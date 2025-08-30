@@ -1,16 +1,16 @@
 ---
 name: Gambinos Restaurant and Lounge reservation booking project
-about: Manage reservation bookings by staff and allow online bookings
+about: A reservation booking and tracking app for Gambinos Restaurant and Lounge
 title: User Story <Title>
-labels: Could Have, enhancement, Must Have, Should Have
-assignees: Pacman0126
+labels: ''
+assignees: ''
 
 ---
 
 As a **role** I can **capability** so that **received benefit**
 
-- Acceptance criteria 1
+- [ ] Acceptance criteria 1
 
-- Acceptance criteria 2
+- [ ] Acceptance criteria 2
 
-- Acceptance criteria 3
+- [ ] Acceptance criteria 3
