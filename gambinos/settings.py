@@ -35,6 +35,7 @@ ALLOWED_HOSTS = ['.herokuapp.com', '127.0.0.1', 'localhost',]
 # Application definition
 
 INSTALLED_APPS = [
+    'django_admin_dracula',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'reservation_book',
+    "phonenumber_field",
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -87,6 +89,11 @@ DATABASES = {
     'default': dj_database_url.parse(os.environ.get("DATABASE_URL"))
 }
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.codeinstitute-ide.net/",
+    "https://*.herokuapp.com"
+]
+
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
@@ -116,6 +123,10 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+
+PHONENUMBER_DB_FORMAT = 'INTERNATIONAL'
+
+PHONENUMBER_DEFAULT_REGION = 'DE'
 
 
 # Static files (CSS, JavaScript, Images)
