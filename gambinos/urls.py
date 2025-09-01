@@ -19,9 +19,9 @@ from django.urls import path, include
 # from reservation_book import views as reservation_book_views
 
 urlpatterns = [
-    path('', include('reservation_book.urls'),  name='reservation_book-urls'),
+    path('', include('reservation_book.urls'), name='home'),
     path('admin/', admin.site.urls),
-    path('summernote/', include('django_summernote.urls')),
+    # path('summernote/', include('django_summernote.urls')),
     # path('reservations/', reservation_book_views.reservations,  name='reservations'),
 
 ]
