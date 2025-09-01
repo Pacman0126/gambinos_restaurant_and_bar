@@ -1,7 +1,9 @@
-from django.shortcuts import render, get_object_or_404
-from django.views import generic
-from django.views import generic
+from django.shortcuts import render, get_object_or_404, redirect
+# from django.views import generic
 from .models import ReservationBook
+from .forms import ReservationsForm
+
+
 # from django.http import HttpResponse
 
 
@@ -9,13 +11,13 @@ from .models import ReservationBook
 # def reservations(request):
 #    return HttpResponse("Welcome Gambinos reservation book")
 
-class ReservationDisplay(generic.ListView):
-    # model = ReservationBook
-    queryset = ReservationBook.objects.all()
-    template_name = "reservation_book/index.html"
+# class ReservationDisplay(generic.ListView):
+# model = ReservationBook
+# queryset = ReservationBook.objects.all()
+# template_name = "reservation_book/index.html"
 
 
-def reservation_detail(request, reservation_id):
+def home(request):
     """
     Display an individual :model:`reservation_book.ReservationBook`.
 
@@ -29,11 +31,11 @@ def reservation_detail(request, reservation_id):
     :template:`reservation_book/index.html`
     """
 
-    queryset = ReservationBook.objects.all()
-    post = get_object_or_404(queryset, reservation_id=reservation_id)
+    reservations = ReservationBook.objects.all()
+    # reservation = get_object_or_404(queryset, reservation_id=reservation_id)
 
     return render(
         request,
-        "reservation_book/index.html",
-        {"post": post},
+        "reservation_book/templates/index.html",
+        {"reservations": reservations}
     )
