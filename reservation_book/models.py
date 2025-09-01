@@ -32,6 +32,9 @@ class ReservationBook(models.Model):
     mobile = PhoneNumberField(default='+49 123 456 78')
     email = models.EmailField(max_length=254, default='me@domain.com')
 
+    def __str__(self):
+        return f"{self.reservation_date} | by {self.first_name}"
+
 
 class TableReservation(models.Model):
     reservation_id = models.IntegerField(primary_key=True)
