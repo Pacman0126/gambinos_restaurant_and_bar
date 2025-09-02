@@ -4,6 +4,13 @@ from .models import ContactMobile
 from .models import ContactPhone
 from .models import ReservationBook
 from .models import TableReservation
+from .models import OnlineRegisteredCustomer
+from .models import ReservedTables1718
+from .models import ReservedTables1819
+from .models import ReservedTables1920
+from .models import ReservedTables2021
+from .models import ReservedTables2122
+from .models import BridgeEntity
 
 
 # Register your models here.
@@ -29,10 +36,10 @@ class ContactAdminPhone(admin.ModelAdmin):
 
 # admin.register(ReservationBook)
 admin.register(TableReservation)
-
-
-# class AuthorAdmin(admin.ModelAdmin):
-#    pass
-
-
-# admin.site.register(ReservationBook, AuthorAdmin)
+admin.register(OnlineRegisteredCustomer)
+admin.register(ReservedTables1718)
+admin.register(ReservedTables1819)
+admin.register(ReservedTables1920)
+admin.register(ReservedTables2021)
+admin.register(ReservedTables2122)
+admin.register(BridgeEntity)
