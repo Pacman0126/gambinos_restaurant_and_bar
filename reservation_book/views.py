@@ -36,6 +36,30 @@ def home(request):
 
     return render(
         request,
-        "reservation_book/templates/index.html",
+        "reservation_book/templates/reservation_book/templates/index.html",
+        {"reservations": reservations}
+    )
+
+
+def reservations(request):
+    """
+    Display an individual :model:`reservation_book.ReservationBook`.
+
+    **Context**
+
+    ``post``
+        An instance of :model:`reservation_book.ReservationBook`.
+
+    **Template:**
+
+    :template:`reservation_book/index.html`
+    """
+
+    reservations = ReservationBook.objects.all()
+    # reservation = get_object_or_404(queryset, reservation_id=reservation_id)
+
+    return render(
+        request,
+        "reservation_book/templates/reservation_book/templates/reservation_book.html",
         {"reservations": reservations}
     )
