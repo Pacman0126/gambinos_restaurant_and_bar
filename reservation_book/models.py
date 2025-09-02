@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from phonenumber_field.modelfields import PhoneNumberField
 from phonenumber_field.phonenumber import PhoneNumber
-from datetime import datetime
+import datetime
 from datetime import date
 
 # Create your models here.
