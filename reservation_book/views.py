@@ -36,7 +36,7 @@ def home(request):
 
     return render(
         request,
-        "reservation_book/templates/reservation_book/templates/index.html",
+        "reservation_book/index.html",
         {"reservations": reservations}
     )
 
@@ -60,6 +60,6 @@ def reservations(request):
 
     return render(
         request,
-        "reservation_book/templates/reservation_book/templates/reservation_book.html",
+        "reservation_book/reservation_book.html",
         {"reservations": reservations}
     )
