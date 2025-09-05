@@ -11,6 +11,7 @@ from .models import ReservedTables1920
 from .models import ReservedTables2021
 from .models import ReservedTables2122
 from .models import BridgeEntity
+from .models import Creditos1
 
 
 # Register your models here.
@@ -43,3 +44,4 @@ admin.register(ReservedTables1920)
 admin.register(ReservedTables2021)
 admin.register(ReservedTables2122)
 admin.register(BridgeEntity)
+admin.register(Creditos1)
