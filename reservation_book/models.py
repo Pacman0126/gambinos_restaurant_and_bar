@@ -1,9 +1,12 @@
 from django.db import models
+from django.db.models import JSONField
 from django.contrib.auth.models import User
+# from django.contrib.postgres.fields import JSONField
 from phonenumber_field.modelfields import PhoneNumberField
 from phonenumber_field.phonenumber import PhoneNumber
 import datetime
 from datetime import date
+
 
 # Create your models here.
 
@@ -37,28 +40,32 @@ class ReservationBook(models.Model):
 
 
 class TableReservation(models.Model):
-    reservation_id = models.IntegerField(primary_key=True)
-    reservation_id = models.OneToOneField(
-        ReservationBook,
-        on_delete=models.CASCADE,
-        primary_key=True,
-        unique=True
-    )
+    reservation_id = models.AutoField(primary_key=True)  # auto-increment ID
+
     time_slot = models.CharField(max_length=15, default='time_slot')
     number_of_tables_required_by_patron = models.IntegerField(default=0)
-    reservation_date = models.DateField(default=date.today)
     reservation_status = models.BooleanField(default=True)
     booked_on_date = models.DateTimeField(auto_now=True)
 
+    timeslot_availability = models.ForeignKey(
+        "TimeSlotAvailability",
+        on_delete=models.CASCADE,
+        to_field="calendar_date",
+        db_column="reservation_date",
+        related_name="reservations",
+    )
+
+    @property
+    def reservation_date(self):
+        return self.timeslot_availability.calendar_date
+
+    def __str__(self):
+        return f"Reservation {self.reservation_id} on {self.reservation_date}"
+
 
 class TimeSlotAvailability(models.Model):
-    calendar_date = models.IntegerField(primary_key=True)
-    calendar_date = models.OneToOneField(
-        TableReservation,
-        on_delete=models.CASCADE,
-        primary_key=True,
-        unique=True
-    )
+    calendar_date = models.DateField(primary_key=True)
+
     total_cust_demand_for_tables_17_18 = models.IntegerField(default=0)
     number_of_tables_available_17_18 = models.IntegerField(default=10)
     total_cust_demand_for_tables_18_19 = models.IntegerField(default=0)
@@ -69,6 +76,9 @@ class TimeSlotAvailability(models.Model):
     number_of_tables_available_20_21 = models.IntegerField(default=10)
     total_cust_demand_for_tables_21_22 = models.IntegerField(default=0)
     number_of_tables_available_21_22 = models.IntegerField(default=10)
+
+    def __str__(self):
+        return f"Availability for {self.calendar_date}"
 
 
 class OnlineRegisteredCustomer(models.Model):
@@ -163,3 +173,7 @@ class ReservedTables2122(models.Model):
 class BridgeEntity(models.Model):
     calendar_date = models.DateField(default=date.today, primary_key=True)
     date = models.DateField(default=date.today)
+
+
+class Creditos1(models.Model):
+    dict_info = JSONField(default=dict)

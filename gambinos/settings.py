@@ -50,7 +50,11 @@ INSTALLED_APPS = [
     'django_summernote',
     'reservation_book',
     "phonenumber_field",
+    'django_tables2',
+
 ]
+
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',

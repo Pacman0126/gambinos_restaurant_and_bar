@@ -1,0 +1,17 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reservation Successful</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div class="container mt-5 text-center">
+    <div class="alert alert-success p-4 rounded shadow">
+        <h1>🎉 Reservation Confirmed!</h1>
+        <p>Your table has been reserved successfully.</p>
+        <a href="{% url 'make_reservation' %}" class="btn btn-primary mt-3">Back to Reservations</a>
+    </div>
+</div>
+</body>
+</html>
