@@ -1,6 +1,7 @@
 from . import views
 from django.urls import path
-from .views import home, reservations, importExcel, make_reservation
+from django.views.generic import TemplateView
+from .views import home, reservations, make_reservation
 
 urlpatterns = [
     path('', home, name='home'),
@@ -8,7 +9,11 @@ urlpatterns = [
     path('reservation_book/', reservations, name='reservations'),
     path("reservation_success/", views.reservation_success,
          name="reservation_success"),
-    path('import/', importExcel, name='push_excel'),
+    path(
+        "zoho-domain-verification.html",
+        TemplateView.as_view(
+            template_name="reservation_book/zoho-domain-verification.html"
+        ),
+    ),
 
-    # views.reservation_detail, name='reservation_detail'),
 ]

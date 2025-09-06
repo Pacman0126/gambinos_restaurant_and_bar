@@ -1,9 +1,13 @@
 from django.shortcuts import render, HttpResponse, redirect
 from django.contrib import messages
 from django.utils import timezone
+from django.core.mail import send_mail
+
+from twilio.rest import Client
+
 from .forms import ReservationForm
 from datetime import date, timedelta
-
+from django.http import JsonResponse
 
 from .models import TableReservation, TimeSlotAvailability, OnlineRegisteredCustomer, ReservationBook
 from django.contrib.auth.decorators import login_required
@@ -25,37 +29,6 @@ from .models import TableReservation, TimeSlotAvailability
 
 # Create your views here.
 # https://stackoverflow.com/questions/68248414/how-to-store-a-dictionary-in-a-django-database-models-field
-
-def importExcel(request):
-    today = date.today()
-    created_rows = []
-
-    for i in range(30):
-        day = today + timedelta(days=i)
-
-        # Create or get existing record
-        obj, created = TimeSlotAvailability.objects.get_or_create(
-            calendar_date=day,
-            defaults={
-                "total_cust_demand_for_tables_17_18": 0,
-                "number_of_tables_available_17_18": 10,
-                "total_cust_demand_for_tables_18_19": 0,
-                "number_of_tables_available_18_19": 10,
-                "total_cust_demand_for_tables_19_20": 0,
-                "number_of_tables_available_19_20": 10,
-                "total_cust_demand_for_tables_20_21": 0,
-                "number_of_tables_available_20_21": 10,
-                "total_cust_demand_for_tables_21_22": 0,
-                "number_of_tables_available_21_22": 10,
-            },
-        )
-        created_rows.append(obj)
-
-    return render(
-        request,
-        "reservation_book/reservation_book.html",
-        {"table_availability": created_rows},
-    )
 
 
 def home(request):
@@ -106,6 +79,24 @@ def reservations(request):
     )
 
 
+def send_sms(to_number, body):
+    """
+    Helper to send SMS using Twilio. Credentials come from environment variables or settings.
+    """
+    client = Client(
+        os.environ.get("TWILIO_ACCOUNT_SID", getattr(
+            settings, "TWILIO_ACCOUNT_SID", "")),
+        os.environ.get("TWILIO_AUTH_TOKEN", getattr(
+            settings, "TWILIO_AUTH_TOKEN", "")),
+    )
+    client.messages.create(
+        body=body,
+        from_=os.environ.get("TWILIO_PHONE_NUMBER", getattr(
+            settings, "TWILIO_PHONE_NUMBER", "+441234567890")),
+        to=to_number,
+    )
+
+
 def make_reservation(request):
     if request.method == "POST":
         date = request.POST.get("reservation_date")
@@ -119,27 +110,67 @@ def make_reservation(request):
         mobile = request.POST.get("mobile")
         email = request.POST.get("email")
 
+        # detect if AJAX request
+        is_ajax = request.headers.get("x-requested-with") == "XMLHttpRequest"
+
         try:
             ts = TimeSlotAvailability.objects.get(calendar_date=date)
         except TimeSlotAvailability.DoesNotExist:
+            if is_ajax:
+                return JsonResponse({"success": False, "error": "Invalid date"})
             messages.error(request, "Invalid date selected.")
             return redirect("make_reservation")
 
-        # check availability
         slot_available = getattr(ts, f"number_of_tables_available_{slot}")
         slot_demand = getattr(ts, f"total_cust_demand_for_tables_{slot}")
 
+        # check availability
         if slot_demand + tables_needed > slot_available:
+            if is_ajax:
+                return JsonResponse({"success": False, "error": "Not enough tables available"})
             messages.error(request, "Not enough tables available.")
             return redirect("make_reservation")
 
-        # save TableReservation
+        # must provide at least one phone number
+        if not (phone or mobile):
+            if is_ajax:
+                return JsonResponse({"success": False, "error": "Phone or mobile required"})
+            messages.error(
+                request, "Please provide at least a phone or mobile number.")
+            return redirect("make_reservation")
+
+        # create reservation
         reservation = TableReservation.objects.create(
             time_slot=slot,
             number_of_tables_required_by_patron=tables_needed,
             timeslot_availability=ts,
             reservation_status=True,
         )
+
+        # update demand for that slot
+        demand_field = f"total_cust_demand_for_tables_{slot}"
+        setattr(ts, demand_field, getattr(ts, demand_field) + tables_needed)
+        ts.save()
+
+        # compute remaining availability (✅ only once)
+        left = slot_available - getattr(ts, demand_field)
+
+        # send confirmation email
+        if email:
+            send_mail(
+                subject="Your Gambino’s Reservation Confirmation",
+                message=f"Hello {first_name}, your reservation on {date} at {slot.replace('_', ':')} is confirmed.",
+                from_email="no-reply@gambinos.com",
+                recipient_list=[email],
+                fail_silently=False,
+            )
+
+        # send SMS if mobile provided
+        if mobile:
+            send_sms(
+                to_number=mobile,
+                body=f"Hello {first_name}, your reservation on {date} at {slot.replace('_', ':')} is confirmed."
+            )
 
         # link to Online or Staff
         if request.user.is_authenticated and request.user.is_staff:
@@ -154,7 +185,7 @@ def make_reservation(request):
             )
         else:
             OnlineRegisteredCustomer.objects.create(
-                id=reservation.pk,  # link to reservation
+                id=reservation.pk,
                 first_name=first_name,
                 last_name=last_name,
                 phone=phone,
@@ -162,12 +193,17 @@ def make_reservation(request):
                 email=email,
             )
 
+        # ✅ AJAX JSON response here
+        if is_ajax:
+            return JsonResponse({"success": True, "left": left})
+
+        # fallback: classic redirect
         messages.success(request, "Reservation confirmed!")
         return redirect("make_reservation")
 
-    # -----------------------
-    # GET branch → ensure 30-day availability
-    # -----------------------
+    # -------------------
+    # GET branch (outside POST)
+    # -------------------
     today = timezone.now().date()
     next_30_days = []
 
@@ -196,7 +232,7 @@ def make_reservation(request):
             ("21_22", ts.number_of_tables_available_21_22 -
              ts.total_cust_demand_for_tables_21_22),
         ]
-        ts.slots = slots  # attach for template use
+        ts.slots = slots
         next_30_days.append(ts)
 
     return render(request, "reservation_book/make_reservation.html", {
@@ -206,3 +242,11 @@ def make_reservation(request):
 
 def reservation_success(request):
     return render(request, "reservation_book/reservation_success.html")
+
+
+def reservation_list(request):
+    reservations = ReservationBook.objects.select_related(
+        "reservation_id").order_by("reservation_date")
+    return render(request, "reservation_book/reservation_list.html", {
+        "reservations": reservations
+    })

@@ -96,9 +96,19 @@ WSGI_APPLICATION = 'gambinos.wsgi.application'
 #        'NAME': BASE_DIR / 'db.sqlite3',
 #    }
 # }
+
+# DATABASES = {
+#    'default': dj_database_url.parse(os.environ.get("DATABASE_URL"))
+# }
+
 DATABASES = {
-    'default': dj_database_url.parse(os.environ.get("DATABASE_URL"))
+    "default": dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",  # fallback for dev
+        conn_max_age=600,
+        ssl_require=True  # Neon + Heroku both need SSL
+    )
 }
+
 
 CSRF_TRUSTED_ORIGINS = [
     "https://*.codeinstitute-ide.net/",
@@ -150,3 +160,18 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# --- SendGrid Email Settings ---
+EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
+SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY")
+
+# Optional settings:
+SENDGRID_SANDBOX_MODE_IN_DEBUG = False  # True = don’t really send emails
+SENDGRID_ECHO_TO_STDOUT = False          # Print emails to console in development
+# must match the email you verified in SendGrid
+DEFAULT_FROM_EMAIL = "oliver.p.hartmann@gmail.com"
+
+# Twilio configuration
+TWILIO_ACCOUNT_SID = "your_account_sid_here"
+TWILIO_AUTH_TOKEN = "your_auth_token_here"
+TWILIO_PHONE_NUMBER = "+441234567890"  # your Twilio number
