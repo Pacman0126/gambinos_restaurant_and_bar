@@ -9,11 +9,5 @@ urlpatterns = [
     path('reservation_book/', reservations, name='reservations'),
     path("reservation_success/", views.reservation_success,
          name="reservation_success"),
-    path(
-        "zoho-domain-verification.html",
-        TemplateView.as_view(
-            template_name="reservation_book/zoho-domain-verification.html"
-        ),
-    ),
 
 ]
