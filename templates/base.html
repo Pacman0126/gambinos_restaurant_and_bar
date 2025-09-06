@@ -46,10 +46,6 @@
                         <a class="nav-link {% if request.path == reservations_url %}active{% endif %}" aria-current="page"
                             href="{% url 'reservations' %}">Reservations</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.path == push_excel_url %}active{% endif %}" aria-current="page"
-                            href="{% url 'push_excel' %}">Import data from Excel</a>
-                    </li>
 
                     <li class="nav-item">
                         <a class="nav-link {% if request.path == make_reservation_url %}active{% endif %}" aria-current="page"

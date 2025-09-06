@@ -19,24 +19,25 @@ class ContactPhone(models.Model):
     phone = PhoneNumberField()
 
 
-class ReservationBook(models.Model):
+# models.py
 
-    reservation_id = models.AutoField(primary_key=True)
-    reservation_id = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE,
-        primary_key=True,
-        unique=True
+
+class ReservationBook(models.Model):
+    id = models.AutoField(primary_key=True)
+    reservation_id = models.ForeignKey(
+        "TableReservation", on_delete=models.CASCADE, related_name="reservation_book"
     )
-    reservation_date = models.DateField(default=date.today)
-    first_name = models.CharField(max_length=15, default='first name')
-    last_name = models.CharField(max_length=15, default='last name')
-    phone = PhoneNumberField(default='+49 123 456 78')
-    mobile = PhoneNumberField(default='+49 123 456 78')
-    email = models.EmailField(max_length=254, default='me@domain.com')
+    reservation_date = models.DateField()
+
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+
+    phone = PhoneNumberField(blank=True, null=True, region="GB")   # default UK
+    mobile = PhoneNumberField(blank=True, null=True, region="GB")  # default UK
+    email = models.EmailField(blank=True, null=True)
 
     def __str__(self):
-        return f"{self.reservation_date} | by {self.first_name}"
+        return f"{self.first_name} {self.last_name} on {self.reservation_date}"
 
 
 class TableReservation(models.Model):
@@ -82,12 +83,13 @@ class TimeSlotAvailability(models.Model):
 
 
 class OnlineRegisteredCustomer(models.Model):
-    id = models.IntegerField(primary_key=True)
-    first_name = models.CharField(max_length=15, default='first name')
-    last_name = models.CharField(max_length=15, default='last name')
-    phone = PhoneNumberField(default='+49 123 456 78')
-    mobile = PhoneNumberField(default='+49 123 456 78')
-    email = models.EmailField(max_length=254, default='me@domain.com')
+    id = models.AutoField(primary_key=True)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    phone = PhoneNumberField(blank=True, region="GB")   # Landline
+    mobile = PhoneNumberField(blank=True, region="GB")  # Mobile
+    email = models.EmailField(
+        max_length=254, blank=True, null=True)  # optional
 
 
 class ReservedTables1718(models.Model):

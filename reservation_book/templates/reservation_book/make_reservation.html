@@ -42,17 +42,31 @@
                         <label class="form-label">Last Name</label>
                         <input type="text" class="form-control" name="last_name" required>
                     </div>
+
                     <div class="mb-3">
-                        <label class="form-label">Phone (Landline)</label>
-                        <input type="text" class="form-control" name="phone">
+                    <label class="form-label">Country</label>
+                    <select class="form-select" name="country_code" id="country_code">
+                        <option value="GB" selected>United Kingdom</option>
+                        <option value="DE">Germany</option>
+                        <option value="FR">France</option>
+                        <option value="US">United States</option>
+                        <!-- add more countries as needed -->
+                    </select>
                     </div>
+
                     <div class="mb-3">
-                        <label class="form-label">Mobile (SMS)</label>
-                        <input type="text" class="form-control" name="mobile" required>
+                    <label class="form-label">Phone / Mobile <span class="text-danger">*</span></label>
+                    <small class="form-text text-muted">Please provide at least one number</small>
+                    <input type="text" class="form-control mb-2" name="phone" placeholder="Phone (Landline)">
+                    <input type="text" class="form-control" name="mobile" placeholder="Mobile (for SMS)">
+                    <div id="phoneError" class="text-danger mt-1" style="display: none;">
+                        Phone required if no mobile provided (or vice versa).
                     </div>
+                    </div>
+
                     <div class="mb-3">
                         <label class="form-label">Email</label>
-                        <input type="email" class="form-control" name="email" required>
+                        <input type="email" class="form-control" name="email">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -83,7 +97,7 @@
         <td>{{ day.calendar_date }}</td>
         {% for slot, left in day.slots %}
             <td class="text-center {% if left <= 0 %}table-danger{% else %}table-success clickable{% endif %}"
-                data-date="{{ day.calendar_date }}"
+                data-date="{{ day.calendar_date|date:'Y-m-d' }}"
                 data-slot="{{ slot }}"
                 data-left="{{ left }}">
                 {% if left > 0 %}
@@ -101,16 +115,110 @@
 
 <!-- Script to handle cell clicks -->
 <script>
-document.querySelectorAll("td[data-slot]").forEach(cell => {
-    cell.addEventListener("click", () => {
-        if (cell.dataset.left <= 0) return; // skip FULL cells
-        document.getElementById("reservation_date").value = cell.dataset.date;
-        document.getElementById("time_slot").value = cell.dataset.slot;
-        let modal = new bootstrap.Modal(document.getElementById("customerModal"));
-        modal.show();
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("reservationForm");
+    const modalEl = document.getElementById("customerModal");
+    const modal = new bootstrap.Modal(modalEl);
+    let clickedCell = null;  // store which cell was clicked
+
+    // Phone regex per country
+    const patterns = {
+        "GB": /^(\+44\s?\d{9,10}|0\d{9,10})$/,                     // UK
+        "DE": /^(?:\+49\s?[1-9]\d{6,12}|0[1-9]\d{6,12})$/,         // Germany
+        "FR": /^(\+33\s?[1-9]\d{8}|0[1-9]\d{8})$/,                 // France
+        "US": /^(\+1\s?\d{10}|[2-9]\d{9})$/,                       // US
+        "IT": /^(\+39\s?\d{8,11}|0\d{8,11})$/,                     // Italy
+        "IE": /^(\+353\s?\d{7,9}|0\d{7,9})$/,                      // Ireland
+        "AT": /^(\+43\s?\d{7,12}|0\d{7,12})$/,                     // Austria
+        "PL": /^(\+48\s?\d{9}|0\d{9})$/                            // Poland
+    };
+
+    // Handle cell clicks
+    document.querySelectorAll("td[data-slot]").forEach(cell => {
+        cell.addEventListener("click", () => {
+            if (cell.dataset.left <= 0) return; // skip FULL cells
+            clickedCell = cell;
+            document.getElementById("reservation_date").value = cell.dataset.date;
+            document.getElementById("time_slot").value = cell.dataset.slot;
+            modal.show();
+        });
+    });
+
+    // Form submit (AJAX)
+    form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const phone = form.querySelector("input[name='phone']").value.trim();
+        const mobile = form.querySelector("input[name='mobile']").value.trim();
+        const country = form.querySelector("select[name='country_code']").value;
+        const errorDiv = document.getElementById("phoneError");
+
+        // Require at least one number
+        if (!phone && !mobile) {
+            errorDiv.textContent = "Please provide at least a phone or mobile number.";
+            errorDiv.style.display = "block";
+            return;
+        }
+
+        // Regex validation (both numbers if filled)
+        let valid = true;
+        if (phone && !patterns[country].test(phone)) {
+            valid = false;
+            errorDiv.textContent = "Invalid phone number for " + country;
+        }
+        if (mobile && !patterns[country].test(mobile)) {
+            valid = false;
+            errorDiv.textContent = "Invalid mobile number for " + country;
+        }
+        if (!valid) {
+            errorDiv.style.display = "block";
+            return;
+        }
+        errorDiv.style.display = "none";
+
+        // AJAX submit
+        const formData = new FormData(form);
+        try {
+            const response = await fetch(form.action || window.location.href, {
+                method: "POST",
+                headers: { "X-Requested-With": "XMLHttpRequest" },
+                body: formData
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                // Update the clicked cell with new availability
+                if (clickedCell) {
+                    if (data.left > 0) {
+                        clickedCell.textContent = data.left;
+                        clickedCell.dataset.left = data.left;
+                        clickedCell.classList.remove("table-danger");
+                        clickedCell.classList.add("table-success");
+                    } else {
+                        clickedCell.textContent = "FULL";
+                        clickedCell.dataset.left = 0;
+                        clickedCell.classList.remove("table-success");
+                        clickedCell.classList.add("table-danger");
+                    }
+                }
+                modal.hide();
+                form.reset();
+            } else {
+                errorDiv.textContent = data.error || "Reservation failed.";
+                errorDiv.style.display = "block";
+            }
+        } catch (err) {
+            errorDiv.textContent = "Server error. Please try again.";
+            errorDiv.style.display = "block";
+            console.error(err);
+        }
     });
 });
 </script>
+
+
+
+
 
 </body>
 </html>
