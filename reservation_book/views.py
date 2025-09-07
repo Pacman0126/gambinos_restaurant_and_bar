@@ -87,6 +87,8 @@ logger = logging.getLogger(__name__)
 
 def send_sms(to_number, body):
     try:
+        logger.info(
+            f"Using SID={settings.TWILIO_ACCOUNT_SID}, TOKEN length={len(settings.TWILIO_AUTH_TOKEN)}")
         client = Client(
             settings.TWILIO_ACCOUNT_SID,
             settings.TWILIO_AUTH_TOKEN,
@@ -216,7 +218,7 @@ def make_reservation(request):
 
             messages.success(request, "Reservation confirmed!")
             return redirect("make_reservation")
-
+            # return render(request, "reservation_book/reservation_success.html")
         except Exception as e:
             logger.exception("Unexpected error in make_reservation: %s", e)
             if request.headers.get("x-requested-with") == "XMLHttpRequest":

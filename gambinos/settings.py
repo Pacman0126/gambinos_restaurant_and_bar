@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+import sys
 from django.conf import settings
 import logging.config
 import dj_database_url
@@ -24,6 +25,11 @@ if os.path.isfile('env.py'):
 # TEMPLATES_DIR = os.path.join(BASE_DIR, 'reservation_book/templates/')
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+ENV_PATH = BASE_DIR / "env.py"
+if ENV_PATH.exists():
+    sys.path.append(str(BASE_DIR))  # allow Python to find env.py
+    import env  # this runs env.py, populating os.environ
+
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 SITE_ID = 1
 
@@ -228,6 +234,6 @@ SENDGRID_ECHO_TO_STDOUT = False          # Print emails to console in developmen
 DEFAULT_FROM_EMAIL = "oliver.p.hartmann@gmail.com"
 
 # Twilio configuration
-TWILIO_ACCOUNT_SID = env.TWILIO_ACCOUNT_SID
-TWILIO_AUTH_TOKEN = env.TWILIO_AUTH_TOKEN
-TWILIO_PHONE_NUMBER = env.TWILIO_PHONE_NUMBER
+TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID")
+TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN")
+TWILIO_PHONE_NUMBER = os.environ.get("TWILIO_PHONE_NUMBER")
