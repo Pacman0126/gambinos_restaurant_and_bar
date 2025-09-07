@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+from django.conf import settings
+import logging.config
 import dj_database_url
 
 if os.path.isfile('env.py'):
@@ -35,6 +37,60 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 DEBUG = True
 
 ALLOWED_HOSTS = ['.herokuapp.com', '127.0.0.1', 'localhost',]
+
+# production-friendly logging config that outputs to both the console and a rotating log file
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "[{asctime}] {levelname} [{name}:{lineno}] {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+        "file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(BASE_DIR, "logs/django.log"),
+            "maxBytes": 5 * 1024 * 1024,  # 5 MB
+            "backupCount": 5,
+            "formatter": "verbose",
+        },
+        "errors_file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(BASE_DIR, "logs/errors.log"),
+            "maxBytes": 5 * 1024 * 1024,
+            "backupCount": 5,
+            "level": "ERROR",  # only log errors+
+            "formatter": "verbose",
+        },
+    },
+    "root": {
+        "handlers": ["console", "file", "errors_file"],
+        "level": "DEBUG",  # change to INFO/ WARNING for prod
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console", "file", "errors_file"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "reservation_book": {
+            "handlers": ["console", "file", "errors_file"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+    },
+}
 
 
 # Application definition
@@ -172,6 +228,6 @@ SENDGRID_ECHO_TO_STDOUT = False          # Print emails to console in developmen
 DEFAULT_FROM_EMAIL = "oliver.p.hartmann@gmail.com"
 
 # Twilio configuration
-TWILIO_ACCOUNT_SID = "your_account_sid_here"
-TWILIO_AUTH_TOKEN = "your_auth_token_here"
-TWILIO_PHONE_NUMBER = "+441234567890"  # your Twilio number
+TWILIO_ACCOUNT_SID = env.TWILIO_ACCOUNT_SID
+TWILIO_AUTH_TOKEN = env.TWILIO_AUTH_TOKEN
+TWILIO_PHONE_NUMBER = env.TWILIO_PHONE_NUMBER

@@ -1,16 +1,19 @@
+import os
+import logging
 from django.shortcuts import render, HttpResponse, redirect
 from django.contrib import messages
 from django.utils import timezone
 from django.core.mail import send_mail
-
-from twilio.rest import Client
-
-from .forms import ReservationForm
-from datetime import date, timedelta
 from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.conf import settings
+from twilio.rest import Client
+from datetime import date, timedelta
+from .forms import ReservationForm
+
 
 from .models import TableReservation, TimeSlotAvailability, OnlineRegisteredCustomer, ReservationBook
-from django.contrib.auth.decorators import login_required
+
 # import pandas as pd
 # import sqlalchemy
 import json
@@ -79,131 +82,150 @@ def reservations(request):
     )
 
 
+logger = logging.getLogger(__name__)
+
+
 def send_sms(to_number, body):
-    """
-    Helper to send SMS using Twilio. Credentials come from environment variables or settings.
-    """
-    client = Client(
-        os.environ.get("TWILIO_ACCOUNT_SID", getattr(
-            settings, "TWILIO_ACCOUNT_SID", "")),
-        os.environ.get("TWILIO_AUTH_TOKEN", getattr(
-            settings, "TWILIO_AUTH_TOKEN", "")),
-    )
-    client.messages.create(
-        body=body,
-        from_=os.environ.get("TWILIO_PHONE_NUMBER", getattr(
-            settings, "TWILIO_PHONE_NUMBER", "+441234567890")),
-        to=to_number,
-    )
+    try:
+        client = Client(
+            settings.TWILIO_ACCOUNT_SID,
+            settings.TWILIO_AUTH_TOKEN,
+        )
+        message = client.messages.create(
+            body=body,
+            from_=settings.TWILIO_PHONE_NUMBER,
+            to=to_number,
+        )
+        logger.info(f"SMS sent to {to_number}, SID={message.sid}")
+    except Exception as e:
+        logger.error(f"SMS sending failed: {e}")
+
+
+# Map time slot codes to human-readable labels
+SLOT_LABELS = {
+    "17_18": "17:00–18:00",
+    "18_19": "18:00–19:00",
+    "19_20": "19:00–20:00",
+    "20_21": "20:00–21:00",
+    "21_22": "21:00–22:00",
+}
 
 
 def make_reservation(request):
+    logger.info("make_reservation called, method=%s", request.method)
+
     if request.method == "POST":
-        date = request.POST.get("reservation_date")
-        slot = request.POST.get("time_slot")
-        tables_needed = int(request.POST.get(
-            "number_of_tables_required_by_patron", 1))
-
-        first_name = request.POST.get("first_name")
-        last_name = request.POST.get("last_name")
-        phone = request.POST.get("phone")
-        mobile = request.POST.get("mobile")
-        email = request.POST.get("email")
-
-        # detect if AJAX request
-        is_ajax = request.headers.get("x-requested-with") == "XMLHttpRequest"
-
         try:
+            date = request.POST.get("reservation_date")
+            slot = request.POST.get("time_slot")
+            tables_needed = int(request.POST.get(
+                "number_of_tables_required_by_patron", 1))
+
+            first_name = request.POST.get("first_name")
+            last_name = request.POST.get("last_name")
+            phone = request.POST.get("phone")
+            mobile = request.POST.get("mobile")
+            email = request.POST.get("email")
+
+            is_ajax = request.headers.get(
+                "x-requested-with") == "XMLHttpRequest"
+
             ts = TimeSlotAvailability.objects.get(calendar_date=date)
-        except TimeSlotAvailability.DoesNotExist:
+
+            slot_available = getattr(ts, f"number_of_tables_available_{slot}")
+            slot_demand = getattr(ts, f"total_cust_demand_for_tables_{slot}")
+
+            if slot_demand + tables_needed > slot_available:
+                logger.warning(
+                    "Not enough tables: requested=%s, available=%s", tables_needed, slot_available)
+                if is_ajax:
+                    return JsonResponse({"success": False, "error": "Not enough tables available"})
+                messages.error(request, "Not enough tables available.")
+                return redirect("make_reservation")
+
+            if not (phone or mobile):
+                logger.warning("Reservation missing contact info")
+                if is_ajax:
+                    return JsonResponse({"success": False, "error": "Phone or mobile required"})
+                messages.error(
+                    request, "Please provide at least a phone or mobile number.")
+                return redirect("make_reservation")
+            reservation = TableReservation.objects.create(
+                time_slot=slot,
+                number_of_tables_required_by_patron=tables_needed,
+                timeslot_availability=ts,
+                reservation_status=True,
+            )
+
+            demand_field = f"total_cust_demand_for_tables_{slot}"
+            setattr(ts, demand_field, getattr(
+                ts, demand_field) + tables_needed)
+            ts.save()
+
+            left = slot_available - getattr(ts, demand_field)
+
+            # Convert slot string like "
+            pretty_slot = slot.replace(
+                "_", ":").replace(":", ":00–", 1) + ":00"
+
+            if email:
+                try:
+                    send_mail(
+                        subject="Your Gambino’s Reservation Confirmation",
+                        message=f"Hello {first_name}, your reservation on {date} at {pretty_slot} is confirmed.",
+                        from_email=None,
+                        recipient_list=[email],
+                        fail_silently=False,
+                    )
+                    logger.info("Email sent to %s", email)
+                except Exception as e:
+                    logger.error("Email sending failed: %s", e)
+
+            if mobile:
+                try:
+                    send_sms(
+                        to_number=mobile,
+                        body=f"Hello {first_name}, your reservation on {date} at {pretty_slot} is confirmed."
+                    )
+                    logger.info("SMS sent to %s", mobile)
+                except Exception as e:
+                    logger.error("SMS sending failed: %s", e)
+
+            if request.user.is_authenticated and request.user.is_staff:
+                ReservationBook.objects.create(
+                    reservation_id=request.user,
+                    reservation_date=date,
+                    first_name=first_name,
+                    last_name=last_name,
+                    phone=phone,
+                    mobile=mobile,
+                    email=email,
+                )
+            else:
+                OnlineRegisteredCustomer.objects.create(
+                    id=reservation.pk,
+                    first_name=first_name,
+                    last_name=last_name,
+                    phone=phone,
+                    mobile=mobile,
+                    email=email,
+                )
+
             if is_ajax:
-                return JsonResponse({"success": False, "error": "Invalid date"})
-            messages.error(request, "Invalid date selected.")
+                return JsonResponse({"success": True, "left": left})
+
+            messages.success(request, "Reservation confirmed!")
             return redirect("make_reservation")
 
-        slot_available = getattr(ts, f"number_of_tables_available_{slot}")
-        slot_demand = getattr(ts, f"total_cust_demand_for_tables_{slot}")
-
-        # check availability
-        if slot_demand + tables_needed > slot_available:
-            if is_ajax:
-                return JsonResponse({"success": False, "error": "Not enough tables available"})
-            messages.error(request, "Not enough tables available.")
+        except Exception as e:
+            logger.exception("Unexpected error in make_reservation: %s", e)
+            if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                return JsonResponse({"success": False, "error": str(e)})
+            messages.error(request, f"Error processing reservation: {e}")
             return redirect("make_reservation")
-
-        # must provide at least one phone number
-        if not (phone or mobile):
-            if is_ajax:
-                return JsonResponse({"success": False, "error": "Phone or mobile required"})
-            messages.error(
-                request, "Please provide at least a phone or mobile number.")
-            return redirect("make_reservation")
-
-        # create reservation
-        reservation = TableReservation.objects.create(
-            time_slot=slot,
-            number_of_tables_required_by_patron=tables_needed,
-            timeslot_availability=ts,
-            reservation_status=True,
-        )
-
-        # update demand for that slot
-        demand_field = f"total_cust_demand_for_tables_{slot}"
-        setattr(ts, demand_field, getattr(ts, demand_field) + tables_needed)
-        ts.save()
-
-        # compute remaining availability (✅ only once)
-        left = slot_available - getattr(ts, demand_field)
-
-        # send confirmation email
-        if email:
-            send_mail(
-                subject="Your Gambino’s Reservation Confirmation",
-                message=f"Hello {first_name}, your reservation on {date} at {slot.replace('_', ':')} is confirmed.",
-                from_email="no-reply@gambinos.com",
-                recipient_list=[email],
-                fail_silently=False,
-            )
-
-        # send SMS if mobile provided
-        if mobile:
-            send_sms(
-                to_number=mobile,
-                body=f"Hello {first_name}, your reservation on {date} at {slot.replace('_', ':')} is confirmed."
-            )
-
-        # link to Online or Staff
-        if request.user.is_authenticated and request.user.is_staff:
-            ReservationBook.objects.create(
-                reservation_id=request.user,
-                reservation_date=date,
-                first_name=first_name,
-                last_name=last_name,
-                phone=phone,
-                mobile=mobile,
-                email=email,
-            )
-        else:
-            OnlineRegisteredCustomer.objects.create(
-                id=reservation.pk,
-                first_name=first_name,
-                last_name=last_name,
-                phone=phone,
-                mobile=mobile,
-                email=email,
-            )
-
-        # ✅ AJAX JSON response here
-        if is_ajax:
-            return JsonResponse({"success": True, "left": left})
-
-        # fallback: classic redirect
-        messages.success(request, "Reservation confirmed!")
-        return redirect("make_reservation")
-
-    # -------------------
-    # GET branch (outside POST)
-    # -------------------
+    # ----------------
+    # GET branch
+    # ----------------
     today = timezone.now().date()
     next_30_days = []
 

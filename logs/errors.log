@@ -1,0 +1,91 @@
+[2025-09-07 14:58:06,638] ERROR [sendgrid_backend.mail:187] Failed to send email, error: HTTP Error 403: Forbidden, response body: b'{"errors":[{"message":"The from address does not match a verified Sender Identity. Mail cannot be sent until this error is resolved. Visit https://sendgrid.com/docs/for-developers/sending-email/sender-identity/ to see the Sender Identity requirements","field":"from","help":null}]}'
+[2025-09-07 14:58:06,638] ERROR [reservation_book.views:187] Email sending failed: HTTP Error 403: Forbidden
+[2025-09-07 16:14:55,104] ERROR [sendgrid_backend.mail:187] Failed to send email, error: HTTP Error 403: Forbidden, response body: b'{"errors":[{"message":"The from address does not match a verified Sender Identity. Mail cannot be sent until this error is resolved. Visit https://sendgrid.com/docs/for-developers/sending-email/sender-identity/ to see the Sender Identity requirements","field":"from","help":null}]}'
+[2025-09-07 16:14:55,112] ERROR [reservation_book.views:181] Email sending failed: HTTP Error 403: Forbidden
+[2025-09-07 16:14:55,112] ERROR [reservation_book.views:191] SMS sending failed: name 'os' is not defined
+[2025-09-07 16:27:40,360] ERROR [sendgrid_backend.mail:187] Failed to send email, error: HTTP Error 403: Forbidden, response body: b'{"errors":[{"message":"The from address does not match a verified Sender Identity. Mail cannot be sent until this error is resolved. Visit https://sendgrid.com/docs/for-developers/sending-email/sender-identity/ to see the Sender Identity requirements","field":"from","help":null}]}'
+[2025-09-07 16:27:40,361] ERROR [reservation_book.views:181] Email sending failed: HTTP Error 403: Forbidden
+[2025-09-07 16:27:40,361] ERROR [reservation_book.views:191] SMS sending failed: name 'os' is not defined
+[2025-09-07 17:07:13,808] ERROR [sendgrid_backend.mail:187] Failed to send email, error: HTTP Error 403: Forbidden, response body: b'{"errors":[{"message":"The from address does not match a verified Sender Identity. Mail cannot be sent until this error is resolved. Visit https://sendgrid.com/docs/for-developers/sending-email/sender-identity/ to see the Sender Identity requirements","field":"from","help":null}]}'
+[2025-09-07 17:07:13,809] ERROR [reservation_book.views:181] Email sending failed: HTTP Error 403: Forbidden
+[2025-09-07 17:07:13,809] ERROR [reservation_book.views:191] SMS sending failed: name 'os' is not defined
+[2025-09-07 17:14:45,030] ERROR [reservation_book.views:181] Email sending failed: send_mail() missing 1 required positional argument: 'from_email'
+[2025-09-07 17:14:45,031] ERROR [reservation_book.views:191] SMS sending failed: name 'os' is not defined
+[2025-09-07 17:18:16,769] ERROR [reservation_book.views:191] SMS sending failed: name 'os' is not defined
+[2025-09-07 17:22:36,460] ERROR [reservation_book.views:192] SMS sending failed: name 'settings' is not defined
+[2025-09-07 17:29:30,859] ERROR [reservation_book.views:115] SMS sending failed: 
+[31m[49mHTTP Error[0m [37m[49mYour request was:[0m
+
+[36m[49mPOST /Accounts/your_account_sid_here/Messages.json[0m
+
+[37m[49mTwilio returned the following information:[0m
+
+[34m[49mUnable to create record: Authentication Error - invalid username[0m
+
+[37m[49mMore information may be available here:[0m
+
+[34m[49mhttps://www.twilio.com/docs/errors/20003[0m
+
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 105, in send_sms
+    client.messages.create(
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\twilio\rest\api\v2010\account\message\__init__.py", line 589, in create
+    payload = self._version.create(
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\twilio\base\version.py", line 463, in create
+    return self._parse_create(method, uri, response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\twilio\base\version.py", line 435, in _parse_create
+    raise self.exception(method, uri, response, "Unable to create record")
+twilio.base.exceptions.TwilioRestException: 
+[31m[49mHTTP Error[0m [37m[49mYour request was:[0m
+
+[36m[49mPOST /Accounts/your_account_sid_here/Messages.json[0m
+
+[37m[49mTwilio returned the following information:[0m
+
+[34m[49mUnable to create record: Authentication Error - invalid username[0m
+
+[37m[49mMore information may be available here:[0m
+
+[34m[49mhttps://www.twilio.com/docs/errors/20003[0m
+
+
+[2025-09-07 17:54:11,726] ERROR [reservation_book.views:115] SMS sending failed: 
+[31m[49mHTTP Error[0m [37m[49mYour request was:[0m
+
+[36m[49mPOST /Accounts/your_account_sid_here/Messages.json[0m
+
+[37m[49mTwilio returned the following information:[0m
+
+[34m[49mUnable to create record: Authentication Error - invalid username[0m
+
+[37m[49mMore information may be available here:[0m
+
+[34m[49mhttps://www.twilio.com/docs/errors/20003[0m
+
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 105, in send_sms
+    client.messages.create(
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\twilio\rest\api\v2010\account\message\__init__.py", line 589, in create
+    payload = self._version.create(
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\twilio\base\version.py", line 463, in create
+    return self._parse_create(method, uri, response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\twilio\base\version.py", line 435, in _parse_create
+    raise self.exception(method, uri, response, "Unable to create record")
+twilio.base.exceptions.TwilioRestException: 
+[31m[49mHTTP Error[0m [37m[49mYour request was:[0m
+
+[36m[49mPOST /Accounts/your_account_sid_here/Messages.json[0m
+
+[37m[49mTwilio returned the following information:[0m
+
+[34m[49mUnable to create record: Authentication Error - invalid username[0m
+
+[37m[49mMore information may be available here:[0m
+
+[34m[49mhttps://www.twilio.com/docs/errors/20003[0m
+
+
