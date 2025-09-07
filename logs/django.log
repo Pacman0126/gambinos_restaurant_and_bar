@@ -1,0 +1,263 @@
+[2025-09-07 14:57:35,184] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-07 14:57:39,463] INFO [django.server:212] "GET / HTTP/1.1" 200 3654
+[2025-09-07 14:57:51,411] INFO [django.server:212] "GET /reservation_book/ HTTP/1.1" 200 47564
+[2025-09-07 14:58:06,142] DEBUG [python_http_client.client:267] POST Request: https://api.sendgrid.com/v3/mail/send
+[2025-09-07 14:58:06,142] DEBUG [python_http_client.client:271] PAYLOAD: b'{"from": {"email": "no-reply@gambinos.com"}, "subject": "Your Gambino\\u2019s Reservation Confirmation", "personalizations": [{"to": [{"email": "oliver.p.hartmann@gmail.com"}], "subject": "Your Gambino\\u2019s Reservation Confirmation"}], "content": [{"type": "text/plain", "value": "Hello Oliver, your reservation on 2025-09-07 at 17:18 is confirmed."}], "mail_settings": {"sandbox_mode": {"enable": false}}, "tracking_settings": {"click_tracking": {"enable": true, "enable_text": true}, "open_tracking": {"enable": true}}}'
+[2025-09-07 14:58:06,149] DEBUG [python_http_client.client:273] HEADERS: {'Authorization': 'Bearer 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', 'User-agent': 'sendgrid/6.12.4;python', 'Accept': 'application/json', 'Content-type': 'application/json'}
+[2025-09-07 14:58:06,637] DEBUG [python_http_client.client:180] POST Response: 403 b'{"errors":[{"message":"The from address does not match a verified Sender Identity. Mail cannot be sent until this error is resolved. Visit https://sendgrid.com/docs/for-developers/sending-email/sender-identity/ to see the Sender Identity requirements","field":"from","help":null}]}'
+[2025-09-07 14:58:06,638] ERROR [sendgrid_backend.mail:187] Failed to send email, error: HTTP Error 403: Forbidden, response body: b'{"errors":[{"message":"The from address does not match a verified Sender Identity. Mail cannot be sent until this error is resolved. Visit https://sendgrid.com/docs/for-developers/sending-email/sender-identity/ to see the Sender Identity requirements","field":"from","help":null}]}'
+[2025-09-07 14:58:06,638] ERROR [reservation_book.views:187] Email sending failed: HTTP Error 403: Forbidden
+[2025-09-07 14:58:06,639] INFO [reservation_book.views:191] Would send SMS to +491607739482: Reservation confirmed for 2025-09-07 17_18
+[2025-09-07 14:58:06,675] INFO [django.server:212] "POST /reservation_book/ HTTP/1.1" 200 28
+[2025-09-07 15:05:12,255] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-09-07 15:05:12,986] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-07 15:05:33,260] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-09-07 15:05:34,133] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-07 15:05:46,685] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-07 15:05:49,211] INFO [django.server:212] "GET / HTTP/1.1" 200 3654
+[2025-09-07 15:05:54,680] INFO [django.server:212] "GET /reservation_book/ HTTP/1.1" 200 47562
+[2025-09-07 15:06:11,558] DEBUG [python_http_client.client:267] POST Request: https://api.sendgrid.com/v3/mail/send
+[2025-09-07 15:06:11,559] DEBUG [python_http_client.client:271] PAYLOAD: b'{"from": {"email": "oliver.p.hartmann@gmail.com"}, "subject": "Your Gambino\\u2019s Reservation Confirmation", "personalizations": [{"to": [{"email": "oliver.p.hartmann@gmail.com"}], "subject": "Your Gambino\\u2019s Reservation Confirmation"}], "content": [{"type": "text/plain", "value": "Hello Oliver, your reservation on 2025-09-07 at 19:20 is confirmed."}], "mail_settings": {"sandbox_mode": {"enable": false}}, "tracking_settings": {"click_tracking": {"enable": true, "enable_text": true}, "open_tracking": {"enable": true}}}'
+[2025-09-07 15:06:11,559] DEBUG [python_http_client.client:273] HEADERS: {'Authorization': 'Bearer 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', 'User-agent': 'sendgrid/6.12.4;python', 'Accept': 'application/json', 'Content-type': 'application/json'}
+[2025-09-07 15:06:12,207] DEBUG [python_http_client.client:280] POST Response: 202 b''
+[2025-09-07 15:06:12,207] INFO [reservation_book.views:191] Would send SMS to +491607739482: Reservation confirmed for 2025-09-07 19_20
+[2025-09-07 15:06:12,245] INFO [django.server:212] "POST /reservation_book/ HTTP/1.1" 200 28
+[2025-09-07 15:23:25,815] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-09-07 15:23:26,560] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-07 15:56:53,232] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-09-07 15:56:54,014] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-07 16:13:55,846] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-09-07 16:13:56,642] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-07 16:14:16,948] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-07 16:14:29,049] INFO [django.server:212] "GET / HTTP/1.1" 200 3654
+[2025-09-07 16:14:35,535] INFO [reservation_book.views:114] make_reservation called, method=GET
+[2025-09-07 16:14:37,615] INFO [django.server:212] "GET /reservation_book/ HTTP/1.1" 200 47560
+[2025-09-07 16:14:54,366] INFO [reservation_book.views:114] make_reservation called, method=POST
+[2025-09-07 16:14:54,566] DEBUG [python_http_client.client:267] POST Request: https://api.sendgrid.com/v3/mail/send
+[2025-09-07 16:14:54,566] DEBUG [python_http_client.client:271] PAYLOAD: b'{"from": {"email": "no-reply@gambinosrestaurantandlounge.com"}, "subject": "Your Gambino\\u2019s Reservation Confirmation", "personalizations": [{"to": [{"email": "oliver.p.hartmann@gmail.com"}], "subject": "Your Gambino\\u2019s Reservation Confirmation"}], "content": [{"type": "text/plain", "value": "Hello Oliver, your reservation on 2025-09-08 at 17:00\\u201318:00 is confirmed."}], "mail_settings": {"sandbox_mode": {"enable": false}}, "tracking_settings": {"click_tracking": {"enable": true, "enable_text": true}, "open_tracking": {"enable": true}}}'
+[2025-09-07 16:14:54,567] DEBUG [python_http_client.client:273] HEADERS: {'Authorization': 'Bearer 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', 'User-agent': 'sendgrid/6.12.4;python', 'Accept': 'application/json', 'Content-type': 'application/json'}
+[2025-09-07 16:14:55,104] DEBUG [python_http_client.client:180] POST Response: 403 b'{"errors":[{"message":"The from address does not match a verified Sender Identity. Mail cannot be sent until this error is resolved. Visit https://sendgrid.com/docs/for-developers/sending-email/sender-identity/ to see the Sender Identity requirements","field":"from","help":null}]}'
+[2025-09-07 16:14:55,104] ERROR [sendgrid_backend.mail:187] Failed to send email, error: HTTP Error 403: Forbidden, response body: b'{"errors":[{"message":"The from address does not match a verified Sender Identity. Mail cannot be sent until this error is resolved. Visit https://sendgrid.com/docs/for-developers/sending-email/sender-identity/ to see the Sender Identity requirements","field":"from","help":null}]}'
+[2025-09-07 16:14:55,112] ERROR [reservation_book.views:181] Email sending failed: HTTP Error 403: Forbidden
+[2025-09-07 16:14:55,112] ERROR [reservation_book.views:191] SMS sending failed: name 'os' is not defined
+[2025-09-07 16:14:55,153] INFO [django.server:212] "POST /reservation_book/ HTTP/1.1" 200 28
+[2025-09-07 16:27:18,117] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-07 16:27:20,836] INFO [django.server:212] "GET / HTTP/1.1" 200 3654
+[2025-09-07 16:27:24,102] INFO [reservation_book.views:114] make_reservation called, method=GET
+[2025-09-07 16:27:25,360] INFO [django.server:212] "GET /reservation_book/ HTTP/1.1" 200 47558
+[2025-09-07 16:27:39,659] INFO [reservation_book.views:114] make_reservation called, method=POST
+[2025-09-07 16:27:39,834] DEBUG [python_http_client.client:267] POST Request: https://api.sendgrid.com/v3/mail/send
+[2025-09-07 16:27:39,834] DEBUG [python_http_client.client:271] PAYLOAD: b'{"from": {"email": "no-reply@gambinosrestaurantandlounge.com"}, "subject": "Your Gambino\\u2019s Reservation Confirmation", "personalizations": [{"to": [{"email": "oliver.p.hartmann@gmail.com"}], "subject": "Your Gambino\\u2019s Reservation Confirmation"}], "content": [{"type": "text/plain", "value": "Hello Oliver, your reservation on 2025-09-08 at 18:00\\u201319:00 is confirmed."}], "mail_settings": {"sandbox_mode": {"enable": false}}, "tracking_settings": {"click_tracking": {"enable": true, "enable_text": true}, "open_tracking": {"enable": true}}}'
+[2025-09-07 16:27:39,835] DEBUG [python_http_client.client:273] HEADERS: {'Authorization': 'Bearer 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', 'User-agent': 'sendgrid/6.12.4;python', 'Accept': 'application/json', 'Content-type': 'application/json'}
+[2025-09-07 16:27:40,360] DEBUG [python_http_client.client:180] POST Response: 403 b'{"errors":[{"message":"The from address does not match a verified Sender Identity. Mail cannot be sent until this error is resolved. Visit https://sendgrid.com/docs/for-developers/sending-email/sender-identity/ to see the Sender Identity requirements","field":"from","help":null}]}'
+[2025-09-07 16:27:40,360] ERROR [sendgrid_backend.mail:187] Failed to send email, error: HTTP Error 403: Forbidden, response body: b'{"errors":[{"message":"The from address does not match a verified Sender Identity. Mail cannot be sent until this error is resolved. Visit https://sendgrid.com/docs/for-developers/sending-email/sender-identity/ to see the Sender Identity requirements","field":"from","help":null}]}'
+[2025-09-07 16:27:40,361] ERROR [reservation_book.views:181] Email sending failed: HTTP Error 403: Forbidden
+[2025-09-07 16:27:40,361] ERROR [reservation_book.views:191] SMS sending failed: name 'os' is not defined
+[2025-09-07 16:27:40,395] INFO [django.server:212] "POST /reservation_book/ HTTP/1.1" 200 28
+[2025-09-07 17:06:50,636] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-07 17:06:54,137] INFO [django.server:212] "GET / HTTP/1.1" 200 3654
+[2025-09-07 17:06:59,147] INFO [reservation_book.views:114] make_reservation called, method=GET
+[2025-09-07 17:07:00,110] INFO [django.server:212] "GET /reservation_book/ HTTP/1.1" 200 47556
+[2025-09-07 17:07:13,257] INFO [reservation_book.views:114] make_reservation called, method=POST
+[2025-09-07 17:07:13,449] DEBUG [python_http_client.client:267] POST Request: https://api.sendgrid.com/v3/mail/send
+[2025-09-07 17:07:13,449] DEBUG [python_http_client.client:271] PAYLOAD: b'{"from": {"email": "no-reply@gambinosrestaurantandlounge.com"}, "subject": "Your Gambino\\u2019s Reservation Confirmation", "personalizations": [{"to": [{"email": "oliver.p.hartmann@gmail.com"}], "subject": "Your Gambino\\u2019s Reservation Confirmation"}], "content": [{"type": "text/plain", "value": "Hello Oliver, your reservation on 2025-09-08 at 18:00\\u201319:00 is confirmed."}], "mail_settings": {"sandbox_mode": {"enable": false}}, "tracking_settings": {"click_tracking": {"enable": true, "enable_text": true}, "open_tracking": {"enable": true}}}'
+[2025-09-07 17:07:13,450] DEBUG [python_http_client.client:273] HEADERS: {'Authorization': 'Bearer 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', 'User-agent': 'sendgrid/6.12.4;python', 'Accept': 'application/json', 'Content-type': 'application/json'}
+[2025-09-07 17:07:13,807] DEBUG [python_http_client.client:180] POST Response: 403 b'{"errors":[{"message":"The from address does not match a verified Sender Identity. Mail cannot be sent until this error is resolved. Visit https://sendgrid.com/docs/for-developers/sending-email/sender-identity/ to see the Sender Identity requirements","field":"from","help":null}]}'
+[2025-09-07 17:07:13,808] ERROR [sendgrid_backend.mail:187] Failed to send email, error: HTTP Error 403: Forbidden, response body: b'{"errors":[{"message":"The from address does not match a verified Sender Identity. Mail cannot be sent until this error is resolved. Visit https://sendgrid.com/docs/for-developers/sending-email/sender-identity/ to see the Sender Identity requirements","field":"from","help":null}]}'
+[2025-09-07 17:07:13,809] ERROR [reservation_book.views:181] Email sending failed: HTTP Error 403: Forbidden
+[2025-09-07 17:07:13,809] ERROR [reservation_book.views:191] SMS sending failed: name 'os' is not defined
+[2025-09-07 17:07:13,846] INFO [django.server:212] "POST /reservation_book/ HTTP/1.1" 200 28
+[2025-09-07 17:14:07,321] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-07 17:14:20,178] INFO [django.server:212] "GET / HTTP/1.1" 200 3654
+[2025-09-07 17:14:26,024] INFO [reservation_book.views:114] make_reservation called, method=GET
+[2025-09-07 17:14:27,577] INFO [django.server:212] "GET /reservation_book/ HTTP/1.1" 200 47556
+[2025-09-07 17:14:44,925] INFO [reservation_book.views:114] make_reservation called, method=POST
+[2025-09-07 17:14:45,030] ERROR [reservation_book.views:181] Email sending failed: send_mail() missing 1 required positional argument: 'from_email'
+[2025-09-07 17:14:45,031] ERROR [reservation_book.views:191] SMS sending failed: name 'os' is not defined
+[2025-09-07 17:14:45,065] INFO [django.server:212] "POST /reservation_book/ HTTP/1.1" 200 28
+[2025-09-07 17:17:35,971] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-09-07 17:17:36,715] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-07 17:17:44,319] INFO [django.server:212] "GET / HTTP/1.1" 200 3654
+[2025-09-07 17:18:00,171] INFO [reservation_book.views:114] make_reservation called, method=GET
+[2025-09-07 17:18:01,215] INFO [django.server:212] "GET /reservation_book/ HTTP/1.1" 200 47556
+[2025-09-07 17:18:15,986] INFO [reservation_book.views:114] make_reservation called, method=POST
+[2025-09-07 17:18:16,154] DEBUG [python_http_client.client:267] POST Request: https://api.sendgrid.com/v3/mail/send
+[2025-09-07 17:18:16,155] DEBUG [python_http_client.client:271] PAYLOAD: b'{"from": {"email": "oliver.p.hartmann@gmail.com"}, "subject": "Your Gambino\\u2019s Reservation Confirmation", "personalizations": [{"to": [{"email": "oliver.p.hartmann@gmail.com"}], "subject": "Your Gambino\\u2019s Reservation Confirmation"}], "content": [{"type": "text/plain", "value": "Hello Oliver, your reservation on 2025-09-08 at 17:00\\u201318:00 is confirmed."}], "mail_settings": {"sandbox_mode": {"enable": false}}, "tracking_settings": {"click_tracking": {"enable": true, "enable_text": true}, "open_tracking": {"enable": true}}}'
+[2025-09-07 17:18:16,155] DEBUG [python_http_client.client:273] HEADERS: {'Authorization': 'Bearer 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', 'User-agent': 'sendgrid/6.12.4;python', 'Accept': 'application/json', 'Content-type': 'application/json'}
+[2025-09-07 17:18:16,768] DEBUG [python_http_client.client:280] POST Response: 202 b''
+[2025-09-07 17:18:16,769] INFO [reservation_book.views:179] Email sent to oliver.p.hartmann@gmail.com
+[2025-09-07 17:18:16,769] ERROR [reservation_book.views:191] SMS sending failed: name 'os' is not defined
+[2025-09-07 17:18:16,805] INFO [django.server:212] "POST /reservation_book/ HTTP/1.1" 200 28
+[2025-09-07 17:22:07,464] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-09-07 17:22:08,222] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-07 17:22:15,968] INFO [django.server:212] "GET / HTTP/1.1" 200 3654
+[2025-09-07 17:22:19,291] INFO [reservation_book.views:115] make_reservation called, method=GET
+[2025-09-07 17:22:20,672] INFO [django.server:212] "GET /reservation_book/ HTTP/1.1" 200 47556
+[2025-09-07 17:22:35,672] INFO [reservation_book.views:115] make_reservation called, method=POST
+[2025-09-07 17:22:35,842] DEBUG [python_http_client.client:267] POST Request: https://api.sendgrid.com/v3/mail/send
+[2025-09-07 17:22:35,843] DEBUG [python_http_client.client:271] PAYLOAD: b'{"from": {"email": "oliver.p.hartmann@gmail.com"}, "subject": "Your Gambino\\u2019s Reservation Confirmation", "personalizations": [{"to": [{"email": "oliver.p.hartmann@gmail.com"}], "subject": "Your Gambino\\u2019s Reservation Confirmation"}], "content": [{"type": "text/plain", "value": "Hello Oliver, your reservation on 2025-09-08 at 17:00\\u201318:00 is confirmed."}], "mail_settings": {"sandbox_mode": {"enable": false}}, "tracking_settings": {"click_tracking": {"enable": true, "enable_text": true}, "open_tracking": {"enable": true}}}'
+[2025-09-07 17:22:35,843] DEBUG [python_http_client.client:273] HEADERS: {'Authorization': 'Bearer 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', 'User-agent': 'sendgrid/6.12.4;python', 'Accept': 'application/json', 'Content-type': 'application/json'}
+[2025-09-07 17:22:36,459] DEBUG [python_http_client.client:280] POST Response: 202 b''
+[2025-09-07 17:22:36,459] INFO [reservation_book.views:180] Email sent to oliver.p.hartmann@gmail.com
+[2025-09-07 17:22:36,460] ERROR [reservation_book.views:192] SMS sending failed: name 'settings' is not defined
+[2025-09-07 17:22:36,495] INFO [django.server:212] "POST /reservation_book/ HTTP/1.1" 200 28
+[2025-09-07 17:26:48,288] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-09-07 17:26:49,144] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-07 17:29:01,553] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-09-07 17:29:02,340] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-07 17:29:11,201] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-07 17:29:14,667] INFO [django.server:212] "GET / HTTP/1.1" 200 3654
+[2025-09-07 17:29:17,314] INFO [reservation_book.views:130] make_reservation called, method=GET
+[2025-09-07 17:29:18,313] INFO [django.server:212] "GET /reservation_book/ HTTP/1.1" 200 47556
+[2025-09-07 17:29:29,453] INFO [reservation_book.views:130] make_reservation called, method=POST
+[2025-09-07 17:29:29,613] DEBUG [python_http_client.client:267] POST Request: https://api.sendgrid.com/v3/mail/send
+[2025-09-07 17:29:29,613] DEBUG [python_http_client.client:271] PAYLOAD: b'{"from": {"email": "oliver.p.hartmann@gmail.com"}, "subject": "Your Gambino\\u2019s Reservation Confirmation", "personalizations": [{"to": [{"email": "oliver.p.hartmann@gmail.com"}], "subject": "Your Gambino\\u2019s Reservation Confirmation"}], "content": [{"type": "text/plain", "value": "Hello Oliver, your reservation on 2025-09-07 at 18:00\\u201319:00 is confirmed."}], "mail_settings": {"sandbox_mode": {"enable": false}}, "tracking_settings": {"click_tracking": {"enable": true, "enable_text": true}, "open_tracking": {"enable": true}}}'
+[2025-09-07 17:29:29,614] DEBUG [python_http_client.client:273] HEADERS: {'Authorization': 'Bearer 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', 'User-agent': 'sendgrid/6.12.4;python', 'Accept': 'application/json', 'Content-type': 'application/json'}
+[2025-09-07 17:29:30,124] DEBUG [python_http_client.client:280] POST Response: 202 b''
+[2025-09-07 17:29:30,125] INFO [reservation_book.views:195] Email sent to oliver.p.hartmann@gmail.com
+[2025-09-07 17:29:30,331] INFO [twilio.http_client:56] -- BEGIN Twilio API Request --
+[2025-09-07 17:29:30,332] INFO [twilio.http_client:66] POST Request: https://api.twilio.com/2010-04-01/Accounts/your_account_sid_here/Messages.json
+[2025-09-07 17:29:30,332] INFO [twilio.http_client:69] Headers:
+[2025-09-07 17:29:30,332] INFO [twilio.http_client:73] Content-Type : application/x-www-form-urlencoded
+[2025-09-07 17:29:30,333] INFO [twilio.http_client:73] Accept : application/json
+[2025-09-07 17:29:30,333] INFO [twilio.http_client:73] User-Agent : twilio-python/9.8.0 (Windows AMD64) Python/3.12.10
+[2025-09-07 17:29:30,333] INFO [twilio.http_client:73] X-Twilio-Client : python-9.8.0
+[2025-09-07 17:29:30,334] INFO [twilio.http_client:73] Accept-Charset : utf-8
+[2025-09-07 17:29:30,334] INFO [twilio.http_client:75] -- END Twilio API Request --
+[2025-09-07 17:29:30,335] DEBUG [urllib3.connectionpool:1049] Starting new HTTPS connection (1): api.twilio.com:443
+[2025-09-07 17:29:30,857] DEBUG [urllib3.connectionpool:544] https://api.twilio.com:443 "POST /2010-04-01/Accounts/your_account_sid_here/Messages.json HTTP/1.1" 401 134
+[2025-09-07 17:29:30,858] INFO [twilio.http_client:81] Response Status Code: 401
+[2025-09-07 17:29:30,858] INFO [twilio.http_client:82] Response Headers: {'Content-Type': 'application/json', 'Content-Length': '134', 'Connection': 'keep-alive', 'Date': 'Sun, 07 Sep 2025 15:29:30 GMT', 'X-API-Domain': 'api.twilio.com', 'X-Verification-Disclosure': 'Message Accepted. Pending content verification for US/Canada destination numbers:', 'Www-Authenticate': 'Basic realm="Twilio API"', 'Twilio-Request-Id': 'RQ445ed05310941de243a026b9dd07c34c', 'X-Shenanigans': 'none', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Accept, Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match, If-Unmodified-Since, Idempotency-Key', 'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS', 'Access-Control-Expose-Headers': 'ETag', 'Access-Control-Allow-Credentials': 'true', 'X-Powered-By': 'AT-5000', 'X-Home-Region': 'us1', 'X-Cache': 'Error from cloudfront', 'Via': '1.1 986e79a1f22b8bf29001818ede5df5c8.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'MUC50-P1', 'X-Amz-Cf-Id': '4dM6YJzClBcfycLXLtgpHuTGUjXN4qwiMGH7ZrNmo1iKPGVnU0mMeg=='}
+[2025-09-07 17:29:30,859] ERROR [reservation_book.views:115] SMS sending failed: 
+[31m[49mHTTP Error[0m [37m[49mYour request was:[0m
+
+[36m[49mPOST /Accounts/your_account_sid_here/Messages.json[0m
+
+[37m[49mTwilio returned the following information:[0m
+
+[34m[49mUnable to create record: Authentication Error - invalid username[0m
+
+[37m[49mMore information may be available here:[0m
+
+[34m[49mhttps://www.twilio.com/docs/errors/20003[0m
+
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 105, in send_sms
+    client.messages.create(
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\twilio\rest\api\v2010\account\message\__init__.py", line 589, in create
+    payload = self._version.create(
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\twilio\base\version.py", line 463, in create
+    return self._parse_create(method, uri, response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\twilio\base\version.py", line 435, in _parse_create
+    raise self.exception(method, uri, response, "Unable to create record")
+twilio.base.exceptions.TwilioRestException: 
+[31m[49mHTTP Error[0m [37m[49mYour request was:[0m
+
+[36m[49mPOST /Accounts/your_account_sid_here/Messages.json[0m
+
+[37m[49mTwilio returned the following information:[0m
+
+[34m[49mUnable to create record: Authentication Error - invalid username[0m
+
+[37m[49mMore information may be available here:[0m
+
+[34m[49mhttps://www.twilio.com/docs/errors/20003[0m
+
+
+[2025-09-07 17:29:30,863] INFO [reservation_book.views:205] SMS sent to +491607739482
+[2025-09-07 17:29:30,901] INFO [django.server:212] "POST /reservation_book/ HTTP/1.1" 200 28
+[2025-09-07 17:53:46,723] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-07 17:53:49,942] INFO [django.server:212] "GET / HTTP/1.1" 200 3654
+[2025-09-07 17:53:53,250] INFO [reservation_book.views:130] make_reservation called, method=GET
+[2025-09-07 17:53:54,512] INFO [django.server:212] "GET /reservation_book/ HTTP/1.1" 200 47556
+[2025-09-07 17:54:10,300] INFO [reservation_book.views:130] make_reservation called, method=POST
+[2025-09-07 17:54:10,476] DEBUG [python_http_client.client:267] POST Request: https://api.sendgrid.com/v3/mail/send
+[2025-09-07 17:54:10,476] DEBUG [python_http_client.client:271] PAYLOAD: b'{"from": {"email": "oliver.p.hartmann@gmail.com"}, "subject": "Your Gambino\\u2019s Reservation Confirmation", "personalizations": [{"to": [{"email": "oliver.p.hartmann@gmail.com"}], "subject": "Your Gambino\\u2019s Reservation Confirmation"}], "content": [{"type": "text/plain", "value": "Hello Oliver, your reservation on 2025-09-07 at 19:00\\u201320:00 is confirmed."}], "mail_settings": {"sandbox_mode": {"enable": false}}, "tracking_settings": {"click_tracking": {"enable": true, "enable_text": true}, "open_tracking": {"enable": true}}}'
+[2025-09-07 17:54:10,477] DEBUG [python_http_client.client:273] HEADERS: {'Authorization': 'Bearer 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', 'User-agent': 'sendgrid/6.12.4;python', 'Accept': 'application/json', 'Content-type': 'application/json'}
+[2025-09-07 17:54:11,048] DEBUG [python_http_client.client:280] POST Response: 202 b''
+[2025-09-07 17:54:11,049] INFO [reservation_book.views:195] Email sent to oliver.p.hartmann@gmail.com
+[2025-09-07 17:54:11,203] INFO [twilio.http_client:56] -- BEGIN Twilio API Request --
+[2025-09-07 17:54:11,203] INFO [twilio.http_client:66] POST Request: https://api.twilio.com/2010-04-01/Accounts/your_account_sid_here/Messages.json
+[2025-09-07 17:54:11,204] INFO [twilio.http_client:69] Headers:
+[2025-09-07 17:54:11,204] INFO [twilio.http_client:73] Content-Type : application/x-www-form-urlencoded
+[2025-09-07 17:54:11,204] INFO [twilio.http_client:73] Accept : application/json
+[2025-09-07 17:54:11,204] INFO [twilio.http_client:73] User-Agent : twilio-python/9.8.0 (Windows AMD64) Python/3.12.10
+[2025-09-07 17:54:11,205] INFO [twilio.http_client:73] X-Twilio-Client : python-9.8.0
+[2025-09-07 17:54:11,205] INFO [twilio.http_client:73] Accept-Charset : utf-8
+[2025-09-07 17:54:11,205] INFO [twilio.http_client:75] -- END Twilio API Request --
+[2025-09-07 17:54:11,206] DEBUG [urllib3.connectionpool:1049] Starting new HTTPS connection (1): api.twilio.com:443
+[2025-09-07 17:54:11,724] DEBUG [urllib3.connectionpool:544] https://api.twilio.com:443 "POST /2010-04-01/Accounts/your_account_sid_here/Messages.json HTTP/1.1" 401 134
+[2025-09-07 17:54:11,725] INFO [twilio.http_client:81] Response Status Code: 401
+[2025-09-07 17:54:11,725] INFO [twilio.http_client:82] Response Headers: {'Content-Type': 'application/json', 'Content-Length': '134', 'Connection': 'keep-alive', 'Date': 'Sun, 07 Sep 2025 15:54:11 GMT', 'X-API-Domain': 'api.twilio.com', 'X-Verification-Disclosure': 'Message Accepted. Pending content verification for US/Canada destination numbers:', 'Www-Authenticate': 'Basic realm="Twilio API"', 'Twilio-Request-Id': 'RQf81ab304990954aab2cfe65764e0a186', 'X-Shenanigans': 'none', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Accept, Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match, If-Unmodified-Since, Idempotency-Key', 'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS', 'Access-Control-Expose-Headers': 'ETag', 'Access-Control-Allow-Credentials': 'true', 'X-Powered-By': 'AT-5000', 'X-Home-Region': 'us1', 'X-Cache': 'Error from cloudfront', 'Via': '1.1 8c1abfbb8460bed752668233d296dba8.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'MUC50-P1', 'X-Amz-Cf-Id': 'XOIjzL1iNWqXzQqr2XZIGaI6fDZ9Dpg2uR-plYIrDK9yxWTIhpH-Ig=='}
+[2025-09-07 17:54:11,726] ERROR [reservation_book.views:115] SMS sending failed: 
+[31m[49mHTTP Error[0m [37m[49mYour request was:[0m
+
+[36m[49mPOST /Accounts/your_account_sid_here/Messages.json[0m
+
+[37m[49mTwilio returned the following information:[0m
+
+[34m[49mUnable to create record: Authentication Error - invalid username[0m
+
+[37m[49mMore information may be available here:[0m
+
+[34m[49mhttps://www.twilio.com/docs/errors/20003[0m
+
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 105, in send_sms
+    client.messages.create(
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\twilio\rest\api\v2010\account\message\__init__.py", line 589, in create
+    payload = self._version.create(
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\twilio\base\version.py", line 463, in create
+    return self._parse_create(method, uri, response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\twilio\base\version.py", line 435, in _parse_create
+    raise self.exception(method, uri, response, "Unable to create record")
+twilio.base.exceptions.TwilioRestException: 
+[31m[49mHTTP Error[0m [37m[49mYour request was:[0m
+
+[36m[49mPOST /Accounts/your_account_sid_here/Messages.json[0m
+
+[37m[49mTwilio returned the following information:[0m
+
+[34m[49mUnable to create record: Authentication Error - invalid username[0m
+
+[37m[49mMore information may be available here:[0m
+
+[34m[49mhttps://www.twilio.com/docs/errors/20003[0m
+
+
+[2025-09-07 17:54:11,729] INFO [reservation_book.views:205] SMS sent to +491607739482
+[2025-09-07 17:54:11,766] INFO [django.server:212] "POST /reservation_book/ HTTP/1.1" 200 28
+[2025-09-07 17:59:59,307] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\gambinos\settings.py changed, reloading.
+[2025-09-07 18:00:00,180] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-07 18:04:17,579] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-09-07 18:04:18,423] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-07 18:04:36,823] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-07 18:04:40,158] INFO [django.server:212] "GET / HTTP/1.1" 200 3654
+[2025-09-07 18:04:45,364] INFO [reservation_book.views:115] make_reservation called, method=GET
+[2025-09-07 18:04:47,055] INFO [django.server:212] "GET /reservation_book/ HTTP/1.1" 200 47556
+[2025-09-07 18:05:01,124] INFO [reservation_book.views:115] make_reservation called, method=POST
+[2025-09-07 18:05:01,302] DEBUG [python_http_client.client:267] POST Request: https://api.sendgrid.com/v3/mail/send
+[2025-09-07 18:05:01,303] DEBUG [python_http_client.client:271] PAYLOAD: b'{"from": {"email": "oliver.p.hartmann@gmail.com"}, "subject": "Your Gambino\\u2019s Reservation Confirmation", "personalizations": [{"to": [{"email": "oliver.p.hartmann@gmail.com"}], "subject": "Your Gambino\\u2019s Reservation Confirmation"}], "content": [{"type": "text/plain", "value": "Hello Oliver, your reservation on 2025-09-08 at 18:00\\u201319:00 is confirmed."}], "mail_settings": {"sandbox_mode": {"enable": false}}, "tracking_settings": {"click_tracking": {"enable": true, "enable_text": true}, "open_tracking": {"enable": true}}}'
+[2025-09-07 18:05:01,303] DEBUG [python_http_client.client:273] HEADERS: {'Authorization': 'Bearer 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', 'User-agent': 'sendgrid/6.12.4;python', 'Accept': 'application/json', 'Content-type': 'application/json'}
+[2025-09-07 18:05:01,718] DEBUG [python_http_client.client:280] POST Response: 202 b''
+[2025-09-07 18:05:01,719] INFO [reservation_book.views:180] Email sent to oliver.p.hartmann@gmail.com
+[2025-09-07 18:05:01,864] INFO [twilio.http_client:56] -- BEGIN Twilio API Request --
+[2025-09-07 18:05:01,864] INFO [twilio.http_client:66] POST Request: https://api.twilio.com/2010-04-01/Accounts/AC2969394648e15dec9e186368819ded0b/Messages.json
+[2025-09-07 18:05:01,865] INFO [twilio.http_client:69] Headers:
+[2025-09-07 18:05:01,865] INFO [twilio.http_client:73] Content-Type : application/x-www-form-urlencoded
+[2025-09-07 18:05:01,865] INFO [twilio.http_client:73] Accept : application/json
+[2025-09-07 18:05:01,865] INFO [twilio.http_client:73] User-Agent : twilio-python/9.8.0 (Windows AMD64) Python/3.12.10
+[2025-09-07 18:05:01,865] INFO [twilio.http_client:73] X-Twilio-Client : python-9.8.0
+[2025-09-07 18:05:01,866] INFO [twilio.http_client:73] Accept-Charset : utf-8
+[2025-09-07 18:05:01,866] INFO [twilio.http_client:75] -- END Twilio API Request --
+[2025-09-07 18:05:01,867] DEBUG [urllib3.connectionpool:1049] Starting new HTTPS connection (1): api.twilio.com:443
+[2025-09-07 18:05:02,534] DEBUG [urllib3.connectionpool:544] https://api.twilio.com:443 "POST /2010-04-01/Accounts/AC2969394648e15dec9e186368819ded0b/Messages.json HTTP/1.1" 201 881
+[2025-09-07 18:05:02,535] INFO [twilio.http_client:81] Response Status Code: 201
+[2025-09-07 18:05:02,535] INFO [twilio.http_client:82] Response Headers: {'Content-Type': 'application/json;charset=utf-8', 'Content-Length': '881', 'Connection': 'keep-alive', 'Date': 'Sun, 07 Sep 2025 16:05:02 GMT', 'Twilio-Concurrent-Requests': '1', 'Twilio-Request-Id': 'RQf8168b5069e6803199302b4b7cc7fe83', 'Twilio-Request-Duration': '0.166', 'X-Home-Region': 'us1', 'X-API-Domain': 'api.twilio.com', 'Strict-Transport-Security': 'max-age=31536000', 'X-Cache': 'Miss from cloudfront', 'Via': '1.1 6ef87569c26a159f552948d3c30a2be0.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'MUC50-P1', 'X-Amz-Cf-Id': 'dKGBhqqdTAr5SPKSp48IBXFmYKXSP_h1-OBLkcCrqo4yZ5z7Le_AUA==', 'X-Powered-By': 'AT-5000', 'X-Shenanigans': 'none', 'Vary': 'Origin'}
+[2025-09-07 18:05:02,536] INFO [reservation_book.views:99] SMS sent to +491607739482, SID=SMf8168b5069e6803199302b4b7cc7fe83
+[2025-09-07 18:05:02,537] INFO [reservation_book.views:190] SMS sent to +491607739482
+[2025-09-07 18:05:02,575] INFO [django.server:212] "POST /reservation_book/ HTTP/1.1" 200 28
