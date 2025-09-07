@@ -723,3 +723,33 @@ twilio.base.exceptions.TwilioRestException:
 [2025-09-07 21:34:27,251] INFO [reservation_book.views:192] SMS sent to +491607739482
 [2025-09-07 21:34:27,279] INFO [django.server:212] "POST /reservation_book/ HTTP/1.1" 200 28
 [2025-09-07 22:07:02,531] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-07 22:07:05,501] INFO [django.server:212] "GET / HTTP/1.1" 200 3654
+[2025-09-07 22:07:07,616] INFO [reservation_book.views:117] make_reservation called, method=GET
+[2025-09-07 22:07:09,455] INFO [django.server:212] "GET /reservation_book/ HTTP/1.1" 200 48468
+[2025-09-07 22:07:19,293] INFO [reservation_book.views:117] make_reservation called, method=POST
+[2025-09-07 22:07:19,486] DEBUG [python_http_client.client:267] POST Request: https://api.sendgrid.com/v3/mail/send
+[2025-09-07 22:07:19,487] DEBUG [python_http_client.client:271] PAYLOAD: b'{"from": {"email": "oliver.p.hartmann@gmail.com"}, "subject": "Your Gambino\\u2019s Reservation Confirmation", "personalizations": [{"to": [{"email": "oliver.p.hartmann@gmail.com"}], "subject": "Your Gambino\\u2019s Reservation Confirmation"}], "content": [{"type": "text/plain", "value": "Hello Oliver, your reservation on 2025-09-08 at 17:00\\u201318:00 is confirmed."}], "mail_settings": {"sandbox_mode": {"enable": false}}, "tracking_settings": {"click_tracking": {"enable": true, "enable_text": true}, "open_tracking": {"enable": true}}}'
+[2025-09-07 22:07:19,487] DEBUG [python_http_client.client:273] HEADERS: {'Authorization': 'Bearer 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', 'User-agent': 'sendgrid/6.12.4;python', 'Accept': 'application/json', 'Content-type': 'application/json'}
+[2025-09-07 22:07:20,047] DEBUG [python_http_client.client:280] POST Response: 202 b''
+[2025-09-07 22:07:20,048] INFO [reservation_book.views:182] Email sent to oliver.p.hartmann@gmail.com
+[2025-09-07 22:07:20,048] INFO [reservation_book.views:90] Using SID=AC2969394648e15dec9e186368819ded0b, TOKEN length=32
+[2025-09-07 22:07:20,198] INFO [twilio.http_client:56] -- BEGIN Twilio API Request --
+[2025-09-07 22:07:20,198] INFO [twilio.http_client:66] POST Request: https://api.twilio.com/2010-04-01/Accounts/AC2969394648e15dec9e186368819ded0b/Messages.json
+[2025-09-07 22:07:20,198] INFO [twilio.http_client:69] Headers:
+[2025-09-07 22:07:20,199] INFO [twilio.http_client:73] Content-Type : application/x-www-form-urlencoded
+[2025-09-07 22:07:20,199] INFO [twilio.http_client:73] Accept : application/json
+[2025-09-07 22:07:20,199] INFO [twilio.http_client:73] User-Agent : twilio-python/9.8.0 (Windows AMD64) Python/3.12.10
+[2025-09-07 22:07:20,199] INFO [twilio.http_client:73] X-Twilio-Client : python-9.8.0
+[2025-09-07 22:07:20,199] INFO [twilio.http_client:73] Accept-Charset : utf-8
+[2025-09-07 22:07:20,200] INFO [twilio.http_client:75] -- END Twilio API Request --
+[2025-09-07 22:07:20,201] DEBUG [urllib3.connectionpool:1049] Starting new HTTPS connection (1): api.twilio.com:443
+[2025-09-07 22:07:21,028] DEBUG [urllib3.connectionpool:544] https://api.twilio.com:443 "POST /2010-04-01/Accounts/AC2969394648e15dec9e186368819ded0b/Messages.json HTTP/1.1" 201 881
+[2025-09-07 22:07:21,030] INFO [twilio.http_client:81] Response Status Code: 201
+[2025-09-07 22:07:21,030] INFO [twilio.http_client:82] Response Headers: {'Content-Type': 'application/json;charset=utf-8', 'Content-Length': '881', 'Connection': 'keep-alive', 'Date': 'Sun, 07 Sep 2025 20:07:20 GMT', 'Twilio-Concurrent-Requests': '1', 'Twilio-Request-Id': 'RQaaa6aaa8175c5d380e7fe4f2dea7cd3a', 'Twilio-Request-Duration': '0.156', 'X-Home-Region': 'us1', 'X-API-Domain': 'api.twilio.com', 'Strict-Transport-Security': 'max-age=31536000', 'X-Cache': 'Miss from cloudfront', 'Via': '1.1 77aa8087323921dee0b130bc0589bda8.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'MUC50-P1', 'X-Amz-Cf-Id': 'miyXVvQA77iZ6PYWMiFJG7bSxM0f54-R6S6hGHnsA2dOejCYspLISQ==', 'X-Powered-By': 'AT-5000', 'X-Shenanigans': 'none', 'Vary': 'Origin'}
+[2025-09-07 22:07:21,031] INFO [reservation_book.views:101] SMS sent to +491607739482, SID=SMaaa6aaa8175c5d380e7fe4f2dea7cd3a
+[2025-09-07 22:07:21,031] INFO [reservation_book.views:192] SMS sent to +491607739482
+[2025-09-07 22:07:21,069] INFO [django.server:212] "POST /reservation_book/ HTTP/1.1" 200 28
+[2025-09-07 22:27:09,825] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\models.py changed, reloading.
+[2025-09-07 22:27:10,761] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-07 22:48:30,477] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\admin.py changed, reloading.
+[2025-09-07 22:48:31,335] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
