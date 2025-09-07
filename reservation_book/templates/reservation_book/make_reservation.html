@@ -26,24 +26,24 @@
     <input type="hidden" name="number_of_tables_required_by_patron" id="tables_needed" value="1">
 
     <!-- Customer Info Modal -->
-    <div class="modal fade" id="customerModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-dark text-white">
-                    <h5 class="modal-title">Enter Reservation Details</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+<div class="modal fade" id="customerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title">Enter Reservation Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">First Name</label>
+                    <input type="text" class="form-control" name="first_name" required>
                 </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">First Name</label>
-                        <input type="text" class="form-control" name="first_name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Last Name</label>
-                        <input type="text" class="form-control" name="last_name" required>
-                    </div>
+                <div class="mb-3">
+                    <label class="form-label">Last Name</label>
+                    <input type="text" class="form-control" name="last_name" required>
+                </div>
 
-                    <div class="mb-3">
+                <div class="mb-3">
                     <label class="form-label">Country</label>
                     <select class="form-select" name="country_code" id="country_code">
                         <option value="GB" selected>United Kingdom</option>
@@ -52,9 +52,9 @@
                         <option value="US">United States</option>
                         <!-- add more countries as needed -->
                     </select>
-                    </div>
+                </div>
 
-                    <div class="mb-3">
+                <div class="mb-3">
                     <label class="form-label">Phone / Mobile <span class="text-danger">*</span></label>
                     <small class="form-text text-muted">Please provide at least one number</small>
                     <input type="text" class="form-control mb-2" name="phone" placeholder="Phone (Landline)">
@@ -62,20 +62,22 @@
                     <div id="phoneError" class="text-danger mt-1" style="display: none;">
                         Phone required if no mobile provided (or vice versa).
                     </div>
-                    </div>
+                </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Email</label>
-                        <input type="email" class="form-control" name="email">
-                    </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" name="email">
+                    <small class="form-text text-muted text-danger">⚠️ Please check your spam folder for the confirmation email.</small>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-success">Confirm Reservation</button>
-                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-success">Confirm Reservation</button>
             </div>
         </div>
     </div>
+</div>
+ 
 </form>
 
 <!-- Availability Table -->
@@ -119,9 +121,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("reservationForm");
     const modalEl = document.getElementById("customerModal");
     const modal = new bootstrap.Modal(modalEl);
-    let clickedCell = null;  // store which cell was clicked
+    const modalBody = modalEl.querySelector(".modal-body");
+    const modalFooter = modalEl.querySelector(".modal-footer");
+    const originalModalBody = modalBody.innerHTML;
+    const originalModalFooter = modalFooter.innerHTML;
+    let clickedCell = null;
 
-    // Phone regex per country
+    // Phone regex patterns per country
     const patterns = {
         "GB": /^(\+44\s?\d{9,10}|0\d{9,10})$/,                     // UK
         "DE": /^(?:\+49\s?[1-9]\d{6,12}|0[1-9]\d{6,12})$/,         // Germany
@@ -133,18 +139,20 @@ document.addEventListener("DOMContentLoaded", () => {
         "PL": /^(\+48\s?\d{9}|0\d{9})$/                            // Poland
     };
 
-    // Handle cell clicks
+    // Handle availability cell clicks
     document.querySelectorAll("td[data-slot]").forEach(cell => {
         cell.addEventListener("click", () => {
-            if (cell.dataset.left <= 0) return; // skip FULL cells
+            if (cell.dataset.left <= 0) return;
             clickedCell = cell;
             document.getElementById("reservation_date").value = cell.dataset.date;
             document.getElementById("time_slot").value = cell.dataset.slot;
+            modalBody.innerHTML = originalModalBody;
+            modalFooter.innerHTML = originalModalFooter;
             modal.show();
         });
     });
 
-    // Form submit (AJAX)
+    // Handle form submit via AJAX
     form.addEventListener("submit", async function (e) {
         e.preventDefault();
 
@@ -160,7 +168,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        // Regex validation (both numbers if filled)
+        // Validate numbers if present
         let valid = true;
         if (phone && !patterns[country].test(phone)) {
             valid = false;
@@ -176,7 +184,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         errorDiv.style.display = "none";
 
-        // AJAX submit
+        // Submit via fetch
         const formData = new FormData(form);
         try {
             const response = await fetch(form.action || window.location.href, {
@@ -187,7 +195,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await response.json();
 
             if (data.success) {
-                // Update the clicked cell with new availability
+                // Update clicked cell
                 if (clickedCell) {
                     if (data.left > 0) {
                         clickedCell.textContent = data.left;
@@ -201,15 +209,28 @@ document.addEventListener("DOMContentLoaded", () => {
                         clickedCell.classList.add("table-danger");
                     }
                 }
-                modal.hide();
+
+                // Show success message in modal with only a Close button
+                modalBody.innerHTML = `
+                    <div class="alert alert-success">
+                        🎉 Your reservation is confirmed!<br>
+                        Please also check your <strong>spam folder</strong> for the confirmation email.
+                    </div>
+                `;
+                modalFooter.innerHTML = `
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                `;
+
                 form.reset();
             } else {
-                errorDiv.textContent = data.error || "Reservation failed.";
-                errorDiv.style.display = "block";
+                modalBody.insertAdjacentHTML("beforeend",
+                    `<div class="alert alert-danger mt-3">${data.error || "Reservation failed."}</div>`
+                );
             }
         } catch (err) {
-            errorDiv.textContent = "Server error. Please try again.";
-            errorDiv.style.display = "block";
+            modalBody.insertAdjacentHTML("beforeend",
+                `<div class="alert alert-danger mt-3">Server error. Please try again.</div>`
+            );
             console.error(err);
         }
     });

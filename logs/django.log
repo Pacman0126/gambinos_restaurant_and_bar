@@ -592,3 +592,134 @@ twilio.base.exceptions.TwilioRestException:
 [2025-09-07 20:25:00,954] INFO [twilio.http_client:81] Response Status Code: 401
 [2025-09-07 20:25:00,954] INFO [twilio.http_client:82] Response Headers: {'Content-Type': 'application/json', 'Content-Length': '107', 'Connection': 'keep-alive', 'Date': 'Sun, 07 Sep 2025 18:25:00 GMT', 'X-Twilio-Error-Code': '20003', 'Twilio-Request-Id': 'RQ23c2b7d4b2a11aaa93cb62139e635c30', 'Twilio-Request-Duration': '0.009', 'X-Home-Region': 'us1', 'X-API-Domain': 'api.twilio.com', 'Strict-Transport-Security': 'max-age=31536000', 'WWW-Authenticate': 'Basic realm="Twilio API"', 'X-Cache': 'Error from cloudfront', 'Via': '1.1 8c1abfbb8460bed752668233d296dba8.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'MUC50-P1', 'X-Amz-Cf-Id': '6ZxZoL1l_VK5zBBK1qT-HE89nmCkPIfEzbE2dMvvl0GUzOqiRgQEQQ==', 'X-Powered-By': 'AT-5000', 'X-Shenanigans': 'none', 'Vary': 'Origin'}
 [2025-09-07 20:42:27,015] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-07 20:42:29,948] INFO [django.server:212] "GET / HTTP/1.1" 200 3654
+[2025-09-07 20:42:32,127] INFO [reservation_book.views:117] make_reservation called, method=GET
+[2025-09-07 20:42:33,194] INFO [django.server:212] "GET /reservation_book/ HTTP/1.1" 200 47552
+[2025-09-07 20:43:00,543] INFO [reservation_book.views:117] make_reservation called, method=POST
+[2025-09-07 20:43:00,860] DEBUG [python_http_client.client:267] POST Request: https://api.sendgrid.com/v3/mail/send
+[2025-09-07 20:43:00,861] DEBUG [python_http_client.client:271] PAYLOAD: b'{"from": {"email": "oliver.p.hartmann@gmail.com"}, "subject": "Your Gambino\\u2019s Reservation Confirmation", "personalizations": [{"to": [{"email": "oliver.p.hartmann@gmail.com"}], "subject": "Your Gambino\\u2019s Reservation Confirmation"}], "content": [{"type": "text/plain", "value": "Hello Oliver, your reservation on 2025-09-08 at 18:00\\u201319:00 is confirmed."}], "mail_settings": {"sandbox_mode": {"enable": false}}, "tracking_settings": {"click_tracking": {"enable": true, "enable_text": true}, "open_tracking": {"enable": true}}}'
+[2025-09-07 20:43:00,861] DEBUG [python_http_client.client:273] HEADERS: {'Authorization': 'Bearer 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', 'User-agent': 'sendgrid/6.12.4;python', 'Accept': 'application/json', 'Content-type': 'application/json'}
+[2025-09-07 20:43:01,640] DEBUG [python_http_client.client:280] POST Response: 202 b''
+[2025-09-07 20:43:01,640] INFO [reservation_book.views:182] Email sent to oliver.p.hartmann@gmail.com
+[2025-09-07 20:43:01,640] INFO [reservation_book.views:90] Using SID=AC2969394648e15dec9e186368819ded0b, TOKEN length=32
+[2025-09-07 20:43:01,786] INFO [twilio.http_client:56] -- BEGIN Twilio API Request --
+[2025-09-07 20:43:01,786] INFO [twilio.http_client:66] POST Request: https://api.twilio.com/2010-04-01/Accounts/AC2969394648e15dec9e186368819ded0b/Messages.json
+[2025-09-07 20:43:01,787] INFO [twilio.http_client:69] Headers:
+[2025-09-07 20:43:01,787] INFO [twilio.http_client:73] Content-Type : application/x-www-form-urlencoded
+[2025-09-07 20:43:01,787] INFO [twilio.http_client:73] Accept : application/json
+[2025-09-07 20:43:01,787] INFO [twilio.http_client:73] User-Agent : twilio-python/9.8.0 (Windows AMD64) Python/3.12.10
+[2025-09-07 20:43:01,788] INFO [twilio.http_client:73] X-Twilio-Client : python-9.8.0
+[2025-09-07 20:43:01,788] INFO [twilio.http_client:73] Accept-Charset : utf-8
+[2025-09-07 20:43:01,788] INFO [twilio.http_client:75] -- END Twilio API Request --
+[2025-09-07 20:43:01,790] DEBUG [urllib3.connectionpool:1049] Starting new HTTPS connection (1): api.twilio.com:443
+[2025-09-07 20:43:02,501] DEBUG [urllib3.connectionpool:544] https://api.twilio.com:443 "POST /2010-04-01/Accounts/AC2969394648e15dec9e186368819ded0b/Messages.json HTTP/1.1" 201 881
+[2025-09-07 20:43:02,502] INFO [twilio.http_client:81] Response Status Code: 201
+[2025-09-07 20:43:02,502] INFO [twilio.http_client:82] Response Headers: {'Content-Type': 'application/json;charset=utf-8', 'Content-Length': '881', 'Connection': 'keep-alive', 'Date': 'Sun, 07 Sep 2025 18:43:02 GMT', 'Twilio-Concurrent-Requests': '1', 'Twilio-Request-Id': 'RQb6d04a026d8011e0c42cec656cdb3e93', 'Twilio-Request-Duration': '0.137', 'X-Home-Region': 'us1', 'X-API-Domain': 'api.twilio.com', 'Strict-Transport-Security': 'max-age=31536000', 'X-Cache': 'Miss from cloudfront', 'Via': '1.1 f8d34d99bd5a267bad6857ae101ea8e2.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'MUC50-P1', 'X-Amz-Cf-Id': 'g5OgCX-myzUdZvpsAvSVaDDUd2YFEFgRZlA5So4VC7f7bGrhYzCyVA==', 'X-Powered-By': 'AT-5000', 'X-Shenanigans': 'none', 'Vary': 'Origin'}
+[2025-09-07 20:43:02,503] INFO [reservation_book.views:101] SMS sent to +491607739482, SID=SMb6d04a026d8011e0c42cec656cdb3e93
+[2025-09-07 20:43:02,503] INFO [reservation_book.views:192] SMS sent to +491607739482
+[2025-09-07 20:43:02,540] INFO [django.server:212] "POST /reservation_book/ HTTP/1.1" 200 28
+[2025-09-07 21:20:17,618] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-07 21:20:23,176] INFO [django.server:212] "GET / HTTP/1.1" 200 3654
+[2025-09-07 21:20:25,328] INFO [reservation_book.views:117] make_reservation called, method=GET
+[2025-09-07 21:20:26,303] INFO [django.server:212] "GET /reservation_book/ HTTP/1.1" 200 49012
+[2025-09-07 21:20:43,899] INFO [reservation_book.views:117] make_reservation called, method=POST
+[2025-09-07 21:20:43,901] INFO [reservation_book.views:117] make_reservation called, method=POST
+[2025-09-07 21:20:44,079] DEBUG [python_http_client.client:267] POST Request: https://api.sendgrid.com/v3/mail/send
+[2025-09-07 21:20:44,080] DEBUG [python_http_client.client:271] PAYLOAD: b'{"from": {"email": "oliver.p.hartmann@gmail.com"}, "subject": "Your Gambino\\u2019s Reservation Confirmation", "personalizations": [{"to": [{"email": "oliver.p.hartmann@gmail.com"}], "subject": "Your Gambino\\u2019s Reservation Confirmation"}], "content": [{"type": "text/plain", "value": "Hello Oliver, your reservation on 2025-09-08 at 20:00\\u201321:00 is confirmed."}], "mail_settings": {"sandbox_mode": {"enable": false}}, "tracking_settings": {"click_tracking": {"enable": true, "enable_text": true}, "open_tracking": {"enable": true}}}'
+[2025-09-07 21:20:44,080] DEBUG [python_http_client.client:273] HEADERS: {'Authorization': 'Bearer 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', 'User-agent': 'sendgrid/6.12.4;python', 'Accept': 'application/json', 'Content-type': 'application/json'}
+[2025-09-07 21:20:44,205] DEBUG [python_http_client.client:267] POST Request: https://api.sendgrid.com/v3/mail/send
+[2025-09-07 21:20:44,206] DEBUG [python_http_client.client:271] PAYLOAD: b'{"from": {"email": "oliver.p.hartmann@gmail.com"}, "subject": "Your Gambino\\u2019s Reservation Confirmation", "personalizations": [{"to": [{"email": "oliver.p.hartmann@gmail.com"}], "subject": "Your Gambino\\u2019s Reservation Confirmation"}], "content": [{"type": "text/plain", "value": "Hello Oliver, your reservation on 2025-09-08 at 20:00\\u201321:00 is confirmed."}], "mail_settings": {"sandbox_mode": {"enable": false}}, "tracking_settings": {"click_tracking": {"enable": true, "enable_text": true}, "open_tracking": {"enable": true}}}'
+[2025-09-07 21:20:44,206] DEBUG [python_http_client.client:273] HEADERS: {'Authorization': 'Bearer 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', 'User-agent': 'sendgrid/6.12.4;python', 'Accept': 'application/json', 'Content-type': 'application/json'}
+[2025-09-07 21:20:44,656] DEBUG [python_http_client.client:280] POST Response: 202 b''
+[2025-09-07 21:20:44,657] INFO [reservation_book.views:182] Email sent to oliver.p.hartmann@gmail.com
+[2025-09-07 21:20:44,657] INFO [reservation_book.views:90] Using SID=AC2969394648e15dec9e186368819ded0b, TOKEN length=32
+[2025-09-07 21:20:44,682] DEBUG [python_http_client.client:280] POST Response: 202 b''
+[2025-09-07 21:20:44,682] INFO [reservation_book.views:182] Email sent to oliver.p.hartmann@gmail.com
+[2025-09-07 21:20:44,684] INFO [reservation_book.views:90] Using SID=AC2969394648e15dec9e186368819ded0b, TOKEN length=32
+[2025-09-07 21:20:44,805] INFO [twilio.http_client:56] -- BEGIN Twilio API Request --
+[2025-09-07 21:20:44,805] INFO [twilio.http_client:66] POST Request: https://api.twilio.com/2010-04-01/Accounts/AC2969394648e15dec9e186368819ded0b/Messages.json
+[2025-09-07 21:20:44,805] INFO [twilio.http_client:69] Headers:
+[2025-09-07 21:20:44,805] INFO [twilio.http_client:73] Content-Type : application/x-www-form-urlencoded
+[2025-09-07 21:20:44,806] INFO [twilio.http_client:73] Accept : application/json
+[2025-09-07 21:20:44,806] INFO [twilio.http_client:73] User-Agent : twilio-python/9.8.0 (Windows AMD64) Python/3.12.10
+[2025-09-07 21:20:44,806] INFO [twilio.http_client:73] X-Twilio-Client : python-9.8.0
+[2025-09-07 21:20:44,806] INFO [twilio.http_client:73] Accept-Charset : utf-8
+[2025-09-07 21:20:44,807] INFO [twilio.http_client:75] -- END Twilio API Request --
+[2025-09-07 21:20:44,808] DEBUG [urllib3.connectionpool:1049] Starting new HTTPS connection (1): api.twilio.com:443
+[2025-09-07 21:20:44,824] INFO [twilio.http_client:56] -- BEGIN Twilio API Request --
+[2025-09-07 21:20:44,825] INFO [twilio.http_client:66] POST Request: https://api.twilio.com/2010-04-01/Accounts/AC2969394648e15dec9e186368819ded0b/Messages.json
+[2025-09-07 21:20:44,825] INFO [twilio.http_client:69] Headers:
+[2025-09-07 21:20:44,825] INFO [twilio.http_client:73] Content-Type : application/x-www-form-urlencoded
+[2025-09-07 21:20:44,826] INFO [twilio.http_client:73] Accept : application/json
+[2025-09-07 21:20:44,826] INFO [twilio.http_client:73] User-Agent : twilio-python/9.8.0 (Windows AMD64) Python/3.12.10
+[2025-09-07 21:20:44,826] INFO [twilio.http_client:73] X-Twilio-Client : python-9.8.0
+[2025-09-07 21:20:44,827] INFO [twilio.http_client:73] Accept-Charset : utf-8
+[2025-09-07 21:20:44,827] INFO [twilio.http_client:75] -- END Twilio API Request --
+[2025-09-07 21:20:44,828] DEBUG [urllib3.connectionpool:1049] Starting new HTTPS connection (1): api.twilio.com:443
+[2025-09-07 21:20:45,505] DEBUG [urllib3.connectionpool:544] https://api.twilio.com:443 "POST /2010-04-01/Accounts/AC2969394648e15dec9e186368819ded0b/Messages.json HTTP/1.1" 201 881
+[2025-09-07 21:20:45,506] INFO [twilio.http_client:81] Response Status Code: 201
+[2025-09-07 21:20:45,506] INFO [twilio.http_client:82] Response Headers: {'Content-Type': 'application/json;charset=utf-8', 'Content-Length': '881', 'Connection': 'keep-alive', 'Date': 'Sun, 07 Sep 2025 19:20:45 GMT', 'Twilio-Concurrent-Requests': '1', 'Twilio-Request-Id': 'RQ7404b4198bef64a0244278be6b5f6488', 'Twilio-Request-Duration': '0.142', 'X-Home-Region': 'us1', 'X-API-Domain': 'api.twilio.com', 'Strict-Transport-Security': 'max-age=31536000', 'X-Cache': 'Miss from cloudfront', 'Via': '1.1 986e79a1f22b8bf29001818ede5df5c8.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'MUC50-P1', 'X-Amz-Cf-Id': 'r59-qFPY6l0lPMb3mPBATOwX8xusbmU1pRer-qkXM-PCd02eMSRSBg==', 'X-Powered-By': 'AT-5000', 'X-Shenanigans': 'none', 'Vary': 'Origin'}
+[2025-09-07 21:20:45,507] INFO [reservation_book.views:101] SMS sent to +491607739482, SID=SM7404b4198bef64a0244278be6b5f6488
+[2025-09-07 21:20:45,508] INFO [reservation_book.views:192] SMS sent to +491607739482
+[2025-09-07 21:20:45,529] DEBUG [urllib3.connectionpool:544] https://api.twilio.com:443 "POST /2010-04-01/Accounts/AC2969394648e15dec9e186368819ded0b/Messages.json HTTP/1.1" 201 881
+[2025-09-07 21:20:45,530] INFO [twilio.http_client:81] Response Status Code: 201
+[2025-09-07 21:20:45,530] INFO [twilio.http_client:82] Response Headers: {'Content-Type': 'application/json;charset=utf-8', 'Content-Length': '881', 'Connection': 'keep-alive', 'Date': 'Sun, 07 Sep 2025 19:20:45 GMT', 'Twilio-Concurrent-Requests': '2', 'Twilio-Request-Id': 'RQ268901d92a7eb32f9712dd3c815b326b', 'Twilio-Request-Duration': '0.122', 'X-Home-Region': 'us1', 'X-API-Domain': 'api.twilio.com', 'Strict-Transport-Security': 'max-age=31536000', 'X-Cache': 'Miss from cloudfront', 'Via': '1.1 ae6c2eb8d653982f5df6a91a4b14b518.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'MUC50-P1', 'X-Amz-Cf-Id': '8-fJcyVSek7yRV5o6v4ibRhv1zXjCqKURtYkeA4T1Wka6TohQYCeNA==', 'X-Powered-By': 'AT-5000', 'X-Shenanigans': 'none', 'Vary': 'Origin'}
+[2025-09-07 21:20:45,531] INFO [reservation_book.views:101] SMS sent to +491607739482, SID=SM268901d92a7eb32f9712dd3c815b326b
+[2025-09-07 21:20:45,531] INFO [reservation_book.views:192] SMS sent to +491607739482
+[2025-09-07 21:20:45,894] INFO [django.server:212] "POST /reservation_book/ HTTP/1.1" 200 28
+[2025-09-07 21:20:45,898] INFO [django.server:212] "POST /reservation_book/ HTTP/1.1" 200 28
+[2025-09-07 21:31:37,617] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-07 21:31:45,433] INFO [django.server:212] "GET / HTTP/1.1" 200 3654
+[2025-09-07 21:31:48,450] INFO [reservation_book.views:117] make_reservation called, method=GET
+[2025-09-07 21:31:49,464] INFO [django.server:212] "GET /reservation_book/ HTTP/1.1" 200 48150
+[2025-09-07 21:32:05,205] INFO [reservation_book.views:117] make_reservation called, method=POST
+[2025-09-07 21:32:05,506] DEBUG [python_http_client.client:267] POST Request: https://api.sendgrid.com/v3/mail/send
+[2025-09-07 21:32:05,506] DEBUG [python_http_client.client:271] PAYLOAD: b'{"from": {"email": "oliver.p.hartmann@gmail.com"}, "subject": "Your Gambino\\u2019s Reservation Confirmation", "personalizations": [{"to": [{"email": "oliver.p.hartmann@gmail.com"}], "subject": "Your Gambino\\u2019s Reservation Confirmation"}], "content": [{"type": "text/plain", "value": "Hello Oliver, your reservation on 2025-09-09 at 18:00\\u201319:00 is confirmed."}], "mail_settings": {"sandbox_mode": {"enable": false}}, "tracking_settings": {"click_tracking": {"enable": true, "enable_text": true}, "open_tracking": {"enable": true}}}'
+[2025-09-07 21:32:05,506] DEBUG [python_http_client.client:273] HEADERS: {'Authorization': 'Bearer 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', 'User-agent': 'sendgrid/6.12.4;python', 'Accept': 'application/json', 'Content-type': 'application/json'}
+[2025-09-07 21:32:06,372] DEBUG [python_http_client.client:280] POST Response: 202 b''
+[2025-09-07 21:32:06,372] INFO [reservation_book.views:182] Email sent to oliver.p.hartmann@gmail.com
+[2025-09-07 21:32:06,373] INFO [reservation_book.views:90] Using SID=AC2969394648e15dec9e186368819ded0b, TOKEN length=32
+[2025-09-07 21:32:06,521] INFO [twilio.http_client:56] -- BEGIN Twilio API Request --
+[2025-09-07 21:32:06,521] INFO [twilio.http_client:66] POST Request: https://api.twilio.com/2010-04-01/Accounts/AC2969394648e15dec9e186368819ded0b/Messages.json
+[2025-09-07 21:32:06,521] INFO [twilio.http_client:69] Headers:
+[2025-09-07 21:32:06,521] INFO [twilio.http_client:73] Content-Type : application/x-www-form-urlencoded
+[2025-09-07 21:32:06,522] INFO [twilio.http_client:73] Accept : application/json
+[2025-09-07 21:32:06,522] INFO [twilio.http_client:73] User-Agent : twilio-python/9.8.0 (Windows AMD64) Python/3.12.10
+[2025-09-07 21:32:06,522] INFO [twilio.http_client:73] X-Twilio-Client : python-9.8.0
+[2025-09-07 21:32:06,523] INFO [twilio.http_client:73] Accept-Charset : utf-8
+[2025-09-07 21:32:06,523] INFO [twilio.http_client:75] -- END Twilio API Request --
+[2025-09-07 21:32:06,524] DEBUG [urllib3.connectionpool:1049] Starting new HTTPS connection (1): api.twilio.com:443
+[2025-09-07 21:32:07,263] DEBUG [urllib3.connectionpool:544] https://api.twilio.com:443 "POST /2010-04-01/Accounts/AC2969394648e15dec9e186368819ded0b/Messages.json HTTP/1.1" 201 881
+[2025-09-07 21:32:07,264] INFO [twilio.http_client:81] Response Status Code: 201
+[2025-09-07 21:32:07,264] INFO [twilio.http_client:82] Response Headers: {'Content-Type': 'application/json;charset=utf-8', 'Content-Length': '881', 'Connection': 'keep-alive', 'Date': 'Sun, 07 Sep 2025 19:32:07 GMT', 'Twilio-Concurrent-Requests': '1', 'Twilio-Request-Id': 'RQ0b8aaf196ee890570e6dbd576896607e', 'Twilio-Request-Duration': '0.130', 'X-Home-Region': 'us1', 'X-API-Domain': 'api.twilio.com', 'Strict-Transport-Security': 'max-age=31536000', 'X-Cache': 'Miss from cloudfront', 'Via': '1.1 8eb3c67b1958af32e15515c8eb27fbb4.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'MUC50-P1', 'X-Amz-Cf-Id': 'H76ii88MDfz3-hCQq22dRWtMYH0fI9cbjD4VK4i9UaK-lkR4igun-w==', 'X-Powered-By': 'AT-5000', 'X-Shenanigans': 'none', 'Vary': 'Origin'}
+[2025-09-07 21:32:07,265] INFO [reservation_book.views:101] SMS sent to +491607739482, SID=SM0b8aaf196ee890570e6dbd576896607e
+[2025-09-07 21:32:07,265] INFO [reservation_book.views:192] SMS sent to +491607739482
+[2025-09-07 21:32:07,312] INFO [django.server:212] "POST /reservation_book/ HTTP/1.1" 200 28
+[2025-09-07 21:34:01,567] INFO [reservation_book.views:117] make_reservation called, method=GET
+[2025-09-07 21:34:02,365] INFO [django.server:212] "GET /reservation_book/ HTTP/1.1" 200 48148
+[2025-09-07 21:34:04,772] INFO [reservation_book.views:117] make_reservation called, method=GET
+[2025-09-07 21:34:05,575] INFO [django.server:212] "GET /reservation_book/ HTTP/1.1" 200 48148
+[2025-09-07 21:34:25,663] INFO [reservation_book.views:117] make_reservation called, method=POST
+[2025-09-07 21:34:25,775] DEBUG [python_http_client.client:267] POST Request: https://api.sendgrid.com/v3/mail/send
+[2025-09-07 21:34:25,775] DEBUG [python_http_client.client:271] PAYLOAD: b'{"from": {"email": "oliver.p.hartmann@gmail.com"}, "subject": "Your Gambino\\u2019s Reservation Confirmation", "personalizations": [{"to": [{"email": "oliver.p.hartmann@gmail.com"}], "subject": "Your Gambino\\u2019s Reservation Confirmation"}], "content": [{"type": "text/plain", "value": "Hello Oliver, your reservation on 2025-09-08 at 17:00\\u201318:00 is confirmed."}], "mail_settings": {"sandbox_mode": {"enable": false}}, "tracking_settings": {"click_tracking": {"enable": true, "enable_text": true}, "open_tracking": {"enable": true}}}'
+[2025-09-07 21:34:25,776] DEBUG [python_http_client.client:273] HEADERS: {'Authorization': 'Bearer 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', 'User-agent': 'sendgrid/6.12.4;python', 'Accept': 'application/json', 'Content-type': 'application/json'}
+[2025-09-07 21:34:26,634] DEBUG [python_http_client.client:280] POST Response: 202 b''
+[2025-09-07 21:34:26,635] INFO [reservation_book.views:182] Email sent to oliver.p.hartmann@gmail.com
+[2025-09-07 21:34:26,635] INFO [reservation_book.views:90] Using SID=AC2969394648e15dec9e186368819ded0b, TOKEN length=32
+[2025-09-07 21:34:26,635] INFO [twilio.http_client:56] -- BEGIN Twilio API Request --
+[2025-09-07 21:34:26,636] INFO [twilio.http_client:66] POST Request: https://api.twilio.com/2010-04-01/Accounts/AC2969394648e15dec9e186368819ded0b/Messages.json
+[2025-09-07 21:34:26,636] INFO [twilio.http_client:69] Headers:
+[2025-09-07 21:34:26,636] INFO [twilio.http_client:73] Content-Type : application/x-www-form-urlencoded
+[2025-09-07 21:34:26,637] INFO [twilio.http_client:73] Accept : application/json
+[2025-09-07 21:34:26,637] INFO [twilio.http_client:73] User-Agent : twilio-python/9.8.0 (Windows AMD64) Python/3.12.10
+[2025-09-07 21:34:26,637] INFO [twilio.http_client:73] X-Twilio-Client : python-9.8.0
+[2025-09-07 21:34:26,638] INFO [twilio.http_client:73] Accept-Charset : utf-8
+[2025-09-07 21:34:26,638] INFO [twilio.http_client:75] -- END Twilio API Request --
+[2025-09-07 21:34:26,639] DEBUG [urllib3.connectionpool:1049] Starting new HTTPS connection (1): api.twilio.com:443
+[2025-09-07 21:34:27,249] DEBUG [urllib3.connectionpool:544] https://api.twilio.com:443 "POST /2010-04-01/Accounts/AC2969394648e15dec9e186368819ded0b/Messages.json HTTP/1.1" 201 881
+[2025-09-07 21:34:27,250] INFO [twilio.http_client:81] Response Status Code: 201
+[2025-09-07 21:34:27,250] INFO [twilio.http_client:82] Response Headers: {'Content-Type': 'application/json;charset=utf-8', 'Content-Length': '881', 'Connection': 'keep-alive', 'Date': 'Sun, 07 Sep 2025 19:34:27 GMT', 'Twilio-Concurrent-Requests': '1', 'Twilio-Request-Id': 'RQ289e28fdbfcdffb717588586f683e363', 'Twilio-Request-Duration': '0.118', 'X-Home-Region': 'us1', 'X-API-Domain': 'api.twilio.com', 'Strict-Transport-Security': 'max-age=31536000', 'X-Cache': 'Miss from cloudfront', 'Via': '1.1 1a45d1e1304c39dfa9b034c2308f4976.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'MUC50-P1', 'X-Amz-Cf-Id': 'un8Wuz_DQf1fRPmAJjvHVWUDDaeS1M2iusqafL2uq7DZkLt8Ggkrwg==', 'X-Powered-By': 'AT-5000', 'X-Shenanigans': 'none', 'Vary': 'Origin'}
+[2025-09-07 21:34:27,251] INFO [reservation_book.views:101] SMS sent to +491607739482, SID=SM289e28fdbfcdffb717588586f683e363
+[2025-09-07 21:34:27,251] INFO [reservation_book.views:192] SMS sent to +491607739482
+[2025-09-07 21:34:27,279] INFO [django.server:212] "POST /reservation_book/ HTTP/1.1" 200 28
+[2025-09-07 22:07:02,531] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
