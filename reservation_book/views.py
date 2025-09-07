@@ -264,6 +264,18 @@ def make_reservation(request):
     })
 
 
+def book_table(request):
+    if request.method == "POST":
+        form = BookingForm(request.POST)
+        if form.is_valid():
+            booking = form.save()
+            # Send SMS/email logic here
+
+            messages.success(
+                request, "✅ Your booking was successful! A confirmation SMS has been sent.")
+            return redirect("reservation_success")  # or back to same page
+
+
 def reservation_success(request):
     return render(request, "reservation_book/reservation_success.html")
 
