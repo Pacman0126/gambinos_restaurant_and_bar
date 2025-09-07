@@ -11,12 +11,12 @@ from datetime import date
 # Create your models here.
 
 
-class ContactMobile(models.Model):
-    mobile_phone = PhoneNumberField()
+# class ContactMobile(models.Model):
+#    mobile_phone = PhoneNumberField()
 
 
-class ContactPhone(models.Model):
-    phone = PhoneNumberField()
+# class ContactPhone(models.Model):
+#    phone = PhoneNumberField()
 
 
 # models.py
@@ -90,92 +90,3 @@ class OnlineRegisteredCustomer(models.Model):
     mobile = PhoneNumberField(blank=True, region="GB")  # Mobile
     email = models.EmailField(
         max_length=254, blank=True, null=True)  # optional
-
-
-class ReservedTables1718(models.Model):
-    calendar_date = models.DateField(default=date.today, primary_key=True)
-    timme_slot = models.CharField(max_length=15, default='17:00 to 18:00')
-
-    table_1 = models.IntegerField(default=0)
-    table_2 = models.IntegerField(default=0)
-    table_3 = models.IntegerField(default=0)
-    table_4 = models.IntegerField(default=0)
-    table_5 = models.IntegerField(default=0)
-    table_6 = models.IntegerField(default=0)
-    table_7 = models.IntegerField(default=0)
-    table_8 = models.IntegerField(default=0)
-    table_9 = models.IntegerField(default=0)
-    table_10 = models.IntegerField(default=0)
-
-
-class ReservedTables1819(models.Model):
-    calendar_date = models.DateField(default=date.today, primary_key=True)
-    timme_slot = models.CharField(max_length=15, default='18:00 to 19:00')
-
-    table_1 = models.IntegerField(default=0)
-    table_2 = models.IntegerField(default=0)
-    table_3 = models.IntegerField(default=0)
-    table_4 = models.IntegerField(default=0)
-    table_5 = models.IntegerField(default=0)
-    table_6 = models.IntegerField(default=0)
-    table_7 = models.IntegerField(default=0)
-    table_8 = models.IntegerField(default=0)
-    table_9 = models.IntegerField(default=0)
-    table_10 = models.IntegerField(default=0)
-
-
-class ReservedTables1920(models.Model):
-    calendar_date = models.DateField(default=date.today, primary_key=True)
-    timme_slot = models.CharField(max_length=15, default='19:00 to 20:00')
-
-    table_1 = models.IntegerField(default=0)
-    table_2 = models.IntegerField(default=0)
-    table_3 = models.IntegerField(default=0)
-    table_4 = models.IntegerField(default=0)
-    table_5 = models.IntegerField(default=0)
-    table_6 = models.IntegerField(default=0)
-    table_7 = models.IntegerField(default=0)
-    table_8 = models.IntegerField(default=0)
-    table_9 = models.IntegerField(default=0)
-    table_10 = models.IntegerField(default=0)
-
-
-class ReservedTables2021(models.Model):
-    calendar_date = models.DateField(default=date.today, primary_key=True)
-    timme_slot = models.CharField(max_length=15, default='20:00 to 21:00')
-
-    table_1 = models.IntegerField(default=0)
-    table_2 = models.IntegerField(default=0)
-    table_3 = models.IntegerField(default=0)
-    table_4 = models.IntegerField(default=0)
-    table_5 = models.IntegerField(default=0)
-    table_6 = models.IntegerField(default=0)
-    table_7 = models.IntegerField(default=0)
-    table_8 = models.IntegerField(default=0)
-    table_9 = models.IntegerField(default=0)
-    table_10 = models.IntegerField(default=0)
-
-
-class ReservedTables2122(models.Model):
-    calendar_date = models.DateField(default=date.today, primary_key=True)
-    timme_slot = models.CharField(max_length=15, default='21:00 to 22:00')
-
-    table_1 = models.IntegerField(default=0)
-    table_2 = models.IntegerField(default=0)
-    table_3 = models.IntegerField(default=0)
-    table_4 = models.IntegerField(default=0)
-    table_5 = models.IntegerField(default=0)
-    table_6 = models.IntegerField(default=0)
-    table_7 = models.IntegerField(default=0)
-    table_8 = models.IntegerField(default=0)
-    table_9 = models.IntegerField(default=0)
-    table_10 = models.IntegerField(default=0)
-
-
-class BridgeEntity(models.Model):
-    calendar_date = models.DateField(default=date.today, primary_key=True)
-    date = models.DateField(default=date.today)
-
-
-class Creditos1(models.Model):
-    dict_info = JSONField(default=dict)
