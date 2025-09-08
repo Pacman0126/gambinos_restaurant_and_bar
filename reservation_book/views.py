@@ -8,8 +8,8 @@ from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 
-from .forms import ReservationForm
-from .models import ReservationBook, TableReservation, TimeSlotAvailability
+# from .forms import ReservationForm
+from .models import TableReservation, TimeSlotAvailability
 
 logger = logging.getLogger(__name__)
 

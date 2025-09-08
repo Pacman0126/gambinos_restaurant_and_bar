@@ -8,7 +8,7 @@ from .models import TableReservation
 
 
 # Register your models here.
-@admin.register(ReservationBook)
+
 class PostAdmin(SummernoteModelAdmin):
 
     list_display = ('reservation_date', 'first_name')

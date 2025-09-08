@@ -170,7 +170,20 @@ DATABASES = {
         ssl_require=True  # Neon + Heroku both need SSL
     )
 }
-
+# if os.getenv("DJANGO_PRODUCTION"):  # Use this flag in Heroku/Neon
+#     DATABASES = {
+#         "default": dj_database_url.config(
+#             conn_max_age=600,
+#             ssl_require=True  # required for Neon/Heroku
+#         )
+#     }
+# else:  # Local development → SQLite
+#     DATABASES = {
+#         "default": {
+#             "ENGINE": "django.db.backends.sqlite3",
+#             "NAME": BASE_DIR / "db.sqlite3",
+#         }
+#     }
 
 CSRF_TRUSTED_ORIGINS = [
     "https://*.codeinstitute-ide.net/",
