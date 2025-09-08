@@ -1,13 +1,18 @@
 from . import views
 from django.urls import path
-from django.views.generic import TemplateView
-from .views import home, reservations, make_reservation
+# from django.views.generic import TemplateView
 
 urlpatterns = [
-    path('', home, name='home'),
-    path('reservation_book/', make_reservation, name='make_reservation'),
-    path('reservation_book/', reservations, name='reservations'),
+    path("", views.home, name="home"),
+
+    # customer-facing
+    path("make_reservation/", views.make_reservation, name="make_reservation"),
     path("reservation_success/", views.reservation_success,
          name="reservation_success"),
 
+    # staff-facing (requires login/permissions in the view)
+    path('staff/reservations/', views.reservation_book_view,
+         name='reservations'),
+    path('staff/reservations/cancel/<int:reservation_id>/',
+         views.cancel_reservation, name='cancel_reservation'),
 ]

@@ -753,3 +753,370 @@ twilio.base.exceptions.TwilioRestException:
 [2025-09-07 22:27:10,761] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
 [2025-09-07 22:48:30,477] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\admin.py changed, reloading.
 [2025-09-07 22:48:31,335] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-07 22:48:36,040] INFO [django.server:212] "GET / HTTP/1.1" 200 3654
+[2025-09-07 22:48:40,849] INFO [django.server:212] "GET / HTTP/1.1" 200 3654
+[2025-09-07 22:48:45,573] INFO [reservation_book.views:117] make_reservation called, method=GET
+[2025-09-07 22:48:46,585] INFO [django.server:212] "GET /reservation_book/ HTTP/1.1" 200 48468
+[2025-09-08 13:44:45,451] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-08 13:44:52,290] INFO [django.server:212] "GET / HTTP/1.1" 200 3654
+[2025-09-08 13:44:52,640] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 304 0
+[2025-09-08 13:44:52,710] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-09-08 13:44:52,711] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 2952
+[2025-09-08 13:44:57,961] INFO [reservation_book.views:117] make_reservation called, method=GET
+[2025-09-08 13:44:59,016] INFO [django.server:212] "GET /reservation_book/ HTTP/1.1" 200 48475
+[2025-09-08 13:45:22,071] INFO [reservation_book.views:117] make_reservation called, method=POST
+[2025-09-08 13:45:22,322] DEBUG [python_http_client.client:267] POST Request: https://api.sendgrid.com/v3/mail/send
+[2025-09-08 13:45:22,322] DEBUG [python_http_client.client:271] PAYLOAD: b'{"from": {"email": "oliver.p.hartmann@gmail.com"}, "subject": "Your Gambino\\u2019s Reservation Confirmation", "personalizations": [{"to": [{"email": "oliver.p.hartmann@gmail.com"}], "subject": "Your Gambino\\u2019s Reservation Confirmation"}], "content": [{"type": "text/plain", "value": "Hello Oliver, your reservation on 2025-09-08 at 17:00\\u201318:00 is confirmed."}], "mail_settings": {"sandbox_mode": {"enable": false}}, "tracking_settings": {"click_tracking": {"enable": true, "enable_text": true}, "open_tracking": {"enable": true}}}'
+[2025-09-08 13:45:22,323] DEBUG [python_http_client.client:273] HEADERS: {'Authorization': 'Bearer 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', 'User-agent': 'sendgrid/6.12.4;python', 'Accept': 'application/json', 'Content-type': 'application/json'}
+[2025-09-08 13:45:22,595] DEBUG [python_http_client.client:180] POST Response: 401 b'{"errors":[{"message":"The provided authorization grant is invalid, expired, or revoked","field":null,"help":null}]}'
+[2025-09-08 13:45:22,595] ERROR [sendgrid_backend.mail:187] Failed to send email, error: HTTP Error 401: Unauthorized, response body: b'{"errors":[{"message":"The provided authorization grant is invalid, expired, or revoked","field":null,"help":null}]}'
+[2025-09-08 13:45:22,596] ERROR [reservation_book.views:184] Email sending failed: HTTP Error 401: Unauthorized
+[2025-09-08 13:45:22,596] INFO [reservation_book.views:90] Using SID=AC2969394648e15dec9e186368819ded0b, TOKEN length=32
+[2025-09-08 13:45:22,757] INFO [twilio.http_client:56] -- BEGIN Twilio API Request --
+[2025-09-08 13:45:22,757] INFO [twilio.http_client:66] POST Request: https://api.twilio.com/2010-04-01/Accounts/AC2969394648e15dec9e186368819ded0b/Messages.json
+[2025-09-08 13:45:22,757] INFO [twilio.http_client:69] Headers:
+[2025-09-08 13:45:22,758] INFO [twilio.http_client:73] Content-Type : application/x-www-form-urlencoded
+[2025-09-08 13:45:22,758] INFO [twilio.http_client:73] Accept : application/json
+[2025-09-08 13:45:22,758] INFO [twilio.http_client:73] User-Agent : twilio-python/9.8.0 (Windows AMD64) Python/3.12.10
+[2025-09-08 13:45:22,758] INFO [twilio.http_client:73] X-Twilio-Client : python-9.8.0
+[2025-09-08 13:45:22,759] INFO [twilio.http_client:73] Accept-Charset : utf-8
+[2025-09-08 13:45:22,759] INFO [twilio.http_client:75] -- END Twilio API Request --
+[2025-09-08 13:45:22,760] DEBUG [urllib3.connectionpool:1049] Starting new HTTPS connection (1): api.twilio.com:443
+[2025-09-08 13:45:23,431] DEBUG [urllib3.connectionpool:544] https://api.twilio.com:443 "POST /2010-04-01/Accounts/AC2969394648e15dec9e186368819ded0b/Messages.json HTTP/1.1" 201 881
+[2025-09-08 13:45:23,432] INFO [twilio.http_client:81] Response Status Code: 201
+[2025-09-08 13:45:23,432] INFO [twilio.http_client:82] Response Headers: {'Content-Type': 'application/json;charset=utf-8', 'Content-Length': '881', 'Connection': 'keep-alive', 'Date': 'Mon, 08 Sep 2025 11:45:23 GMT', 'Twilio-Concurrent-Requests': '1', 'Twilio-Request-Id': 'RQ15634d1d9fa3143750a749a745f79ee6', 'Twilio-Request-Duration': '0.162', 'X-Home-Region': 'us1', 'X-API-Domain': 'api.twilio.com', 'Strict-Transport-Security': 'max-age=31536000', 'X-Cache': 'Miss from cloudfront', 'Via': '1.1 3ddbbcaacc1ba68ddfab04ef45c3ca98.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'MUC50-P1', 'X-Amz-Cf-Id': 'NwzSJNXBmXcqhzp6a9wdenOAjnQdCU5-dvVRs0O6VnTBd1FMFx9j5g==', 'X-Powered-By': 'AT-5000', 'X-Shenanigans': 'none', 'Vary': 'Origin'}
+[2025-09-08 13:45:23,433] INFO [reservation_book.views:101] SMS sent to +491607739482, SID=SM15634d1d9fa3143750a749a745f79ee6
+[2025-09-08 13:45:23,433] INFO [reservation_book.views:192] SMS sent to +491607739482
+[2025-09-08 13:45:23,476] INFO [django.server:212] "POST /reservation_book/ HTTP/1.1" 200 28
+[2025-09-08 16:57:19,029] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-08 17:15:11,483] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\models.py changed, reloading.
+[2025-09-08 17:15:12,659] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-08 17:20:44,207] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-09-08 17:20:45,527] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-08 17:20:55,264] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-08 17:21:00,092] ERROR [django.request:246] Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 42, in home
+    return render(
+           ^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\backends\django.py", line 61, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 175, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 157, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 471, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\urls\resolvers.py", line 828, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'reservations' not found. 'reservations' is not a valid view function or pattern name.
+[2025-09-08 17:21:00,106] ERROR [django.server:212] "GET / HTTP/1.1" 500 146909
+[2025-09-08 17:24:01,373] ERROR [django.request:246] Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 42, in home
+    return render(
+           ^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\backends\django.py", line 61, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 175, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 157, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 471, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\urls\resolvers.py", line 828, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'reservations' not found. 'reservations' is not a valid view function or pattern name.
+[2025-09-08 17:24:01,378] ERROR [django.server:212] "GET / HTTP/1.1" 500 147046
+[2025-09-08 17:24:08,225] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\urls.py changed, reloading.
+[2025-09-08 17:24:09,514] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-08 17:24:11,511] INFO [django.server:212] "GET / HTTP/1.1" 200 3656
+[2025-09-08 17:24:16,099] INFO [reservation_book.views:105] make_reservation called, method=GET
+[2025-09-08 17:24:17,584] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 48533
+[2025-09-08 17:25:10,658] INFO [reservation_book.views:105] make_reservation called, method=POST
+[2025-09-08 17:25:10,889] DEBUG [python_http_client.client:267] POST Request: https://api.sendgrid.com/v3/mail/send
+[2025-09-08 17:25:10,889] DEBUG [python_http_client.client:271] PAYLOAD: b'{"from": {"email": "oliver.p.hartmann@gmail.com"}, "subject": "Your Gambino\\u2019s Reservation Confirmation", "personalizations": [{"to": [{"email": "oliver.p.hartmann@gmail.com"}], "subject": "Your Gambino\\u2019s Reservation Confirmation"}], "content": [{"type": "text/plain", "value": "Hello Oliver, your reservation on 2025-09-08 at 17:00\\u201318:00 is confirmed."}], "mail_settings": {"sandbox_mode": {"enable": false}}, "tracking_settings": {"click_tracking": {"enable": true, "enable_text": true}, "open_tracking": {"enable": true}}}'
+[2025-09-08 17:25:10,890] DEBUG [python_http_client.client:273] HEADERS: {'Authorization': 'Bearer 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', 'User-agent': 'sendgrid/6.12.4;python', 'Accept': 'application/json', 'Content-type': 'application/json'}
+[2025-09-08 17:25:11,145] DEBUG [python_http_client.client:180] POST Response: 401 b'{"errors":[{"message":"The provided authorization grant is invalid, expired, or revoked","field":null,"help":null}]}'
+[2025-09-08 17:25:11,146] ERROR [sendgrid_backend.mail:187] Failed to send email, error: HTTP Error 401: Unauthorized, response body: b'{"errors":[{"message":"The provided authorization grant is invalid, expired, or revoked","field":null,"help":null}]}'
+[2025-09-08 17:25:11,147] ERROR [reservation_book.views:172] Email sending failed: HTTP Error 401: Unauthorized
+[2025-09-08 17:25:11,147] INFO [reservation_book.views:78] Using SID=AC2969394648e15dec9e186368819ded0b, TOKEN length=32
+[2025-09-08 17:25:11,369] INFO [twilio.http_client:56] -- BEGIN Twilio API Request --
+[2025-09-08 17:25:11,369] INFO [twilio.http_client:66] POST Request: https://api.twilio.com/2010-04-01/Accounts/AC2969394648e15dec9e186368819ded0b/Messages.json
+[2025-09-08 17:25:11,370] INFO [twilio.http_client:69] Headers:
+[2025-09-08 17:25:11,370] INFO [twilio.http_client:73] Content-Type : application/x-www-form-urlencoded
+[2025-09-08 17:25:11,371] INFO [twilio.http_client:73] Accept : application/json
+[2025-09-08 17:25:11,371] INFO [twilio.http_client:73] User-Agent : twilio-python/9.8.0 (Windows AMD64) Python/3.12.10
+[2025-09-08 17:25:11,371] INFO [twilio.http_client:73] X-Twilio-Client : python-9.8.0
+[2025-09-08 17:25:11,372] INFO [twilio.http_client:73] Accept-Charset : utf-8
+[2025-09-08 17:25:11,372] INFO [twilio.http_client:75] -- END Twilio API Request --
+[2025-09-08 17:25:11,374] DEBUG [urllib3.connectionpool:1049] Starting new HTTPS connection (1): api.twilio.com:443
+[2025-09-08 17:25:12,241] DEBUG [urllib3.connectionpool:544] https://api.twilio.com:443 "POST /2010-04-01/Accounts/AC2969394648e15dec9e186368819ded0b/Messages.json HTTP/1.1" 201 881
+[2025-09-08 17:25:12,243] INFO [twilio.http_client:81] Response Status Code: 201
+[2025-09-08 17:25:12,243] INFO [twilio.http_client:82] Response Headers: {'Content-Type': 'application/json;charset=utf-8', 'Content-Length': '881', 'Connection': 'keep-alive', 'Date': 'Mon, 08 Sep 2025 15:25:12 GMT', 'Twilio-Concurrent-Requests': '0', 'Twilio-Request-Id': 'RQ1948485acb7ed374e86bf5077ec560ee', 'Twilio-Request-Duration': '0.153', 'X-Home-Region': 'us1', 'X-API-Domain': 'api.twilio.com', 'Strict-Transport-Security': 'max-age=31536000', 'X-Cache': 'Miss from cloudfront', 'Via': '1.1 ec12d3de4ccd821a7e749609dcc62010.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'MUC50-P1', 'X-Amz-Cf-Id': 'u7Iz-ffl3F7hk2244_vSzIKYWvrLZ9wtm0k4tnfE0TReR8QlZaY5MQ==', 'X-Powered-By': 'AT-5000', 'X-Shenanigans': 'none', 'Vary': 'Origin'}
+[2025-09-08 17:25:12,244] INFO [reservation_book.views:89] SMS sent to +491607739482, SID=SM1948485acb7ed374e86bf5077ec560ee
+[2025-09-08 17:25:12,244] INFO [reservation_book.views:180] SMS sent to +491607739482
+[2025-09-08 17:25:12,248] ERROR [reservation_book.views:211] Unexpected error in make_reservation: OnlineRegisteredCustomer() got unexpected keyword arguments: 'first_name', 'last_name'
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 195, in make_reservation
+    OnlineRegisteredCustomer.objects.create(
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\query.py", line 656, in create
+    obj = self.model(**kwargs)
+          ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\base.py", line 567, in __init__
+    raise TypeError(
+TypeError: OnlineRegisteredCustomer() got unexpected keyword arguments: 'first_name', 'last_name'
+[2025-09-08 17:25:12,251] INFO [django.server:212] "POST /make_reservation/ HTTP/1.1" 200 117
+[2025-09-08 17:35:53,545] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-09-08 17:35:54,622] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-08 17:36:30,835] INFO [django.server:212] "GET / HTTP/1.1" 200 3656
+[2025-09-08 17:37:03,014] INFO [reservation_book.views:105] make_reservation called, method=GET
+[2025-09-08 17:37:04,151] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 48533
+[2025-09-08 17:37:31,014] INFO [reservation_book.views:105] make_reservation called, method=POST
+[2025-09-08 17:37:31,266] DEBUG [python_http_client.client:267] POST Request: https://api.sendgrid.com/v3/mail/send
+[2025-09-08 17:37:31,266] DEBUG [python_http_client.client:271] PAYLOAD: b'{"from": {"email": "oliver.p.hartmann@gmail.com"}, "subject": "Your Gambino\\u2019s Reservation Confirmation", "personalizations": [{"to": [{"email": "oliver.p.hartmann@gmail.com"}], "subject": "Your Gambino\\u2019s Reservation Confirmation"}], "content": [{"type": "text/plain", "value": "Hello Oliver, your reservation on 2025-09-08 at 17:00\\u201318:00 is confirmed."}], "mail_settings": {"sandbox_mode": {"enable": false}}, "tracking_settings": {"click_tracking": {"enable": true, "enable_text": true}, "open_tracking": {"enable": true}}}'
+[2025-09-08 17:37:31,267] DEBUG [python_http_client.client:273] HEADERS: {'Authorization': 'Bearer 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', 'User-agent': 'sendgrid/6.12.4;python', 'Accept': 'application/json', 'Content-type': 'application/json'}
+[2025-09-08 17:37:31,602] DEBUG [python_http_client.client:180] POST Response: 401 b'{"errors":[{"message":"The provided authorization grant is invalid, expired, or revoked","field":null,"help":null}]}'
+[2025-09-08 17:37:31,602] ERROR [sendgrid_backend.mail:187] Failed to send email, error: HTTP Error 401: Unauthorized, response body: b'{"errors":[{"message":"The provided authorization grant is invalid, expired, or revoked","field":null,"help":null}]}'
+[2025-09-08 17:37:31,603] ERROR [reservation_book.views:172] Email sending failed: HTTP Error 401: Unauthorized
+[2025-09-08 17:37:31,604] INFO [reservation_book.views:78] Using SID=AC2969394648e15dec9e186368819ded0b, TOKEN length=32
+[2025-09-08 17:37:31,793] INFO [twilio.http_client:56] -- BEGIN Twilio API Request --
+[2025-09-08 17:37:31,794] INFO [twilio.http_client:66] POST Request: https://api.twilio.com/2010-04-01/Accounts/AC2969394648e15dec9e186368819ded0b/Messages.json
+[2025-09-08 17:37:31,794] INFO [twilio.http_client:69] Headers:
+[2025-09-08 17:37:31,795] INFO [twilio.http_client:73] Content-Type : application/x-www-form-urlencoded
+[2025-09-08 17:37:31,795] INFO [twilio.http_client:73] Accept : application/json
+[2025-09-08 17:37:31,796] INFO [twilio.http_client:73] User-Agent : twilio-python/9.8.0 (Windows AMD64) Python/3.12.10
+[2025-09-08 17:37:31,797] INFO [twilio.http_client:73] X-Twilio-Client : python-9.8.0
+[2025-09-08 17:37:31,797] INFO [twilio.http_client:73] Accept-Charset : utf-8
+[2025-09-08 17:37:31,798] INFO [twilio.http_client:75] -- END Twilio API Request --
+[2025-09-08 17:37:31,800] DEBUG [urllib3.connectionpool:1049] Starting new HTTPS connection (1): api.twilio.com:443
+[2025-09-08 17:37:32,661] DEBUG [urllib3.connectionpool:544] https://api.twilio.com:443 "POST /2010-04-01/Accounts/AC2969394648e15dec9e186368819ded0b/Messages.json HTTP/1.1" 201 881
+[2025-09-08 17:37:32,662] INFO [twilio.http_client:81] Response Status Code: 201
+[2025-09-08 17:37:32,663] INFO [twilio.http_client:82] Response Headers: {'Content-Type': 'application/json;charset=utf-8', 'Content-Length': '881', 'Connection': 'keep-alive', 'Date': 'Mon, 08 Sep 2025 15:37:33 GMT', 'Twilio-Concurrent-Requests': '0', 'Twilio-Request-Id': 'RQaebcee8f4faa2d7ed9d6143a8f6dc099', 'Twilio-Request-Duration': '0.119', 'X-Home-Region': 'us1', 'X-API-Domain': 'api.twilio.com', 'Strict-Transport-Security': 'max-age=31536000', 'X-Cache': 'Miss from cloudfront', 'Via': '1.1 a4a80ac7ffee78c042728f52e3f729e0.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'MUC50-P1', 'X-Amz-Cf-Id': '1M9z3RtqQz69qmjpgw856VrSz2nqlb3EgbvG45h0OsZm92GDqkVjOw==', 'X-Powered-By': 'AT-5000', 'X-Shenanigans': 'none', 'Vary': 'Origin'}
+[2025-09-08 17:37:32,663] INFO [reservation_book.views:89] SMS sent to +491607739482, SID=SMaebcee8f4faa2d7ed9d6143a8f6dc099
+[2025-09-08 17:37:32,664] INFO [reservation_book.views:180] SMS sent to +491607739482
+[2025-09-08 17:37:32,665] INFO [django.server:212] "POST /make_reservation/ HTTP/1.1" 200 28
+[2025-09-08 17:44:42,939] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-08 17:44:45,122] INFO [django.server:212] "GET / HTTP/1.1" 200 3656
+[2025-09-08 17:51:29,513] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-08 17:52:04,224] INFO [django.server:212] "GET / HTTP/1.1" 200 3683
+[2025-09-08 17:52:27,564] INFO [reservation_book.views:105] make_reservation called, method=GET
+[2025-09-08 17:52:28,701] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 51444
+[2025-09-08 17:52:54,771] INFO [reservation_book.views:105] make_reservation called, method=POST
+[2025-09-08 17:52:55,016] DEBUG [python_http_client.client:267] POST Request: https://api.sendgrid.com/v3/mail/send
+[2025-09-08 17:52:55,016] DEBUG [python_http_client.client:271] PAYLOAD: b'{"from": {"email": "oliver.p.hartmann@gmail.com"}, "subject": "Your Gambino\\u2019s Reservation Confirmation", "personalizations": [{"to": [{"email": "oliver.p.hartmann@gmail.com"}], "subject": "Your Gambino\\u2019s Reservation Confirmation"}], "content": [{"type": "text/plain", "value": "Hello Oliver, your reservation on 2025-09-08 at 17:00\\u201318:00 is confirmed."}], "mail_settings": {"sandbox_mode": {"enable": false}}, "tracking_settings": {"click_tracking": {"enable": true, "enable_text": true}, "open_tracking": {"enable": true}}}'
+[2025-09-08 17:52:55,017] DEBUG [python_http_client.client:273] HEADERS: {'Authorization': 'Bearer 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', 'User-agent': 'sendgrid/6.12.4;python', 'Accept': 'application/json', 'Content-type': 'application/json'}
+[2025-09-08 17:52:55,276] DEBUG [python_http_client.client:180] POST Response: 401 b'{"errors":[{"message":"The provided authorization grant is invalid, expired, or revoked","field":null,"help":null}]}'
+[2025-09-08 17:52:55,277] ERROR [sendgrid_backend.mail:187] Failed to send email, error: HTTP Error 401: Unauthorized, response body: b'{"errors":[{"message":"The provided authorization grant is invalid, expired, or revoked","field":null,"help":null}]}'
+[2025-09-08 17:52:55,278] ERROR [reservation_book.views:172] Email sending failed: HTTP Error 401: Unauthorized
+[2025-09-08 17:52:55,278] INFO [reservation_book.views:78] Using SID=AC2969394648e15dec9e186368819ded0b, TOKEN length=32
+[2025-09-08 17:52:55,522] INFO [twilio.http_client:56] -- BEGIN Twilio API Request --
+[2025-09-08 17:52:55,523] INFO [twilio.http_client:66] POST Request: https://api.twilio.com/2010-04-01/Accounts/AC2969394648e15dec9e186368819ded0b/Messages.json
+[2025-09-08 17:52:55,524] INFO [twilio.http_client:69] Headers:
+[2025-09-08 17:52:55,524] INFO [twilio.http_client:73] Content-Type : application/x-www-form-urlencoded
+[2025-09-08 17:52:55,525] INFO [twilio.http_client:73] Accept : application/json
+[2025-09-08 17:52:55,526] INFO [twilio.http_client:73] User-Agent : twilio-python/9.8.0 (Windows AMD64) Python/3.12.10
+[2025-09-08 17:52:55,526] INFO [twilio.http_client:73] X-Twilio-Client : python-9.8.0
+[2025-09-08 17:52:55,527] INFO [twilio.http_client:73] Accept-Charset : utf-8
+[2025-09-08 17:52:55,527] INFO [twilio.http_client:75] -- END Twilio API Request --
+[2025-09-08 17:52:55,529] DEBUG [urllib3.connectionpool:1049] Starting new HTTPS connection (1): api.twilio.com:443
+[2025-09-08 17:52:56,502] DEBUG [urllib3.connectionpool:544] https://api.twilio.com:443 "POST /2010-04-01/Accounts/AC2969394648e15dec9e186368819ded0b/Messages.json HTTP/1.1" 201 881
+[2025-09-08 17:52:56,503] INFO [twilio.http_client:81] Response Status Code: 201
+[2025-09-08 17:52:56,504] INFO [twilio.http_client:82] Response Headers: {'Content-Type': 'application/json;charset=utf-8', 'Content-Length': '881', 'Connection': 'keep-alive', 'Date': 'Mon, 08 Sep 2025 15:52:57 GMT', 'Twilio-Concurrent-Requests': '0', 'Twilio-Request-Id': 'RQc915a3346b988056b057d532b6a5e188', 'Twilio-Request-Duration': '0.142', 'X-Home-Region': 'us1', 'X-API-Domain': 'api.twilio.com', 'Strict-Transport-Security': 'max-age=31536000', 'X-Cache': 'Miss from cloudfront', 'Via': '1.1 986e79a1f22b8bf29001818ede5df5c8.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'MUC50-P1', 'X-Amz-Cf-Id': 'o16u6F1fA1lQ94JWkxtYncnHPo_afAEqHmhsi0G9AhYMpSuLz9bQXA==', 'X-Powered-By': 'AT-5000', 'X-Shenanigans': 'none', 'Vary': 'Origin'}
+[2025-09-08 17:52:56,505] INFO [reservation_book.views:89] SMS sent to +491607739482, SID=SMc915a3346b988056b057d532b6a5e188
+[2025-09-08 17:52:56,506] INFO [reservation_book.views:180] SMS sent to +491607739482
+[2025-09-08 17:52:56,506] INFO [django.server:212] "POST /make_reservation/ HTTP/1.1" 200 28
+[2025-09-08 18:10:29,750] INFO [django.server:212] "GET / HTTP/1.1" 200 3683
+[2025-09-08 18:10:32,844] INFO [reservation_book.views:105] make_reservation called, method=GET
+[2025-09-08 18:10:34,895] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 51436
+[2025-09-08 18:10:45,885] INFO [django.server:212] "GET /staff/reservations/ HTTP/1.1" 302 0
+[2025-09-08 18:10:45,907] WARNING [django.request:246] Not Found: /accounts/login/
+[2025-09-08 18:10:45,908] WARNING [django.server:212] "GET /accounts/login/?next=/staff/reservations/ HTTP/1.1" 404 3219
+[2025-09-08 18:12:03,918] INFO [django.server:212] "GET / HTTP/1.1" 200 3683
+[2025-09-08 18:12:08,737] INFO [django.server:212] "GET /admin/ HTTP/1.1" 302 0
+[2025-09-08 18:12:08,781] INFO [django.server:212] "GET /admin/login/?next=/admin/ HTTP/1.1" 200 4981
+[2025-09-08 18:12:08,814] INFO [django.server:212] "GET /static/admin/css/base.css HTTP/1.1" 304 0
+[2025-09-08 18:12:08,819] INFO [django.server:212] "GET /static/admin/js/theme.js HTTP/1.1" 304 0
+[2025-09-08 18:12:08,824] INFO [django.server:212] "GET /static/admin/css/dark_mode.css HTTP/1.1" 304 0
+[2025-09-08 18:12:08,826] INFO [django.server:212] "GET /static/admin/css/responsive.css HTTP/1.1" 304 0
+[2025-09-08 18:12:08,828] INFO [django.server:212] "GET /static/admin/css/nav_sidebar.css HTTP/1.1" 304 0
+[2025-09-08 18:12:08,833] INFO [django.server:212] "GET /static/admin/js/nav_sidebar.js HTTP/1.1" 304 0
+[2025-09-08 18:12:08,893] INFO [django.server:212] "GET /static/admin/css/login.css HTTP/1.1" 200 951
+[2025-09-08 18:12:12,380] INFO [django.server:212] "POST /admin/login/?next=/admin/ HTTP/1.1" 200 5148
+[2025-09-08 18:12:34,272] INFO [django.server:212] "POST /admin/login/?next=/admin/ HTTP/1.1" 200 5148
+[2025-09-08 18:13:45,464] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-08 18:13:47,881] INFO [django.server:212] "GET / HTTP/1.1" 200 3683
+[2025-09-08 18:13:55,491] INFO [django.server:212] "GET /admin/ HTTP/1.1" 302 0
+[2025-09-08 18:13:55,531] INFO [django.server:212] "GET /admin/login/?next=/admin/ HTTP/1.1" 200 4981
+[2025-09-08 18:13:55,560] INFO [django.server:212] "GET /static/admin/css/base.css HTTP/1.1" 304 0
+[2025-09-08 18:13:55,567] INFO [django.server:212] "GET /static/admin/css/dark_mode.css HTTP/1.1" 304 0
+[2025-09-08 18:13:55,567] INFO [django.server:212] "GET /static/admin/css/nav_sidebar.css HTTP/1.1" 304 0
+[2025-09-08 18:13:55,570] INFO [django.server:212] "GET /static/admin/css/responsive.css HTTP/1.1" 304 0
+[2025-09-08 18:13:55,571] INFO [django.server:212] "GET /static/admin/js/theme.js HTTP/1.1" 304 0
+[2025-09-08 18:13:55,580] INFO [django.server:212] "GET /static/admin/js/nav_sidebar.js HTTP/1.1" 304 0
+[2025-09-08 18:14:07,668] INFO [django.server:212] "POST /admin/login/?next=/admin/ HTTP/1.1" 200 5148
+[2025-09-08 18:14:18,293] INFO [django.server:212] "POST /admin/login/?next=/admin/ HTTP/1.1" 200 5148
+[2025-09-08 18:17:12,135] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-08 18:17:15,204] INFO [django.server:212] "GET / HTTP/1.1" 200 3683
+[2025-09-08 18:17:22,563] INFO [django.server:212] "GET /admin/ HTTP/1.1" 302 0
+[2025-09-08 18:17:22,614] INFO [django.server:212] "GET /admin/login/?next=/admin/ HTTP/1.1" 200 4981
+[2025-09-08 18:17:22,642] INFO [django.server:212] "GET /static/admin/css/base.css HTTP/1.1" 304 0
+[2025-09-08 18:17:22,660] INFO [django.server:212] "GET /static/admin/css/dark_mode.css HTTP/1.1" 304 0
+[2025-09-08 18:17:22,660] INFO [django.server:212] "GET /static/admin/js/theme.js HTTP/1.1" 304 0
+[2025-09-08 18:17:22,660] INFO [django.server:212] "GET /static/admin/css/nav_sidebar.css HTTP/1.1" 304 0
+[2025-09-08 18:17:22,664] INFO [django.server:212] "GET /static/admin/css/responsive.css HTTP/1.1" 304 0
+[2025-09-08 18:17:22,669] INFO [django.server:212] "GET /static/admin/js/nav_sidebar.js HTTP/1.1" 304 0
+[2025-09-08 18:17:33,641] INFO [django.server:212] "POST /admin/login/?next=/admin/ HTTP/1.1" 302 0
+[2025-09-08 18:17:33,749] INFO [django.server:212] "GET /admin/ HTTP/1.1" 200 7871
+[2025-09-08 18:17:33,789] INFO [django.server:212] "GET /static/admin/img/icon-changelink.svg HTTP/1.1" 304 0
+[2025-09-08 18:17:33,789] INFO [django.server:212] "GET /static/admin/img/icon-addlink.svg HTTP/1.1" 304 0
+[2025-09-08 18:17:33,790] INFO [django.server:212] "GET /static/admin/css/dashboard.css HTTP/1.1" 304 0
+[2025-09-08 18:18:10,569] ERROR [django.request:246] Internal Server Error: /admin/reservation_book/reservationbook/
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\backends\utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.UndefinedColumn: column reservation_book_reservationbook.customer_id does not exist
+LINE 1: ...ile", "reservation_book_reservationbook"."email", "reservati...
+                                                             ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\contrib\admin\options.py", line 688, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\utils\decorators.py", line 134, in _wrapper_view
+    response = view_func(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\views\decorators\cache.py", line 62, in _wrapper_view_func
+    response = view_func(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\contrib\admin\sites.py", line 242, in inner
+    return view(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\utils\decorators.py", line 46, in _wrapper
+    return bound_method(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\utils\decorators.py", line 134, in _wrapper_view
+    response = view_func(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\contrib\admin\options.py", line 2065, in changelist_view
+    "selection_note": _("0 of %(cnt)s selected") % {"cnt": len(cl.result_list)},
+                                                           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\query.py", line 380, in __len__
+    self._fetch_all()
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\query.py", line 1881, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\backends\utils.py", line 102, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\backends\utils.py", line 67, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\backends\utils.py", line 80, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\backends\utils.py", line 84, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\backends\utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.ProgrammingError: column reservation_book_reservationbook.customer_id does not exist
+LINE 1: ...ile", "reservation_book_reservationbook"."email", "reservati...
+                                                             ^
+
+[2025-09-08 18:18:10,590] ERROR [django.server:212] "GET /admin/reservation_book/reservationbook/ HTTP/1.1" 500 166115

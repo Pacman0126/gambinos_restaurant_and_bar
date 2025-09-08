@@ -4,7 +4,7 @@ from django_summernote.admin import SummernoteModelAdmin
 # from .models import ContactPhone
 from .models import ReservationBook
 from .models import TableReservation
-from .models import OnlineRegisteredCustomer
+# from .models import OnlineRegisteredCustomer
 
 
 # Register your models here.
@@ -20,4 +20,3 @@ class PostAdmin(SummernoteModelAdmin):
 
 # admin.register(ReservationBook)
 admin.register(TableReservation)
-admin.register(OnlineRegisteredCustomer)
