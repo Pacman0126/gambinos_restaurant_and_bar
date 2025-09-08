@@ -1,3 +1,5 @@
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from django.db import models
 from django.db.models import JSONField
 from django.contrib.auth.models import User
@@ -21,20 +23,28 @@ from datetime import date
 
 # models.py
 
-
 class ReservationBook(models.Model):
     id = models.AutoField(primary_key=True)
     reservation_id = models.ForeignKey(
-        "TableReservation", on_delete=models.CASCADE, related_name="reservation_book"
+        "TableReservation",
+        on_delete=models.CASCADE,
+        related_name="reservation_book"
     )
     reservation_date = models.DateField()
 
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
 
-    phone = PhoneNumberField(blank=True, null=True, region="GB")   # default UK
-    mobile = PhoneNumberField(blank=True, null=True, region="GB")  # default UK
+    phone = PhoneNumberField(blank=True, null=True, region="GB")
+    mobile = PhoneNumberField(blank=True, null=True, region="GB")
     email = models.EmailField(blank=True, null=True)
+
+    # Link directly to the Django user who created this reservation
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="reservations"
+    )
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} on {self.reservation_date}"
@@ -64,6 +74,19 @@ class TableReservation(models.Model):
         return f"Reservation {self.reservation_id} on {self.reservation_date}"
 
 
+@login_required
+def cancel_reservation(request, reservation_id):
+    if not request.user.is_staff:
+        return JsonResponse({"success": False, "error": "Only staff can cancel reservations."}, status=403)
+
+    try:
+        reservation = ReservationBook.objects.get(pk=reservation_id)
+        reservation.delete()
+        return JsonResponse({"success": True})
+    except ReservationBook.DoesNotExist:
+        return JsonResponse({"success": False, "error": "Reservation not found."}, status=404)
+
+
 class TimeSlotAvailability(models.Model):
     calendar_date = models.DateField(primary_key=True)
 
@@ -80,13 +103,3 @@ class TimeSlotAvailability(models.Model):
 
     def __str__(self):
         return f"Availability for {self.calendar_date}"
-
-
-class OnlineRegisteredCustomer(models.Model):
-    id = models.AutoField(primary_key=True)
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    phone = PhoneNumberField(blank=True, region="GB")   # Landline
-    mobile = PhoneNumberField(blank=True, region="GB")  # Mobile
-    email = models.EmailField(
-        max_length=254, blank=True, null=True)  # optional

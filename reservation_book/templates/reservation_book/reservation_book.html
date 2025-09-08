@@ -1,98 +1,113 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<!-- reservation_book.html content starts here -->
 <div class="container">
     <div class="row">
-
-        
         <div class="col-12 mt-3 left">
-            <div class="row">               
-                <p>Table Availability</p>
-            </div>
-            <div class="container">
-            <div class="row">
+            <h3>Reservation Book (Next 30 Days)</h3>
 
-                <table class="table">
-                  <thead>
-                    {% for keys in table_availability.0.keys %}
-
-                      <th scope="col">{{keys}}</th>
-                
-                    {%endfor%}
-                  </thead>
-                  <tbody>
-                    {% for data in table_availability%}
+            <table class="table table-bordered table-hover text-center align-middle">
+                <thead class="table-dark">
                     <tr>
-                      {%for val in data.values%}
-                      <td>{{val}}</td>
-                      {%endfor%}
+                        <th>Date</th>
+                        <th>17:00 - 18:00</th>
+                        <th>18:00 - 19:00</th>
+                        <th>19:00 - 20:00</th>
+                        <th>20:00 - 21:00</th>
+                        <th>21:00 - 22:00</th>
                     </tr>
-                    {%endfor%}
-                </table>
-              </div>
+                </thead>
+                <tbody>
+                {% for day in next_30_days %}
+                <tr>
+                    <td>{{ day.calendar_date }}</td>
+                    {% for slot, slot_key in day.slots %}
+                        {% with availability=availabilities|get_item:day.calendar_date %}
+                        {% if availability %}
+                            {% if slot_key == '17_18' %}
+                                {% set left=availability.number_of_tables_available_17_18 %}
+                            {% elif slot_key == '18_19' %}
+                                {% set left=availability.number_of_tables_available_18_19 %}
+                            {% elif slot_key == '19_20' %}
+                                {% set left=availability.number_of_tables_available_19_20 %}
+                            {% elif slot_key == '20_21' %}
+                                {% set left=availability.number_of_tables_available_20_21 %}
+                            {% elif slot_key == '21_22' %}
+                                {% set left=availability.number_of_tables_available_21_22 %}
+                            {% endif %}
+                        {% else %}
+                            {% set left=0 %}
+                        {% endif %}
 
-                <form>
-                  <div class="form-group row">
-                    <label for="inputEmail3" class="col-sm-2 col-form-label">Email</label>
-                    <div class="col-sm-10">
-                      <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
-                    </div>
-                  </div>
-                  <div class="form-group row">
-                    <label for="inputPassword3" class="col-sm-2 col-form-label">Password</label>
-                    <div class="col-sm-10">
-                      <input type="password" class="form-control" id="inputPassword3" placeholder="Password">
-                    </div>
-                  </div>
-                  <fieldset class="form-group">
-                    <div class="row">
-                      <legend class="col-form-label col-sm-2 pt-0">Radios</legend>
-                      <div class="col-sm-10">
-                        <div class="form-check">
-                          <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="option1" checked>
-                          <label class="form-check-label" for="gridRadios1">
-                            First radio
-                          </label>
-                        </div>
-                        <div class="form-check">
-                          <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="option2">
-                          <label class="form-check-label" for="gridRadios2">
-                            Second radio
-                          </label>
-                        </div>
-                        <div class="form-check disabled">
-                          <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios3" value="option3" disabled>
-                          <label class="form-check-label" for="gridRadios3">
-                            Third disabled radio
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                  </fieldset>
-                  <div class="form-group row">
-                    <div class="col-sm-2">Checkbox</div>
-                    <div class="col-sm-10">
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="gridCheck1">
-                        <label class="form-check-label" for="gridCheck1">
-                          Example checkbox
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="form-group row">
-                    <div class="col-sm-10">
-                      <button type="submit" class="btn btn-primary">Sign in</button>
-                    </div>
-                  </div>
-                </form>
-            </div>
+                        <td class="text-center {% if left <= 0 %}table-danger{% else %}table-success{% endif %}">
+                            {% if left > 0 %}
+                                {{ left }}
+                            {% else %}
+                                FULL
+                            {% endif %}
+
+                            {% if user.is_staff %}
+                                <form method="post" action="{% url 'cancel_reservation' availability.pk %}" class="mt-2">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-danger">Cancel</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                        {% endwith %}
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
-
 </div>
-
-<!-- index.html content ends here -->
 {% endblock %}
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".cancel-reservation").forEach(btn => {
+        btn.addEventListener("click", async () => {
+            const reservationId = btn.dataset.reservationId;
+            if (!confirm("Are you sure you want to cancel this reservation?")) return;
+
+            try {
+                const response = await fetch(`/cancel_reservation/${reservationId}/`, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": getCookie("csrftoken"),
+                        "X-Requested-With": "XMLHttpRequest"
+                    }
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    alert("Reservation cancelled.");
+                    window.location.reload(); // refresh table
+                } else {
+                    alert(data.error || "Failed to cancel reservation.");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Server error. Try again later.");
+            }
+        });
+    });
+
+    // CSRF helper function
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+            const cookies = document.cookie.split(";");
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + "=")) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
+</script>
