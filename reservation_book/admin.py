@@ -2,7 +2,7 @@ from django.contrib import admin
 from django_summernote.admin import SummernoteModelAdmin
 # from .models import ContactMobile
 # from .models import ContactPhone
-from .models import ReservationBook
+# from .models import ReservationBook
 from .models import TableReservation
 # from .models import OnlineRegisteredCustomer
 

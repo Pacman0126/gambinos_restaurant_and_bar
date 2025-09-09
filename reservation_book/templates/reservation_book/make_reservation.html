@@ -13,60 +13,48 @@
     <input type="hidden" name="number_of_tables_required_by_patron" id="tables_needed" value="1">
 
     <!-- Customer Info Modal -->
-<div class="modal fade" id="customerModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-dark text-white">
-                <h5 class="modal-title">Enter Reservation Details</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label class="form-label">First Name</label>
-                    <input type="text" class="form-control" name="first_name" required>
+    <div class="modal fade" id="customerModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title">Enter Reservation Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Last Name</label>
-                    <input type="text" class="form-control" name="last_name" required>
-                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">First Name</label>
+                        <input type="text" class="form-control" name="first_name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Last Name</label>
+                        <input type="text" class="form-control" name="last_name" required>
+                    </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Country</label>
-                    <select class="form-select" name="country_code" id="country_code">
-                        <option value="GB" selected>United Kingdom</option>
-                        <option value="DE">Germany</option>
-                        <option value="FR">France</option>
-                        <option value="US">United States</option>
-                        <option value="IE">Ireland</option>
-                        <!-- add more countries as needed -->
-                    </select>
-                </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control" name="email" required>
+                        <small class="form-text text-muted text-danger">⚠️ Please check your spam folder for the confirmation email.</small>
+                    </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Phone / Mobile <span class="text-danger">*</span></label>
-                    <small class="form-text text-muted">Please provide at least one number</small>
-                    <input type="text" class="form-control mb-2" name="phone" placeholder="Phone (Landline)">
-                    <input type="text" class="form-control" name="mobile" placeholder="Mobile (for SMS)">
-                    <div id="phoneError" class="text-danger mt-1" style="display: none;">
-                        Phone required if no mobile provided (or vice versa).
+                    <div class="mb-3">
+                        <label class="form-label">Phone (optional)</label>
+                        <input type="text" class="form-control" name="phone" placeholder="Phone (Landline)">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Mobile (optional)</label>
+                        <input type="text" class="form-control" name="mobile" placeholder="Mobile">
                     </div>
                 </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Email</label>
-                    <input type="email" class="form-control" name="email">
-                    <small class="form-text text-muted text-danger">⚠️ Please check your spam folder for the confirmation email.</small>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Confirm Reservation</button>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn btn-success">Confirm Reservation</button>
             </div>
         </div>
     </div>
-</div>
- 
 </form>
+
 
 <!-- Availability Table -->
 <h3 class="mb-3">Availability for the Next 30 Days</h3>

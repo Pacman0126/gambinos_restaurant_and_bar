@@ -1,5 +1,7 @@
 from django import forms
-from .models import ReservationBook
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+# from .models import ReservationBook   # no longer needed
 from .models import TimeSlotAvailability, TableReservation
 
 
@@ -17,7 +19,6 @@ class ReservationForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Only show available time slots for the chosen date
         if "reservation_date" in self.data:
             try:
                 date_id = self.data.get("reservation_date")
@@ -31,8 +32,6 @@ class ReservationForm(forms.Form):
                         "20_21": ("20:00 - 21:00", ts.total_cust_demand_for_tables_20_21, ts.number_of_tables_available_20_21),
                         "21_22": ("21:00 - 22:00", ts.total_cust_demand_for_tables_21_22, ts.number_of_tables_available_21_22),
                     }
-
-                    # Only include slots where demand < available
                     available_slots = [
                         (key, label) for key, (label, demand, available) in slot_map.items()
                         if demand < available
@@ -49,3 +48,11 @@ class ReservationForm(forms.Form):
                 ("20_21", "20:00 - 21:00"),
                 ("21_22", "21:00 - 22:00"),
             ]
+
+
+class SignUpForm(UserCreationForm):
+    email = forms.EmailField(required=True)
+
+    class Meta:
+        model = User
+        fields = ["username", "email", "password1", "password2"]
