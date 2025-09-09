@@ -237,15 +237,17 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# --- SendGrid Email Settings ---
-EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
-SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY")
+# --- Upcoming Email Feature in 2nd sprint
 
-# Optional settings:
-SENDGRID_SANDBOX_MODE_IN_DEBUG = False  # True = don’t really send emails
-SENDGRID_ECHO_TO_STDOUT = False          # Print emails to console in development
-# must match the email you verified in SendGrid
-DEFAULT_FROM_EMAIL = "oliver.p.hartmann@gmail.com"
+# --- SendGrid Email Settings ---
+# EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
+# SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY")
+
+# # Optional settings:
+# SENDGRID_SANDBOX_MODE_IN_DEBUG = False  # True = don’t really send emails
+# SENDGRID_ECHO_TO_STDOUT = False          # Print emails to console in development
+# # must match the email you verified in SendGrid
+# DEFAULT_FROM_EMAIL = "oliver.p.hartmann@gmail.com"
 
 # Twilio configuration
 # TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID")

@@ -1134,3 +1134,151 @@ LINE 1: ...ile", "reservation_book_reservationbook"."email", "reservati...
 [2025-09-09 02:01:33,934] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 50918
 [2025-09-09 02:01:50,854] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 302 0
 [2025-09-09 02:01:50,858] INFO [django.server:212] "GET / HTTP/1.1" 200 3788
+[2025-09-09 02:12:15,107] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-09 02:12:18,985] INFO [django.server:212] "GET / HTTP/1.1" 200 3788
+[2025-09-09 02:12:24,379] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 302 0
+[2025-09-09 02:12:24,400] INFO [django.server:212] "GET /accounts/login/?next=/make_reservation/ HTTP/1.1" 200 4723
+[2025-09-09 02:12:27,254] INFO [django.server:212] "POST /accounts/login/?next=/make_reservation/ HTTP/1.1" 200 4886
+[2025-09-09 02:12:37,696] INFO [django.server:212] "POST /accounts/login/?next=/make_reservation/ HTTP/1.1" 302 0
+[2025-09-09 02:12:37,756] INFO [reservation_book.views:34] make_reservation called, method=GET
+[2025-09-09 02:12:38,794] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 50918
+[2025-09-09 13:37:47,774] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-09 13:38:07,463] INFO [django.server:212] "GET / HTTP/1.1" 200 3787
+[2025-09-09 13:38:07,535] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 304 0
+[2025-09-09 13:38:07,601] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-09-09 13:38:07,602] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 2906
+[2025-09-09 13:38:13,015] INFO [reservation_book.views:34] make_reservation called, method=GET
+[2025-09-09 13:38:13,904] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 50945
+[2025-09-09 14:51:00,168] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-09 14:51:03,395] INFO [django.server:212] "GET / HTTP/1.1" 200 3787
+[2025-09-09 14:51:05,906] INFO [reservation_book.views:34] make_reservation called, method=GET
+[2025-09-09 14:51:07,227] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 50945
+[2025-09-09 15:09:57,279] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-09 15:10:03,857] INFO [django.server:212] "GET / HTTP/1.1" 200 3787
+[2025-09-09 15:10:07,555] INFO [reservation_book.views:34] make_reservation called, method=GET
+[2025-09-09 15:10:08,662] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 50629
+[2025-09-09 15:12:30,463] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 302 0
+[2025-09-09 15:12:30,467] INFO [django.server:212] "GET / HTTP/1.1" 200 3788
+[2025-09-09 15:12:32,919] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 302 0
+[2025-09-09 15:12:32,955] INFO [django.server:212] "GET /accounts/login/?next=/make_reservation/ HTTP/1.1" 200 4723
+[2025-09-09 15:12:37,375] INFO [django.server:212] "POST /accounts/login/?next=/make_reservation/ HTTP/1.1" 200 4886
+[2025-09-09 15:13:00,513] INFO [django.server:212] "POST /accounts/login/?next=/make_reservation/ HTTP/1.1" 200 4886
+[2025-09-09 15:13:02,222] INFO [django.server:212] "GET /accounts/signup/ HTTP/1.1" 200 5528
+[2025-09-09 15:13:27,339] INFO [django.server:212] "POST /accounts/signup/ HTTP/1.1" 302 0
+[2025-09-09 15:13:27,394] INFO [reservation_book.views:34] make_reservation called, method=GET
+[2025-09-09 15:13:28,153] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 50633
+[2025-09-09 15:42:32,984] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-09 15:42:36,942] INFO [django.server:212] "GET / HTTP/1.1" 200 3791
+[2025-09-09 15:42:44,121] INFO [reservation_book.views:34] make_reservation called, method=GET
+[2025-09-09 15:42:45,642] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 51466
+[2025-09-09 15:53:13,260] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-09 15:53:16,909] INFO [django.server:212] "GET / HTTP/1.1" 200 3791
+[2025-09-09 15:53:18,943] INFO [reservation_book.views:34] make_reservation called, method=GET
+[2025-09-09 15:53:20,144] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 51467
+[2025-09-09 16:27:30,116] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-09 16:27:35,702] INFO [django.server:212] "GET / HTTP/1.1" 200 3791
+[2025-09-09 16:27:38,063] INFO [reservation_book.views:34] make_reservation called, method=GET
+[2025-09-09 16:27:39,105] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 51809
+[2025-09-09 16:27:57,691] INFO [reservation_book.views:34] make_reservation called, method=POST
+[2025-09-09 16:27:57,692] ERROR [reservation_book.views:117] Unexpected error in make_reservation POST: ['“” value has an invalid date format. It must be in YYYY-MM-DD format.']
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 53, in make_reservation
+    ts = TimeSlotAvailability.objects.get(calendar_date=date)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\query.py", line 623, in get
+    clone = self._chain() if self.query.combinator else self.filter(*args, **kwargs)
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\query.py", line 1436, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\query.py", line 1454, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\query.py", line 1461, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1546, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1577, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1492, in build_filter
+    condition = self.build_lookup(lookups, col, value)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1319, in build_lookup
+    lookup = lookup_class(lhs, rhs)
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\lookups.py", line 27, in __init__
+    self.rhs = self.get_prep_lookup()
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\lookups.py", line 341, in get_prep_lookup
+    return super().get_prep_lookup()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\lookups.py", line 85, in get_prep_lookup
+    return self.lhs.output_field.get_prep_value(self.rhs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\fields\__init__.py", line 1464, in get_prep_value
+    return self.to_python(value)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\fields\__init__.py", line 1430, in to_python
+    raise exceptions.ValidationError(
+django.core.exceptions.ValidationError: ['“” value has an invalid date format. It must be in YYYY-MM-DD format.']
+[2025-09-09 16:27:57,702] INFO [django.server:212] "POST /make_reservation/ HTTP/1.1" 200 114
+[2025-09-09 17:14:56,506] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-09 17:15:01,386] INFO [django.server:212] "GET / HTTP/1.1" 200 3791
+[2025-09-09 17:15:01,503] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-09-09 17:15:01,504] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 2906
+[2025-09-09 17:15:05,765] INFO [reservation_book.views:34] make_reservation called, method=GET
+[2025-09-09 17:15:06,584] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 51641
+[2025-09-09 17:15:18,621] INFO [reservation_book.views:34] make_reservation called, method=POST
+[2025-09-09 17:15:18,647] ERROR [reservation_book.views:128] Unexpected error in make_reservation POST: TableReservation() got unexpected keyword arguments: 'user'
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 76, in make_reservation
+    reservation = TableReservation.objects.create(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\query.py", line 656, in create
+    obj = self.model(**kwargs)
+          ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\base.py", line 567, in __init__
+    raise TypeError(
+TypeError: TableReservation() got unexpected keyword arguments: 'user'
+[2025-09-09 17:15:18,659] INFO [django.server:212] "POST /make_reservation/ HTTP/1.1" 200 90
+[2025-09-09 17:48:43,147] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-09 17:48:47,037] INFO [django.server:212] "GET / HTTP/1.1" 200 3791
+[2025-09-09 17:48:51,200] INFO [reservation_book.views:34] make_reservation called, method=GET
+[2025-09-09 17:48:54,629] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 51641
+[2025-09-09 17:49:07,232] INFO [reservation_book.views:34] make_reservation called, method=POST
+[2025-09-09 17:49:07,323] INFO [reservation_book.views:117] Reservation confirmed for Oliver Hartmann at 17:00–18:00 on 2025-09-09
+[2025-09-09 17:49:07,323] INFO [django.server:212] "POST /make_reservation/ HTTP/1.1" 200 28
+[2025-09-09 18:22:47,427] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-09 18:24:38,409] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\admin.py changed, reloading.
+[2025-09-09 18:24:39,034] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-09 18:24:43,499] INFO [django.server:212] "GET / HTTP/1.1" 200 3791
+[2025-09-09 18:24:47,429] INFO [reservation_book.views:35] make_reservation called, method=GET
+[2025-09-09 18:24:48,627] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 51694
+[2025-09-09 18:25:05,160] INFO [reservation_book.views:35] make_reservation called, method=POST
+[2025-09-09 18:25:05,267] INFO [reservation_book.views:118] Reservation confirmed for Oliver Hartmann at 17:00–18:00 on 2025-09-09
+[2025-09-09 18:25:05,268] INFO [django.server:212] "POST /make_reservation/ HTTP/1.1" 200 28
+[2025-09-09 19:54:58,918] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-09 19:55:02,602] INFO [django.server:212] "GET / HTTP/1.1" 200 3791
+[2025-09-09 19:55:04,873] INFO [reservation_book.views:35] make_reservation called, method=GET
+[2025-09-09 19:55:05,672] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 54435
+[2025-09-09 19:55:19,213] INFO [reservation_book.views:35] make_reservation called, method=POST
+[2025-09-09 19:55:19,323] INFO [reservation_book.views:102] Reservation confirmed for Oliver Hartmann at 17:00–18:00 on 2025-09-09
+[2025-09-09 19:55:19,324] INFO [django.server:212] "POST /make_reservation/ HTTP/1.1" 200 106
+[2025-09-09 19:56:02,433] INFO [reservation_book.views:35] make_reservation called, method=POST
+[2025-09-09 19:56:02,516] INFO [reservation_book.views:102] Reservation confirmed for Oliver Hartmann at 17:00–18:00 on 2025-09-09
+[2025-09-09 19:56:02,517] INFO [django.server:212] "POST /make_reservation/ HTTP/1.1" 200 106
+[2025-09-09 20:12:09,015] INFO [reservation_book.views:35] make_reservation called, method=POST
+[2025-09-09 20:12:09,122] INFO [reservation_book.views:102] Reservation confirmed for Oliver Hartmann at 17:00–18:00 on 2025-09-09
+[2025-09-09 20:12:09,123] INFO [django.server:212] "POST /make_reservation/ HTTP/1.1" 200 106
+[2025-09-09 20:13:01,986] INFO [reservation_book.views:35] make_reservation called, method=POST
+[2025-09-09 20:13:02,065] INFO [reservation_book.views:102] Reservation confirmed for Oliver Hartmann at 17:00–18:00 on 2025-09-09
+[2025-09-09 20:13:02,065] INFO [django.server:212] "POST /make_reservation/ HTTP/1.1" 200 106
+[2025-09-09 20:13:42,897] INFO [django.server:212] "POST /cancel_reservation/6/ HTTP/1.1" 200 28
+[2025-09-09 20:22:15,999] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader

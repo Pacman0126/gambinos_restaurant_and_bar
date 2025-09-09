@@ -49,57 +49,61 @@ from datetime import date
 #         return f"{self.first_name} {self.last_name} on {self.reservation_date}"
 
 
+# class TableReservation(models.Model):
+#     reservation_id = models.AutoField(primary_key=True)  # auto-increment ID
+
+#     # --- Customer details ---
+#     first_name = models.CharField(max_length=100, null=True)
+#     last_name = models.CharField(max_length=100, null=True)
+#     email = models.EmailField(blank=True, null=True)  # required
+#     phone = models.CharField(max_length=20, blank=True, null=True)   # optional
+#     mobile = models.CharField(max_length=20, blank=True, null=True)  # optional
+
+#     # --- Reservation details ---
+#     time_slot = models.CharField(max_length=15, default='time_slot')
+#     number_of_tables_required_by_patron = models.IntegerField(default=0)
+#     reservation_status = models.BooleanField(default=True)
+#     booked_on_date = models.DateTimeField(auto_now=True)
+
+#     # Link to availability per date
+#     timeslot_availability = models.ForeignKey(
+#         "TimeSlotAvailability",
+#         on_delete=models.CASCADE,
+#         to_field="calendar_date",
+#         db_column="reservation_date",
+#         related_name="reservations",
+#     )
+
+#     @property
+#     def reservation_date(self):
+#         return self.timeslot_availability.calendar_date
+
+#     def __str__(self):
+#         return f"Reservation {self.reservation_id} for {self.first_name} {self.last_name} on {self.reservation_date}"
 class TableReservation(models.Model):
-    reservation_id = models.AutoField(primary_key=True)  # auto-increment ID
-
-    # --- Customer details ---
-    first_name = models.CharField(max_length=100, null=True)
-    last_name = models.CharField(max_length=100, null=True)
-    email = models.EmailField(blank=True, null=True)  # required
-    phone = models.CharField(max_length=20, blank=True, null=True)   # optional
-    mobile = models.CharField(max_length=20, blank=True, null=True)  # optional
-
-    # --- Reservation details ---
-    time_slot = models.CharField(max_length=15, default='time_slot')
-    number_of_tables_required_by_patron = models.IntegerField(default=0)
-    reservation_status = models.BooleanField(default=True)
-    booked_on_date = models.DateTimeField(auto_now=True)
-
-    # Link to availability per date
+    id = models.BigAutoField(primary_key=True)
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="reservations",
+        null=True,   # allow existing rows to migrate
+        blank=True
+    )
+    time_slot = models.CharField(max_length=20)
+    number_of_tables_required_by_patron = models.PositiveIntegerField()
     timeslot_availability = models.ForeignKey(
         "TimeSlotAvailability",
-        on_delete=models.CASCADE,
-        to_field="calendar_date",
-        db_column="reservation_date",
-        related_name="reservations",
+        on_delete=models.CASCADE
     )
-
-    @property
-    def reservation_date(self):
-        return self.timeslot_availability.calendar_date
+    reservation_status = models.BooleanField(default=True)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    email = models.EmailField(blank=True, null=True)
+    phone = models.CharField(max_length=20, blank=True, null=True)
+    mobile = models.CharField(max_length=20, blank=True, null=True)
 
     def __str__(self):
-        return f"Reservation {self.reservation_id} for {self.first_name} {self.last_name} on {self.reservation_date}"
-
-
-@require_POST
-def cancel_reservation(request, reservation_id):
-    """Cancel a reservation and free up tables."""
-    try:
-        reservation = TableReservation.objects.get(pk=reservation_id)
-
-        # Update demand count (free up tables)
-        ts = reservation.timeslot_availability
-        demand_field = f"total_cust_demand_for_tables_{reservation.time_slot}"
-        setattr(ts, demand_field, getattr(ts, demand_field) -
-                reservation.number_of_tables_required_by_patron)
-        ts.save()
-
-        reservation.delete()
-        return JsonResponse({"success": True})
-
-    except TableReservation.DoesNotExist:
-        return JsonResponse({"success": False, "error": "Reservation not found."}, status=404)
+        return f"{self.first_name} {self.last_name} - {self.time_slot}"
 
 
 class TimeSlotAvailability(models.Model):
