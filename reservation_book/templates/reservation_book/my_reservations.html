@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>My Reservations</h2>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Time Slot</th>
+      <th>Tables</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in reservations %}
+    <tr>
+      <td>{{ r.timeslot_availability.calendar_date }}</td>
+      <td>{{ r.time_slot }}</td>
+      <td>{{ r.number_of_tables_required_by_patron }}</td>
+      <td>
+        <form method="post" action="{% url 'cancel_reservation' r.id %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+        </form>
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="4">No active reservations.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
