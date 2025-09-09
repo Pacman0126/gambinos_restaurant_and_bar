@@ -1120,3 +1120,17 @@ LINE 1: ...ile", "reservation_book_reservationbook"."email", "reservati...
                                                              ^
 
 [2025-09-08 18:18:10,590] ERROR [django.server:212] "GET /admin/reservation_book/reservationbook/ HTTP/1.1" 500 166115
+[2025-09-09 02:00:08,946] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-09 02:00:16,749] INFO [django.server:212] "GET / HTTP/1.1" 200 3788
+[2025-09-09 02:00:16,953] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-09-09 02:00:16,954] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 2906
+[2025-09-09 02:00:24,686] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 302 0
+[2025-09-09 02:00:24,703] INFO [django.server:212] "GET /accounts/login/?next=/make_reservation/ HTTP/1.1" 200 4723
+[2025-09-09 02:00:37,778] INFO [django.server:212] "POST /accounts/login/?next=/make_reservation/ HTTP/1.1" 200 4886
+[2025-09-09 02:00:50,653] INFO [django.server:212] "POST /accounts/login/?next=/make_reservation/ HTTP/1.1" 200 4886
+[2025-09-09 02:00:59,504] INFO [django.server:212] "GET /accounts/signup/ HTTP/1.1" 200 5528
+[2025-09-09 02:01:30,407] INFO [django.server:212] "POST /accounts/signup/ HTTP/1.1" 302 0
+[2025-09-09 02:01:30,467] INFO [reservation_book.views:34] make_reservation called, method=GET
+[2025-09-09 02:01:33,934] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 50918
+[2025-09-09 02:01:50,854] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 302 0
+[2025-09-09 02:01:50,858] INFO [django.server:212] "GET / HTTP/1.1" 200 3788

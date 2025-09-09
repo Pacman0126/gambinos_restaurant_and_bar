@@ -98,6 +98,7 @@ LOGGING = {
     },
 }
 
+LOGOUT_REDIRECT_URL = "home"
 
 # Application definition
 
@@ -247,6 +248,6 @@ SENDGRID_ECHO_TO_STDOUT = False          # Print emails to console in developmen
 DEFAULT_FROM_EMAIL = "oliver.p.hartmann@gmail.com"
 
 # Twilio configuration
-TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID")
-TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN")
-TWILIO_PHONE_NUMBER = os.environ.get("TWILIO_PHONE_NUMBER")
+# TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID")
+# TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN")
+# TWILIO_PHONE_NUMBER = os.environ.get("TWILIO_PHONE_NUMBER")
