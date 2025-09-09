@@ -120,7 +120,6 @@
     </div>
   </div>
 </div>
-
 <!-- Availability Table -->
 <h3 class="mb-3">Availability for the Next 30 Days</h3>
 <table class="table table-bordered table-hover text-center align-middle">
@@ -138,23 +137,24 @@
     {% for day in next_30_days %}
     <tr>
         <td>{{ day.calendar_date }}</td>
-        {% for slot, left in day.slots %}
+        {% for slot, left, available in day.slots %}
             <td class="text-center {% if left <= 0 %}table-danger{% else %}table-success clickable{% endif %}"
                 data-date="{{ day.calendar_date|date:'Y-m-d' }}"
                 data-slot="{{ slot }}"
                 data-left="{{ left }}">
                 {% if left > 0 %}
-                    {{ left }}
+                    {{ left }} / {{ available }}
                 {% else %}
-                    FULL
+                    FULL ({{ available }})
                 {% endif %}
             </td>
         {% endfor %}
-
     </tr>
     {% endfor %}
     </tbody>
 </table>
+
+
 {% endblock %}
 {% block js %}
 <script>

@@ -54,6 +54,14 @@ def make_reservation(request):
 
             first_name = request.POST.get("first_name", "").strip()
             last_name = request.POST.get("last_name", "").strip()
+
+            if not first_name or not last_name:
+                msg = "First name and Last name are required."
+                if is_ajax:
+                    return JsonResponse({"success": False, "error": msg})
+                messages.error(request, msg)
+                return redirect("make_reservation")
+
             phone = request.POST.get("phone", "").strip()
             mobile = request.POST.get("mobile", "").strip()
 
@@ -129,6 +137,11 @@ def make_reservation(request):
     today = timezone.now().date()
     next_30_days = []
 
+    # Get default tables from RestaurantConfig (fallback to 10 if not set)
+    from .models import RestaurantConfig
+    config = RestaurantConfig.objects.first()
+    default_tables = config.default_tables_per_slot if config else 10
+
     for i in range(30):
         day = today + timedelta(days=i)
 
@@ -136,26 +149,29 @@ def make_reservation(request):
         ts, created = TimeSlotAvailability.objects.get_or_create(
             calendar_date=day,
             defaults={
-                "number_of_tables_available_17_18": 10,
-                "number_of_tables_available_18_19": 10,
-                "number_of_tables_available_19_20": 10,
-                "number_of_tables_available_20_21": 10,
-                "number_of_tables_available_21_22": 10,
+                "number_of_tables_available_17_18": default_tables,
+                "number_of_tables_available_18_19": default_tables,
+                "number_of_tables_available_19_20": default_tables,
+                "number_of_tables_available_20_21": default_tables,
+                "number_of_tables_available_21_22": default_tables,
             },
         )
 
-        # Calculate remaining tables per slot
+        # Calculate remaining tables per slot using your helper methods
+        # slots = [
+        #     ("17_18", ts.left_for("17_18")),
+        #     ("18_19", ts.left_for("18_19")),
+        #     ("19_20", ts.left_for("19_20")),
+        #     ("20_21", ts.left_for("20_21")),
+        #     ("21_22", ts.left_for("21_22")),
+        # ]
+
         slots = [
-            ("17_18", ts.number_of_tables_available_17_18 -
-             ts.total_cust_demand_for_tables_17_18),
-            ("18_19", ts.number_of_tables_available_18_19 -
-             ts.total_cust_demand_for_tables_18_19),
-            ("19_20", ts.number_of_tables_available_19_20 -
-             ts.total_cust_demand_for_tables_19_20),
-            ("20_21", ts.number_of_tables_available_20_21 -
-             ts.total_cust_demand_for_tables_20_21),
-            ("21_22", ts.number_of_tables_available_21_22 -
-             ts.total_cust_demand_for_tables_21_22),
+            ("17_18", ts.left_for("17_18"), ts.number_of_tables_available_17_18),
+            ("18_19", ts.left_for("18_19"), ts.number_of_tables_available_18_19),
+            ("19_20", ts.left_for("19_20"), ts.number_of_tables_available_19_20),
+            ("20_21", ts.left_for("20_21"), ts.number_of_tables_available_20_21),
+            ("21_22", ts.left_for("21_22"), ts.number_of_tables_available_21_22),
         ]
 
         ts.slots = slots
@@ -214,8 +230,8 @@ def cancel_reservation(request, reservation_id):
 
         # recompute tables left (availability - demand)
         available_field = f"number_of_tables_available_{slot}"
-        left = getattr(ts, available_field) - getattr(ts, demand_field)
-
+        # left = getattr(ts, available_field) - getattr(ts, demand_field)
+        left = ts.left_for(slot)
         if request.headers.get("x-requested-with") == "XMLHttpRequest":
             return JsonResponse({"success": True, "left": left})
 
@@ -228,3 +244,13 @@ def cancel_reservation(request, reservation_id):
             return JsonResponse({"success": False, "error": str(e)})
         messages.error(request, f"Error cancelling reservation: {e}")
         return redirect("make_reservation")
+
+
+@login_required
+def my_reservations(request):
+    reservations = TableReservation.objects.filter(
+        user=request.user, reservation_status=True
+    ).order_by("timeslot_availability__calendar_date", "time_slot")
+    return render(request, "reservation_book/my_reservations.html", {
+        "reservations": reservations
+    })
