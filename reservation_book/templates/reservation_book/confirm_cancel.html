@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+  <h3>Cancel Reservation</h3>
+  <p>Are you sure you want to cancel your reservation for 
+     <strong>{{ reservation.timeslot_availability.calendar_date }}</strong> at 
+     <strong>{{ reservation.get_time_slot_display }}</strong>?</p>
+
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Yes, Cancel</button>
+    <a href="{% url 'make_reservation' %}" class="btn btn-secondary">No, Go Back</a>
+  </form>
+</div>
+{% endblock %}
