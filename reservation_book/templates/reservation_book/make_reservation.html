@@ -5,55 +5,7 @@
 {% block content %}
 
 
-<!-- Reservation Form (wrapped around modal for submission) -->
-{% comment %} <form method="post" id="reservationForm" action="{% url 'make_reservation' %}">
-    {% csrf_token %}
-    <input type="hidden" name="reservation_date" id="reservation_date">
-    <input type="hidden" name="time_slot" id="time_slot">
-    <input type="hidden" name="number_of_tables_required_by_patron" id="tables_needed" value="1">
 
-    <!-- Customer Info Modal -->
-    <div class="modal fade" id="customerModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-dark text-white">
-                    <h5 class="modal-title">Enter Reservation Details</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">First Name</label>
-                        <input type="text" class="form-control" name="first_name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Last Name</label>
-                        <input type="text" class="form-control" name="last_name" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Email <span class="text-danger">*</span></label>
-                        <input type="email" class="form-control" name="email" required>
-                        <small class="form-text text-muted text-danger">⚠️ Please check your spam folder for the confirmation email.</small>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Phone (optional)</label>
-                        <input type="text" class="form-control" name="phone" placeholder="Phone (Landline)">
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Mobile (optional)</label>
-                        <input type="text" class="form-control" name="mobile" placeholder="Mobile">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" id="confirmBtn" class="btn btn-success">Confirm Reservation</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</form> {% endcomment %}
 <!-- Reservation Modal -->
 <div class="modal fade" id="customerModal" tabindex="-1" aria-labelledby="customerModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -136,16 +88,16 @@
     <tbody>
     {% for day in next_30_days %}
     <tr>
-        <td>{{ day.calendar_date }}</td>
-        {% for slot, left, available in day.slots %}
+        <td class="table-secondary fw-bold">{{ day.calendar_date }}</td>
+        {% for slot, left, total in day.slots %}
             <td class="text-center {% if left <= 0 %}table-danger{% else %}table-success clickable{% endif %}"
                 data-date="{{ day.calendar_date|date:'Y-m-d' }}"
                 data-slot="{{ slot }}"
                 data-left="{{ left }}">
                 {% if left > 0 %}
-                    {{ left }} / {{ available }}
+                    {{ left }} / {{ total }}
                 {% else %}
-                    FULL ({{ available }})
+                    FULL
                 {% endif %}
             </td>
         {% endfor %}

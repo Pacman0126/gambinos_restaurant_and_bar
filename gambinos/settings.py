@@ -21,8 +21,7 @@ if os.path.isfile('env.py'):
     import env
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-# BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-# TEMPLATES_DIR = os.path.join(BASE_DIR, 'reservation_book/templates/')
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 ENV_PATH = BASE_DIR / "env.py"
@@ -34,6 +33,10 @@ TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 SITE_ID = 1
 
 LOGIN_REDIRECT_URL = '/admin/'
+
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [BASE_DIR / "static"]
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -152,20 +155,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'gambinos.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-# DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': BASE_DIR / 'db.sqlite3',
-#    }
-# }
-
-# DATABASES = {
-#    'default': dj_database_url.parse(os.environ.get("DATABASE_URL"))
-# }
-
 DATABASES = {
     "default": dj_database_url.config(
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",  # fallback for dev
@@ -173,20 +162,7 @@ DATABASES = {
         ssl_require=True  # Neon + Heroku both need SSL
     )
 }
-# if os.getenv("DJANGO_PRODUCTION"):  # Use this flag in Heroku/Neon
-#     DATABASES = {
-#         "default": dj_database_url.config(
-#             conn_max_age=600,
-#             ssl_require=True  # required for Neon/Heroku
-#         )
-#     }
-# else:  # Local development → SQLite
-#     DATABASES = {
-#         "default": {
-#             "ENGINE": "django.db.backends.sqlite3",
-#             "NAME": BASE_DIR / "db.sqlite3",
-#         }
-#     }
+
 
 CSRF_TRUSTED_ORIGINS = [
     "https://*.codeinstitute-ide.net/",

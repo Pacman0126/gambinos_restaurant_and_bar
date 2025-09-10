@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-banner text-white text-center py-5" style="background: url('{% static 'images/hero/hero1.jpg' %}') center/cover no-repeat;">
+    <div class="overlay d-flex justify-content-center align-items-center">
+        <h1 class="display-4 fw-bold">Our Menu</h1>
+    </div>
+</section>
+
+<!-- Menu Section -->
+<div class="container py-5 text-white">
+
+    <!-- Starters -->
+    <div class="row mb-5">
+        <h2 class="text-center mb-4">Starters</h2>
+        <div class="col-md-4 mb-4">
+            <div class="card bg-dark text-white h-100">
+                <img src="{% static 'images/obny/dishes/Calamari.jpg' %}" class="card-img-top" alt="Fried Calamari">
+                <div class="card-body">
+                    <h5 class="card-title">Fried Calamari</h5>
+                    <p class="card-text">Crispy golden calamari, marinara sauce. €36</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card bg-dark text-white h-100">
+                <img src="{% static 'images/obny/dishes/Aranchini.jpg' %}" class="card-img-top" alt="Arancini">
+                <div class="card-body">
+                    <h5 class="card-title">Arancini</h5>
+                    <p class="card-text">Risotto croquettes with cheese and herbs. €30</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card bg-dark text-white h-100">
+                <img src="{% static 'images/obny/dishes/Beet-Salad.jpg' %}" class="card-img-top" alt="Beet Salad">
+                <div class="card-body">
+                    <h5 class="card-title">Beet Salad</h5>
+                    <p class="card-text">Roasted beets, goat cheese, candied walnuts. €33</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pasta -->
+    <div class="row mb-5">
+        <h2 class="text-center mb-4">Pasta</h2>
+        <div class="col-md-4 mb-4">
+            <div class="card bg-dark text-white h-100">
+                <img src="{% static 'images/obny/dishes/Fresh-Fettuchino-w-jalf.jpg' %}" class="card-img-top" alt="Fettuccine Bolognese">
+                <div class="card-body">
+                    <h5 class="card-title">Fettuccine Bolognese</h5>
+                    <p class="card-text">Handmade pasta, rich veal & beef ragu. €48</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card bg-dark text-white h-100">
+                <img src="{% static 'images/obny/dishes/Black-Maccoroni-w-Lobster-Tail.jpg' %}" class="card-img-top" alt="Black Linguine">
+                <div class="card-body">
+                    <h5 class="card-title">Black Linguine with Lobster</h5>
+                    <p class="card-text">Squid ink pasta, Maine lobster, light tomato sauce. €90</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card bg-dark text-white h-100">
+                <img src="{% static 'images/obny/dishes/Spinach-Rossoto.jpg' %}" class="card-img-top" alt="Risotto">
+                <div class="card-body">
+                    <h5 class="card-title">Risotto ai Funghi</h5>
+                    <p class="card-text">Creamy risotto, wild mushrooms, truffle oil. €54</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mains -->
+    <div class="row mb-5">
+        <h2 class="text-center mb-4">Mains</h2>
+        <div class="col-md-4 mb-4">
+            <div class="card bg-dark text-white h-100">
+                <img src="{% static 'images/obny/dishes/Seared-Octopus.jpg' %}" class="card-img-top" alt="Seared Octopus">
+                <div class="card-body">
+                    <h5 class="card-title">Seared Octopus</h5>
+                    <p class="card-text">Tender octopus, smoked paprika, potatoes. €66</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card bg-dark text-white h-100">
+                <img src="{% static 'images/obny/dishes/Cod-Cabunata.jpg' %}" class="card-img-top" alt="Branzino">
+                <div class="card-body">
+                    <h5 class="card-title">Branzino al Forno</h5>
+                    <p class="card-text">Whole roasted Mediterranean sea bass. €78</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card bg-dark text-white h-100">
+                <img src="{% static 'images/obny/dishes/Seafood-Special-lodge.jpg' %}" class="card-img-top" alt="Seafood Special">
+                <div class="card-body">
+                    <h5 class="card-title">Seafood Special</h5>
+                    <p class="card-text">Daily catch, clams, shrimp, white wine sauce. €99</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Desserts -->
+    <div class="row mb-5">
+        <h2 class="text-center mb-4">Desserts</h2>
+        <div class="col-md-6 mb-4">
+            <div class="card bg-dark text-white h-100">
+                <img src="{% static 'images/obny/dishes/Tiramaso.jpg' %}" class="card-img-top" alt="Tiramisu">
+                <div class="card-body">
+                    <h5 class="card-title">Tiramisu</h5>
+                    <p class="card-text">Mascarpone, espresso, ladyfingers, cocoa. €27</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card bg-dark text-white h-100">
+                <img src="{% static 'images/obny/dishes/OB-Apple-Strudel.jpg' %}" class="card-img-top" alt="Apple Strudel">
+                <div class="card-body">
+                    <h5 class="card-title">Apple Strudel</h5>
+                    <p class="card-text">Warm apple strudel, vanilla ice cream. €30</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
