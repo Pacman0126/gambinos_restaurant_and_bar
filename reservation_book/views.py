@@ -254,3 +254,7 @@ def my_reservations(request):
     return render(request, "reservation_book/my_reservations.html", {
         "reservations": reservations
     })
+
+
+def menu(request):
+    return render(request, "reservation_book/menu.html")
