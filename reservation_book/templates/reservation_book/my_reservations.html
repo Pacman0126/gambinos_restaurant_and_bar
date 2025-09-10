@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
 <h2>My Reservations</h2>
-<table class="table">
-  <thead>
+<table class="table table-bordered table-hover table-striped text-center align-middle">
+  <thead class="table-dark">
     <tr>
       <th>Date</th>
       <th>Time Slot</th>
@@ -12,7 +12,7 @@
   </thead>
   <tbody>
     {% for r in reservations %}
-    <tr>
+    <tr class="table-secondary fw-bold">
       <td>{{ r.timeslot_availability.calendar_date }}</td>
       <td>{{ r.time_slot }}</td>
       <td>{{ r.number_of_tables_required_by_patron }}</td>
@@ -25,7 +25,7 @@
     </tr>
     {% empty %}
     <tr>
-      <td colspan="4">No active reservations.</td>
+      <td colspan="4" class="text-center">No active reservations.</td>
     </tr>
     {% endfor %}
   </tbody>
