@@ -4,7 +4,7 @@
 body {
   background: url("../images/hero/brown-concrete-wall-with-scratches-vector.jpg") no-repeat center center fixed;
   background-size: cover;
-  color: #f8f9fa; /* light text for contrast */
+  
   font-family: 'Lato', sans-serif;
 }
 
@@ -133,3 +133,73 @@ a:hover, .post-link:hover {
     margin: 0.3rem 0;
     font-size: 0.9rem;
 }
+
+/* Reset modal to Bootstrap defaults */
+.modal-content {
+  background-color: #fff !important;
+  color: #212529 !important; /* Bootstrap's default text color */
+}
+
+.modal-header,
+.modal-body,
+.modal-footer {
+  background-color: #fff !important;
+  color: #212529 !important;
+}
+
+/* Fix Bootstrap modal text and form fields */
+.modal-content {
+  background-color: #fff !important;
+  color: #212529 !important; /* Bootstrap default text color */
+}
+
+.modal-content label,
+.modal-content h5,
+.modal-content .form-label,
+.modal-content .form-control,
+.modal-content .form-select,
+.modal-content option {
+  color: #212529 !important;
+}
+
+.modal-content input,
+.modal-content select,
+.modal-content textarea {
+  background-color: #fff !important;
+  color: #212529 !important;
+}
+
+/* =====================
+   Fix Reservation Modal
+===================== */
+#customerModal .modal-content {
+  background-color: #fff !important;
+  color: #212529 !important;
+}
+
+#customerModal .modal-header,
+#customerModal .modal-body,
+#customerModal .modal-footer {
+  background-color: #fff !important;
+  color: #212529 !important;
+}
+
+#customerModal label,
+#customerModal h5,
+#customerModal .form-label {
+  color: #212529 !important;
+}
+
+#customerModal input,
+#customerModal select,
+#customerModal textarea {
+  background-color: #fff !important;
+  color: #212529 !important;
+  border: 1px solid #ced4da !important;
+}
+
+#customerModal option {
+  color: #212529 !important;
+}
+
+
