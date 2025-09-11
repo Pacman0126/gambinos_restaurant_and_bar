@@ -91,20 +91,17 @@ def make_reservation(request):
             )
 
             # --- Update demand ---
-            if slot == "17_18":
-                ts.total_cust_demand_for_tables_17_18 += tables_needed
-            elif slot == "18_19":
-                ts.total_cust_demand_for_tables_18_19 += tables_needed
-            elif slot == "19_20":
-                ts.total_cust_demand_for_tables_19_20 += tables_needed
-            elif slot == "20_21":
-                ts.total_cust_demand_for_tables_20_21 += tables_needed
-            elif slot == "21_22":
-                ts.total_cust_demand_for_tables_21_22 += tables_needed
+            setattr(
+                ts,
+                f"total_cust_demand_for_tables_{slot}",
+                slot_demand + tables_needed
+            )
             ts.save()
 
-            left = slot_available - \
-                getattr(ts, f"total_cust_demand_for_tables_{slot}")
+            # --- Prepare counts ---
+            new_demand = getattr(ts, f"total_cust_demand_for_tables_{slot}")
+            available_total = getattr(ts, f"number_of_tables_available_{slot}")
+            left = available_total - new_demand
             pretty_slot = SLOT_LABELS.get(slot, slot)
 
             logger.info(
@@ -114,10 +111,12 @@ def make_reservation(request):
             if is_ajax:
                 return JsonResponse({
                     "success": True,
-                    "left": left,
                     "reservation_id": reservation.id,
                     "date": str(date),
-                    "pretty_slot": pretty_slot
+                    "pretty_slot": pretty_slot,
+                    "demand": new_demand,        # send updated demand
+                    "available": available_total,  # total available
+                    "left": left                  # remaining
                 })
 
             messages.success(request, "Reservation confirmed!")
@@ -157,22 +156,19 @@ def make_reservation(request):
             },
         )
 
-        # Calculate remaining tables per slot using your helper methods
-        # slots = [
-        #     ("17_18", ts.left_for("17_18")),
-        #     ("18_19", ts.left_for("18_19")),
-        #     ("19_20", ts.left_for("19_20")),
-        #     ("20_21", ts.left_for("20_21")),
-        #     ("21_22", ts.left_for("21_22")),
-        # ]
+        slots = []
+        for slot_key, label in SLOT_LABELS.items():
+            demand = getattr(ts, f"total_cust_demand_for_tables_{slot_key}")
+            available = getattr(ts, f"number_of_tables_available_{slot_key}")
+            remaining = max(available - demand, 0)  # precompute remaining
 
-        slots = [
-            ("17_18", ts.left_for("17_18"), ts.number_of_tables_available_17_18),
-            ("18_19", ts.left_for("18_19"), ts.number_of_tables_available_18_19),
-            ("19_20", ts.left_for("19_20"), ts.number_of_tables_available_19_20),
-            ("20_21", ts.left_for("20_21"), ts.number_of_tables_available_20_21),
-            ("21_22", ts.left_for("21_22"), ts.number_of_tables_available_21_22),
-        ]
+            slots.append({
+                "key": slot_key,
+                "label": label,
+                "demand": demand,
+                "available": available,
+                "remaining": remaining,
+            })
 
         ts.slots = slots
         next_30_days.append(ts)

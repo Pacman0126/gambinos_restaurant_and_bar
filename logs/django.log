@@ -2293,3 +2293,315 @@ NameError: name 'timezone' is not defined
 [2025-09-10 20:02:31,638] INFO [django.server:212] "GET /admin/jsi18n/ HTTP/1.1" 200 3343
 [2025-09-10 20:41:15,241] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\gambinos\settings.py changed, reloading.
 [2025-09-10 20:41:16,096] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-10 21:02:50,321] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-10 21:02:53,977] INFO [django.server:212] "GET / HTTP/1.1" 200 5859
+[2025-09-10 21:02:54,019] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-09-10 21:02:54,020] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 2563
+[2025-09-10 21:02:54,039] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-09-10 21:02:54,041] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-09-10 21:02:54,353] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2025-09-10 21:03:00,591] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 4940
+[2025-09-10 21:52:05,136] INFO [reservation_book.views:35] make_reservation called, method=GET
+[2025-09-10 21:52:06,019] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 56360
+[2025-09-10 21:52:06,041] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 304 0
+[2025-09-10 21:52:06,058] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-09-10 21:52:34,150] INFO [reservation_book.views:35] make_reservation called, method=GET
+[2025-09-10 21:52:35,798] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 56360
+[2025-09-10 21:52:35,813] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 2563
+[2025-09-10 21:52:36,178] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2025-09-10 21:52:36,212] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-09-10 21:52:36,213] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 179
+[2025-09-10 22:03:50,185] INFO [reservation_book.views:35] make_reservation called, method=GET
+[2025-09-10 22:03:51,630] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 56360
+[2025-09-10 22:03:51,651] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 2563
+[2025-09-10 22:03:51,925] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2025-09-10 22:03:52,462] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-09-10 22:03:52,463] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 179
+[2025-09-10 22:14:42,127] INFO [reservation_book.views:35] make_reservation called, method=GET
+[2025-09-10 22:14:43,240] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 56360
+[2025-09-10 22:14:43,260] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 2563
+[2025-09-10 22:14:43,592] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2025-09-10 22:14:43,620] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-09-10 22:14:43,621] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 179
+[2025-09-10 22:17:03,458] INFO [reservation_book.views:35] make_reservation called, method=GET
+[2025-09-10 22:17:04,526] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 56407
+[2025-09-10 22:17:04,546] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 2563
+[2025-09-10 22:17:04,894] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2025-09-10 22:17:05,877] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-09-10 22:17:05,877] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 179
+[2025-09-10 22:25:46,257] INFO [reservation_book.views:35] make_reservation called, method=GET
+[2025-09-10 22:25:47,140] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 56360
+[2025-09-10 22:25:47,159] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 2563
+[2025-09-10 22:25:47,435] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2025-09-10 22:25:47,590] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-09-10 22:25:47,591] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 179
+[2025-09-10 22:35:23,149] INFO [reservation_book.views:35] make_reservation called, method=GET
+[2025-09-10 22:35:24,005] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 56360
+[2025-09-10 22:35:24,029] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 2563
+[2025-09-10 22:35:24,637] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2025-09-10 22:35:24,675] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-09-10 22:35:24,676] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 179
+[2025-09-10 22:35:52,447] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-10 22:35:56,213] INFO [django.server:212] "GET / HTTP/1.1" 200 5859
+[2025-09-10 22:35:56,259] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-09-10 22:35:56,359] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-09-10 22:35:56,360] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-09-10 22:36:00,108] INFO [reservation_book.views:35] make_reservation called, method=GET
+[2025-09-10 22:36:01,502] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 56360
+[2025-09-10 22:40:53,984] INFO [reservation_book.views:35] make_reservation called, method=GET
+[2025-09-10 22:40:54,996] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 56360
+[2025-09-10 22:40:55,022] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 2563
+[2025-09-10 22:40:55,615] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2025-09-10 22:40:55,662] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-09-10 22:40:55,664] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 179
+[2025-09-10 22:43:36,329] INFO [reservation_book.views:35] make_reservation called, method=GET
+[2025-09-10 22:43:37,199] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 56360
+[2025-09-10 22:43:37,216] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 2563
+[2025-09-10 22:43:37,607] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2025-09-10 22:43:37,668] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-09-10 22:43:37,669] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 179
+[2025-09-10 22:47:41,250] INFO [reservation_book.views:35] make_reservation called, method=GET
+[2025-09-10 22:47:42,944] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 56360
+[2025-09-10 22:47:42,965] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 2563
+[2025-09-10 22:47:43,426] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2025-09-10 22:47:43,487] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-09-10 22:47:43,488] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 179
+[2025-09-10 22:53:16,007] INFO [reservation_book.views:35] make_reservation called, method=GET
+[2025-09-10 22:53:16,915] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 56360
+[2025-09-10 22:53:16,939] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 2563
+[2025-09-10 22:53:17,634] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2025-09-10 22:53:17,674] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-09-10 22:53:17,677] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 179
+[2025-09-10 22:54:45,920] INFO [reservation_book.views:35] make_reservation called, method=GET
+[2025-09-10 22:54:46,775] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 56284
+[2025-09-10 22:54:47,110] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-09-10 22:54:47,111] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 179
+[2025-09-10 22:55:01,069] INFO [reservation_book.views:35] make_reservation called, method=GET
+[2025-09-10 22:55:02,717] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 56284
+[2025-09-10 22:55:03,145] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 4864
+[2025-09-10 22:55:05,437] INFO [django.server:212] "GET / HTTP/1.1" 200 5783
+[2025-09-10 22:55:05,451] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-09-10 22:55:05,458] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-09-10 22:55:05,459] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-09-10 22:59:19,669] INFO [django.server:212] "GET / HTTP/1.1" 200 5952
+[2025-09-10 22:59:19,698] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 200 2099793
+[2025-09-10 22:59:20,191] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 200 4346620
+[2025-09-10 22:59:20,215] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 200 5238762
+[2025-09-10 22:59:20,497] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2025-09-10 22:59:20,533] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-09-10 22:59:20,533] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 179
+[2025-09-10 22:59:31,774] INFO [reservation_book.views:35] make_reservation called, method=GET
+[2025-09-10 22:59:32,619] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 56453
+[2025-09-10 23:01:13,060] INFO [reservation_book.views:35] make_reservation called, method=POST
+[2025-09-10 23:01:13,167] INFO [reservation_book.views:110] Reservation confirmed for Oliver Hartmann at 18:00–19:00 on 2025-09-10
+[2025-09-10 23:01:13,174] INFO [django.server:212] "POST /make_reservation/ HTTP/1.1" 200 108
+[2025-09-10 23:25:16,536] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-09-10 23:25:17,220] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-10 23:26:36,276] INFO [reservation_book.views:35] make_reservation called, method=GET
+[2025-09-10 23:26:37,431] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 15680
+[2025-09-10 23:26:37,725] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2025-09-10 23:26:37,859] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-09-10 23:26:37,860] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 179
+[2025-09-10 23:35:31,476] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-09-10 23:35:32,360] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-10 23:41:27,934] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-09-10 23:41:28,758] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-10 23:43:40,740] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-09-10 23:43:41,438] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-10 23:44:01,064] INFO [reservation_book.views:35] make_reservation called, method=GET
+[2025-09-10 23:44:01,962] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 22742
+[2025-09-10 23:44:02,410] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2025-09-10 23:44:02,455] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-09-10 23:44:02,455] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 179
+[2025-09-10 23:49:54,959] INFO [reservation_book.views:35] make_reservation called, method=GET
+[2025-09-10 23:49:55,804] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 70681
+[2025-09-10 23:49:58,572] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2025-09-10 23:49:58,695] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-09-10 23:49:58,696] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 179
+[2025-09-11 00:16:35,501] INFO [reservation_book.views:35] make_reservation called, method=GET
+[2025-09-11 00:16:36,724] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 71695
+[2025-09-11 00:16:37,024] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2025-09-11 00:16:37,052] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-09-11 00:16:37,053] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 179
+[2025-09-11 00:38:04,029] INFO [reservation_book.views:35] make_reservation called, method=GET
+[2025-09-11 00:38:05,345] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 75414
+[2025-09-11 00:38:05,628] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2025-09-11 00:38:05,660] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-09-11 00:38:05,660] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 179
+[2025-09-11 00:39:10,221] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-11 00:39:13,772] INFO [django.server:212] "GET / HTTP/1.1" 200 5952
+[2025-09-11 00:39:13,814] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-09-11 00:39:13,883] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-09-11 00:39:13,886] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-09-11 00:39:13,886] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-09-11 00:39:17,435] INFO [reservation_book.views:35] make_reservation called, method=GET
+[2025-09-11 00:39:19,461] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 75414
+[2025-09-11 00:40:51,491] WARNING [django.request:246] Not Found: /.well-known/appspecific/com.chrome.devtools.json
+[2025-09-11 00:40:51,492] WARNING [django.server:212] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 179
+[2025-09-11 00:41:00,352] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2025-09-11 00:42:18,997] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-09-11 00:47:12,273] INFO [reservation_book.views:35] make_reservation called, method=GET
+[2025-09-11 00:47:13,185] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 75414
+[2025-09-11 00:47:13,231] WARNING [django.request:246] Not Found: /.well-known/appspecific/com.chrome.devtools.json
+[2025-09-11 00:47:13,232] WARNING [django.server:212] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 179
+[2025-09-11 00:47:13,876] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2025-09-11 00:47:13,968] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-09-11 00:47:13,969] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 179
+[2025-09-11 00:59:43,606] INFO [reservation_book.views:35] make_reservation called, method=GET
+[2025-09-11 00:59:44,707] ERROR [django.request:246] Internal Server Error: /make_reservation/
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 174, in make_reservation
+    return render(request, "reservation_book/make_reservation.html", {
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\backends\django.py", line 33, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\engine.py", line 175, in get_template
+    template, origin = self.find_template(template_name)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\engine.py", line 157, in find_template
+    template = loader.get_template(name, skip=skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loaders\cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loaders\base.py", line 28, in get_template
+    return Template(
+           ^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 200, in compile_nodelist
+    return parser.parse()
+           ^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 513, in parse
+    raise self.error(token, e)
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 511, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 293, in do_extends
+    nodelist = parser.parse()
+               ^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 513, in parse
+    raise self.error(token, e)
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 511, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 232, in do_block
+    nodelist = parser.parse(("endblock",))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 513, in parse
+    raise self.error(token, e)
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 511, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 853, in do_for
+    nodelist_loop = parser.parse(
+                    ^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 513, in parse
+    raise self.error(token, e)
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 511, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 853, in do_for
+    nodelist_loop = parser.parse(
+                    ^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 484, in parse
+    raise self.error(token, e)
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 482, in parse
+    filter_expression = self.compile_filter(token.contents)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 600, in compile_filter
+    return FilterExpression(token, self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 699, in __init__
+    self.args_check(filter_name, filter_func, args)
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 761, in args_check
+    raise TemplateSyntaxError(
+django.template.exceptions.TemplateSyntaxError: add requires 2 arguments, 1 provided
+[2025-09-11 00:59:44,729] ERROR [django.server:212] "GET /make_reservation/ HTTP/1.1" 500 145
+[2025-09-11 00:59:44,753] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-09-11 00:59:44,754] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 179
+[2025-09-11 01:12:23,728] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-09-11 01:12:24,573] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-11 01:13:50,143] INFO [reservation_book.views:35] make_reservation called, method=GET
+[2025-09-11 01:13:51,861] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 73361
+[2025-09-11 01:13:52,166] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2025-09-11 01:13:52,233] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-09-11 01:13:52,233] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 179
+[2025-09-11 01:21:28,293] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-11 01:21:32,532] INFO [django.server:212] "GET / HTTP/1.1" 200 5952
+[2025-09-11 01:21:32,572] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-09-11 01:21:32,600] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-09-11 01:21:32,600] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-09-11 01:21:32,602] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-09-11 01:21:36,354] INFO [reservation_book.views:35] make_reservation called, method=GET
+[2025-09-11 01:21:37,223] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 73601
+[2025-09-11 01:21:52,227] INFO [reservation_book.views:35] make_reservation called, method=POST
+[2025-09-11 01:21:52,330] INFO [reservation_book.views:110] Reservation confirmed for Oliver Hartmann at 18:00–19:00 on 2025-09-12
+[2025-09-11 01:21:52,330] INFO [django.server:212] "POST /make_reservation/ HTTP/1.1" 200 108
+[2025-09-11 01:45:02,379] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-09-11 01:45:02,697] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-09-11 01:45:03,091] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-11 01:45:03,490] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-09-11 01:45:07,414] INFO [django.server:212] "GET / HTTP/1.1" 200 5952
+[2025-09-11 01:45:07,451] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-09-11 01:45:07,474] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-09-11 01:45:07,476] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-09-11 01:45:07,477] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-09-11 01:45:11,100] INFO [reservation_book.views:35] make_reservation called, method=GET
+[2025-09-11 01:45:11,949] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 73489
+[2025-09-11 01:45:33,954] INFO [reservation_book.views:35] make_reservation called, method=POST
+[2025-09-11 01:45:34,046] INFO [reservation_book.views:107] Reservation confirmed for Oliver Hartmann at 17:00–18:00 on 2025-09-11
+[2025-09-11 01:45:34,046] INFO [django.server:212] "POST /make_reservation/ HTTP/1.1" 200 138
+[2025-09-11 01:48:25,423] INFO [reservation_book.views:35] make_reservation called, method=POST
+[2025-09-11 01:48:25,500] INFO [reservation_book.views:107] Reservation confirmed for Oliver Hartmann at 18:00–19:00 on 2025-09-11
+[2025-09-11 01:48:25,501] INFO [django.server:212] "POST /make_reservation/ HTTP/1.1" 200 138
+[2025-09-11 01:49:46,890] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 6773
+[2025-09-11 01:49:46,907] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-09-11 01:50:56,115] INFO [django.server:212] "GET / HTTP/1.1" 200 5952
+[2025-09-11 01:50:56,134] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-09-11 01:50:56,155] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-09-11 01:50:56,156] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-09-11 01:50:56,156] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-09-11 01:50:59,954] INFO [django.server:212] "GET /admin/ HTTP/1.1" 200 12174
+[2025-09-11 01:50:59,969] INFO [django.server:212] "GET /static/admin/css/dark_mode.css HTTP/1.1" 304 0
+[2025-09-11 01:50:59,970] INFO [django.server:212] "GET /static/admin/js/theme.js HTTP/1.1" 304 0
+[2025-09-11 01:50:59,970] INFO [django.server:212] "GET /static/admin/css/base.css HTTP/1.1" 304 0
+[2025-09-11 01:50:59,975] INFO [django.server:212] "GET /static/admin/css/nav_sidebar.css HTTP/1.1" 304 0
+[2025-09-11 01:50:59,978] INFO [django.server:212] "GET /static/admin/css/dashboard.css HTTP/1.1" 304 0
+[2025-09-11 01:50:59,978] INFO [django.server:212] "GET /static/admin/css/responsive.css HTTP/1.1" 304 0
+[2025-09-11 01:50:59,980] INFO [django.server:212] "GET /static/admin/js/nav_sidebar.js HTTP/1.1" 304 0
+[2025-09-11 01:50:59,987] INFO [django.server:212] "GET /static/admin/img/icon-addlink.svg HTTP/1.1" 304 0
+[2025-09-11 01:50:59,987] INFO [django.server:212] "GET /static/admin/img/icon-changelink.svg HTTP/1.1" 304 0
+[2025-09-11 01:50:59,988] INFO [django.server:212] "GET /static/admin/img/icon-deletelink.svg HTTP/1.1" 200 392
+[2025-09-11 01:51:09,943] INFO [django.server:212] "GET /admin/reservation_book/restaurantconfig/ HTTP/1.1" 200 11077
+[2025-09-11 01:51:09,975] INFO [django.server:212] "GET /static/admin/js/core.js HTTP/1.1" 200 5682
+[2025-09-11 01:51:09,977] INFO [django.server:212] "GET /static/admin/js/jquery.init.js HTTP/1.1" 200 347
+[2025-09-11 01:51:09,980] INFO [django.server:212] "GET /static/admin/js/actions.js HTTP/1.1" 200 7872
+[2025-09-11 01:51:09,982] INFO [django.server:212] "GET /static/admin/js/vendor/jquery/jquery.min.js HTTP/1.1" 200 89795
+[2025-09-11 01:51:09,982] INFO [django.server:212] "GET /static/admin/js/vendor/xregexp/xregexp.min.js HTTP/1.1" 200 125266
+[2025-09-11 01:51:09,982] INFO [django.server:212] "GET /static/admin/js/prepopulate.js HTTP/1.1" 200 1531
+[2025-09-11 01:51:09,985] INFO [django.server:212] "GET /static/admin/js/urlify.js HTTP/1.1" 200 7887
+[2025-09-11 01:51:09,985] INFO [django.server:212] "GET /static/admin/js/admin/RelatedObjectLookups.js HTTP/1.1" 200 8943
+[2025-09-11 01:51:09,989] INFO [django.server:212] "GET /static/admin/js/filters.js HTTP/1.1" 200 978
+[2025-09-11 01:51:10,293] INFO [django.server:212] "GET /admin/jsi18n/ HTTP/1.1" 200 3343
+[2025-09-11 01:51:10,311] INFO [django.server:212] "GET /static/admin/img/tooltag-add.svg HTTP/1.1" 200 331

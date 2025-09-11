@@ -1,10 +1,7 @@
-{%extends "base.html" %}
-
+{% extends "base.html" %}
 {% load static %}
 
 {% block content %}
-
-
 
 <!-- Reservation Modal -->
 <div class="modal fade" id="customerModal" tabindex="-1" aria-labelledby="customerModalLabel" aria-hidden="true">
@@ -13,8 +10,8 @@
       <form method="post" id="reservationForm" action="{% url 'make_reservation' %}">
         {% csrf_token %}
         <div class="modal-header">
-        <h5 class="modal-title" id="customerModalLabel">Confirm Your Reservation</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <h5 class="modal-title" id="customerModalLabel">Confirm Your Reservation</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
 
         <div class="modal-body">
@@ -72,45 +69,55 @@
     </div>
   </div>
 </div>
+
 <!-- Availability Table -->
 <h3 class="mb-3">Availability for the Next 30 Days</h3>
-<table class="table table-bordered table-hover text-center align-middle">
+<div class="table-responsive">
+  <table class="table table-bordered table-hover table-striped text-center align-middle bg-white">
     <thead class="table-dark">
-        <tr>
-            <th>Date</th>
-            <th>17:00 - 18:00</th>
-            <th>18:00 - 19:00</th>
-            <th>19:00 - 20:00</th>
-            <th>20:00 - 21:00</th>
-            <th>21:00 - 22:00</th>
-        </tr>
+      <tr>
+        <th>Date</th>
+        <th>17:00 - 18:00</th>
+        <th>18:00 - 19:00</th>
+        <th>19:00 - 20:00</th>
+        <th>20:00 - 21:00</th>
+        <th>21:00 - 22:00</th>
+      </tr>
     </thead>
     <tbody>
-    {% for day in next_30_days %}
-    <tr>
-        <td class="table-secondary fw-bold">{{ day.calendar_date }}</td>
-        {% for slot, left, total in day.slots %}
-            <td class="text-center {% if left <= 0 %}table-danger{% else %}table-success clickable{% endif %}"
-                data-date="{{ day.calendar_date|date:'Y-m-d' }}"
-                data-slot="{{ slot }}"
-                data-left="{{ left }}">
-                {% if left > 0 %}
-                    {{ left }} / {{ total }}
+      {% for ts in next_30_days %}
+      <tr>
+        <td class="fw-bold">{{ ts.calendar_date }}</td>
+        {% for slot in ts.slots %}
+        <td>
+            <button 
+            class="btn btn-sm w-100 
+                {% if slot.remaining <= 0 %}
+                btn-secondary disabled
                 {% else %}
-                    FULL
-                {% endif %}
-            </td>
+                btn-outline-primary
+                {% endif %}"
+            data-bs-toggle="modal"
+            data-bs-target="#customerModal"
+            data-date="{{ ts.calendar_date|date:'Y-m-d' }}"
+            data-slot="{{ slot.key }}"
+            data-left="{{ slot.remaining }}"
+            >
+            {{ slot.demand }}/{{ slot.available }}
+            </button>
+        </td>
         {% endfor %}
-    </tr>
-    {% endfor %}
+      </tr>
+      {% endfor %}
     </tbody>
-</table>
-
+  </table>
+</div>
 
 {% endblock %}
+
 {% block js %}
 <script>
-// Grab CSRF token from cookie
+// Grab CSRF token
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== "") {
@@ -130,42 +137,41 @@ const csrftoken = getCookie("csrftoken");
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("reservationForm");
     const modalEl = document.getElementById("customerModal");
-    const modal = new bootstrap.Modal(modalEl);
     const modalBody = modalEl.querySelector(".modal-body");
     const modalFooter = modalEl.querySelector(".modal-footer");
     const originalModalBody = modalBody.innerHTML;
     const originalModalFooter = modalFooter.innerHTML;
-    let clickedCell = null;
+    let clickedBtn = null;
 
     const isISODate = d => /^\d{4}-\d{2}-\d{2}$/.test(d);
 
-    // Phone regex patterns per country
+    // Phone regex patterns
     const patterns = {
-        "GB": /^(\+44\s?\d{9,10}|0\d{9,10})$/,                     
-        "DE": /^(?:\+49\s?[1-9]\d{6,12}|0[1-9]\d{6,12})$/,         
-        "FR": /^(\+33\s?[1-9]\d{8}|0[1-9]\d{8})$/,                 
-        "US": /^(\+1\s?\d{10}|[2-9]\d{9})$/,                       
-        "IT": /^(\+39\s?\d{8,11}|0\d{8,11})$/,                     
-        "IE": /^(\+353\s?\d{7,9}|0\d{7,9})$/,                      
-        "AT": /^(\+43\s?\d{7,12}|0\d{7,12})$/,                     
-        "PL": /^(\+48\s?\d{9}|0\d{9})$/                            
+        "GB": /^(\+44\s?\d{9,10}|0\d{9,10})$/,
+        "DE": /^(?:\+49\s?[1-9]\d{6,12}|0[1-9]\d{6,12})$/,
+        "FR": /^(\+33\s?[1-9]\d{8}|0[1-9]\d{8})$/,
+        "US": /^(\+1\s?\d{10}|[2-9]\d{9})$/,
+        "IT": /^(\+39\s?\d{8,11}|0\d{8,11})$/,
+        "IE": /^(\+353\s?\d{7,9}|0\d{7,9})$/,
+        "AT": /^(\+43\s?\d{7,12}|0\d{7,12})$/,
+        "PL": /^(\+48\s?\d{9}|0\d{9})$/
     };
 
     // Reset modal when closed
     modalEl.addEventListener("hidden.bs.modal", () => {
         modalBody.innerHTML = originalModalBody;
         modalFooter.innerHTML = originalModalFooter;
-        clickedCell = null;
+        clickedBtn = null;
     });
 
-    // Handle availability cell clicks
-    document.querySelectorAll("td[data-slot][data-date]").forEach(cell => {
-        cell.addEventListener("click", () => {
-            if (Number(cell.dataset.left) <= 0) return; // skip FULL
-            clickedCell = cell;
+    // Handle availability button clicks
+    document.querySelectorAll("button[data-slot][data-date]").forEach(btn => {
+        btn.addEventListener("click", () => {
+            if (Number(btn.dataset.left) <= 0) return; // skip FULL
+            clickedBtn = btn;
 
-            const dateVal = cell.dataset.date;
-            const slotVal = cell.dataset.slot;
+            const dateVal = btn.dataset.date;
+            const slotVal = btn.dataset.slot;  // slot key, e.g. 17_18
 
             if (!dateVal || !isISODate(dateVal)) {
                 modalEl.querySelectorAll(".alert-danger.validation").forEach(n => n.remove());
@@ -175,17 +181,10 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             // set hidden inputs
-            const dateInput = document.getElementById("reservation_date");
-            const slotInput = document.getElementById("time_slot");
-            if (dateInput) dateInput.value = dateVal;
-            if (slotInput) slotInput.value = slotVal;
+            document.getElementById("reservation_date").value = dateVal;
+            document.getElementById("time_slot").value = slotVal;
 
-            // display selected info
-            const selectedInfo = modalEl.querySelector("#selectedInfo");
-            if (selectedInfo) selectedInfo.textContent = `${dateVal} • ${slotVal.replace('_', ':')}`;
-
-            // clear old validation and show
-            modalEl.querySelectorAll(".alert-danger.validation").forEach(n => n.remove());
+            // show modal
             modal.show();
         });
     });
@@ -193,20 +192,30 @@ document.addEventListener("DOMContentLoaded", () => {
     // Handle reservation form submit
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
+        const dateVal = document.getElementById("reservation_date").value;
+        const slotVal = document.getElementById("time_slot").value;
 
-        const dateInput = document.getElementById("reservation_date");
-        const slotInput = document.getElementById("time_slot");
-
-        if (!dateInput || !slotInput || !dateInput.value || !slotInput.value || !isISODate(dateInput.value)) {
-            modalEl.querySelectorAll(".alert-danger.validation").forEach(n => n.remove());
+        if (!dateVal || !slotVal || !isISODate(dateVal)) {
             modalBody.insertAdjacentHTML("afterbegin",
                 '<div class="alert alert-danger validation">Please select a time slot before confirming.</div>');
             return;
         }
 
+        const country = document.getElementById("country_code")?.value;
+        const phone = document.getElementById("phone")?.value.trim();
+        const mobile = document.getElementById("mobile")?.value.trim();
+        const pattern = patterns[country];
+        if (pattern) {
+            if ((phone && !pattern.test(phone)) || (mobile && !pattern.test(mobile))) {
+                modalBody.insertAdjacentHTML("afterbegin",
+                    `<div class="alert alert-danger validation">Invalid phone for ${country}.</div>`);
+                return;
+            }
+        }
+
         const formData = new FormData(form);
         try {
-            const response = await fetch(form.action || window.location.href, {
+            const response = await fetch(form.action, {
                 method: "POST",
                 headers: { "X-Requested-With": "XMLHttpRequest" },
                 body: formData
@@ -214,85 +223,24 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await response.json();
 
             if (data.success) {
-                // update clicked cell availability
-                if (clickedCell) {
+                if (clickedBtn) {
                     const left = Number(data.left);
-                    clickedCell.dataset.left = left;
-                    clickedCell.textContent = left > 0 ? left : "FULL";
-                    clickedCell.classList.toggle("table-success", left > 0);
-                    clickedCell.classList.toggle("table-danger", left <= 0);
+                    clickedBtn.dataset.left = left;
+                    clickedBtn.textContent = left > 0 ? `${data.demand}/${data.available}` : "FULL";
+                    clickedBtn.classList.toggle("btn-outline-primary", left > 0);
+                    clickedBtn.classList.toggle("btn-secondary", left <= 0);
                 }
-
-                // success feedback with Cancel button
-                modalBody.innerHTML = `
-                    <div class="alert alert-success">
-                        🎉 Your reservation is confirmed for ${data.pretty_slot}!<br>
-                        (Date: ${data.date})
-                    </div>
-                `;
-                modalFooter.innerHTML = `
-                    <button type="button" class="btn btn-danger" id="cancelReservationBtn" data-id="${data.reservation_id}">
-                        Cancel Reservation
-                    </button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
-                `;
-
-                // Cancel button AJAX handler
-                document.getElementById("cancelReservationBtn").addEventListener("click", async (e) => {
-                    const reservationId = e.target.dataset.id;
-                    try {
-                        const cancelResponse = await fetch(`/cancel_reservation/${reservationId}/`, {
-                            method: "POST",
-                            headers: {
-                                "X-Requested-With": "XMLHttpRequest",
-                                "X-CSRFToken": csrftoken
-                            }
-                        });
-                        const cancelData = await cancelResponse.json();
-
-                        if (cancelData.success) {
-                            if (clickedCell) {
-                                const left = Number(cancelData.left);
-                                clickedCell.dataset.left = left;
-                                clickedCell.textContent = left > 0 ? left : "FULL";
-                                clickedCell.classList.toggle("table-success", left > 0);
-                                clickedCell.classList.toggle("table-danger", left <= 0);
-                            }
-
-                            modalBody.innerHTML = `
-                                <div class="alert alert-info">Your reservation has been cancelled.</div>
-                            `;
-                            modalFooter.innerHTML = `
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            `;
-                        } else {
-                            modalBody.insertAdjacentHTML("beforeend",
-                                `<div class="alert alert-danger mt-2">${cancelData.error || "Cancel failed."}</div>`);
-                        }
-                    } catch (err) {
-                        console.error(err);
-                        modalBody.insertAdjacentHTML("beforeend",
-                            '<div class="alert alert-danger mt-2">Server error while cancelling. Please try again.</div>');
-                    }
-                });
-
+                modalBody.innerHTML = `<div class="alert alert-success">🎉 Reservation confirmed for ${data.pretty_slot} (${data.date})</div>`;
+                modalFooter.innerHTML = `<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>`;
                 form.reset();
             } else {
-                modalBody.insertAdjacentHTML("beforeend",
-                    `<div class="alert alert-danger mt-2">${data.error || "Reservation failed"}</div>`);
+                modalBody.insertAdjacentHTML("beforeend", `<div class="alert alert-danger">${data.error}</div>`);
             }
         } catch (err) {
-            console.error(err);
-            modalBody.insertAdjacentHTML("beforeend",
-                '<div class="alert alert-danger mt-2">Server error — please try again.</div>');
+            modalBody.insertAdjacentHTML("beforeend", '<div class="alert alert-danger">Server error</div>');
         }
     });
 });
 </script>
 {% endblock %}
-
-
-
-
-
 
