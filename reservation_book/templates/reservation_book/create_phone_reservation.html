@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-3">
+        <i class="fa-solid fa-phone me-2"></i>
+        Phone Reservation (Staff Only)
+    </h1>
+
+    <p class="text-muted mb-4">
+        Use this form to create reservations taken over the phone. These
+        reservations are not tied to a user account but still affect table
+        availability like online bookings.
+    </p>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label" for="id_reservation_date">Date</label>
+                        {{ form.reservation_date }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="id_time_slot">Time Slot</label>
+                        {{ form.time_slot }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="id_number_of_tables_required_by_patron">
+                            Tables
+                        </label>
+                        {{ form.number_of_tables_required_by_patron }}
+                    </div>
+                </div>
+
+                <h5 class="mt-3 mb-3">Customer Details</h5>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label" for="id_first_name">First Name</label>
+                        {{ form.first_name }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="id_last_name">Last Name</label>
+                        {{ form.last_name }}
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label" for="id_phone">Phone</label>
+                        {{ form.phone }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="id_mobile">Mobile</label>
+                        {{ form.mobile }}
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-check me-1"></i>
+                    Create Phone Reservation
+                </button>
+
+                <a href="{% url 'user_reservations_overview' %}" class="btn btn-secondary ms-2">
+                    Cancel
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>Edit Reservation</h2>
+  <form method="post">
+    {% csrf_token %}
+
+    <div class="mb-3">
+      <label for="reservation_date" class="form-label">Date</label>
+      <input
+        type="date"
+        id="reservation_date"
+        name="reservation_date"
+        class="form-control"
+        value="{{ reservation.timeslot_availability.calendar_date|date:'Y-m-d' }}"
+        required
+      >
+    </div>
+
+    <div class="mb-3">
+      <label for="time_slot" class="form-label">Time Slot</label>
+      <select
+        id="time_slot"
+        name="time_slot"
+        class="form-select"
+        required
+      >
+        {% for key, label in slot_labels.items %}
+          <option value="{{ key }}"
+            {% if reservation.time_slot == key %}selected{% endif %}
+          >
+            {{ label }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="number_of_tables_required_by_patron" class="form-label">
+        Number of Tables
+      </label>
+      <input
+        type="number"
+        id="number_of_tables_required_by_patron"
+        name="number_of_tables_required_by_patron"
+        class="form-control"
+        min="1"
+        value="{{ reservation.number_of_tables_required_by_patron }}"
+        required
+      >
+    </div>
+
+    <div class="mb-3">
+      <label for="first_name" class="form-label">First name</label>
+      <input
+        type="text"
+        id="first_name"
+        name="first_name"
+        class="form-control"
+        value="{{ reservation.first_name }}"
+        required
+      >
+    </div>
+
+    <div class="mb-3">
+      <label for="last_name" class="form-label">Last name</label>
+      <input
+        type="text"
+        id="last_name"
+        name="last_name"
+        class="form-control"
+        value="{{ reservation.last_name }}"
+        required
+      >
+    </div>
+
+    <div class="mb-3">
+      <label for="phone" class="form-label">Phone</label>
+      <input
+        type="text"
+        id="phone"
+        name="phone"
+        class="form-control"
+        value="{{ reservation.phone }}"
+      >
+    </div>
+
+    <div class="mb-3">
+      <label for="mobile" class="form-label">Mobile</label>
+      <input
+        type="text"
+        id="mobile"
+        name="mobile"
+        class="form-control"
+        value="{{ reservation.mobile }}"
+      >
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+      Save Changes
+    </button>
+    <a href="{% url 'my_reservations' %}" class="btn btn-secondary ms-2">
+      Cancel
+    </a>
+  </form>
+</div>
+{% endblock %}
