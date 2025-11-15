@@ -1,6 +1,10 @@
-# Python bytecode
+# === PYTHON CACHE FILES ===
 __pycache__/
-*.py[cod]
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+*.p*
 *$py.class
 
 # Virtual environments
