@@ -15,42 +15,66 @@ import os
 import sys
 from django.conf import settings
 import logging.config
-import dj_database_url
+import dj_database_url  # kept in case you want it later
+import environ
+from dotenv import load_dotenv
 
-if os.path.isfile('env.py'):
-    import env
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-
-
+# =====================================================
+# 🔧 CORE CONFIGURATION
+# =====================================================
 BASE_DIR = Path(__file__).resolve().parent.parent
-ENV_PATH = BASE_DIR / "env.py"
-if ENV_PATH.exists():
-    sys.path.append(str(BASE_DIR))  # allow Python to find env.py
-    import env  # this runs env.py, populating os.environ
 
-TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
+# Load .env file from project root
+env_file = BASE_DIR / ".env"
+if env_file.exists():
+    load_dotenv(env_file)  # lets os.environ see values from .env
+
+# Initialise django-environ
+env = environ.Env(
+    DEBUG=(bool, False),
+)
+
+# read .env again via environ (uses same .env)
+if env_file.exists():
+    environ.Env.read_env(env_file)
+
+TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
 SITE_ID = 1
-
-LOGIN_REDIRECT_URL = '/admin/'
-
-STATIC_URL = "/static/"
-STATICFILES_DIRS = [BASE_DIR / "static"]
+LOGIN_REDIRECT_URL = "home"
+LOGOUT_REDIRECT_URL = "home"
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
+# =====================================================
+# 🔐 SECURITY / DEBUG
+# =====================================================
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY")
+# SECRET_KEY must be defined in .env
+# e.g. SECRET_KEY=django-insecure-xxxxxxxxxxxxxxxxxxxx
+SECRET_KEY = env("SECRET_KEY")
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+# DEBUG from .env (default False for safety)
+DEBUG = env.bool("DEBUG", default=False)
 
-ALLOWED_HOSTS = ['.herokuapp.com', '127.0.0.1', 'localhost',]
+# Allowed hosts – can override from .env if you want
+ALLOWED_HOSTS = env.list(
+    "ALLOWED_HOSTS",
+    default=[".herokuapp.com", "127.0.0.1", "localhost"],
+)
+
+CSRF_TRUSTED_ORIGINS = env.list(
+    "CSRF_TRUSTED_ORIGINS",
+    default=[
+        "https://*.codeinstitute-ide.net",
+        "https://*.herokuapp.com",
+    ],
+)
+
+
+# =====================================================
+# 📜 LOGGING
+# =====================================================
 
 # production-friendly logging config that outputs to both the console and a rotating log file
-
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -87,7 +111,7 @@ LOGGING = {
     },
     "root": {
         "handlers": ["console", "file", "errors_file"],
-        "level": "DEBUG",  # change to INFO/ WARNING for prod
+        "level": "DEBUG",  # change to INFO / WARNING for prod
     },
     "loggers": {
         "django": {
@@ -103,128 +127,212 @@ LOGGING = {
     },
 }
 
-LOGOUT_REDIRECT_URL = "home"
 
-# Application definition
+# =====================================================
+# 🔌 APPLICATION DEFINITION
+# =====================================================
 
 INSTALLED_APPS = [
-    'django_admin_dracula',
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'django_summernote',
-    'reservation_book',
+    "django_admin_dracula",
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "django_summernote",
+    # "reservation_book",
     "phonenumber_field",
-    'django_tables2',
+    "django_tables2",
+    "django.contrib.sites",
+    "reservation_book.apps.ReservationBookConfig",
 
+    # Required by allauth
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",  # optional but recommended
+
+    "crispy_forms",
+    "crispy_bootstrap5",
 ]
-
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'gambinos.urls'
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+
+ROOT_URLCONF = "gambinos.urls"
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [TEMPLATES_DIR],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [TEMPLATES_DIR],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'gambinos.wsgi.application'
+WSGI_APPLICATION = "gambinos.wsgi.application"
 
+
+# =====================================================
+# 🗄 DATABASE – POSTGRES VIA DATABASE_URL WITH SQLITE FALLBACK
+# =====================================================
+
+# .env should contain:
+# DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/DBNAME?sslmode=require
+#
+# If DATABASE_URL is present -> Postgres (or whatever URL points to).
+# If DATABASE_URL is missing -> falls back to local SQLite, and
+# crucially no sslmode is passed to sqlite3 (so no TypeError).
 
 DATABASES = {
-    "default": dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",  # fallback for dev
-        conn_max_age=600,
-        ssl_require=True  # Neon + Heroku both need SSL
+    "default": env.db(
+        "DATABASE_URL",
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
     )
 }
 
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://*.codeinstitute-ide.net/",
-    "https://*.herokuapp.com"
-]
-
-# Password validation
-# https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
+# =====================================================
+# 🔐 PASSWORD VALIDATION
+# =====================================================
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
+# ==== dj-allauth authentication behaviour ====
 
-# Internationalization
-# https://docs.djangoproject.com/en/4.2/topics/i18n/
+# Keep usernames around and usable
+ACCOUNT_USER_MODEL_USERNAME_FIELD = "username"
+ACCOUNT_USERNAME_REQUIRED = True
 
-LANGUAGE_CODE = 'en-us'
+# Still collect emails and enforce them being unique
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
 
-TIME_ZONE = 'UTC'
+# NEW style (for recent django-allauth)
+ACCOUNT_LOGIN_METHODS = {"username", "email"}
+
+# Backwards compatibility for older allauth, harmless if ignored
+ACCOUNT_AUTHENTICATION_METHOD = "username_email"
+
+# For development, don’t block logins just because emails aren’t verified
+ACCOUNT_EMAIL_VERIFICATION = "optional"
+ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+
+
+# =====================================================
+# 🌍 INTERNATIONALIZATION
+# =====================================================
+
+LANGUAGE_CODE = "en-us"
+
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
 USE_TZ = True
 
-PHONENUMBER_DB_FORMAT = 'INTERNATIONAL'
+PHONENUMBER_DB_FORMAT = "INTERNATIONAL"
+PHONENUMBER_DEFAULT_REGION = "DE"
 
-PHONENUMBER_DEFAULT_REGION = 'DE'
+
+# =====================================================
+# 📦 STATIC FILES
+# =====================================================
+
+STATIC_URL = "static/"
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
+# =====================================================
+# 🔑 PRIMARY KEY DEFAULT
+# =====================================================
 
-STATIC_URL = 'static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ]
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# --- Upcoming Email Feature in 2nd sprint
+# =====================================================
+# 📧 EMAIL (READY FOR SMTP)
+# =====================================================
+
+# .env can define:
+# EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+# EMAIL_HOST=smtp.gmail.com
+# EMAIL_PORT=587
+# EMAIL_USE_TLS=True
+# EMAIL_HOST_USER=your_gmail@gmail.com
+# EMAIL_HOST_PASSWORD=your_app_password
+# DEFAULT_FROM_EMAIL="Gambinos Restaurant & Lounge <your_gmail@gmail.com>"
+# SERVER_EMAIL=your_gmail@gmail.com
+
+EMAIL_BACKEND = env(
+    "EMAIL_BACKEND",
+    default="django.core.mail.backends.console.EmailBackend",
+)
+
+EMAIL_HOST = env("EMAIL_HOST", default="localhost")
+EMAIL_PORT = env.int("EMAIL_PORT", default=25)
+EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=False)
+EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
+
+DEFAULT_FROM_EMAIL = env(
+    "DEFAULT_FROM_EMAIL",
+    default="Gambinos Restaurant & Lounge <no-reply@example.com>",
+)
+
+SERVER_EMAIL = env(
+    "SERVER_EMAIL",
+    default=EMAIL_HOST_USER or "no-reply@example.com",
+)
+
+
+# =====================================================
+# 📨 FUTURE INTEGRATIONS (COMMENTED)
+# =====================================================
 
 # --- SendGrid Email Settings ---
 # EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
 # SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY")
-
-# # Optional settings:
 # SENDGRID_SANDBOX_MODE_IN_DEBUG = False  # True = don’t really send emails
-# SENDGRID_ECHO_TO_STDOUT = False          # Print emails to console in development
-# # must match the email you verified in SendGrid
+# SENDGRID_ECHO_TO_STDOUT = False         # Print emails to console in development
 # DEFAULT_FROM_EMAIL = "oliver.p.hartmann@gmail.com"
 
 # Twilio configuration

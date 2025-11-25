@@ -1,0 +1,19 @@
+Subject: Your Gambinos Reservation Has Been Cancelled
+
+Dear {{ reservation.first_name }} {{ reservation.last_name }},
+
+Your reservation at Gambinos Restaurant & Lounge has been successfully cancelled.
+
+Here were the original reservation details:
+
+- Date: {{ reservation.reservation_date }}
+- Time: {{ slot_label }}
+- Number of tables: {{ reservation.number_of_tables_required_by_patron }}
+
+If this cancellation was made in error or you wish to book again,
+you may visit our website to create a new reservation at any time.
+
+We hope to welcome you again soon.
+
+Kind regards,
+Gambinos Restaurant & Lounge

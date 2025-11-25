@@ -1,0 +1,12 @@
+{% if guest_name %}Hello {{ guest_name }},
+
+{% endif %}The reservation for {{ old_tables }} table{% if old_tables|default:1 > 1 %}s{% endif %}
+on {{ old_date|date:"M j, Y" }} at {{ old_slot_label }}
+has been updated to {{ new_tables }} table{% if new_tables|default:1 > 1 %}s{% endif %}
+on {{ new_date|date:"M j, Y" }} at {{ new_slot_label }}.
+
+Reservation ID: {{ reservation.id }}
+{% if reservation.user %}
+Booked by: {{ reservation.user.get_full_name|default:reservation.user.username }}
+{% endif %}
+Thank you for choosing Gambinos Restaurant &amp; Lounge.

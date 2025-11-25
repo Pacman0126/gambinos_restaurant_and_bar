@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h1 class="h4 text-center mb-4">
+                        {% trans "Sign in to your account" %}
+                    </h1>
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+
+                    <form method="POST" action="{% url 'account_login' %}">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label class="form-label" for="{{ form.login.id_for_label }}">
+                                {% trans "Email" %}
+                            </label>
+                            {{ form.login }}
+                            {% if form.login.errors %}
+                                <div class="text-danger small">
+                                    {{ form.login.errors|striptags }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="{{ form.password.id_for_label }}">
+                                {% trans "Password" %}
+                            </label>
+                            {{ form.password }}
+                            {% if form.password.errors %}
+                                <div class="text-danger small">
+                                    {{ form.password.errors|striptags }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        {% if form.remember %}
+                            <div class="form-check mb-3">
+                                {{ form.remember }}
+                                <label class="form-check-label" for="{{ form.remember.id_for_label }}">
+                                    {% trans "Remember me" %}
+                                </label>
+                            </div>
+                        {% endif %}
+
+                        {% if redirect_field_value %}
+                            <input type="hidden"
+                                   name="{{ redirect_field_name }}"
+                                   value="{{ redirect_field_value }}">
+                        {% endif %}
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger">
+                                {% trans "Sign In" %}
+                            </button>
+                        </div>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <div class="text-center small">
+                        <p class="mb-1">
+                            <a href="{% url 'account_reset_password' %}">
+                                {% trans "Forgot your password?" %}
+                            </a>
+                        </p>
+                        <p class="mb-0">
+                            {% trans "Don’t have an account?" %}
+                            <a href="{% url 'account_signup' %}">
+                                {% trans "Sign up" %}
+                            </a>
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

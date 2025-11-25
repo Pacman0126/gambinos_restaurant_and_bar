@@ -1,9 +1,4 @@
 {% load static %}
-{% url 'home' as home_url %}
-{% url 'make_reservation' as make_reservation_url %}
-{% url 'my_reservations' as my_reservations_url %}
-{% url 'menu' as menu_url %}
-
 <!DOCTYPE html>
 <html class="h-100" lang="en">
 
@@ -17,18 +12,25 @@
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;700&display=swap" rel="stylesheet">
 
     <!-- Font Awesome CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+          integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer" />
 
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
+          crossorigin="anonymous">
 
-    {% comment %} <!-- Custom CSS -->
-    <link rel="stylesheet" href="{% static 'css/style.css' %}"> {% endcomment %}
+    {# Optional custom CSS
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    #}
 </head>
 
-<body class="d-flex flex-column h-100" 
-      style="background: url('{% static "images/hero/brown-concrete-wall-with-scratches-vector.jpg" %}') no-repeat center center fixed; 
+<body class="d-flex flex-column h-100"
+      style="background: url('{% static "images/hero/brown-concrete-wall-with-scratches-vector.jpg" %}') no-repeat center center fixed;
              background-size: cover;">
 
     <!-- Navigation -->
@@ -37,49 +39,120 @@
             <a class="navbar-brand fw-bold" href="{% url 'home' %}">
                 Gambinos Restaurant & Lounge
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
-                aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+
+            <button class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarText"
+                    aria-controls="navbarText"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <div class="collapse navbar-collapse" id="navbarText">
+
+                <!-- LEFT SIDE NAV -->
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                    <!-- Home -->
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path == home_url %}active{% endif %}"
-                            href="{% url 'home' %}">Home</a>
+                        <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
+                           href="{% url 'home' %}">
+                            Home
+                        </a>
                     </li>
+
+                    <!-- Book Reservation -->
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path == make_reservation_url %}active{% endif %}"
-                            href="{% url 'make_reservation' %}">Book Reservation</a>
+                        <a class="nav-link {% if request.resolver_match.url_name == 'make_reservation' %}active{% endif %}"
+                           href="{% url 'make_reservation' %}">
+                            Book Reservation
+                        </a>
                     </li>
+
+                    <!-- My Reservations -->
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path == my_reservations_url %}active{% endif %}"
-                            href="{% url 'my_reservations' %}">My Reservations</a>
+                        <a class="nav-link {% if request.resolver_match.url_name == 'my_reservations' %}active{% endif %}"
+                           href="{% url 'my_reservations' %}">
+                            My Reservations
+                        </a>
                     </li>
+
+                    <!-- Menu -->
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path == menu_url %}active{% endif %}" aria-current="page"
-                            href="{% url 'menu' %}">Menu</a>
+                        <a class="nav-link {% if request.resolver_match.url_name == 'menu' %}active{% endif %}"
+                           href="{% url 'menu' %}">
+                            Menu
+                        </a>
                     </li>
+
+                    <!-- STAFF-ONLY DROPDOWN -->
+                    {% if user.is_authenticated and user.is_staff %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle {% if request.resolver_match.url_name == 'user_reservations_overview' or request.resolver_match.url_name == 'create_phone_reservation' %}active{% endif %}"
+                               href="#"
+                               id="staffDropdown"
+                               role="button"
+                               data-bs-toggle="dropdown"
+                               aria-expanded="false">
+                                <i class="fa-solid fa-user-tie me-1"></i>
+                                Staff
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="staffDropdown">
+                                <li>
+                                    <a class="dropdown-item"
+                                       href="{% url 'user_reservations_overview' %}">
+                                        <i class="fa-solid fa-users me-2"></i>
+                                        Customer Stats
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item"
+                                       href="{% url 'create_phone_reservation' %}">
+                                        <i class="fa-solid fa-phone me-2"></i>
+                                        Phone Reservation
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    {% endif %}
 
                 </ul>
 
+                <!-- RIGHT SIDE AUTH -->
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                     {% if user.is_authenticated %}
                         <li class="nav-item">
-                            <span class="nav-link disabled">Hello, {{ user.username }}</span>
+                            <span class="nav-link disabled">
+                                {% if user.first_name or user.last_name %}
+                                    Hello, {{ user.first_name }} {{ user.last_name }}
+                                {% elif user.username %}
+                                    Hello, {{ user.username }}
+                                {% else %}
+                                    Hello, {{ user.email }}
+                                {% endif %}
+                            </span>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                            <a class="nav-link" href="{% url 'account_logout' %}">
+                                Logout
+                            </a>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'login' %}">Login</a>
+                            <a class="nav-link" href="{% url 'account_login' %}">
+                                Login
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'signup' %}">Sign Up</a>
+                            <a class="nav-link" href="{% url 'account_signup' %}">
+                                Sign Up
+                            </a>
                         </li>
                     {% endif %}
                 </ul>
+
             </div>
         </div>
     </nav>
@@ -96,7 +169,6 @@
     <!-- Main Content -->
     <main class="flex-shrink-0 main-bg container my-4">
         {% block content %}
-        <!-- Page content goes here -->
         {% endblock content %}
     </main>
 
@@ -113,9 +185,9 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous">
-    </script>
+            integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+            crossorigin="anonymous"></script>
 
-    {% block js %}{% endblock %}
+    {% block js %}{% endblock js %}
 </body>
 </html>

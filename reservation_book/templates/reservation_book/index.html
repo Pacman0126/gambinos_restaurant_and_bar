@@ -4,8 +4,10 @@
 {% block content %}
 
 <!-- Hero Section -->
-<section class="hero-banner text-white text-center py-5" style="background: url('{% static 'images/hero/hero1.jpg' %}') center/cover no-repeat;">
-    <div class="overlay d-flex flex-column justify-content-center align-items-center" style="background-color: rgba(0,0,0,0.5); min-height: 70vh;">
+<section class="hero-banner text-white text-center py-5"
+         style="background: url('{% static "images/hero/hero1.jpg" %}') center/cover no-repeat;">
+    <div class="overlay d-flex flex-column justify-content-center align-items-center"
+         style="background-color: rgba(0,0,0,0.5); min-height: 70vh;">
         <h1 class="display-3 fw-bold">Gambinos Restaurant & Lounge</h1>
         <p class="lead mt-3">Fine Italian Dining in a Luxurious Atmosphere</p>
         <a href="{% url 'make_reservation' %}" class="btn btn-lg btn-danger mt-4">Book a Reservation</a>
@@ -20,22 +22,25 @@
     </div>
     <div class="row">
         <div class="col-md-6 mb-4">
-            <img src="{% static 'images/obny/dishes/Seared-Octopus.jpg' %}" class="img-fluid rounded shadow" alt="Signature Dish">
+            <img src="{% static "images/obny/dishes/Seared-Octopus.jpg" %}"
+                 class="img-fluid rounded shadow"
+                 alt="Signature Dish">
         </div>
         <div class="col-md-6 d-flex flex-column justify-content-center">
             <h3 class="fw-bold">Our Philosophy</h3>
             <p>
-                At Gambinos, we believe dining is more than just food – it’s an experience. 
-                From our handmade pastas to our fresh seafood, every dish is crafted with passion and elegance. 
-                Whether you’re celebrating a special occasion or enjoying a night out, Gambinos offers the perfect setting. 
+                At Gambinos, we believe dining is more than just food – it’s an experience.
+                From our handmade pastas to our fresh seafood, every dish is crafted with passion and elegance.
+                Whether you’re celebrating a special occasion or enjoying a night out, Gambinos offers the perfect setting.
             </p>
             <a href="{% url 'menu' %}" class="btn btn-outline-light mt-3">Explore Our Menu</a>
         </div>
     </div>
 </div>
 
-<!-- CTA Section -->
-<section class="text-center text-white py-5" style="background: url('{% static 'images/hero/hero2.jpg' %}') center/cover no-repeat;">
+<!-- Call To Action Section -->
+<section class="text-center text-white py-5"
+         style="background: url('{% static "images/hero/hero2.jpg" %}') center/cover no-repeat;">
     <div class="overlay" style="background-color: rgba(0,0,0,0.5); padding: 4rem;">
         <h2 class="fw-bold">Reserve Your Table Today</h2>
         <p class="lead">An unforgettable dining experience awaits you.</p>
@@ -43,4 +48,4 @@
     </div>
 </section>
 
-{% endblock %}
+{% endblock content %}

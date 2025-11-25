@@ -2625,3 +2625,2168 @@ django.template.exceptions.TemplateSyntaxError: add requires 2 arguments, 1 prov
 [2025-09-11 02:22:13,162] INFO [django.server:212] "GET /static/admin/img/tooltag-add.svg HTTP/1.1" 304 0
 [2025-09-11 02:22:13,162] INFO [django.server:212] "GET /static/admin/img/icon-addlink.svg HTTP/1.1" 304 0
 [2025-11-15 20:48:30,592] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-15 21:08:09,035] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-15 21:34:45,992] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\gambinos\settings.py changed, reloading.
+[2025-11-15 22:50:22,741] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-15 22:50:28,516] WARNING [django.security.SuspiciousSession:108] Session data corrupted
+[2025-11-15 22:50:28,518] INFO [django.server:212] "GET / HTTP/1.1" 200 5949
+[2025-11-15 22:50:28,615] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-15 22:50:28,643] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-15 22:50:28,646] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-15 22:50:28,650] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-15 22:50:29,059] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-11-15 22:50:29,060] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 3478
+[2025-11-15 22:50:51,276] WARNING [django.security.SuspiciousSession:108] Session data corrupted
+[2025-11-15 22:50:51,300] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 5190
+[2025-11-15 22:50:55,174] WARNING [django.security.SuspiciousSession:108] Session data corrupted
+[2025-11-15 22:50:55,439] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-15 22:50:55,792] INFO [django.server:212] "GET /admin/ HTTP/1.1" 200 12174
+[2025-11-15 22:50:55,840] INFO [django.server:212] "GET /static/admin/css/dark_mode.css HTTP/1.1" 304 0
+[2025-11-15 22:50:55,840] INFO [django.server:212] "GET /static/admin/css/base.css HTTP/1.1" 304 0
+[2025-11-15 22:50:55,844] INFO [django.server:212] "GET /static/admin/css/nav_sidebar.css HTTP/1.1" 304 0
+[2025-11-15 22:50:55,846] INFO [django.server:212] "GET /static/admin/css/responsive.css HTTP/1.1" 304 0
+[2025-11-15 22:50:55,846] INFO [django.server:212] "GET /static/admin/css/dashboard.css HTTP/1.1" 304 0
+[2025-11-15 22:50:55,847] INFO [django.server:212] "GET /static/admin/js/theme.js HTTP/1.1" 304 0
+[2025-11-15 22:50:55,850] INFO [django.server:212] "GET /static/admin/js/nav_sidebar.js HTTP/1.1" 304 0
+[2025-11-15 22:50:55,856] INFO [django.server:212] "GET /static/admin/img/icon-addlink.svg HTTP/1.1" 304 0
+[2025-11-15 22:50:55,856] INFO [django.server:212] "GET /static/admin/img/icon-changelink.svg HTTP/1.1" 304 0
+[2025-11-15 22:50:55,916] INFO [django.server:212] "GET /static/admin/img/icon-deletelink.svg HTTP/1.1" 200 392
+[2025-11-15 22:50:59,525] INFO [django.server:212] "POST /admin/logout/ HTTP/1.1" 302 0
+[2025-11-15 22:50:59,545] INFO [django.server:212] "GET / HTTP/1.1" 200 5949
+[2025-11-15 22:51:43,349] INFO [django.server:212] "GET / HTTP/1.1" 200 5949
+[2025-11-15 22:51:43,381] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-15 22:51:43,392] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-15 22:51:43,395] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-15 22:51:43,397] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-18 16:25:00,482] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-18 16:25:07,482] INFO [django.server:212] "GET / HTTP/1.1" 200 5949
+[2025-11-18 16:25:07,775] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-18 16:25:07,796] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-18 16:25:07,797] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-18 16:25:07,797] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-18 16:25:08,339] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-11-18 16:25:08,339] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 3478
+[2025-11-18 16:25:23,146] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 5190
+[2025-11-18 16:25:35,129] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-18 16:25:36,458] INFO [django.server:212] "GET /admin/ HTTP/1.1" 200 8899
+[2025-11-18 16:26:30,621] INFO [django.server:212] "POST /admin/logout/ HTTP/1.1" 302 0
+[2025-11-18 16:26:30,625] INFO [django.server:212] "GET / HTTP/1.1" 200 5949
+[2025-11-18 16:26:30,663] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-18 16:26:30,669] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-18 16:26:30,669] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-18 16:26:30,676] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-18 16:26:33,724] INFO [django.server:212] "GET /accounts/signup/ HTTP/1.1" 200 5995
+[2025-11-18 16:27:36,631] INFO [django.server:212] "POST /accounts/signup/ HTTP/1.1" 200 6125
+[2025-11-18 16:27:36,651] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-18 16:29:40,261] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 5190
+[2025-11-18 16:29:40,299] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-18 16:29:51,143] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-18 16:29:51,450] INFO [django.server:212] "GET /admin/ HTTP/1.1" 200 8899
+[2025-11-18 16:30:09,357] INFO [django.server:212] "GET /admin/auth/user/ HTTP/1.1" 200 14930
+[2025-11-18 16:30:09,383] INFO [django.server:212] "GET /static/admin/css/changelists.css HTTP/1.1" 304 0
+[2025-11-18 16:30:09,398] INFO [django.server:212] "GET /static/admin/js/vendor/jquery/jquery.js HTTP/1.1" 304 0
+[2025-11-18 16:30:09,402] INFO [django.server:212] "GET /static/admin/js/core.js HTTP/1.1" 304 0
+[2025-11-18 16:30:09,403] INFO [django.server:212] "GET /static/admin/js/jquery.init.js HTTP/1.1" 304 0
+[2025-11-18 16:30:09,405] INFO [django.server:212] "GET /static/admin/js/urlify.js HTTP/1.1" 304 0
+[2025-11-18 16:30:09,406] INFO [django.server:212] "GET /static/admin/js/admin/RelatedObjectLookups.js HTTP/1.1" 304 0
+[2025-11-18 16:30:09,408] INFO [django.server:212] "GET /static/admin/js/actions.js HTTP/1.1" 304 0
+[2025-11-18 16:30:09,412] INFO [django.server:212] "GET /static/admin/js/prepopulate.js HTTP/1.1" 304 0
+[2025-11-18 16:30:09,413] INFO [django.server:212] "GET /static/admin/js/vendor/xregexp/xregexp.js HTTP/1.1" 304 0
+[2025-11-18 16:30:09,415] INFO [django.server:212] "GET /static/admin/img/search.svg HTTP/1.1" 304 0
+[2025-11-18 16:30:09,417] INFO [django.server:212] "GET /static/admin/img/icon-no.svg HTTP/1.1" 304 0
+[2025-11-18 16:30:09,421] INFO [django.server:212] "GET /static/admin/img/icon-yes.svg HTTP/1.1" 304 0
+[2025-11-18 16:30:09,427] INFO [django.server:212] "GET /static/admin/js/filters.js HTTP/1.1" 304 0
+[2025-11-18 16:30:09,653] INFO [django.server:212] "GET /admin/jsi18n/ HTTP/1.1" 200 3343
+[2025-11-18 16:30:09,677] INFO [django.server:212] "GET /static/admin/img/tooltag-add.svg HTTP/1.1" 304 0
+[2025-11-18 16:30:09,750] INFO [django.server:212] "GET /static/admin/img/sorting-icons.svg HTTP/1.1" 200 1097
+[2025-11-18 16:30:56,252] INFO [django.server:212] "POST /admin/auth/user/ HTTP/1.1" 200 12846
+[2025-11-18 16:30:56,287] INFO [django.server:212] "GET /static/admin/js/cancel.js HTTP/1.1" 200 884
+[2025-11-18 16:31:19,098] INFO [django.server:212] "POST /admin/auth/user/ HTTP/1.1" 302 0
+[2025-11-18 16:31:21,149] INFO [django.server:212] "GET /admin/auth/user/ HTTP/1.1" 200 13418
+[2025-11-18 16:31:21,442] INFO [django.server:212] "GET /admin/jsi18n/ HTTP/1.1" 200 3343
+[2025-11-18 16:31:28,081] INFO [django.server:212] "POST /admin/logout/ HTTP/1.1" 302 0
+[2025-11-18 16:31:28,081] INFO [django.server:212] "GET / HTTP/1.1" 200 5949
+[2025-11-18 16:31:28,119] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-18 16:31:28,125] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-18 16:31:28,127] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-18 16:31:28,127] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-18 16:31:30,667] INFO [django.server:212] "GET /accounts/signup/ HTTP/1.1" 200 5995
+[2025-11-18 16:32:03,954] INFO [django.server:212] "POST /accounts/signup/ HTTP/1.1" 302 0
+[2025-11-18 16:32:04,209] INFO [reservation_book.views:35] make_reservation called, method=GET
+[2025-11-18 16:32:05,560] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 73464
+[2025-11-18 16:33:55,066] INFO [reservation_book.views:35] make_reservation called, method=POST
+[2025-11-18 16:33:55,144] INFO [reservation_book.views:107] Reservation confirmed for Cartman Doe at 18:00–19:00 on 2025-11-23
+[2025-11-18 16:33:55,145] INFO [django.server:212] "POST /make_reservation/ HTTP/1.1" 200 138
+[2025-11-18 16:42:10,741] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-18 16:42:10,745] INFO [django.server:212] "GET / HTTP/1.1" 200 5949
+[2025-11-18 16:42:10,767] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-18 16:42:10,799] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-18 16:42:10,800] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-18 16:42:10,805] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-18 16:44:19,454] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-18 16:44:22,814] INFO [django.server:212] "GET / HTTP/1.1" 200 5949
+[2025-11-18 16:44:22,857] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-18 16:44:23,225] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-18 16:44:23,227] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-18 16:44:23,228] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-18 16:44:25,853] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 5190
+[2025-11-18 16:44:40,136] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-18 16:44:40,462] INFO [django.server:212] "GET /admin/ HTTP/1.1" 200 9905
+[2025-11-18 16:45:04,316] INFO [django.server:212] "GET / HTTP/1.1" 200 5946
+[2025-11-18 16:45:22,664] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-18 16:45:22,668] INFO [django.server:212] "GET / HTTP/1.1" 200 5949
+[2025-11-18 16:45:22,694] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-18 16:55:01,224] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-18 16:55:04,439] INFO [django.server:212] "GET / HTTP/1.1" 200 5949
+[2025-11-18 16:55:04,482] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-18 16:55:04,874] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-18 16:55:04,875] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-18 16:55:04,876] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-18 16:55:07,764] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 5190
+[2025-11-18 16:55:11,878] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-18 16:55:12,279] INFO [django.server:212] "GET /admin/ HTTP/1.1" 200 9905
+[2025-11-18 16:55:17,220] INFO [django.server:212] "GET /admin/auth/user/add/ HTTP/1.1" 200 12779
+[2025-11-18 16:55:17,332] INFO [django.server:212] "GET /static/admin/js/prepopulate_init.js HTTP/1.1" 200 586
+[2025-11-18 16:55:17,340] INFO [django.server:212] "GET /static/admin/css/forms.css HTTP/1.1" 200 8710
+[2025-11-18 16:55:17,346] INFO [django.server:212] "GET /static/admin/js/change_form.js HTTP/1.1" 200 606
+[2025-11-18 16:55:17,346] INFO [django.server:212] "GET /static/admin/css/widgets.css HTTP/1.1" 200 11628
+[2025-11-18 16:55:17,505] INFO [django.server:212] "GET /admin/jsi18n/ HTTP/1.1" 200 3343
+[2025-11-18 16:55:53,678] INFO [django.server:212] "POST /admin/auth/user/add/ HTTP/1.1" 302 0
+[2025-11-18 16:55:54,349] INFO [django.server:212] "GET /admin/auth/user/7/change/ HTTP/1.1" 200 26323
+[2025-11-18 16:55:54,383] INFO [django.server:212] "GET /static/admin/js/SelectBox.js HTTP/1.1" 200 4530
+[2025-11-18 16:55:54,383] INFO [django.server:212] "GET /static/admin/js/admin/DateTimeShortcuts.js HTTP/1.1" 200 19319
+[2025-11-18 16:55:54,385] INFO [django.server:212] "GET /static/admin/js/calendar.js HTTP/1.1" 200 8466
+[2025-11-18 16:55:54,388] INFO [django.server:212] "GET /static/admin/js/SelectFilter2.js HTTP/1.1" 200 15292
+[2025-11-18 16:55:54,624] INFO [django.server:212] "GET /admin/jsi18n/ HTTP/1.1" 200 3343
+[2025-11-18 16:55:54,672] INFO [django.server:212] "GET /static/admin/img/icon-unknown.svg HTTP/1.1" 200 655
+[2025-11-18 16:55:54,682] INFO [django.server:212] "GET /static/admin/img/selector-icons.svg HTTP/1.1" 200 3291
+[2025-11-18 16:55:54,683] INFO [django.server:212] "GET /static/admin/img/icon-unknown-alt.svg HTTP/1.1" 200 655
+[2025-11-18 16:55:54,683] INFO [django.server:212] "GET /static/admin/img/icon-calendar.svg HTTP/1.1" 200 1086
+[2025-11-18 16:55:54,683] INFO [django.server:212] "GET /static/admin/img/icon-clock.svg HTTP/1.1" 200 677
+[2025-11-18 17:01:21,785] INFO [django.server:212] "POST /admin/auth/user/7/change/ HTTP/1.1" 302 0
+[2025-11-18 17:01:22,160] INFO [django.server:212] "GET /admin/auth/user/ HTTP/1.1" 200 14304
+[2025-11-18 17:01:22,465] INFO [django.server:212] "GET /admin/jsi18n/ HTTP/1.1" 200 3343
+[2025-11-18 17:01:45,606] INFO [django.server:212] "POST /admin/logout/ HTTP/1.1" 302 0
+[2025-11-18 17:01:45,610] INFO [django.server:212] "GET / HTTP/1.1" 200 5949
+[2025-11-18 17:01:45,635] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-18 17:01:45,641] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-18 17:01:45,642] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-18 17:01:45,642] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-18 17:01:48,334] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 5190
+[2025-11-18 17:01:59,221] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-18 17:01:59,587] INFO [django.server:212] "GET /admin/ HTTP/1.1" 200 8899
+[2025-11-18 17:02:13,655] INFO [django.server:212] "GET / HTTP/1.1" 200 5946
+[2025-11-18 17:10:44,099] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\gambinos\settings.py changed, reloading.
+[2025-11-18 17:10:44,897] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-18 17:12:50,349] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-18 17:12:54,936] INFO [django.server:212] "GET / HTTP/1.1" 200 5946
+[2025-11-18 17:12:54,977] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-18 17:12:54,999] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-18 17:12:54,999] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-18 17:12:55,000] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-18 17:13:04,796] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-18 17:13:04,800] INFO [django.server:212] "GET / HTTP/1.1" 200 5949
+[2025-11-18 17:13:07,503] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 5190
+[2025-11-18 17:13:28,332] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-18 17:13:28,593] INFO [django.server:212] "GET / HTTP/1.1" 200 5946
+[2025-11-18 17:31:29,815] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-18 17:31:33,731] ERROR [django.request:246] Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\smartif.py", line 179, in translate_token
+    op = OPERATORS[token]
+         ~~~~~~~~~^^^^^^^
+KeyError: "['user_reservations_overview',"
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 30, in home
+    return render(request, "reservation_book/index.html")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\backends\django.py", line 61, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 175, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 132, in render
+    compiled_parent = self.get_parent(context)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 129, in get_parent
+    return self.find_template(parent, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 107, in find_template
+    template, origin = context.template.engine.find_template(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\engine.py", line 157, in find_template
+    template = loader.get_template(name, skip=skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loaders\cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loaders\base.py", line 28, in get_template
+    return Template(
+           ^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 200, in compile_nodelist
+    return parser.parse()
+           ^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 513, in parse
+    raise self.error(token, e)
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 511, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 953, in do_if
+    nodelist = parser.parse(("elif", "else", "endif"))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 513, in parse
+    raise self.error(token, e)
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 511, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 952, in do_if
+    condition = TemplateIfParser(parser, bits).parse()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 885, in __init__
+    super().__init__(*args, **kwargs)
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\smartif.py", line 170, in __init__
+    mapped_tokens.append(self.translate_token(token))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\smartif.py", line 181, in translate_token
+    return self.create_var(token)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 888, in create_var
+    return TemplateLiteral(self.template_parser.compile_filter(value), value)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 600, in compile_filter
+    return FilterExpression(token, self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 703, in __init__
+    raise TemplateSyntaxError(
+django.template.exceptions.TemplateSyntaxError: Could not parse the remainder: '['user_reservations_overview',' from '['user_reservations_overview','
+[2025-11-18 17:31:33,740] ERROR [django.server:212] "GET / HTTP/1.1" 500 254026
+[2025-11-18 17:44:42,662] ERROR [django.request:246] Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 30, in home
+    return render(request, "reservation_book/index.html")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\backends\django.py", line 61, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 175, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 157, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 321, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 471, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\urls\resolvers.py", line 828, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'user_reservations_overview' not found. 'user_reservations_overview' is not a valid view function or pattern name.
+[2025-11-18 17:44:42,667] ERROR [django.server:212] "GET / HTTP/1.1" 500 163931
+[2025-11-18 17:44:42,833] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-11-18 17:44:42,834] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 3478
+[2025-11-18 17:46:26,568] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-18 17:46:31,246] ERROR [django.request:246] Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 30, in home
+    return render(request, "reservation_book/index.html")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\backends\django.py", line 61, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 175, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 157, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 321, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 471, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\urls\resolvers.py", line 828, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'user_reservations_overview' not found. 'user_reservations_overview' is not a valid view function or pattern name.
+[2025-11-18 17:46:31,257] ERROR [django.server:212] "GET / HTTP/1.1" 500 163666
+[2025-11-18 17:54:30,966] ERROR [django.request:246] Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 30, in home
+    return render(request, "reservation_book/index.html")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\backends\django.py", line 61, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 175, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 157, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 321, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 471, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\urls\resolvers.py", line 828, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'user_reservations_overview' not found. 'user_reservations_overview' is not a valid view function or pattern name.
+[2025-11-18 17:54:30,971] ERROR [django.server:212] "GET / HTTP/1.1" 500 164245
+[2025-11-18 17:54:31,131] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-11-18 17:54:31,131] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 3478
+[2025-11-18 17:55:11,106] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-18 17:55:14,534] ERROR [django.request:246] Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 30, in home
+    return render(request, "reservation_book/index.html")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\backends\django.py", line 61, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 175, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 157, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 321, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 471, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\urls\resolvers.py", line 828, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'user_reservations_overview' not found. 'user_reservations_overview' is not a valid view function or pattern name.
+[2025-11-18 17:55:14,541] ERROR [django.server:212] "GET / HTTP/1.1" 500 163980
+[2025-11-18 18:04:44,422] ERROR [django.request:246] Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 30, in home
+    return render(request, "reservation_book/index.html")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\backends\django.py", line 61, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 175, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 157, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 321, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 471, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\urls\resolvers.py", line 828, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'account_logout' not found. 'account_logout' is not a valid view function or pattern name.
+[2025-11-18 18:04:44,427] ERROR [django.server:212] "GET / HTTP/1.1" 500 162835
+[2025-11-18 18:04:44,596] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-11-18 18:04:44,597] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 3478
+[2025-11-18 18:05:15,447] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-18 18:05:21,992] ERROR [django.request:246] Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 30, in home
+    return render(request, "reservation_book/index.html")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\backends\django.py", line 61, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 175, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 157, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 321, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 471, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\urls\resolvers.py", line 828, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'account_logout' not found. 'account_logout' is not a valid view function or pattern name.
+[2025-11-18 18:05:22,001] ERROR [django.server:212] "GET / HTTP/1.1" 500 162570
+[2025-11-18 18:11:08,142] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\gambinos\urls.py changed, reloading.
+[2025-11-18 18:11:08,881] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-18 18:11:45,420] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-18 18:18:39,295] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-18 18:26:42,966] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-18 18:26:47,698] INFO [django.server:212] "GET / HTTP/1.1" 200 7739
+[2025-11-18 18:26:47,739] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-18 18:26:47,766] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-18 18:26:47,766] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-18 18:26:47,768] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-18 18:27:59,448] INFO [django.server:212] "GET /admin/ HTTP/1.1" 200 11900
+[2025-11-18 18:28:12,787] INFO [django.server:212] "GET /admin/reservation_book/tablereservation/ HTTP/1.1" 200 15659
+[2025-11-18 18:28:13,055] INFO [django.server:212] "GET /admin/jsi18n/ HTTP/1.1" 200 3343
+[2025-11-18 18:29:16,197] INFO [django.server:212] "POST /admin/logout/ HTTP/1.1" 302 0
+[2025-11-18 18:29:16,201] INFO [django.server:212] "GET / HTTP/1.1" 200 6688
+[2025-11-18 18:29:16,231] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-18 18:29:16,236] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-18 18:29:16,241] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-18 18:29:16,244] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-18 20:17:08,013] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-18 20:22:58,778] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-11-18 20:22:59,687] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-18 20:23:09,605] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-18 20:24:12,258] ERROR [django.request:246] Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\smartif.py", line 179, in translate_token
+    op = OPERATORS[token]
+         ~~~~~~~~~^^^^^^^
+KeyError: "['home']"
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 35, in home
+    return render(request, "reservation_book/index.html")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\backends\django.py", line 61, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 175, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 132, in render
+    compiled_parent = self.get_parent(context)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 129, in get_parent
+    return self.find_template(parent, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 107, in find_template
+    template, origin = context.template.engine.find_template(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\engine.py", line 157, in find_template
+    template = loader.get_template(name, skip=skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loaders\cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loaders\base.py", line 28, in get_template
+    return Template(
+           ^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 200, in compile_nodelist
+    return parser.parse()
+           ^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 513, in parse
+    raise self.error(token, e)
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 511, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 952, in do_if
+    condition = TemplateIfParser(parser, bits).parse()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 885, in __init__
+    super().__init__(*args, **kwargs)
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\smartif.py", line 170, in __init__
+    mapped_tokens.append(self.translate_token(token))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\smartif.py", line 181, in translate_token
+    return self.create_var(token)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 888, in create_var
+    return TemplateLiteral(self.template_parser.compile_filter(value), value)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 600, in compile_filter
+    return FilterExpression(token, self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 703, in __init__
+    raise TemplateSyntaxError(
+django.template.exceptions.TemplateSyntaxError: Could not parse the remainder: '['home']' from '['home']'
+[2025-11-18 20:24:12,272] ERROR [django.server:212] "GET / HTTP/1.1" 500 248524
+[2025-11-18 20:30:39,285] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-18 20:30:42,121] ERROR [django.request:246] Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 505, in parse
+    compile_func = self.tags[command]
+                   ~~~~~~~~~^^^^^^^^^
+KeyError: 'endif'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 35, in home
+    return render(request, "reservation_book/index.html")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\backends\django.py", line 61, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 175, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 132, in render
+    compiled_parent = self.get_parent(context)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 129, in get_parent
+    return self.find_template(parent, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 107, in find_template
+    template, origin = context.template.engine.find_template(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\engine.py", line 157, in find_template
+    template = loader.get_template(name, skip=skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loaders\cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loaders\base.py", line 28, in get_template
+    return Template(
+           ^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 200, in compile_nodelist
+    return parser.parse()
+           ^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 507, in parse
+    self.invalid_block_tag(token, command, parse_until)
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 568, in invalid_block_tag
+    raise self.error(
+django.template.exceptions.TemplateSyntaxError: Invalid block tag on line 130: 'endif'. Did you forget to register or load this tag?
+[2025-11-18 20:30:42,128] ERROR [django.server:212] "GET / HTTP/1.1" 500 198664
+[2025-11-18 20:42:28,797] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-18 20:42:32,923] ERROR [django.request:246] Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 505, in parse
+    compile_func = self.tags[command]
+                   ~~~~~~~~~^^^^^^^^^
+KeyError: 'endif'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 35, in home
+    return render(request, "reservation_book/index.html")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\backends\django.py", line 61, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 175, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 132, in render
+    compiled_parent = self.get_parent(context)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 129, in get_parent
+    return self.find_template(parent, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 107, in find_template
+    template, origin = context.template.engine.find_template(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\engine.py", line 157, in find_template
+    template = loader.get_template(name, skip=skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loaders\cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loaders\base.py", line 28, in get_template
+    return Template(
+           ^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 200, in compile_nodelist
+    return parser.parse()
+           ^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 507, in parse
+    self.invalid_block_tag(token, command, parse_until)
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 568, in invalid_block_tag
+    raise self.error(
+django.template.exceptions.TemplateSyntaxError: Invalid block tag on line 128: 'endif'. Did you forget to register or load this tag?
+[2025-11-18 20:42:32,934] ERROR [django.server:212] "GET / HTTP/1.1" 500 197564
+[2025-11-18 21:04:39,027] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-18 21:04:42,663] ERROR [django.request:246] Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 505, in parse
+    compile_func = self.tags[command]
+                   ~~~~~~~~~^^^^^^^^^
+KeyError: 'endif'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 35, in home
+    return render(request, "reservation_book/index.html")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\backends\django.py", line 61, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 175, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 132, in render
+    compiled_parent = self.get_parent(context)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 129, in get_parent
+    return self.find_template(parent, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 107, in find_template
+    template, origin = context.template.engine.find_template(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\engine.py", line 157, in find_template
+    template = loader.get_template(name, skip=skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loaders\cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loaders\base.py", line 28, in get_template
+    return Template(
+           ^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 200, in compile_nodelist
+    return parser.parse()
+           ^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 507, in parse
+    self.invalid_block_tag(token, command, parse_until)
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 568, in invalid_block_tag
+    raise self.error(
+django.template.exceptions.TemplateSyntaxError: Invalid block tag on line 123: 'endif'. Did you forget to register or load this tag?
+[2025-11-18 21:04:42,670] ERROR [django.server:212] "GET / HTTP/1.1" 500 197114
+[2025-11-18 21:13:14,428] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-18 21:13:19,973] ERROR [django.request:246] Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 505, in parse
+    compile_func = self.tags[command]
+                   ~~~~~~~~~^^^^^^^^^
+KeyError: 'endif'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 35, in home
+    return render(request, "reservation_book/index.html")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\backends\django.py", line 61, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 175, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 132, in render
+    compiled_parent = self.get_parent(context)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 129, in get_parent
+    return self.find_template(parent, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 107, in find_template
+    template, origin = context.template.engine.find_template(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\engine.py", line 157, in find_template
+    template = loader.get_template(name, skip=skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loaders\cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loaders\base.py", line 28, in get_template
+    return Template(
+           ^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 200, in compile_nodelist
+    return parser.parse()
+           ^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 507, in parse
+    self.invalid_block_tag(token, command, parse_until)
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 568, in invalid_block_tag
+    raise self.error(
+django.template.exceptions.TemplateSyntaxError: Invalid block tag on line 122: 'endif'. Did you forget to register or load this tag?
+[2025-11-18 21:13:19,983] ERROR [django.server:212] "GET / HTTP/1.1" 500 193946
+[2025-11-18 21:31:35,861] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-18 21:31:38,385] INFO [django.server:212] "GET / HTTP/1.1" 200 7069
+[2025-11-18 21:31:38,426] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-18 21:31:38,495] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 4030
+[2025-11-18 21:31:38,506] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-18 21:31:38,506] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-18 21:31:38,507] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-18 21:32:09,688] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 2223
+[2025-11-18 21:32:32,580] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-18 21:32:32,831] INFO [django.server:212] "GET / HTTP/1.1" 200 8689
+[2025-11-18 21:32:48,818] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 9872
+[2025-11-18 21:32:48,838] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-18 21:34:12,243] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 1951
+[2025-11-18 21:34:30,890] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-18 21:34:30,895] INFO [django.server:212] "GET / HTTP/1.1" 200 7228
+[2025-11-18 21:34:30,928] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-18 21:34:30,928] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-18 21:34:30,930] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-18 21:34:30,930] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-18 21:34:34,376] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 2223
+[2025-11-18 22:04:01,645] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-18 22:04:13,902] INFO [django.server:212] "GET / HTTP/1.1" 200 7069
+[2025-11-18 22:04:13,947] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-18 22:04:14,097] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-18 22:04:14,134] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-18 22:04:14,134] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-18 22:04:17,428] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 2223
+[2025-11-18 22:23:44,849] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-18 22:24:50,179] INFO [django.server:212] "GET / HTTP/1.1" 200 7069
+[2025-11-18 22:24:50,222] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-18 22:24:50,413] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-18 22:24:50,448] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-18 22:24:50,448] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-18 22:24:54,313] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7633
+[2025-11-18 22:25:09,610] INFO [django.server:81] - Broken pipe from ('127.0.0.1', 55126)
+[2025-11-18 22:25:11,492] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-18 22:25:11,758] INFO [django.server:212] "GET / HTTP/1.1" 200 8689
+[2025-11-18 22:25:21,687] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 9872
+[2025-11-18 22:25:46,080] INFO [django.server:212] "GET /staff/dashboard/ HTTP/1.1" 200 7931
+[2025-11-18 22:26:04,017] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7492
+[2025-11-18 22:26:04,040] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-18 22:26:09,543] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-18 22:26:09,548] INFO [django.server:212] "GET / HTTP/1.1" 200 7228
+[2025-11-18 22:26:09,574] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-18 22:26:09,583] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-18 22:26:09,586] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-19 16:05:56,708] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-19 16:06:05,492] INFO [django.server:212] "GET / HTTP/1.1" 200 7069
+[2025-11-19 16:06:05,777] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-19 16:06:05,800] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-19 16:06:05,801] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-19 16:06:05,801] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-19 16:06:05,975] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-11-19 16:06:05,975] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 3878
+[2025-11-19 16:06:32,138] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7633
+[2025-11-19 16:09:03,802] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 200 7909
+[2025-11-19 16:09:03,830] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-19 16:09:31,128] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 200 7909
+[2025-11-19 16:10:01,067] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 200 7908
+[2025-11-19 16:10:34,775] INFO [django.server:212] "GET /accounts/signup/ HTTP/1.1" 200 7723
+[2025-11-19 16:10:34,800] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-19 16:23:30,966] INFO [django.server:212] "GET /admin/ HTTP/1.1" 302 0
+[2025-11-19 16:23:30,999] INFO [django.server:212] "GET /admin/login/?next=/admin/ HTTP/1.1" 200 4981
+[2025-11-19 16:23:31,016] INFO [django.server:212] "GET /static/admin/css/login.css HTTP/1.1" 304 0
+[2025-11-19 16:23:42,153] INFO [django.server:212] "POST /admin/login/?next=/admin/ HTTP/1.1" 302 0
+[2025-11-19 16:23:42,567] INFO [django.server:212] "GET /admin/ HTTP/1.1" 200 11900
+[2025-11-19 16:23:54,705] INFO [django.server:212] "POST /admin/logout/ HTTP/1.1" 302 0
+[2025-11-19 16:23:54,710] INFO [django.server:212] "GET / HTTP/1.1" 200 7069
+[2025-11-19 16:23:54,739] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-19 16:23:54,763] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-19 16:23:54,763] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-19 16:23:54,764] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-19 16:41:41,854] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-19 16:41:48,618] INFO [django.server:212] "GET / HTTP/1.1" 200 7069
+[2025-11-19 16:41:48,663] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-19 16:41:48,837] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-19 16:41:48,880] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-19 16:41:48,880] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-19 16:41:52,656] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7623
+[2025-11-19 16:42:04,790] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-19 16:42:05,068] INFO [django.server:212] "GET / HTTP/1.1" 200 8689
+[2025-11-19 16:42:34,771] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 9872
+[2025-11-19 17:09:12,504] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-19 17:09:18,218] INFO [django.server:212] "GET / HTTP/1.1" 200 8518
+[2025-11-19 17:09:18,257] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-19 17:09:18,281] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-19 17:09:18,311] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-19 17:09:18,312] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-19 17:10:45,751] INFO [django.server:212] "GET /staff/dashboard/ HTTP/1.1" 200 7931
+[2025-11-19 17:10:45,776] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-19 17:11:03,954] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 10387
+[2025-11-19 17:12:03,023] INFO [django.server:212] "POST /staff/phone-reservation/ HTTP/1.1" 302 0
+[2025-11-19 17:12:03,306] INFO [django.server:212] "GET /staff/dashboard/ HTTP/1.1" 200 8141
+[2025-11-19 17:12:03,335] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-19 17:13:27,741] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7492
+[2025-11-19 17:13:27,766] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-19 17:13:32,027] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-19 17:13:32,032] INFO [django.server:212] "GET / HTTP/1.1" 200 7228
+[2025-11-19 17:13:32,062] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-19 17:13:32,066] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-19 17:13:32,066] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-19 17:13:35,538] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7623
+[2025-11-19 17:14:00,292] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-19 17:14:00,526] INFO [django.server:212] "GET / HTTP/1.1" 200 7259
+[2025-11-19 17:14:11,879] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 5664
+[2025-11-19 17:53:38,365] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 6060
+[2025-11-19 17:53:38,389] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-19 17:53:42,208] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-19 17:53:42,213] INFO [django.server:212] "GET / HTTP/1.1" 200 7228
+[2025-11-19 17:53:42,244] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-19 17:53:42,248] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-19 17:53:42,249] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-19 18:17:20,952] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-19 18:21:03,661] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\gambinos\settings.py changed, reloading.
+[2025-11-19 18:21:04,764] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-19 18:21:28,331] INFO [django.server:212] "GET / HTTP/1.1" 200 7069
+[2025-11-19 18:21:28,383] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-19 18:21:28,752] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-19 18:21:28,782] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-19 18:21:28,783] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-19 18:21:34,259] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7623
+[2025-11-19 18:22:00,029] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-19 18:22:00,850] INFO [django.server:212] "GET / HTTP/1.1" 200 8689
+[2025-11-19 18:22:13,696] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 10387
+[2025-11-19 18:23:00,881] INFO [django.server:212] "POST /staff/phone-reservation/ HTTP/1.1" 302 0
+[2025-11-19 18:23:01,158] INFO [django.server:212] "GET /staff/dashboard/ HTTP/1.1" 200 8141
+[2025-11-19 18:23:01,188] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-19 18:23:42,196] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7492
+[2025-11-19 18:23:44,540] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-19 18:23:44,545] INFO [django.server:212] "GET / HTTP/1.1" 200 7228
+[2025-11-19 18:23:44,577] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-19 18:23:44,577] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-19 18:23:44,578] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-19 18:24:57,174] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7623
+[2025-11-19 18:24:57,210] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-19 18:25:03,318] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-19 18:25:03,588] INFO [django.server:212] "GET / HTTP/1.1" 200 7259
+[2025-11-19 18:25:03,614] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-19 18:25:03,620] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-19 18:25:03,621] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-19 18:25:06,712] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 6097
+[2025-11-19 18:25:25,626] INFO [django.server:212] "POST /cancel_reservation/24/ HTTP/1.1" 302 0
+[2025-11-19 18:25:25,940] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 5837
+[2025-11-19 18:25:55,632] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 6060
+[2025-11-19 18:26:07,902] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-19 18:26:07,907] INFO [django.server:212] "GET / HTTP/1.1" 200 7228
+[2025-11-19 18:26:07,934] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-19 18:26:07,944] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-19 18:26:07,945] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-19 18:26:07,946] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-19 20:26:32,854] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-19 20:26:35,327] INFO [django.server:212] "GET / HTTP/1.1" 200 7069
+[2025-11-19 20:26:35,395] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-19 20:26:35,511] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-19 20:26:35,552] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-19 20:26:35,552] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-19 20:26:42,525] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7623
+[2025-11-19 20:26:53,349] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-19 20:26:53,608] INFO [django.server:212] "GET / HTTP/1.1" 200 8759
+[2025-11-19 20:27:00,319] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 10455
+[2025-11-19 20:27:35,357] ERROR [django.request:246] Internal Server Error: /staff/phone-reservation/
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 434, in create_phone_reservation
+    reservation = TableReservation.objects.create(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\query.py", line 656, in create
+    obj = self.model(**kwargs)
+          ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\base.py", line 567, in __init__
+    raise TypeError(
+TypeError: TableReservation() got unexpected keyword arguments: 'reservation_date', 'is_phone_reservation'
+[2025-11-19 20:27:35,368] ERROR [django.server:212] "POST /staff/phone-reservation/ HTTP/1.1" 500 105826
+[2025-11-19 20:43:29,706] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\models.py changed, reloading.
+[2025-11-19 20:43:30,668] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-19 20:45:18,672] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-19 20:45:23,327] INFO [django.server:212] "GET / HTTP/1.1" 200 8588
+[2025-11-19 20:45:23,376] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-19 20:45:23,394] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-19 20:45:23,429] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-19 20:45:23,429] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-19 20:45:44,544] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7562
+[2025-11-19 20:45:46,919] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-19 20:45:46,924] INFO [django.server:212] "GET / HTTP/1.1" 200 7228
+[2025-11-19 20:45:50,057] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7623
+[2025-11-19 20:45:58,478] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-19 20:45:58,722] INFO [django.server:212] "GET / HTTP/1.1" 200 8759
+[2025-11-19 20:46:09,278] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 10455
+[2025-11-19 20:46:45,239] ERROR [django.request:246] Internal Server Error: /staff/phone-reservation/
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\backends\utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "timeslot_availability_id" of relation "reservation_book_tablereservation" violates not-null constraint
+DETAIL:  Failing row contains (27, 18_19, 1, t, Cartman, Hartmann, paxton.hartmann@gmail.com, , , null, 6, t, 2025-11-26).
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 434, in create_phone_reservation
+    reservation = TableReservation.objects.create(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\query.py", line 658, in create
+    obj.save(force_insert=True, using=self.db)
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\base.py", line 814, in save
+    self.save_base(
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\base.py", line 877, in save_base
+    updated = self._save_table(
+              ^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\base.py", line 1020, in _save_table
+    results = self._do_insert(
+              ^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\base.py", line 1061, in _do_insert
+    return manager._insert(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\query.py", line 1805, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1822, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\backends\utils.py", line 102, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\backends\utils.py", line 67, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\backends\utils.py", line 80, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\backends\utils.py", line 84, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\db\backends\utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.IntegrityError: null value in column "timeslot_availability_id" of relation "reservation_book_tablereservation" violates not-null constraint
+DETAIL:  Failing row contains (27, 18_19, 1, t, Cartman, Hartmann, paxton.hartmann@gmail.com, , , null, 6, t, 2025-11-26).
+
+[2025-11-19 20:46:45,249] ERROR [django.server:212] "POST /staff/phone-reservation/ HTTP/1.1" 500 178467
+[2025-11-19 20:58:18,594] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-11-19 20:58:19,446] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-19 21:03:30,692] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-11-19 21:03:31,607] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-19 21:04:46,027] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-19 21:04:49,988] INFO [django.server:212] "GET / HTTP/1.1" 200 8588
+[2025-11-19 21:04:50,038] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-19 21:04:50,058] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-19 21:04:50,097] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-19 21:04:50,098] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-19 21:04:53,156] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7562
+[2025-11-19 21:04:55,714] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-19 21:04:55,719] INFO [django.server:212] "GET / HTTP/1.1" 200 7228
+[2025-11-19 21:04:58,614] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7623
+[2025-11-19 21:05:09,002] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-19 21:05:10,282] INFO [django.server:212] "GET / HTTP/1.1" 200 8759
+[2025-11-19 21:05:14,476] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 10455
+[2025-11-19 21:05:52,929] ERROR [django.request:246] Internal Server Error: /staff/phone-reservation/
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 465, in create_phone_reservation
+    message = render_to_string(
+              ^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: reservation_book/emails/phone_reservation_confirmation.txt
+[2025-11-19 21:05:52,932] ERROR [django.server:212] "POST /staff/phone-reservation/ HTTP/1.1" 500 103933
+[2025-11-19 21:32:00,495] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-19 21:32:10,966] INFO [django.server:212] "GET / HTTP/1.1" 200 8588
+[2025-11-19 21:32:11,019] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-19 21:32:11,042] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-19 21:32:11,079] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-19 21:32:11,082] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-19 21:32:14,429] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7562
+[2025-11-19 21:32:17,879] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-19 21:32:17,884] INFO [django.server:212] "GET / HTTP/1.1" 200 7228
+[2025-11-19 21:32:55,010] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7623
+[2025-11-19 21:33:18,083] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-19 21:33:18,336] INFO [django.server:212] "GET / HTTP/1.1" 200 8759
+[2025-11-19 21:33:18,361] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-19 21:33:18,367] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-19 21:33:18,368] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-19 21:33:18,370] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-19 21:33:24,589] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 10455
+[2025-11-19 21:33:46,305] ERROR [django.request:246] Internal Server Error: /staff/phone-reservation/
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 474, in create_phone_reservation
+    message = render_to_string(
+              ^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: reservation_book/emails/phone_reservation_confirmation.txt
+[2025-11-19 21:33:46,308] ERROR [django.server:212] "POST /staff/phone-reservation/ HTTP/1.1" 500 103933
+[2025-11-19 21:39:22,422] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-19 21:39:29,328] INFO [django.server:212] "GET / HTTP/1.1" 200 8588
+[2025-11-19 21:39:29,379] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-19 21:39:29,400] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-19 21:39:29,440] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-19 21:39:29,440] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-19 21:39:32,373] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7562
+[2025-11-19 21:39:34,681] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-19 21:39:34,686] INFO [django.server:212] "GET / HTTP/1.1" 200 7228
+[2025-11-19 21:39:36,746] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7623
+[2025-11-19 21:39:46,925] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-19 21:39:47,198] INFO [django.server:212] "GET / HTTP/1.1" 200 8759
+[2025-11-19 21:39:55,982] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 10455
+[2025-11-19 21:40:22,466] INFO [django.server:212] "POST /staff/phone-reservation/ HTTP/1.1" 302 0
+[2025-11-19 21:40:22,750] INFO [django.server:212] "GET /staff/dashboard/ HTTP/1.1" 200 8218
+[2025-11-19 21:40:43,494] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7562
+[2025-11-19 21:40:43,530] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-19 21:40:46,708] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-19 21:40:46,714] INFO [django.server:212] "GET / HTTP/1.1" 200 7228
+[2025-11-19 21:40:46,743] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-19 21:40:46,752] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-19 21:40:46,752] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-19 21:40:54,599] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7623
+[2025-11-19 21:40:58,144] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-19 21:40:58,414] INFO [django.server:212] "GET / HTTP/1.1" 200 7311
+[2025-11-19 21:41:03,352] ERROR [django.request:246] Internal Server Error: /my_reservations/
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 292, in my_reservations
+    return render(request, "reservation_book/my_reservations.html", {
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\backends\django.py", line 61, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 175, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 157, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 63, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 321, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 238, in render
+    nodelist.append(node.render_annotated(context))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 321, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 471, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\urls\resolvers.py", line 828, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'edit_reservation' not found. 'edit_reservation' is not a valid view function or pattern name.
+[2025-11-19 21:41:03,363] ERROR [django.server:212] "GET /my_reservations/ HTTP/1.1" 500 211810
+[2025-11-23 16:37:33,945] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-23 16:37:40,492] INFO [django.server:212] "GET / HTTP/1.1" 200 7069
+[2025-11-23 16:37:40,861] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-23 16:37:40,887] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-23 16:37:40,920] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-23 16:37:40,922] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-23 16:37:41,427] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-11-23 16:37:41,427] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 4097
+[2025-11-23 16:37:51,245] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7623
+[2025-11-23 16:38:09,422] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-23 16:38:09,689] INFO [django.server:212] "GET / HTTP/1.1" 200 8759
+[2025-11-23 16:38:23,925] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 10455
+[2025-11-23 16:38:54,182] INFO [django.server:212] "POST /staff/phone-reservation/ HTTP/1.1" 302 0
+[2025-11-23 16:38:54,465] INFO [django.server:212] "GET /staff/dashboard/ HTTP/1.1" 200 8218
+[2025-11-23 16:38:54,491] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-23 16:39:16,970] INFO [django.server:212] "GET /staff/customer/6/history/ HTTP/1.1" 200 8054
+[2025-11-23 16:39:36,296] INFO [django.server:212] "GET /staff/dashboard/ HTTP/1.1" 200 8001
+[2025-11-23 16:39:39,993] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7562
+[2025-11-23 16:39:42,825] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-23 16:39:42,831] INFO [django.server:212] "GET / HTTP/1.1" 200 7228
+[2025-11-23 16:39:42,856] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-23 16:39:42,869] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-23 16:39:42,869] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-23 16:39:46,145] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7623
+[2025-11-23 16:39:54,456] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-23 16:39:54,707] INFO [django.server:212] "GET / HTTP/1.1" 200 7311
+[2025-11-23 16:39:54,741] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-11-23 16:39:58,766] ERROR [django.request:246] Internal Server Error: /my_reservations/
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 292, in my_reservations
+    return render(request, "reservation_book/my_reservations.html", {
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\backends\django.py", line 61, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 175, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 157, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 63, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 321, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 238, in render
+    nodelist.append(node.render_annotated(context))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 321, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 471, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\urls\resolvers.py", line 828, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'edit_reservation' not found. 'edit_reservation' is not a valid view function or pattern name.
+[2025-11-23 16:39:58,776] ERROR [django.server:212] "GET /my_reservations/ HTTP/1.1" 500 213162
+[2025-11-23 17:03:46,777] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 16852
+[2025-11-23 17:03:46,879] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 4030
+[2025-11-23 17:03:47,244] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2025-11-23 17:03:47,287] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-11-23 17:03:47,288] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 4097
+[2025-11-23 17:04:05,908] INFO [django.server:212] "GET /reservations/31/edit/ HTTP/1.1" 200 9331
+[2025-11-23 17:04:16,890] INFO [django.server:212] "POST /reservations/31/edit/ HTTP/1.1" 302 0
+[2025-11-23 17:04:17,289] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 17029
+[2025-11-23 17:25:37,361] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-11-23 17:25:38,325] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-23 17:44:17,313] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-23 17:44:23,761] INFO [django.server:212] "GET / HTTP/1.1" 200 7138
+[2025-11-23 17:44:23,801] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-23 17:44:23,860] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-23 17:44:23,860] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-23 17:44:27,678] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 6112
+[2025-11-23 17:44:30,069] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-23 17:44:30,079] INFO [django.server:212] "GET / HTTP/1.1" 200 7228
+[2025-11-23 17:44:35,577] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7623
+[2025-11-23 17:44:43,135] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-23 17:44:43,380] INFO [django.server:212] "GET / HTTP/1.1" 200 8759
+[2025-11-23 17:44:50,602] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 10455
+[2025-11-23 17:45:19,006] INFO [django.server:212] "POST /staff/phone-reservation/ HTTP/1.1" 302 0
+[2025-11-23 17:45:19,320] INFO [django.server:212] "GET /staff/dashboard/ HTTP/1.1" 200 8218
+[2025-11-23 17:45:24,483] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7562
+[2025-11-23 17:45:27,056] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-23 17:45:27,061] INFO [django.server:212] "GET / HTTP/1.1" 200 7228
+[2025-11-23 17:45:27,081] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-23 17:45:27,085] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-23 17:45:27,086] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-23 17:45:36,233] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7623
+[2025-11-23 17:45:40,035] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-23 17:45:40,283] INFO [django.server:212] "GET / HTTP/1.1" 200 7311
+[2025-11-23 17:45:43,954] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 19026
+[2025-11-23 17:45:50,587] INFO [django.server:212] "GET /reservations/32/edit/ HTTP/1.1" 200 9331
+[2025-11-23 17:46:02,561] INFO [django.server:212] "POST /reservations/32/edit/ HTTP/1.1" 302 0
+[2025-11-23 17:46:02,991] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 19238
+[2025-11-23 18:03:10,911] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-23 18:03:16,263] INFO [django.server:212] "GET / HTTP/1.1" 200 7138
+[2025-11-23 18:03:16,300] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-23 18:03:16,361] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-23 18:03:16,362] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-23 18:03:19,270] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 6112
+[2025-11-23 18:03:21,476] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-23 18:03:21,487] INFO [django.server:212] "GET / HTTP/1.1" 200 7228
+[2025-11-23 18:03:24,275] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7623
+[2025-11-23 18:03:27,839] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-23 18:03:28,121] INFO [django.server:212] "GET / HTTP/1.1" 200 7311
+[2025-11-23 18:03:31,785] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 19026
+[2025-11-23 18:03:40,280] INFO [django.server:212] "GET /reservations/32/edit/ HTTP/1.1" 200 9331
+[2025-11-23 18:04:09,398] INFO [django.server:212] "POST /reservations/32/edit/ HTTP/1.1" 302 0
+[2025-11-23 18:04:09,834] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 19238
+[2025-11-23 18:14:36,688] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-11-23 18:14:37,614] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-23 18:14:52,248] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-23 18:15:13,155] INFO [django.server:212] "GET / HTTP/1.1" 200 7138
+[2025-11-23 18:15:13,191] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-23 18:15:13,249] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-23 18:15:13,249] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-23 18:15:16,019] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 6112
+[2025-11-23 18:15:18,617] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-23 18:15:18,617] INFO [django.server:212] "GET / HTTP/1.1" 200 7228
+[2025-11-23 18:15:21,687] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7623
+[2025-11-23 18:15:25,649] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-23 18:15:25,885] INFO [django.server:212] "GET / HTTP/1.1" 200 7311
+[2025-11-23 18:15:30,523] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 19026
+[2025-11-23 18:15:41,620] INFO [django.server:212] "GET /reservations/32/edit/ HTTP/1.1" 200 9331
+[2025-11-23 18:16:05,651] INFO [django.server:212] "POST /reservations/32/edit/ HTTP/1.1" 302 0
+[2025-11-23 18:16:06,054] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 19238
+[2025-11-23 18:26:53,335] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-23 18:26:58,216] INFO [django.server:212] "GET / HTTP/1.1" 200 7138
+[2025-11-23 18:26:58,258] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-23 18:26:58,308] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-23 18:26:58,309] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-23 18:27:04,979] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 6112
+[2025-11-23 18:27:07,598] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-23 18:27:07,608] INFO [django.server:212] "GET / HTTP/1.1" 200 7228
+[2025-11-23 18:27:10,634] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7623
+[2025-11-23 18:27:14,371] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-23 18:27:14,640] INFO [django.server:212] "GET / HTTP/1.1" 200 7311
+[2025-11-23 18:27:24,989] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 19026
+[2025-11-23 18:27:30,772] INFO [django.server:212] "GET /reservations/32/edit/ HTTP/1.1" 200 9331
+[2025-11-23 18:27:47,252] INFO [django.server:212] "POST /reservations/32/edit/ HTTP/1.1" 302 0
+[2025-11-23 18:27:47,677] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 19199
+[2025-11-23 18:39:00,396] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-23 18:39:28,585] INFO [django.server:212] "GET / HTTP/1.1" 200 7138
+[2025-11-23 18:39:28,660] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-23 18:39:28,684] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-23 18:39:28,684] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-23 18:39:31,598] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 6112
+[2025-11-23 18:39:34,123] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-23 18:39:34,127] INFO [django.server:212] "GET / HTTP/1.1" 200 7228
+[2025-11-23 18:39:36,907] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7623
+[2025-11-23 18:39:51,030] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-23 18:39:51,302] INFO [django.server:212] "GET / HTTP/1.1" 200 7311
+[2025-11-23 18:39:54,528] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 19026
+[2025-11-23 18:40:00,163] ERROR [django.request:246] Internal Server Error: /reservations/32/edit/
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 699, in update_reservation
+    return render(
+           ^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\backends\django.py", line 33, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\engine.py", line 175, in get_template
+    template, origin = self.find_template(template_name)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\engine.py", line 157, in find_template
+    template = loader.get_template(name, skip=skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loaders\cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loaders\base.py", line 28, in get_template
+    return Template(
+           ^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 200, in compile_nodelist
+    return parser.parse()
+           ^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 513, in parse
+    raise self.error(token, e)
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 511, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 293, in do_extends
+    nodelist = parser.parse()
+               ^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 513, in parse
+    raise self.error(token, e)
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 511, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 232, in do_block
+    nodelist = parser.parse(("endblock",))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 484, in parse
+    raise self.error(token, e)
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 482, in parse
+    filter_expression = self.compile_filter(token.contents)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 600, in compile_filter
+    return FilterExpression(token, self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 698, in __init__
+    filter_func = parser.find_filter(filter_name)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 606, in find_filter
+    raise TemplateSyntaxError("Invalid filter: '%s'" % filter_name)
+django.template.exceptions.TemplateSyntaxError: Invalid filter: 'crispy'
+[2025-11-23 18:40:00,171] ERROR [django.server:212] "GET /reservations/32/edit/ HTTP/1.1" 500 240899
+[2025-11-23 18:46:13,570] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-23 18:46:17,351] INFO [django.server:212] "GET / HTTP/1.1" 200 7138
+[2025-11-23 18:46:17,391] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-23 18:46:17,445] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-23 18:46:17,445] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-23 18:46:20,494] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 6112
+[2025-11-23 18:46:23,013] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-23 18:46:23,018] INFO [django.server:212] "GET / HTTP/1.1" 200 7228
+[2025-11-23 18:46:25,720] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7623
+[2025-11-23 18:46:28,788] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-23 18:46:29,028] INFO [django.server:212] "GET / HTTP/1.1" 200 7311
+[2025-11-23 18:46:32,884] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 19026
+[2025-11-23 18:46:38,097] INFO [django.server:212] "GET /reservations/32/edit/ HTTP/1.1" 200 11152
+[2025-11-23 18:47:17,653] INFO [django.server:212] "POST /reservations/32/edit/ HTTP/1.1" 302 0
+[2025-11-23 18:47:18,297] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 19203
+[2025-11-23 18:56:56,532] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-23 18:56:59,633] INFO [django.server:212] "GET / HTTP/1.1" 200 7138
+[2025-11-23 18:56:59,671] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-23 18:56:59,724] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-23 18:56:59,725] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-23 18:57:07,985] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 6112
+[2025-11-23 18:57:11,082] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-23 18:57:11,087] INFO [django.server:212] "GET / HTTP/1.1" 200 7228
+[2025-11-23 18:57:44,974] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7623
+[2025-11-23 18:57:48,048] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-23 18:57:48,323] INFO [django.server:212] "GET / HTTP/1.1" 200 7311
+[2025-11-23 18:57:52,338] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 19026
+[2025-11-23 18:57:57,743] INFO [django.server:212] "GET /reservations/32/edit/ HTTP/1.1" 200 11152
+[2025-11-23 18:58:21,909] INFO [django.server:212] "POST /reservations/32/edit/ HTTP/1.1" 302 0
+[2025-11-23 18:58:22,350] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 19199
+[2025-11-23 19:10:37,010] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-23 19:10:39,737] INFO [django.server:212] "GET / HTTP/1.1" 200 7138
+[2025-11-23 19:10:39,782] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-23 19:10:39,841] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-23 19:10:39,841] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-23 19:10:43,195] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 6112
+[2025-11-23 19:10:45,423] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-23 19:10:45,428] INFO [django.server:212] "GET / HTTP/1.1" 200 7228
+[2025-11-23 19:10:48,100] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7623
+[2025-11-23 19:10:51,360] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-23 19:10:51,576] INFO [django.server:212] "GET / HTTP/1.1" 200 7311
+[2025-11-23 19:10:56,114] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 19026
+[2025-11-23 19:11:04,864] INFO [django.server:212] "GET /reservations/32/edit/ HTTP/1.1" 200 11152
+[2025-11-23 19:11:28,090] INFO [django.server:212] "POST /reservations/32/edit/ HTTP/1.1" 302 0
+[2025-11-23 19:11:28,542] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 19199
+[2025-11-23 19:20:45,939] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-23 19:20:50,692] INFO [django.server:212] "GET / HTTP/1.1" 200 7138
+[2025-11-23 19:20:50,732] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-23 19:20:50,788] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-23 19:20:50,790] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-23 19:20:54,022] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 6112
+[2025-11-23 19:20:56,359] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-23 19:20:56,364] INFO [django.server:212] "GET / HTTP/1.1" 200 7228
+[2025-11-23 19:20:59,554] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7623
+[2025-11-23 19:21:03,055] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-23 19:21:03,289] INFO [django.server:212] "GET / HTTP/1.1" 200 7311
+[2025-11-23 19:21:06,977] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 19026
+[2025-11-23 19:21:11,258] INFO [reservation_book.views:520] >>> ENTER update_reservation id=32 method=GET user=Cartman
+[2025-11-23 19:21:11,315] INFO [reservation_book.views:526] DB BEFORE: id=32 date=2025-12-04 slot=19_20 tables=6 user=Cartman
+[2025-11-23 19:21:11,317] INFO [reservation_book.views:772] GET update_reservation: showing edit form for id=32
+[2025-11-23 19:21:11,386] INFO [django.server:212] "GET /reservations/32/edit/ HTTP/1.1" 200 11152
+[2025-11-23 19:21:32,181] INFO [reservation_book.views:520] >>> ENTER update_reservation id=32 method=POST user=Cartman
+[2025-11-23 19:21:32,235] INFO [reservation_book.views:526] DB BEFORE: id=32 date=2025-12-04 slot=19_20 tables=6 user=Cartman
+[2025-11-23 19:21:32,235] INFO [reservation_book.views:548] POST data in update_reservation: <QueryDict: {'csrfmiddlewaretoken': ['r6HCNpxy90a016lu02HZMRC0KA7uLmPUYUT8ZqlzfVmByfWz5sRSirD2KzeKQUql'], 'old_reservation_date': ['2025-12-04'], 'old_time_slot': ['19_20'], 'old_tables': ['6'], 'reservation_date': ['2025-12-03', '2025-12-04'], 'time_slot': ['18_19', '19_20'], 'number_of_tables_required_by_patron': ['5', '6']}>
+[2025-11-23 19:21:32,240] INFO [reservation_book.views:553] Form is valid. cleaned_data: {'reservation_date': datetime.date(2025, 12, 4), 'time_slot': '19_20', 'number_of_tables_required_by_patron': 6}
+[2025-11-23 19:21:32,241] INFO [reservation_book.views:554] form.has_changed(): False
+[2025-11-23 19:21:32,241] INFO [reservation_book.views:561] OLD VALUES: date=2025-12-04 slot=19_20 tables=6
+[2025-11-23 19:21:32,241] INFO [reservation_book.views:575] NEW VALUES (from cleaned_data): date=2025-12-04 slot=19_20 tables=6
+[2025-11-23 19:21:32,268] INFO [reservation_book.views:599] OLD TS BEFORE release: date=2025-12-04 slot=19_20 demand_field=total_cust_demand_for_tables_19_20 value=6
+[2025-11-23 19:21:32,295] INFO [reservation_book.views:612] OLD TS AFTER release: date=2025-12-04 slot=19_20 demand_field=total_cust_demand_for_tables_19_20 value=0
+[2025-11-23 19:21:32,321] INFO [reservation_book.views:631] NEW TS BEFORE commit: date=2025-12-04 slot=19_20 avail_field=number_of_tables_available_19_20=20 demand_field=total_cust_demand_for_tables_19_20=0 remaining=20
+[2025-11-23 19:21:32,347] INFO [reservation_book.views:673] NEW TS AFTER commit: date=2025-12-04 slot=19_20 demand_field=total_cust_demand_for_tables_19_20 value=6
+[2025-11-23 19:21:32,430] INFO [reservation_book.views:692] DB AFTER SAVE: id=32 date=2025-12-04 slot=19_20 tables=6 user=Cartman
+[2025-11-23 19:21:32,430] INFO [reservation_book.views:753] EMAIL TO paxton.hartmann@gmail.com:
+Hello Cartman,
+
+The reservation for 6 tables on Dec 04, 2025 at 19:00–20:00 has been updated to 6 tables on Dec 04, 2025 at 19:00–20:00.
+
+Reservation ID: 32
+
+Thank you for choosing Gambinos Restaurant & Lounge.
+[2025-11-23 19:21:33,568] INFO [django.server:212] "POST /reservations/32/edit/ HTTP/1.1" 302 0
+[2025-11-23 19:21:34,302] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 19199
+[2025-11-23 19:21:44,062] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 6112
+[2025-11-23 19:33:13,439] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-23 19:33:17,599] INFO [django.server:212] "GET / HTTP/1.1" 200 7138
+[2025-11-23 19:33:17,632] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-23 19:33:17,688] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-23 19:33:17,688] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-23 19:33:24,829] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 6112
+[2025-11-23 19:33:27,312] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-23 19:33:27,317] INFO [django.server:212] "GET / HTTP/1.1" 200 7228
+[2025-11-23 19:33:29,775] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7623
+[2025-11-23 19:33:33,115] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-23 19:33:33,370] INFO [django.server:212] "GET / HTTP/1.1" 200 7311
+[2025-11-23 19:33:44,801] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 19026
+[2025-11-23 19:33:51,741] INFO [reservation_book.views:519] >>> ENTER update_reservation id=32 method=GET user=Cartman
+[2025-11-23 19:33:51,789] INFO [reservation_book.views:524] DB BEFORE: id=32 date=2025-12-04 slot=19_20 tables=6 user=Cartman
+[2025-11-23 19:33:51,789] INFO [reservation_book.views:765] GET update_reservation: showing edit form for id=32
+[2025-11-23 19:33:51,834] INFO [django.server:212] "GET /reservations/32/edit/ HTTP/1.1" 200 11152
+[2025-11-23 19:34:11,772] INFO [reservation_book.views:519] >>> ENTER update_reservation id=32 method=POST user=Cartman
+[2025-11-23 19:34:11,816] INFO [reservation_book.views:524] DB BEFORE: id=32 date=2025-12-04 slot=19_20 tables=6 user=Cartman
+[2025-11-23 19:34:11,817] INFO [reservation_book.views:546] POST data in update_reservation: <QueryDict: {'csrfmiddlewaretoken': ['jXDH3A7aoclel4IEmYEm7BY2F73gEyR5LvAY3LX85a9ldaB1n7EPYHjmtGsWVnzX'], 'old_reservation_date': ['2025-12-04'], 'old_time_slot': ['19_20'], 'old_tables': ['6'], 'reservation_date': ['2025-12-03', '2025-12-04'], 'time_slot': ['18_19', '19_20'], 'number_of_tables_required_by_patron': ['5', '6']}>
+[2025-11-23 19:34:11,821] INFO [reservation_book.views:551] Form is valid. cleaned_data: {'reservation_date': datetime.date(2025, 12, 4), 'time_slot': '19_20', 'number_of_tables_required_by_patron': 6}
+[2025-11-23 19:34:11,821] INFO [reservation_book.views:558] OLD VALUES: date=2025-12-04 slot=19_20 tables=6
+[2025-11-23 19:34:11,822] INFO [reservation_book.views:588] NEW VALUES (from POST first item): date=2025-12-03 slot=18_19 tables=5
+[2025-11-23 19:34:11,848] INFO [reservation_book.views:610] OLD TS BEFORE release: date=2025-12-04 slot=19_20 field=total_cust_demand_for_tables_19_20 value=6
+[2025-11-23 19:34:11,874] INFO [reservation_book.views:620] OLD TS AFTER release: date=2025-12-04 slot=19_20 field=total_cust_demand_for_tables_19_20 value=0
+[2025-11-23 19:34:11,899] INFO [reservation_book.views:638] NEW TS BEFORE commit: date=2025-12-03 slot=18_19 number_of_tables_available_18_19=20 total_cust_demand_for_tables_18_19=5 remaining=15
+[2025-11-23 19:34:11,921] INFO [reservation_book.views:672] NEW TS AFTER commit: date=2025-12-03 slot=18_19 field=total_cust_demand_for_tables_18_19 value=10
+[2025-11-23 19:34:12,002] INFO [reservation_book.views:687] DB AFTER SAVE: id=32 date=2025-12-03 slot=18_19 tables=5 user=Cartman
+[2025-11-23 19:34:12,002] INFO [reservation_book.views:747] EMAIL TO paxton.hartmann@gmail.com:
+Hello Cartman,
+
+The reservation for 6 tables on Dec 04, 2025 at 19:00–20:00 has been updated to 5 tables on Dec 03, 2025 at 18:00–19:00.
+
+Reservation ID: 32
+
+Thank you for choosing Gambinos Restaurant & Lounge.
+[2025-11-23 19:34:13,821] INFO [django.server:212] "POST /reservations/32/edit/ HTTP/1.1" 302 0
+[2025-11-23 19:34:14,226] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 19199
+[2025-11-23 20:00:26,484] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-11-23 20:00:27,250] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-23 20:00:41,231] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-23 20:00:44,639] INFO [django.server:212] "GET / HTTP/1.1" 200 7138
+[2025-11-23 20:00:44,681] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-23 20:00:44,726] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-23 20:00:44,727] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-23 20:00:47,394] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 6112
+[2025-11-23 20:00:50,302] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-23 20:00:50,307] INFO [django.server:212] "GET / HTTP/1.1" 200 7228
+[2025-11-23 20:01:22,291] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7623
+[2025-11-23 20:01:25,719] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-23 20:01:25,975] INFO [django.server:212] "GET / HTTP/1.1" 200 7311
+[2025-11-23 20:01:29,699] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 19026
+[2025-11-23 20:01:33,922] INFO [reservation_book.views:519] >>> ENTER update_reservation id=32 method=GET user=Cartman
+[2025-11-23 20:01:33,969] INFO [reservation_book.views:524] DB BEFORE: id=32 date=2025-12-03 slot=18_19 tables=5 user=Cartman
+[2025-11-23 20:01:33,970] INFO [reservation_book.views:777] GET update_reservation: showing edit form for id=32
+[2025-11-23 20:01:34,022] INFO [django.server:212] "GET /reservations/32/edit/ HTTP/1.1" 200 11152
+[2025-11-23 20:02:21,396] INFO [reservation_book.views:519] >>> ENTER update_reservation id=32 method=POST user=Cartman
+[2025-11-23 20:02:21,449] INFO [reservation_book.views:524] DB BEFORE: id=32 date=2025-12-03 slot=18_19 tables=5 user=Cartman
+[2025-11-23 20:02:21,450] INFO [reservation_book.views:546] POST data in update_reservation: <QueryDict: {'csrfmiddlewaretoken': ['Bsi2vTtmvICJOWYBlLuCQg4KNATWZdLJWNLOnqbWfJFP7lRkEVFzLGv5ozilj3Tn'], 'old_reservation_date': ['2025-12-03'], 'old_time_slot': ['18_19'], 'old_tables': ['5'], 'reservation_date': ['2025-12-06', '2025-12-03'], 'time_slot': ['19_20', '18_19'], 'number_of_tables_required_by_patron': ['7', '5']}>
+[2025-11-23 20:02:21,453] INFO [reservation_book.views:551] Form is valid. cleaned_data: {'reservation_date': datetime.date(2025, 12, 3), 'time_slot': '18_19', 'number_of_tables_required_by_patron': 5}
+[2025-11-23 20:02:21,454] INFO [reservation_book.views:558] OLD VALUES: date=2025-12-03 slot=18_19 tables=5
+[2025-11-23 20:02:21,454] INFO [reservation_book.views:588] NEW VALUES (from POST first item): date=2025-12-06 slot=19_20 tables=7
+[2025-11-23 20:02:21,480] INFO [reservation_book.views:610] OLD TS BEFORE release: date=2025-12-03 slot=18_19 field=total_cust_demand_for_tables_18_19 value=10
+[2025-11-23 20:02:21,506] INFO [reservation_book.views:620] OLD TS AFTER release: date=2025-12-03 slot=18_19 field=total_cust_demand_for_tables_18_19 value=5
+[2025-11-23 20:02:21,533] INFO [reservation_book.views:638] NEW TS BEFORE commit: date=2025-12-06 slot=19_20 number_of_tables_available_19_20=20 total_cust_demand_for_tables_19_20=0 remaining=20
+[2025-11-23 20:02:21,562] INFO [reservation_book.views:672] NEW TS AFTER commit: date=2025-12-06 slot=19_20 field=total_cust_demand_for_tables_19_20 value=7
+[2025-11-23 20:02:21,645] INFO [reservation_book.views:687] DB AFTER SAVE: id=32 date=2025-12-06 slot=19_20 tables=7 user=Cartman
+[2025-11-23 20:02:21,685] ERROR [django.request:246] Internal Server Error: /reservations/32/edit/
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 729, in update_reservation
+    old_created = fmt_dt(reservation.created_at)
+                         ^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'TableReservation' object has no attribute 'created_at'
+[2025-11-23 20:02:21,689] ERROR [django.server:212] "POST /reservations/32/edit/ HTTP/1.1" 500 91760
+[2025-11-23 20:10:41,314] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-23 20:11:01,627] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-23 20:11:04,080] INFO [django.server:212] "GET / HTTP/1.1" 200 7138
+[2025-11-23 20:11:04,118] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-23 20:11:04,168] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-23 20:11:04,168] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-23 20:11:08,035] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 6112
+[2025-11-23 20:11:10,910] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-23 20:11:10,914] INFO [django.server:212] "GET / HTTP/1.1" 200 7228
+[2025-11-23 20:11:13,695] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7623
+[2025-11-23 20:11:18,896] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-23 20:11:19,158] INFO [django.server:212] "GET / HTTP/1.1" 200 7311
+[2025-11-23 20:11:23,400] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 19026
+[2025-11-23 20:11:28,630] INFO [reservation_book.views:519] >>> ENTER update_reservation id=32 method=GET user=Cartman
+[2025-11-23 20:11:28,682] INFO [reservation_book.views:524] DB BEFORE: id=32 date=2025-12-06 slot=19_20 tables=7 user=Cartman
+[2025-11-23 20:11:28,683] INFO [reservation_book.views:789] GET update_reservation: showing edit form for id=32
+[2025-11-23 20:11:28,726] INFO [django.server:212] "GET /reservations/32/edit/ HTTP/1.1" 200 11152
+[2025-11-23 20:11:44,116] INFO [reservation_book.views:519] >>> ENTER update_reservation id=32 method=POST user=Cartman
+[2025-11-23 20:11:44,163] INFO [reservation_book.views:524] DB BEFORE: id=32 date=2025-12-06 slot=19_20 tables=7 user=Cartman
+[2025-11-23 20:11:44,163] INFO [reservation_book.views:546] POST data in update_reservation: <QueryDict: {'csrfmiddlewaretoken': ['T98a83s6TsFgKVfsjxc5jaCBqqqgTKjxSFJbEpaw2TqFh96cZgcDe98brsAxn8C7'], 'old_reservation_date': ['2025-12-06'], 'old_time_slot': ['19_20'], 'old_tables': ['7'], 'reservation_date': ['2025-12-07', '2025-12-06'], 'time_slot': ['20_21', '19_20'], 'number_of_tables_required_by_patron': ['6', '7']}>
+[2025-11-23 20:11:44,166] INFO [reservation_book.views:551] Form is valid. cleaned_data: {'reservation_date': datetime.date(2025, 12, 6), 'time_slot': '19_20', 'number_of_tables_required_by_patron': 7}
+[2025-11-23 20:11:44,167] INFO [reservation_book.views:558] OLD VALUES: date=2025-12-06 slot=19_20 tables=7
+[2025-11-23 20:11:44,167] INFO [reservation_book.views:588] NEW VALUES (from POST first item): date=2025-12-07 slot=20_21 tables=6
+[2025-11-23 20:11:44,194] INFO [reservation_book.views:610] OLD TS BEFORE release: date=2025-12-06 slot=19_20 field=total_cust_demand_for_tables_19_20 value=7
+[2025-11-23 20:11:44,220] INFO [reservation_book.views:620] OLD TS AFTER release: date=2025-12-06 slot=19_20 field=total_cust_demand_for_tables_19_20 value=0
+[2025-11-23 20:11:44,248] INFO [reservation_book.views:638] NEW TS BEFORE commit: date=2025-12-07 slot=20_21 number_of_tables_available_20_21=20 total_cust_demand_for_tables_20_21=0 remaining=20
+[2025-11-23 20:11:44,272] INFO [reservation_book.views:672] NEW TS AFTER commit: date=2025-12-07 slot=20_21 field=total_cust_demand_for_tables_20_21 value=6
+[2025-11-23 20:11:44,372] INFO [reservation_book.views:687] DB AFTER SAVE: id=32 date=2025-12-07 slot=20_21 tables=6 user=Cartman
+[2025-11-23 20:11:44,372] INFO [reservation_book.views:771] EMAIL TO paxton.hartmann@gmail.com:
+Hello Cartman,
+
+The reservation for 7 tables on Dec 06, 2025 at 19:00–20:00
+was updated on Nov 23, 2025 at 19:11:44
+to 6 tables on Dec 07, 2025 at 20:00–21:00.
+
+Reservation ID: 32
+Updated by: Cartman
+
+Thank you for choosing Gambinos Restaurant & Lounge.
+[2025-11-23 20:11:45,652] INFO [django.server:212] "POST /reservations/32/edit/ HTTP/1.1" 302 0
+[2025-11-23 20:11:46,068] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 19199
+[2025-11-23 20:40:20,057] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\models.py changed, reloading.
+[2025-11-23 20:40:21,101] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-23 20:48:33,500] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-23 20:48:36,628] INFO [django.server:212] "GET / HTTP/1.1" 200 7138
+[2025-11-23 20:48:36,676] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-23 20:48:36,729] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-23 20:48:36,730] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-23 20:48:39,612] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 6112
+[2025-11-23 20:48:42,072] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-23 20:48:42,076] INFO [django.server:212] "GET / HTTP/1.1" 200 7228
+[2025-11-23 20:48:44,812] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7623
+[2025-11-23 20:48:48,283] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-23 20:48:48,527] INFO [django.server:212] "GET / HTTP/1.1" 200 7311
+[2025-11-23 20:48:52,250] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 19026
+[2025-11-23 20:49:11,592] INFO [reservation_book.views:519] >>> ENTER update_reservation id=29 method=GET user=Cartman
+[2025-11-23 20:49:11,658] INFO [reservation_book.views:524] DB BEFORE: id=29 date=2025-11-26 slot=18_19 tables=1 user=Cartman
+[2025-11-23 20:49:11,658] INFO [reservation_book.views:789] GET update_reservation: showing edit form for id=29
+[2025-11-23 20:49:11,707] INFO [django.server:212] "GET /reservations/29/edit/ HTTP/1.1" 200 11152
+[2025-11-23 20:49:24,661] INFO [reservation_book.views:519] >>> ENTER update_reservation id=29 method=POST user=Cartman
+[2025-11-23 20:49:24,712] INFO [reservation_book.views:524] DB BEFORE: id=29 date=2025-11-26 slot=18_19 tables=1 user=Cartman
+[2025-11-23 20:49:24,713] INFO [reservation_book.views:546] POST data in update_reservation: <QueryDict: {'csrfmiddlewaretoken': ['3iAacjTdzWJ1X3yKK6uWia0WsDyRT0JvlAZxaoADVbRE27WBauWNs7AjCsBE38SY'], 'old_reservation_date': ['2025-11-26'], 'old_time_slot': ['18_19'], 'old_tables': ['1'], 'reservation_date': ['2025-11-28', '2025-11-26'], 'time_slot': ['19_20', '18_19'], 'number_of_tables_required_by_patron': ['3', '1']}>
+[2025-11-23 20:49:24,716] INFO [reservation_book.views:551] Form is valid. cleaned_data: {'reservation_date': datetime.date(2025, 11, 26), 'time_slot': '18_19', 'number_of_tables_required_by_patron': 1}
+[2025-11-23 20:49:24,716] INFO [reservation_book.views:558] OLD VALUES: date=2025-11-26 slot=18_19 tables=1
+[2025-11-23 20:49:24,717] INFO [reservation_book.views:588] NEW VALUES (from POST first item): date=2025-11-28 slot=19_20 tables=3
+[2025-11-23 20:49:24,743] INFO [reservation_book.views:610] OLD TS BEFORE release: date=2025-11-26 slot=18_19 field=total_cust_demand_for_tables_18_19 value=3
+[2025-11-23 20:49:24,770] INFO [reservation_book.views:620] OLD TS AFTER release: date=2025-11-26 slot=18_19 field=total_cust_demand_for_tables_18_19 value=2
+[2025-11-23 20:49:24,797] INFO [reservation_book.views:638] NEW TS BEFORE commit: date=2025-11-28 slot=19_20 number_of_tables_available_19_20=20 total_cust_demand_for_tables_19_20=0 remaining=20
+[2025-11-23 20:49:24,827] INFO [reservation_book.views:672] NEW TS AFTER commit: date=2025-11-28 slot=19_20 field=total_cust_demand_for_tables_19_20 value=3
+[2025-11-23 20:49:24,904] INFO [reservation_book.views:687] DB AFTER SAVE: id=29 date=2025-11-28 slot=19_20 tables=3 user=Cartman
+[2025-11-23 20:49:24,904] INFO [reservation_book.views:771] EMAIL TO paxton.hartmann@gmail.com:
+Hello Cartman,
+
+The reservation (created on Nov 23, 2025 at 19:43:17)
+for 1 table on Nov 26, 2025 at 18:00–19:00
+was updated on Nov 23, 2025 at 19:49:24
+to 3 tables on Nov 28, 2025 at 19:00–20:00.
+
+Reservation ID: 29
+Updated by: Cartman
+
+Thank you for choosing Gambinos Restaurant & Lounge.
+[2025-11-23 20:49:26,216] INFO [django.server:212] "POST /reservations/29/edit/ HTTP/1.1" 302 0
+[2025-11-23 20:49:26,650] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 19199
+[2025-11-23 20:50:27,998] INFO [django.server:212] "POST /cancel_reservation/28/ HTTP/1.1" 302 0
+[2025-11-23 20:50:28,424] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 17027
+[2025-11-23 21:01:15,349] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-23 21:01:24,335] INFO [django.server:212] "GET / HTTP/1.1" 200 7138
+[2025-11-23 21:01:24,372] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-23 21:01:24,401] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-23 21:01:24,401] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-23 21:01:31,879] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 6112
+[2025-11-23 21:01:34,104] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-23 21:01:34,109] INFO [django.server:212] "GET / HTTP/1.1" 200 7228
+[2025-11-23 21:01:43,876] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7623
+[2025-11-23 21:01:51,508] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-23 21:01:51,741] INFO [django.server:212] "GET / HTTP/1.1" 200 7311
+[2025-11-23 21:01:56,269] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 16852
+[2025-11-23 21:02:06,222] INFO [django.server:212] "POST /cancel_reservation/30/ HTTP/1.1" 302 0
+[2025-11-23 21:02:06,598] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 14853
+[2025-11-23 21:02:12,892] INFO [django.server:212] "GET /reservations/26/edit/ HTTP/1.1" 200 11104
+[2025-11-23 21:02:37,772] INFO [django.server:212] "POST /reservations/26/edit/ HTTP/1.1" 200 11493
+[2025-11-23 21:03:00,918] INFO [django.server:212] "POST /reservations/26/edit/ HTTP/1.1" 200 11493
+[2025-11-23 21:03:49,616] INFO [django.server:212] "POST /reservations/26/edit/ HTTP/1.1" 200 11493
+[2025-11-23 21:14:01,472] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-11-23 21:14:02,496] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-23 21:14:17,676] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-23 21:14:21,838] INFO [django.server:212] "GET / HTTP/1.1" 200 7138
+[2025-11-23 21:14:21,883] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-23 21:14:21,932] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-23 21:14:21,932] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-23 21:14:30,972] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 6112
+[2025-11-23 21:14:33,123] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-23 21:14:33,127] INFO [django.server:212] "GET / HTTP/1.1" 200 7228
+[2025-11-23 21:14:37,551] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7623
+[2025-11-23 21:14:40,784] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-23 21:14:41,028] INFO [django.server:212] "GET / HTTP/1.1" 200 7311
+[2025-11-23 21:14:46,896] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 14678
+[2025-11-23 21:15:02,022] INFO [django.server:212] "GET /reservations/31/edit/ HTTP/1.1" 200 8083
+[2025-11-23 21:15:25,826] INFO [django.server:212] "POST /reservations/31/edit/ HTTP/1.1" 302 0
+[2025-11-23 21:15:26,187] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 14855
+[2025-11-23 21:27:01,356] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-23 21:27:04,337] INFO [django.server:212] "GET / HTTP/1.1" 200 7138
+[2025-11-23 21:27:04,375] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-23 21:27:04,424] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-23 21:27:04,424] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-23 21:27:08,178] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 6112
+[2025-11-23 21:27:10,507] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-23 21:27:10,511] INFO [django.server:212] "GET / HTTP/1.1" 200 7228
+[2025-11-23 21:27:13,256] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7623
+[2025-11-23 21:27:16,727] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-23 21:27:16,974] INFO [django.server:212] "GET / HTTP/1.1" 200 7311
+[2025-11-23 21:27:19,687] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 14678
+[2025-11-23 21:27:30,003] INFO [django.server:212] "POST /cancel_reservation/31/ HTTP/1.1" 302 0
+[2025-11-23 21:27:30,349] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 12679
+[2025-11-23 21:27:37,527] INFO [django.server:212] "GET /reservations/26/edit/ HTTP/1.1" 200 8067
+[2025-11-23 21:28:26,299] INFO [django.server:212] "POST /reservations/26/edit/ HTTP/1.1" 200 8306
+[2025-11-23 21:43:25,973] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-23 21:43:29,186] INFO [django.server:212] "GET / HTTP/1.1" 200 7138
+[2025-11-23 21:43:29,229] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-23 21:43:29,284] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-23 21:43:29,284] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-23 21:43:32,991] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 6112
+[2025-11-23 21:43:35,166] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-23 21:43:35,171] INFO [django.server:212] "GET / HTTP/1.1" 200 7228
+[2025-11-23 21:43:37,905] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7623
+[2025-11-23 21:43:40,927] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-23 21:43:41,167] INFO [django.server:212] "GET / HTTP/1.1" 200 7311
+[2025-11-23 21:43:43,537] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 12504
+[2025-11-23 21:43:48,051] INFO [django.server:212] "GET /reservations/26/edit/ HTTP/1.1" 200 8066
+[2025-11-23 21:44:08,731] INFO [django.server:212] "POST /reservations/26/edit/ HTTP/1.1" 302 0
+[2025-11-23 21:44:09,088] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 12677
+[2025-11-23 21:55:43,160] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-11-23 21:55:43,976] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-23 21:57:18,323] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-23 21:57:21,852] INFO [django.server:212] "GET / HTTP/1.1" 200 7138
+[2025-11-23 21:57:21,894] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-23 21:57:21,975] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-23 21:57:21,976] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-23 21:57:25,118] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 6112
+[2025-11-23 21:57:27,594] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-23 21:57:27,598] INFO [django.server:212] "GET / HTTP/1.1" 200 7228
+[2025-11-23 21:57:30,139] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7623
+[2025-11-23 21:57:33,578] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-23 21:57:33,825] INFO [django.server:212] "GET / HTTP/1.1" 200 7311
+[2025-11-23 21:57:39,266] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 12504
+[2025-11-23 21:57:55,170] INFO [django.server:212] "GET /reservations/32/edit/ HTTP/1.1" 200 8093
+[2025-11-23 21:58:10,582] INFO [django.server:212] "POST /reservations/32/edit/ HTTP/1.1" 302 0
+[2025-11-23 21:58:10,938] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 12677
+[2025-11-25 18:07:17,682] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-11-25 18:07:23,329] INFO [django.server:212] "GET / HTTP/1.1" 200 7069
+[2025-11-25 18:07:23,689] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-25 18:07:23,745] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-25 18:07:23,750] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-25 18:07:24,170] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-11-25 18:07:24,172] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 4097
+[2025-11-25 18:07:32,378] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7623
+[2025-11-25 18:07:35,823] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-25 18:07:36,079] INFO [django.server:212] "GET / HTTP/1.1" 200 7311
+[2025-11-25 18:07:40,414] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 12504
+[2025-11-25 18:07:46,117] INFO [django.server:212] "GET /reservations/32/edit/ HTTP/1.1" 200 8094
+[2025-11-25 18:08:01,609] INFO [django.server:212] "POST /reservations/32/edit/ HTTP/1.1" 302 0
+[2025-11-25 18:08:01,979] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 12677
+[2025-11-25 18:15:45,428] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 6112
+[2025-11-25 18:15:47,701] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-11-25 18:15:47,705] INFO [django.server:212] "GET / HTTP/1.1" 200 7228
+[2025-11-25 18:15:47,734] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-11-25 18:15:47,735] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-11-25 18:15:47,735] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-11-25 18:15:50,152] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7623
+[2025-11-25 18:15:58,720] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-11-25 18:15:58,959] INFO [django.server:212] "GET / HTTP/1.1" 200 8759
+[2025-11-25 18:16:03,431] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 10455
+[2025-11-25 18:16:50,411] INFO [django.server:212] "POST /staff/phone-reservation/ HTTP/1.1" 302 0
+[2025-11-25 18:16:50,719] INFO [django.server:212] "GET /staff/dashboard/ HTTP/1.1" 200 8219
+[2025-11-25 18:16:54,757] INFO [django.server:212] "GET /staff/customer/6/history/ HTTP/1.1" 200 8483
+[2025-11-25 18:17:24,519] INFO [django.server:212] "GET /staff/dashboard/ HTTP/1.1" 200 8002
+[2025-11-25 18:17:34,027] INFO [django.server:212] "GET /staff/customer/6/history/ HTTP/1.1" 200 8483
+[2025-11-25 18:18:43,105] INFO [django.server:212] "GET /staff/dashboard/ HTTP/1.1" 200 8002
+[2025-11-25 18:18:55,096] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 7108
+[2025-11-25 18:19:02,507] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 10455
+[2025-11-25 18:19:22,518] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 10455
+[2025-11-25 18:19:29,458] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 10455
+[2025-11-25 18:19:49,194] INFO [reservation_book.views:42] make_reservation called, method=GET
+[2025-11-25 18:19:50,472] INFO [django.server:212] "GET /make_reservation/ HTTP/1.1" 200 76035
