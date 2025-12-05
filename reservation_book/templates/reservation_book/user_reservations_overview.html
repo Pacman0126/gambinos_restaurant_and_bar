@@ -19,6 +19,7 @@
                     <th>Email</th>
                     <th>Total Reservations</th>
                     <th>Active</th>
+                    <th>Active Tables Booked</th>
                     <th>Cancelled</th>
                     <th>Total Tables Booked</th>
                     <th>Details</th>
@@ -31,6 +32,7 @@
                         <td>{{ user.email }}</td>
                         <td>{{ user.total_reservations|default:0 }}</td>
                         <td>{{ user.active_reservations|default:0 }}</td>
+                        <td>{{ user.active_tables_booked}}</td>
                         <td>{{ user.cancelled_reservations|default:0 }}</td>
                         <td>{{ user.total_tables_booked|default:0 }}</td>
                         <td>

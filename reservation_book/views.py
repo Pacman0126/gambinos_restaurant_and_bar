@@ -5,11 +5,12 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import login, get_user_model
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.mail import send_mail
 from django.db.models import Q, Count, Sum
 from django.template.loader import render_to_string
 from django.http import JsonResponse
+from django.db.models.functions import Coalesce
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.urls import reverse
@@ -249,6 +250,7 @@ def cancel_reservation(request, reservation_id):
 
     # --- Update demand: release tables from that date/slot ---
     try:
+        ts = TimeSlotAvailability.DoesNotExist
         ts = TimeSlotAvailability.objects.get(calendar_date=old_date)
     except TimeSlotAvailability.DoesNotExist:
         ts = None
@@ -443,14 +445,29 @@ def staff_reservations(request):
     )
 
 
-@staff_member_required
+def is_staff_user(user):
+    return user.is_staff
+
+
+@login_required
+@user_passes_test(is_staff_user)
 def user_reservations_overview(request):
     """
-    Staff dashboard: per-customer reservation stats.
-    Only includes users who have at least one reservation.
+    Staff-facing overview of all customers who have at least one reservation.
+
+    - total_reservations: all reservations (active + cancelled)
+    - active_reservations: reservation_status=True (even if in the past)
+    - cancelled_reservations: reservation_status=False
+    - total_tables_booked: sum of tables across *all* reservations (history)
+    - active_tables_booked: sum of tables for *upcoming* active reservations
+      (reservation_status=True AND reservation_date >= today).
     """
+    today = timezone.localdate()
+
     users = (
-        User.objects.annotate(
+        User.objects
+        .filter(reservations__isnull=False)  # only users with reservations
+        .annotate(
             total_reservations=Count("reservations", distinct=True),
             active_reservations=Count(
                 "reservations",
@@ -462,13 +479,34 @@ def user_reservations_overview(request):
                 filter=Q(reservations__reservation_status=False),
                 distinct=True,
             ),
-            total_tables_booked=Sum(
-                "reservations__number_of_tables_required_by_patron"
+            # NEW: lifetime total tables booked (all reservations)
+            total_tables_booked=Coalesce(
+                Sum("reservations__number_of_tables_required_by_patron"),
+                0,
+            ),
+            # Existing: only upcoming / today active tables
+            active_tables_booked=Coalesce(
+                Sum(
+                    "reservations__number_of_tables_required_by_patron",
+                    filter=Q(
+                        reservations__reservation_status=True,
+                        reservations__reservation_date__gte=today,
+                    ),
+                ),
+                0,
             ),
         )
-        .filter(total_reservations__gt=0)
-        .order_by("-total_reservations", "email")
+        .order_by("last_name", "first_name")
     )
+
+    # Optional debug to check math
+    # for u in users:
+    #     print(
+    #         f"[DEBUG] {u.email} -> "
+    #         f"total_res={u.total_reservations}, "
+    #         f"total_tables={u.total_tables_booked}, "
+    #         f"active_tables={u.active_tables_booked}"
+    #     )
 
     return render(
         request,

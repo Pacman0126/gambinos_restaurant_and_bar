@@ -5357,3 +5357,109 @@ Traceback (most recent call last):
 django.template.exceptions.TemplateDoesNotExist: reservation_book/staff_dashboard.html
 [2025-12-05 20:20:36,518] ERROR [django.server:212] "GET /staff/dashboard/ HTTP/1.1" 500 103728
 [2025-12-05 20:32:44,569] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-05 20:32:49,509] INFO [django.server:212] "GET / HTTP/1.1" 200 8941
+[2025-12-05 20:32:49,566] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-05 20:32:49,622] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-05 20:32:49,623] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-05 20:33:07,645] INFO [django.server:212] "GET /staff/reservations/ HTTP/1.1" 200 25390
+[2025-12-05 20:33:14,705] INFO [django.server:212] "GET /staff/dashboard/ HTTP/1.1" 200 13598
+[2025-12-05 20:33:46,384] INFO [django.server:212] "GET /staff/reservations/ HTTP/1.1" 200 25390
+[2025-12-05 20:49:55,738] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-05 20:49:58,959] INFO [django.server:212] "GET / HTTP/1.1" 200 7042
+[2025-12-05 20:49:59,224] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-05 20:49:59,248] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-05 20:49:59,251] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-05 20:49:59,438] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-12-05 20:49:59,439] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 4467
+[2025-12-05 20:50:04,415] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7614
+[2025-12-05 20:50:08,721] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-12-05 20:50:09,007] INFO [django.server:212] "GET / HTTP/1.1" 200 7284
+[2025-12-05 20:50:16,328] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 14602
+[2025-12-05 20:50:30,135] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 6103
+[2025-12-05 20:50:32,618] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-12-05 20:50:32,618] INFO [django.server:212] "GET / HTTP/1.1" 200 7201
+[2025-12-05 20:50:36,275] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7614
+[2025-12-05 20:50:44,612] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-12-05 20:50:45,074] INFO [django.server:212] "GET / HTTP/1.1" 200 9112
+[2025-12-05 20:50:51,271] INFO [django.server:212] "GET /staff/reservations/ HTTP/1.1" 200 25390
+[2025-12-05 20:51:01,196] INFO [django.server:212] "GET /staff/customer/6/history/ HTTP/1.1" 200 10294
+[2025-12-05 20:51:19,361] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 7486
+[2025-12-05 20:51:29,351] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 10839
+[2025-12-05 20:57:07,108] INFO [django.server:212] "POST /staff/phone-reservation/ HTTP/1.1" 302 0
+[2025-12-05 20:57:07,409] INFO [django.server:212] "GET /staff/customers/ HTTP/1.1" 200 8619
+[2025-12-05 20:57:36,861] INFO [django.server:212] "GET /staff/customer/6/history/ HTTP/1.1" 200 10650
+[2025-12-05 21:01:31,835] INFO [django.server:212] "GET /staff/customers/ HTTP/1.1" 200 8402
+[2025-12-05 21:09:17,366] INFO [django.server:212] "GET /staff/customer/6/history/ HTTP/1.1" 200 10650
+[2025-12-05 21:09:50,153] INFO [django.server:212] "GET /staff/customers/ HTTP/1.1" 200 8402
+[2025-12-05 21:48:12,592] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-05 21:48:17,455] INFO [django.server:212] "GET / HTTP/1.1" 200 8941
+[2025-12-05 21:48:17,499] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-05 21:48:17,554] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-05 21:48:17,556] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-05 21:48:27,366] INFO [django.server:212] "GET /staff/customers/ HTTP/1.1" 200 8437
+[2025-12-05 21:48:48,623] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7933
+[2025-12-05 21:48:52,531] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-12-05 21:48:52,537] INFO [django.server:212] "GET / HTTP/1.1" 200 7201
+[2025-12-05 21:48:56,030] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7614
+[2025-12-05 21:48:59,681] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-12-05 21:48:59,929] INFO [django.server:212] "GET / HTTP/1.1" 200 7284
+[2025-12-05 21:49:04,324] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 16743
+[2025-12-05 21:49:12,602] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 6103
+[2025-12-05 21:49:15,040] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-12-05 21:49:15,045] INFO [django.server:212] "GET / HTTP/1.1" 200 7201
+[2025-12-05 21:49:17,878] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7614
+[2025-12-05 21:49:25,584] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-12-05 21:49:25,832] INFO [django.server:212] "GET / HTTP/1.1" 200 9112
+[2025-12-05 21:49:25,854] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-05 21:49:25,862] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-05 21:49:25,862] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-05 21:49:38,213] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 7486
+[2025-12-05 21:49:45,733] INFO [django.server:212] "GET /staff/reservations/ HTTP/1.1" 200 26924
+[2025-12-05 21:50:03,255] INFO [django.server:212] "GET /staff/customers/ HTTP/1.1" 200 8437
+[2025-12-05 21:52:11,479] INFO [django.server:212] "GET /staff/customers/ HTTP/1.1" 200 8486
+[2025-12-05 21:52:11,647] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 5924
+[2025-12-05 21:52:12,007] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2025-12-05 21:52:12,051] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-12-05 21:52:12,052] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 4467
+[2025-12-05 21:53:13,777] INFO [django.server:212] "GET /staff/customer/6/history/ HTTP/1.1" 200 10650
+[2025-12-05 22:02:49,332] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-12-05 22:02:50,208] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-05 22:02:59,440] INFO [django.server:212] "GET /staff/reservations/ HTTP/1.1" 200 26924
+[2025-12-05 22:03:03,442] INFO [django.server:212] "GET /staff/customers/ HTTP/1.1" 200 8485
+[2025-12-05 22:03:09,118] INFO [django.server:212] "GET /staff/customers/ HTTP/1.1" 200 8485
+[2025-12-05 22:03:09,200] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 5924
+[2025-12-05 22:03:09,449] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2025-12-05 22:03:10,066] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-12-05 22:03:10,066] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 4467
+[2025-12-05 22:14:14,101] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-12-05 22:14:15,132] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-05 22:14:22,192] INFO [django.server:212] "GET /staff/customers/ HTTP/1.1" 200 8485
+[2025-12-05 22:14:22,268] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 5924
+[2025-12-05 22:14:22,711] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2025-12-05 22:14:22,754] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-12-05 22:14:22,755] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 4467
+[2025-12-05 22:39:08,654] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-12-05 22:39:09,580] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-05 22:43:05,503] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-05 22:43:09,483] INFO [django.server:212] "GET / HTTP/1.1" 200 8941
+[2025-12-05 22:43:09,529] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-05 22:43:09,592] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-05 22:43:09,592] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-05 22:43:14,796] INFO [django.server:212] "GET /staff/reservations/ HTTP/1.1" 200 26924
+[2025-12-05 22:43:21,107] INFO [django.server:212] "GET /staff/customers/ HTTP/1.1" 200 8486
+[2025-12-05 22:43:35,311] INFO [django.server:212] "GET /staff/customer/6/history/ HTTP/1.1" 200 10650
+[2025-12-05 22:55:19,090] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-12-05 22:55:20,063] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-05 22:55:33,494] INFO [django.server:212] "GET /staff/customer/6/history/ HTTP/1.1" 200 10650
+[2025-12-05 22:55:33,583] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 5924
+[2025-12-05 22:55:33,978] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2025-12-05 22:55:34,034] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-12-05 22:55:34,035] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 4467
+[2025-12-05 22:55:40,613] INFO [django.server:212] "GET /staff/customers/ HTTP/1.1" 200 8486
+[2025-12-05 23:05:20,293] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-12-05 23:05:21,140] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-05 23:05:27,923] INFO [django.server:212] "GET /staff/customers/ HTTP/1.1" 200 8487
+[2025-12-05 23:05:28,005] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 5924
+[2025-12-05 23:05:28,443] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2025-12-05 23:05:28,488] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-12-05 23:05:28,489] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 4467
