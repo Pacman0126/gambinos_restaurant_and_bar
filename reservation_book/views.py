@@ -4,7 +4,7 @@ from datetime import timedelta, datetime
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth import login
+from django.contrib.auth import login, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.db.models import Q, Count, Sum
@@ -12,11 +12,9 @@ from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
-from django.contrib.auth import get_user_model
 from django.urls import reverse
-from urllib.parse import urlencode
 
-from .models import TableReservation, TimeSlotAvailability
+from .models import TableReservation, TimeSlotAvailability, RestaurantConfig
 from .forms import SignUpForm, PhoneReservationForm, EditReservationForm
 
 User = get_user_model()
@@ -144,7 +142,6 @@ def make_reservation(request):
     next_30_days = []
 
     # Get default tables from RestaurantConfig (fallback to 10 if not set)
-    from .models import RestaurantConfig
     config = RestaurantConfig.objects.first()
     default_tables = config.default_tables_per_slot if config else 10
 
@@ -352,7 +349,98 @@ def menu(request):
     return render(request, "reservation_book/menu.html")
 
 
-User = get_user_model()
+# -------------------------------------------------------------------
+# Staff dashboard (cards for Phone Reservations, Customer Stats, etc.)
+# -------------------------------------------------------------------
+@staff_member_required
+def staff_dashboard(request):
+    today = timezone.now().date()
+
+    total_reservations = TableReservation.objects.count()
+    upcoming_reservations = TableReservation.objects.filter(
+        timeslot_availability__calendar_date__gte=today,
+        reservation_status=True,
+    ).count()
+    phone_reservations = TableReservation.objects.filter(
+        is_phone_reservation=True
+    ).count()
+    online_reservations = TableReservation.objects.filter(
+        is_phone_reservation=False,
+        user__isnull=False,
+    ).count()
+    cancelled_reservations = TableReservation.objects.filter(
+        reservation_status=False
+    ).count()
+
+    context = {
+        "total_reservations": total_reservations,
+        "upcoming_reservations": upcoming_reservations,
+        "phone_reservations": phone_reservations,
+        "online_reservations": online_reservations,
+        "cancelled_reservations": cancelled_reservations,
+    }
+    return render(
+        request,
+        "reservation_book/staff_dashboard.html",
+        context,
+    )
+
+
+@staff_member_required
+def staff_reservations(request):
+    """
+    Staff view: search and manage ALL reservations (online + phone-in).
+
+    Search by:
+    - Booking ID (exact, if q is all digits)
+    - username
+    - email (user or phone-in email)
+    - first/last name
+    - phone or mobile
+    """
+    query = request.GET.get("q", "").strip()
+
+    qs = (
+        TableReservation.objects
+        .select_related("user", "timeslot_availability")
+        .order_by(
+            "-timeslot_availability__calendar_date",
+            "-time_slot",
+            "-created_at",
+        )
+    )
+
+    if query:
+        combined = Q()
+
+        # If it's purely digits, treat as possible Booking ID
+        if query.isdigit():
+            combined |= Q(id=int(query))
+
+        # Username / email (user or phone-in)
+        combined |= Q(user__username__icontains=query)
+        combined |= Q(user__email__icontains=query)
+        combined |= Q(email__icontains=query)
+
+        # First / last name
+        combined |= Q(first_name__icontains=query)
+        combined |= Q(last_name__icontains=query)
+
+        # Phone fields that actually exist on your model
+        combined |= Q(phone__icontains=query)
+        combined |= Q(mobile__icontains=query)
+
+        qs = qs.filter(combined)
+
+    context = {
+        "reservations": qs,
+        "query": query,
+    }
+    return render(
+        request,
+        "reservation_book/staff_reservations.html",
+        context,
+    )
 
 
 @staff_member_required
@@ -518,7 +606,6 @@ def create_phone_reservation(request):
 
             # --- Email handling ---
             if email:
-                # Use your existing confirmation template if you have one.
                 context = {
                     "reservation": reservation,
                     "slot_label": SLOT_LABELS.get(time_slot, time_slot),

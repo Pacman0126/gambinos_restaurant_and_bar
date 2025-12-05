@@ -80,6 +80,9 @@ from datetime import date
 
 #     def __str__(self):
 #         return f"Reservation {self.reservation_id} for {self.first_name} {self.last_name} on {self.reservation_date}"
+from datetime import date  # <-- make sure this is at the top of models.py
+
+
 class TableReservation(models.Model):
     id = models.BigAutoField(primary_key=True)
 
@@ -133,6 +136,25 @@ class TableReservation(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    @property
+    def status_display(self) -> str:
+        """
+        Derived, human-friendly status for UI:
+        - 'Cancelled'  if reservation_status is False
+        - 'Completed'  if reservation_status is True but date is in the past
+        - 'Active'     otherwise (today or future, or missing date)
+        """
+        # Cancelled always wins
+        if not self.reservation_status:
+            return "Cancelled"
+
+        # If we know the date and it's in the past
+        if self.reservation_date and self.reservation_date < date.today():
+            return "Completed"
+
+        # Otherwise it's an active upcoming/today reservation
+        return "Active"
 
     def __str__(self):
         name = f"{self.first_name} {self.last_name}".strip() or "Guest"

@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+{% load static %}
+{% load slot_filters %}
+
+{% block content %}
+<div class="container py-5 text-white">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">All Reservations</h1>
+            <p class="text-muted mb-0">
+                Staff overview of every reservation, with status by date.
+            </p>
+        </div>
+        <a href="{% url 'staff_dashboard' %}" class="btn btn-outline-light">
+            <i class="fa-solid fa-arrow-left me-1"></i> Back to Staff Dashboard
+        </a>
+    </div>
+
+    <!-- Filters -->
+    <div class="card bg-dark border-secondary mb-4">
+        <div class="card-body">
+            <div class="row g-3 align-items-end">
+                <!-- Status Filter -->
+                <div class="col-md-4">
+                    <label for="statusFilter" class="form-label">Filter by Status</label>
+                    <select id="statusFilter" class="form-select">
+                        <option value="all" selected>All</option>
+                        <option value="Active">Active</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                </div>
+
+                <!-- (Optional) Future filters could go here -->
+                <!-- e.g. date range, phone vs online, etc. -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Reservations Table -->
+    <div class="card bg-dark border-secondary">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span>Reservations</span>
+            <small class="text-muted">
+                Click on <strong>ID</strong> or <strong>Date</strong> to sort
+            </small>
+        </div>
+        <div class="card-body table-responsive">
+            <table id="staffReservationsTable" class="table table-dark table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th scope="col"
+                            class="sortable"
+                            data-sort-col="id"
+                            style="cursor:pointer;">
+                            #
+                            <i class="fa-solid fa-sort ms-1"></i>
+                        </th>
+                        <th scope="col"
+                            class="sortable"
+                            data-sort-col="date"
+                            style="cursor:pointer;">
+                            Date
+                            <i class="fa-solid fa-sort ms-1"></i>
+                        </th>
+                        <th scope="col">Time Slot</th>
+                        <th scope="col">Tables</th>
+                        <th scope="col">Customer</th>
+                        <th scope="col">Status</th>
+                        <th scope="col" class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reservation in reservations %}
+                        <tr
+                            data-status="{{ reservation.status_display }}"
+                            data-id="{{ reservation.id }}"
+                            data-date="{{ reservation.timeslot_availability.calendar_date|date:'Y-m-d' }}"
+                        >
+                            <td>{{ reservation.id }}</td>
+                            <td>{{ reservation.timeslot_availability.calendar_date }}</td>
+                            <td>{{ reservation.time_slot|slot_label }}</td>
+                            <td>{{ reservation.number_of_tables_required_by_patron }}</td>
+                            <td>
+                                {{ reservation.first_name }} {{ reservation.last_name }}
+                                {% if reservation.is_phone_reservation %}
+                                    <span class="badge bg-info ms-1">Phone</span>
+                                {% else %}
+                                    <span class="badge bg-primary ms-1">Online</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if reservation.status_display == "Active" %}
+                                    <span class="badge bg-success">Active</span>
+                                {% elif reservation.status_display == "Completed" %}
+                                    <span class="badge bg-secondary">Completed</span>
+                                {% elif reservation.status_display == "Cancelled" %}
+                                    <span class="badge bg-danger">Cancelled</span>
+                                {% else %}
+                                    <span class="badge bg-light text-dark">
+                                        {{ reservation.status_display }}
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <!-- View customer history -->
+                                {% if reservation.user %}
+                                    <a href="{% url 'user_reservation_history' reservation.user.id %}"
+                                       class="btn btn-sm btn-outline-light">
+                                        <i class="fa-solid fa-user-clock me-1"></i>
+                                        History
+                                    </a>
+                                {% endif %}
+
+                                <!-- Edit reservation (staff-side) could be added later -->
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">
+                                No reservations found.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Simple front-end filtering & sorting -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const table = document.getElementById("staffReservationsTable");
+    const statusFilter = document.getElementById("statusFilter");
+    const tbody = table.querySelector("tbody");
+
+    // --- Status Filter ---
+    statusFilter.addEventListener("change", function () {
+        const value = this.value;
+        const rows = tbody.querySelectorAll("tr");
+
+        rows.forEach(row => {
+            const rowStatus = row.getAttribute("data-status");
+            if (value === "all" || rowStatus === value) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    });
+
+    // --- Sorting ---
+    const headers = table.querySelectorAll("th.sortable");
+
+    headers.forEach(header => {
+        header.addEventListener("click", function () {
+            const sortCol = this.getAttribute("data-sort-col");
+            const currentDir = this.getAttribute("data-sort-dir") || "asc";
+            const newDir = currentDir === "asc" ? "desc" : "asc";
+            this.setAttribute("data-sort-dir", newDir);
+
+            const rows = Array.from(tbody.querySelectorAll("tr"));
+            rows.sort((a, b) => {
+                let aVal, bVal;
+
+                if (sortCol === "id") {
+                    aVal = parseInt(a.getAttribute("data-id"), 10);
+                    bVal = parseInt(b.getAttribute("data-id"), 10);
+                } else if (sortCol === "date") {
+                    aVal = a.getAttribute("data-date");
+                    bVal = b.getAttribute("data-date");
+                } else {
+                    return 0;
+                }
+
+                if (aVal < bVal) return newDir === "asc" ? -1 : 1;
+                if (aVal > bVal) return newDir === "asc" ? 1 : -1;
+                return 0;
+            });
+
+            // Re-attach rows in new order
+            rows.forEach(row => tbody.appendChild(row));
+        });
+    });
+});
+</script>
+{% endblock %}

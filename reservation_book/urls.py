@@ -1,21 +1,40 @@
+# reservation_book/urls.py
+
 from django.urls import path
 from . import views
 
 urlpatterns = [
-    # Customer-facing / public views
+    # Public site
     path("", views.home, name="home"),
+    path("menu/", views.menu, name="menu"),
+
+    # Customer reservation flows
+    path("reserve/", views.make_reservation, name="make_reservation"),
     path("my_reservations/", views.my_reservations, name="my_reservations"),
-    path("make_reservation/", views.make_reservation, name="make_reservation"),
     path(
-        "cancel_reservation/<int:reservation_id>/",
+        "reservation/<int:reservation_id>/cancel/",
         views.cancel_reservation,
         name="cancel_reservation",
     ),
-    path("menu/", views.menu, name="menu"),
+    path(
+        "reservation/<int:reservation_id>/edit/",
+        views.update_reservation,
+        name="update_reservation",
+    ),
 
-    # Staff tools (matching navbar)
+    # Staff dashboard + tools
     path(
         "staff/dashboard/",
+        views.staff_dashboard,
+        name="staff_dashboard",
+    ),
+    path(
+        "staff/reservations/",
+        views.staff_reservations,
+        name="staff_reservations",
+    ),
+    path(
+        "staff/customers/",
         views.user_reservations_overview,
         name="user_reservations_overview",
     ),
@@ -29,10 +48,4 @@ urlpatterns = [
         views.create_phone_reservation,
         name="create_phone_reservation",
     ),
-    path(
-        "reservations/<int:reservation_id>/edit/",
-        views.update_reservation,
-        name="update_reservation",
-    ),
-
 ]

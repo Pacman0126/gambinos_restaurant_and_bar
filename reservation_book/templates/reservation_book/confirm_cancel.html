@@ -1,10 +1,17 @@
 {% extends "base.html" %}
+{% load slot_filters %}
+
 {% block content %}
 <div class="container mt-5">
   <h3>Cancel Reservation</h3>
-  <p>Are you sure you want to cancel your reservation for 
-     <strong>{{ reservation.timeslot_availability.calendar_date }}</strong> at 
-     <strong>{{ reservation.get_time_slot_display }}</strong>?</p>
+  <p>Are you sure you want to cancel the following reservation?</p>
+
+  <ul class="list-unstyled mb-4">
+    <li><strong>Booking ID:</strong> {{ reservation.id }}</li>
+    <li><strong>Date:</strong> {{ reservation.reservation_date }}</li>
+    <li><strong>Time:</strong> {{ reservation.time_slot|slot_label }}</li>
+    <li><strong>Tables:</strong> {{ reservation.number_of_tables_required_by_patron }}</li>
+  </ul>
 
   <form method="post">
     {% csrf_token %}
