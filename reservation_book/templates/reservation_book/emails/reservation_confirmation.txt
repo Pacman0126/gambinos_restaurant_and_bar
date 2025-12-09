@@ -3,7 +3,6 @@ Subject: Your table reservation at Gambinos Restaurant & Lounge
 Dear {{ reservation.first_name }} {{ reservation.last_name }},
 
 Thank you for your reservation at Gambinos Restaurant & Lounge.
-This reservation was made by our staff over the phone.
 
 Here are your reservation details:
 
@@ -12,11 +11,10 @@ Here are your reservation details:
 - Number of tables: {{ tables_needed }}
 - Reservation ID: {{ reservation.id }}
 
-If you would like to manage your future reservations online, you can create
-an account using this same email address on our website.
+If you need to change or cancel your reservation, you can log in to your account
+and visit the "My Reservations" page.
 
 We look forward to welcoming you.
 
 Best regards,
 Gambinos Restaurant & Lounge
-

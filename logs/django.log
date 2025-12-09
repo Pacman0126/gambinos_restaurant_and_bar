@@ -5463,3 +5463,227 @@ django.template.exceptions.TemplateDoesNotExist: reservation_book/staff_dashboar
 [2025-12-05 23:05:28,443] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
 [2025-12-05 23:05:28,488] WARNING [django.request:246] Not Found: /favicon.ico
 [2025-12-05 23:05:28,489] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 4467
+[2025-12-05 23:31:13,671] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-05 23:31:20,125] INFO [django.server:212] "GET / HTTP/1.1" 200 8941
+[2025-12-05 23:31:20,164] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-05 23:31:20,192] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-05 23:31:20,192] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-05 23:33:21,421] INFO [django.server:212] "GET /staff/reservations/ HTTP/1.1" 200 26924
+[2025-12-05 23:33:27,357] INFO [django.server:212] "GET /staff/customer/6/history/ HTTP/1.1" 200 10650
+[2025-12-05 23:33:37,304] INFO [django.server:212] "GET /staff/customers/ HTTP/1.1" 200 8501
+[2025-12-05 23:33:48,352] INFO [django.server:212] "GET /staff/customers/ HTTP/1.1" 200 8501
+[2025-12-07 18:49:22,691] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-07 18:49:28,693] INFO [django.server:212] "GET / HTTP/1.1" 200 7042
+[2025-12-07 18:49:29,072] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 304 0
+[2025-12-07 18:49:29,072] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-07 18:49:29,147] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-07 18:49:29,148] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-07 18:49:29,634] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-12-07 18:49:29,634] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 4467
+[2025-12-07 18:49:35,697] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7614
+[2025-12-07 18:49:44,605] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-12-07 18:49:44,831] INFO [django.server:212] "GET / HTTP/1.1" 200 9112
+[2025-12-07 18:50:11,453] INFO [reservation_book.views:41] make_reservation called, method=GET
+[2025-12-07 18:50:13,542] INFO [django.server:212] "GET /reserve/ HTTP/1.1" 200 76398
+[2025-12-07 18:50:40,200] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 7486
+[2025-12-07 18:50:50,162] INFO [django.server:212] "GET / HTTP/1.1" 200 8941
+[2025-12-07 18:50:50,181] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-07 18:50:50,184] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-07 18:50:50,188] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-07 18:51:01,193] INFO [django.server:212] "GET /menu/ HTTP/1.1" 200 12701
+[2025-12-07 18:51:01,221] INFO [django.server:212] "GET /static/images/obny/dishes/Calamari.jpg HTTP/1.1" 304 0
+[2025-12-07 18:51:01,230] INFO [django.server:212] "GET /static/images/obny/dishes/Aranchini.jpg HTTP/1.1" 304 0
+[2025-12-07 18:51:01,237] INFO [django.server:212] "GET /static/images/obny/dishes/Black-Maccoroni-w-Lobster-Tail.jpg HTTP/1.1" 304 0
+[2025-12-07 18:51:01,239] INFO [django.server:212] "GET /static/images/obny/dishes/Fresh-Fettuchino-w-jalf.jpg HTTP/1.1" 304 0
+[2025-12-07 18:51:01,240] INFO [django.server:212] "GET /static/images/obny/dishes/Beet-Salad.jpg HTTP/1.1" 304 0
+[2025-12-07 18:51:01,244] INFO [django.server:212] "GET /static/images/obny/dishes/Spinach-Rossoto.jpg HTTP/1.1" 304 0
+[2025-12-07 18:51:01,264] INFO [django.server:212] "GET /static/images/obny/dishes/Cod-Cabunata.jpg HTTP/1.1" 304 0
+[2025-12-07 18:51:01,877] INFO [django.server:212] "GET /static/images/obny/dishes/Seafood-Special-lodge.jpg HTTP/1.1" 304 0
+[2025-12-07 18:51:01,879] INFO [django.server:212] "GET /static/images/obny/dishes/Tiramaso.jpg HTTP/1.1" 304 0
+[2025-12-07 18:51:01,880] INFO [django.server:212] "GET /static/images/obny/dishes/OB-Apple-Strudel.jpg HTTP/1.1" 304 0
+[2025-12-07 18:54:27,566] INFO [django.server:212] "GET / HTTP/1.1" 200 8941
+[2025-12-07 18:54:27,582] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-07 18:54:27,587] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-07 18:54:27,588] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-07 18:55:08,279] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 10839
+[2025-12-07 19:07:52,538] INFO [reservation_book.views:41] make_reservation called, method=GET
+[2025-12-07 19:07:53,363] INFO [django.server:212] "GET /reserve/ HTTP/1.1" 200 76398
+[2025-12-07 19:40:14,210] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-07 19:40:17,951] INFO [django.server:212] "GET / HTTP/1.1" 200 8484
+[2025-12-07 19:40:17,985] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-07 19:40:18,017] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-07 19:40:18,017] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-07 19:40:33,697] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 14707
+[2025-12-07 19:52:05,967] WARNING [django.request:246] Not Found: /.well-known/appspecific/com.chrome.devtools.json
+[2025-12-07 19:52:05,968] WARNING [django.server:212] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 4578
+[2025-12-07 22:18:08,454] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-07 22:25:58,933] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-07 22:26:09,177] INFO [django.server:212] "GET / HTTP/1.1" 200 8484
+[2025-12-07 22:26:09,214] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-07 22:26:09,281] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-07 22:26:09,284] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-07 22:26:17,525] INFO [reservation_book.views:94] make_reservation called, method=GET
+[2025-12-07 22:26:18,363] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 76219
+[2025-12-07 22:27:56,015] INFO [reservation_book.views:94] make_reservation called, method=POST
+[2025-12-07 22:27:56,112] INFO [reservation_book.views:172] Reservation confirmed for Cartman Hartmann at 17:00–18:00 on 2025-12-12
+[2025-12-07 22:27:56,112] INFO [django.server:212] "POST /reserve/ HTTP/1.1" 200 138
+[2025-12-07 23:06:16,117] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-07 23:06:18,872] INFO [django.server:212] "GET / HTTP/1.1" 200 8484
+[2025-12-07 23:06:18,908] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-07 23:06:18,940] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-07 23:06:18,941] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-07 23:06:28,265] INFO [reservation_book.views:95] make_reservation called, method=GET
+[2025-12-07 23:06:29,071] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 76219
+[2025-12-07 23:29:18,011] INFO [reservation_book.views:95] make_reservation called, method=GET
+[2025-12-07 23:29:18,850] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 76850
+[2025-12-07 23:29:18,935] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 5924
+[2025-12-07 23:29:19,232] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2025-12-07 23:29:19,301] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-12-07 23:29:19,313] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 4467
+[2025-12-07 23:29:28,907] INFO [reservation_book.views:95] make_reservation called, method=GET
+[2025-12-07 23:29:29,736] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 76850
+[2025-12-07 23:30:23,416] INFO [reservation_book.views:95] make_reservation called, method=POST
+[2025-12-07 23:30:23,416] INFO [django.server:212] "POST /reserve/ HTTP/1.1" 302 0
+[2025-12-07 23:30:23,666] INFO [reservation_book.views:95] make_reservation called, method=GET
+[2025-12-07 23:30:24,793] INFO [django.server:212] "GET /reserve/ HTTP/1.1" 200 77025
+[2025-12-07 23:32:01,187] INFO [reservation_book.views:95] make_reservation called, method=POST
+[2025-12-07 23:32:01,187] INFO [django.server:212] "POST /reserve/ HTTP/1.1" 302 0
+[2025-12-07 23:32:01,441] INFO [reservation_book.views:95] make_reservation called, method=GET
+[2025-12-07 23:32:02,211] INFO [django.server:212] "GET /reserve/ HTTP/1.1" 200 77025
+[2025-12-08 00:04:56,126] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-12-08 00:04:57,465] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-08 00:05:27,243] INFO [reservation_book.views:95] make_reservation called, method=POST
+[2025-12-08 00:05:27,256] INFO [django.server:212] "POST /reserve/ HTTP/1.1" 302 0
+[2025-12-08 00:05:27,501] INFO [reservation_book.views:95] make_reservation called, method=GET
+[2025-12-08 00:05:28,336] INFO [django.server:212] "GET /reserve/ HTTP/1.1" 200 77025
+[2025-12-08 00:07:01,080] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-08 00:07:04,148] INFO [django.server:212] "GET / HTTP/1.1" 200 8484
+[2025-12-08 00:07:04,188] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-08 00:07:04,251] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-08 00:07:04,254] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-08 00:07:09,653] INFO [reservation_book.views:95] make_reservation called, method=GET
+[2025-12-08 00:07:10,707] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 76850
+[2025-12-08 00:07:29,967] INFO [reservation_book.views:95] make_reservation called, method=POST
+[2025-12-08 00:07:29,967] INFO [django.server:212] "POST /reserve/ HTTP/1.1" 302 0
+[2025-12-08 00:07:30,192] INFO [reservation_book.views:95] make_reservation called, method=GET
+[2025-12-08 00:07:30,992] INFO [django.server:212] "GET /reserve/ HTTP/1.1" 200 77025
+[2025-12-08 00:15:46,020] INFO [django.server:212] "GET /staff/reservations/ HTTP/1.1" 200 27653
+[2025-12-08 00:16:06,252] INFO [django.server:212] "GET /staff/reservations/ HTTP/1.1" 200 27653
+[2025-12-08 00:16:15,988] INFO [django.server:212] "GET /staff/customers/ HTTP/1.1" 200 8044
+[2025-12-08 00:17:40,616] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-12-08 00:17:41,474] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-08 00:17:48,782] INFO [django.server:212] "GET / HTTP/1.1" 200 8484
+[2025-12-08 00:17:48,822] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-08 00:17:48,927] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-08 00:17:48,927] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-08 00:17:53,127] INFO [reservation_book.views:95] make_reservation called, method=GET
+[2025-12-08 00:17:54,133] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 76850
+[2025-12-08 00:18:18,152] INFO [reservation_book.views:95] make_reservation called, method=POST
+[2025-12-08 00:18:18,152] INFO [django.server:212] "POST /reserve/ HTTP/1.1" 302 0
+[2025-12-08 00:18:18,414] INFO [reservation_book.views:95] make_reservation called, method=GET
+[2025-12-08 00:18:19,210] INFO [django.server:212] "GET /reserve/ HTTP/1.1" 200 77025
+[2025-12-08 00:28:41,810] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-12-08 00:28:43,140] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-08 00:29:03,568] INFO [reservation_book.views:95] make_reservation called, method=POST
+[2025-12-08 00:29:03,580] INFO [django.server:212] "POST /reserve/ HTTP/1.1" 302 0
+[2025-12-08 00:29:03,819] INFO [reservation_book.views:95] make_reservation called, method=GET
+[2025-12-08 00:29:04,649] INFO [django.server:212] "GET /reserve/ HTTP/1.1" 200 77025
+[2025-12-08 00:29:51,763] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-08 00:29:54,852] INFO [django.server:212] "GET / HTTP/1.1" 200 8484
+[2025-12-08 00:29:54,892] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-08 00:29:54,923] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-08 00:29:54,924] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-08 00:29:59,379] INFO [reservation_book.views:95] make_reservation called, method=GET
+[2025-12-08 00:30:00,165] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 76850
+[2025-12-08 00:30:17,873] INFO [reservation_book.views:95] make_reservation called, method=POST
+[2025-12-08 00:30:17,874] INFO [django.server:212] "POST /reserve/ HTTP/1.1" 302 0
+[2025-12-08 00:30:18,105] INFO [reservation_book.views:95] make_reservation called, method=GET
+[2025-12-08 00:30:18,867] INFO [django.server:212] "GET /reserve/ HTTP/1.1" 200 77025
+[2025-12-09 17:38:22,764] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-09 17:38:29,422] INFO [django.server:212] "GET / HTTP/1.1" 200 6942
+[2025-12-09 17:38:29,796] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 304 0
+[2025-12-09 17:38:29,799] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-09 17:38:29,866] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-09 17:38:29,867] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-09 17:38:30,339] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-12-09 17:38:30,356] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 4467
+[2025-12-09 17:38:35,944] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7514
+[2025-12-09 17:38:43,888] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-12-09 17:38:44,147] INFO [django.server:212] "GET / HTTP/1.1" 200 8655
+[2025-12-09 17:38:54,101] INFO [reservation_book.views:95] make_reservation called, method=GET
+[2025-12-09 17:38:55,123] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 76850
+[2025-12-09 17:39:24,041] INFO [reservation_book.views:95] make_reservation called, method=POST
+[2025-12-09 17:39:24,042] INFO [django.server:212] "POST /reserve/ HTTP/1.1" 302 0
+[2025-12-09 17:39:24,266] INFO [reservation_book.views:95] make_reservation called, method=GET
+[2025-12-09 17:39:25,264] INFO [django.server:212] "GET /reserve/ HTTP/1.1" 200 77025
+[2025-12-09 17:52:03,110] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-09 17:52:10,528] INFO [django.server:212] "GET / HTTP/1.1" 200 8484
+[2025-12-09 17:52:10,568] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-09 17:52:10,619] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-09 17:52:10,620] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-09 17:52:24,833] INFO [reservation_book.views:95] make_reservation called, method=GET
+[2025-12-09 17:52:25,922] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 76850
+[2025-12-09 17:53:25,393] INFO [reservation_book.views:95] make_reservation called, method=POST
+[2025-12-09 17:53:25,393] WARNING [reservation_book.views:107] Reservation POST missing date or slot (date='', slot='')
+[2025-12-09 17:53:25,394] INFO [django.server:212] "POST /reserve/ HTTP/1.1" 302 0
+[2025-12-09 17:53:25,623] INFO [reservation_book.views:95] make_reservation called, method=GET
+[2025-12-09 17:53:26,335] INFO [django.server:212] "GET /reserve/ HTTP/1.1" 200 77025
+[2025-12-09 18:15:49,198] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-09 18:15:54,640] INFO [django.server:212] "GET / HTTP/1.1" 200 8484
+[2025-12-09 18:15:54,678] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-09 18:15:54,731] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-09 18:15:54,731] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-09 18:15:59,778] INFO [reservation_book.views:95] make_reservation called, method=GET
+[2025-12-09 18:16:00,648] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 77951
+[2025-12-09 18:16:31,686] INFO [reservation_book.views:95] make_reservation called, method=POST
+[2025-12-09 18:16:31,686] ERROR [reservation_book.views:332] Unexpected error in make_reservation POST: name 'UserModel' is not defined
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 164, in make_reservation
+    existing_user = UserModel.objects.filter(
+                    ^^^^^^^^^
+NameError: name 'UserModel' is not defined
+[2025-12-09 18:16:31,697] INFO [django.server:212] "POST /reserve/ HTTP/1.1" 302 0
+[2025-12-09 18:16:31,950] INFO [reservation_book.views:95] make_reservation called, method=GET
+[2025-12-09 18:16:32,794] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 78159
+[2025-12-09 18:25:14,711] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-12-09 18:25:15,750] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-09 18:27:42,900] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-09 18:27:50,289] INFO [django.server:212] "GET / HTTP/1.1" 200 8484
+[2025-12-09 18:27:50,331] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-09 18:27:50,386] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-09 18:27:50,387] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-09 18:27:56,078] INFO [reservation_book.views:98] make_reservation called, method=GET
+[2025-12-09 18:27:56,910] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 77951
+[2025-12-09 18:28:19,558] INFO [reservation_book.views:98] make_reservation called, method=POST
+[2025-12-09 18:28:19,618] INFO [reservation_book.views:196] Phone reservation: linked to existing user id=6, email=paxton.hartmann@gmail.com
+[2025-12-09 18:28:19,678] INFO [reservation_book.views:260] Reservation confirmed for Cartman Hartmann at 17:00–18:00 on 2025-12-14 (phone=True, user_id=6)
+[2025-12-09 18:28:21,222] INFO [reservation_book.views:303] Confirmation email sent to paxton.hartmann@gmail.com for reservation id=36
+[2025-12-09 18:28:21,224] INFO [django.server:212] "POST /reserve/ HTTP/1.1" 302 0
+[2025-12-09 18:28:21,479] INFO [reservation_book.views:98] make_reservation called, method=GET
+[2025-12-09 18:28:22,293] INFO [django.server:212] "GET /reserve/ HTTP/1.1" 200 78106
+[2025-12-09 18:52:14,647] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-09 18:52:18,688] INFO [django.server:212] "GET / HTTP/1.1" 200 8484
+[2025-12-09 18:52:18,725] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-09 18:52:18,760] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-09 18:52:18,760] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-09 18:52:26,678] INFO [reservation_book.views:98] make_reservation called, method=GET
+[2025-12-09 18:52:27,518] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 77951
+[2025-12-09 18:53:05,051] INFO [reservation_book.views:98] make_reservation called, method=POST
+[2025-12-09 18:53:05,106] INFO [reservation_book.views:196] Phone reservation: linked to existing user id=6, email=paxton.hartmann@gmail.com
+[2025-12-09 18:53:05,172] INFO [reservation_book.views:260] Reservation confirmed for Cartman Hartmann at 18:00–19:00 on 2025-12-14 (phone=True, user_id=6)
+[2025-12-09 18:53:06,372] INFO [reservation_book.views:303] Confirmation email sent to paxton.hartmann@gmail.com for reservation id=37
+[2025-12-09 18:53:06,373] INFO [django.server:212] "POST /reserve/ HTTP/1.1" 302 0
+[2025-12-09 18:53:06,604] INFO [reservation_book.views:98] make_reservation called, method=GET
+[2025-12-09 18:53:07,357] INFO [django.server:212] "GET /reserve/ HTTP/1.1" 200 78106
+[2025-12-09 18:54:04,818] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7476
+[2025-12-09 18:54:08,018] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-12-09 18:54:08,023] INFO [django.server:212] "GET / HTTP/1.1" 200 7101
+[2025-12-09 18:54:08,043] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-09 18:54:08,049] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-09 18:54:08,049] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-09 18:54:13,572] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7514
+[2025-12-09 18:54:17,214] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-12-09 18:54:17,465] INFO [django.server:212] "GET / HTTP/1.1" 200 7542
+[2025-12-09 18:54:21,197] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 21358
+[2025-12-09 18:54:54,850] INFO [django.server:212] "POST /reservation/37/cancel/ HTTP/1.1" 302 0
+[2025-12-09 18:54:55,306] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 19392

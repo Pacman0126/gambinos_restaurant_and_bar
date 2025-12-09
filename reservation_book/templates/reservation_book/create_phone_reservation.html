@@ -1,85 +1,268 @@
 {% extends "base.html" %}
+{% load static %}
+{% load slot_filters %}
 
 {% block content %}
-<div class="container py-4 dark-section">
-    <h1 class="mb-3">
-        <i class="fa-solid fa-phone me-2"></i>
-        Phone Reservation (Staff Only)
-    </h1>
+<div class="container py-5 text-white">
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="mb-2">Staff Phone Reservation</h1>
+            <p class="lead mb-0">
+                Use the 30-day availability grid to pick a date &amp; time slot,
+                then enter the caller’s details to complete the booking.
+            </p>
+        </div>
+    </div>
 
-    <p class="text-muted mb-4">
-        Use this form to create reservations taken over the phone. These
-        reservations are not tied to a user account but still affect table
-        availability like online bookings.
-    </p>
+    {# --- Messages (errors/success) --- #}
+    {% if messages %}
+        <div class="row mb-3">
+            <div class="col-12">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} mb-2">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
 
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <form method="post" novalidate>
-                {% csrf_token %}
-
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <label class="form-label" for="id_reservation_date">Date</label>
-                        {{ form.reservation_date }}
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label" for="id_time_slot">Time Slot</label>
-                        {{ form.time_slot }}
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label" for="id_number_of_tables_required_by_patron">
-                            Tables
-                        </label>
-                        {{ form.number_of_tables_required_by_patron }}
-                    </div>
+    <div class="row g-4">
+        {# ------------------------------ #}
+        {# LEFT: 30-day availability grid #}
+        {# ------------------------------ #}
+        <div class="col-lg-7">
+            <div class="card bg-dark border-secondary h-100">
+                <div class="card-header border-secondary">
+                    <h5 class="card-title mb-0">
+                        30-Day Table Availability
+                    </h5>
                 </div>
+                <div class="card-body">
+                    {% if next_30_days %}
+                        <div class="small text-muted mb-2">
+                            Click a time slot to select it for the phone reservation.
+                            Slots with no remaining tables are disabled.
+                        </div>
 
-                <h5 class="mt-3 mb-3">Customer Details</h5>
-
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <label class="form-label" for="id_first_name">First Name</label>
-                        {{ form.first_name }}
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label" for="id_last_name">Last Name</label>
-                        {{ form.last_name }}
-                    </div>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-dark align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Date</th>
+                                        {% for key, label in slot_labels.items %}
+                                            <th scope="col" class="text-center">
+                                                {{ label }}
+                                            </th>
+                                        {% endfor %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for ts in next_30_days %}
+                                        <tr>
+                                            <td class="fw-semibold">
+                                                {{ ts.calendar_date|date:"D, M j" }}
+                                            </td>
+                                            {% for slot in ts.slots %}
+                                                {# slot dict: key, label, demand, available, remaining #}
+                                                {% with remaining=slot.remaining %}
+                                                    <td class="text-center">
+                                                        <button
+                                                            type="button"
+                                                            class="btn btn-sm {% if remaining > 0 %}btn-outline-light{% else %}btn-outline-secondary{% endif %} slot-button"
+                                                            data-slot-button="1"
+                                                            data-date="{{ ts.calendar_date|date:'Y-m-d' }}"
+                                                            data-slot="{{ slot.key }}"
+                                                            {% if remaining <= 0 %}disabled{% endif %}
+                                                        >
+                                                            <div class="fw-semibold">
+                                                                {{ slot.label }}
+                                                            </div>
+                                                            <div class="small">
+                                                                {% if remaining > 0 %}
+                                                                    {{ remaining }} left
+                                                                {% else %}
+                                                                    Full
+                                                                {% endif %}
+                                                            </div>
+                                                        </button>
+                                                    </td>
+                                                {% endwith %}
+                                            {% endfor %}
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">
+                            Availability data is not loaded. Make sure
+                            <code>next_30_days</code> is passed from
+                            <code>create_phone_reservation</code> view
+                            (same as in <code>make_reservation</code>).
+                        </p>
+                    {% endif %}
                 </div>
+            </div>
+        </div>
 
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <label class="form-label" for="id_email">Email (optional)</label>
-                        {{ form.email }}
-                        <small class="form-text text-muted">
-                            If provided, a confirmation email will be sent to the guest.
-                        </small>
-                    </div>
+        {# ------------------------------ #}
+        {# RIGHT: Phone customer form     #}
+        {# ------------------------------ #}
+        <div class="col-lg-5">
+            <div class="card bg-dark border-secondary h-100">
+                <div class="card-header border-secondary">
+                    <h5 class="card-title mb-0">
+                        Caller Details &amp; Confirmation
+                    </h5>
                 </div>
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
 
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <label class="form-label" for="id_phone">Phone</label>
-                        {{ form.phone }}
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label" for="id_mobile">Mobile</label>
-                        {{ form.mobile }}
-                    </div>
+                        {# Reservation details: date, time slot, tables #}
+                        <h6 class="text-uppercase small text-muted mb-2">
+                            Reservation Details
+                        </h6>
+
+                        <div class="mb-3">
+                            <label for="id_reservation_date" class="form-label">
+                                Reservation Date
+                            </label>
+                            {{ form.reservation_date }}
+                            <div class="form-text">
+                                This is auto-filled when you click a slot in the calendar.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_time_slot" class="form-label">
+                                Time Slot
+                            </label>
+                            {{ form.time_slot }}
+                            <div class="form-text">
+                                Also auto-filled from the calendar; you can still override it.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_number_of_tables_required_by_patron" class="form-label">
+                                Tables Needed
+                            </label>
+                            {{ form.number_of_tables_required_by_patron }}
+                        </div>
+
+                        {% if remaining_for_slot is not None %}
+                            <div class="alert alert-info py-2">
+                                Remaining tables for selected slot:
+                                <strong>{{ remaining_for_slot }}</strong>
+                            </div>
+                        {% endif %}
+
+                        <hr class="border-secondary">
+
+                        {# Caller / guest details #}
+                        <h6 class="text-uppercase small text-muted mb-2">
+                            Caller / Guest Details
+                        </h6>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_first_name" class="form-label">First Name</label>
+                                {{ form.first_name }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_last_name" class="form-label">Last Name</label>
+                                {{ form.last_name }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_email" class="form-label">Email (optional)</label>
+                            {{ form.email }}
+                            <div class="form-text">
+                                If this email matches an existing online customer,
+                                the booking will be linked to their account and a confirmation
+                                email will be sent.
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_phone" class="form-label">Phone</label>
+                                {{ form.phone }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_mobile" class="form-label">Mobile</label>
+                                {{ form.mobile }}
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'staff_dashboard' %}" class="btn btn-outline-secondary">
+                                <i class="fa-solid fa-arrow-left me-1"></i>
+                                Back to Dashboard
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fa-solid fa-phone me-1"></i>
+                                Confirm Phone Reservation
+                            </button>
+                        </div>
+                    </form>
                 </div>
- 
-
-                <button type="submit" class="btn btn-primary">
-                    <i class="fa-solid fa-check me-1"></i>
-                    Create Phone Reservation
-                </button>
-
-                <a href="{% url 'user_reservations_overview' %}" class="btn btn-secondary ms-2">
-                    Cancel
-                </a>
-            </form>
+            </div>
         </div>
     </div>
 </div>
+
+{# ------------------------------ #}
+{# JS: hook grid → form fields    #}
+{# ------------------------------ #}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const dateInput = document.getElementById("id_reservation_date");
+    const slotSelect = document.getElementById("id_time_slot");
+
+    if (!dateInput || !slotSelect) {
+        return;
+    }
+
+    const slotButtons = document.querySelectorAll("[data-slot-button]");
+    slotButtons.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            const date = this.getAttribute("data-date");
+            const slot = this.getAttribute("data-slot");
+
+            if (date) {
+                dateInput.value = date;
+            }
+
+            if (slot) {
+                // For a normal <select>, try to set the matching option
+                const option = Array.from(slotSelect.options).find(
+                    (opt) => opt.value === slot
+                );
+                if (option) {
+                    slotSelect.value = slot;
+                }
+            }
+
+            // Visual highlight: remove active from all, add to this
+            slotButtons.forEach((b) => b.classList.remove("btn-light", "text-dark"));
+            slotButtons.forEach((b) => b.classList.replace("btn-light", "btn-outline-light"));
+
+            if (!this.disabled) {
+                this.classList.remove("btn-outline-light");
+                this.classList.add("btn-light", "text-dark");
+            }
+
+            // Scroll to form on small screens
+            const formCard = document.querySelector(".card-body form");
+            if (formCard && window.innerWidth < 992) {
+                formCard.scrollIntoView({ behavior: "smooth" });
+            }
+        });
+    });
+});
+</script>
 {% endblock %}

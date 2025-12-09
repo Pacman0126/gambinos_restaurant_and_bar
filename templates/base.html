@@ -63,7 +63,7 @@
                         </a>
                     </li>
 
-                    <!-- Book Reservation -->
+                    {% comment %} <!-- Book Reservation -->
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'make_reservation' %}active{% endif %}"
                            href="{% url 'make_reservation' %}">
@@ -77,7 +77,34 @@
                            href="{% url 'my_reservations' %}">
                             My Reservations
                         </a>
+                    </li> {% endcomment %}
+                    {# Only show BOOK RESERVATION for non-staff users (guests or normal customers) #}
+                    {% if not request.user.is_staff %}
+                    <li class="nav-item">
+                        <a class="nav-link
+                                {% if request.resolver_match.url_name == 'make_reservation' %}
+                                    active
+                                {% endif %}"
+                        href="{% url 'make_reservation' %}">
+                            <i class="fa-solid fa-calendar-plus me-1"></i>
+                            Book Reservation
+                        </a>
                     </li>
+                    {% endif %}
+
+                    {# Only show MY RESERVATIONS for authenticated non-staff users #}
+                    {% if request.user.is_authenticated and not request.user.is_staff %}
+                    <li class="nav-item">
+                        <a class="nav-link
+                                {% if request.resolver_match.url_name == 'my_reservations' %}
+                                    active
+                                {% endif %}"
+                        href="{% url 'my_reservations' %}">
+                            <i class="fa-solid fa-list-ul me-1"></i>
+                            My Reservations
+                        </a>
+                    </li>
+                    {% endif %}
 
                     <!-- Menu -->
                     <li class="nav-item">

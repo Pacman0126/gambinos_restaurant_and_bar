@@ -43,9 +43,7 @@ urlpatterns = [
         views.user_reservation_history,
         name="user_reservation_history",
     ),
-    path(
-        "staff/phone-reservation/",
-        views.create_phone_reservation,
-        name="create_phone_reservation",
-    ),
+    path("staff/phone-reservation/",
+         views.make_reservation,
+         name="create_phone_reservation"),
 ]
