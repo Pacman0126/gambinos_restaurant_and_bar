@@ -4,7 +4,6 @@
 {% block content %}
 
 <!-- Reservation Modal -->
-<!-- Reservation Modal -->
 <div class="modal fade" id="customerModal" tabindex="-1" aria-labelledby="customerModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content bg-dark text-light">
@@ -31,6 +30,30 @@
           <div class="alert alert-secondary small" id="selectedSlotSummary">
             No time slot selected yet. Click an availability button in the grid.
           </div>
+
+          {% if request.user.is_staff %}
+          <!-- Staff: quick lookup row -->
+          <div class="mb-3">
+            <label for="customerLookup" class="form-label">
+              Lookup existing customer (email or phone)
+            </label>
+            <div class="input-group">
+              <input type="text"
+                     id="customerLookup"
+                     class="form-control"
+                     placeholder="e.g. customer@example.com or 555-1234">
+              <button type="button"
+                      class="btn btn-outline-secondary"
+                      id="btnCustomerLookup">
+                Search
+              </button>
+            </div>
+            <div class="form-text">
+              If a match is found, the form below will be auto-filled. You can still change any field before confirming.
+            </div>
+            <div class="form-text" id="customerLookupResult"></div>
+          </div>
+          {% endif %}
 
           <div class="row g-3">
             <!-- First name -->
@@ -164,7 +187,7 @@
   </div>
 </div>
 
-<!-- Availability table (unchanged) -->
+<!-- Availability table (shared for staff + online) -->
 <h3 class="mb-3">Availability for the Next 30 Days</h3>
 <div class="table-responsive">
   <table class="table table-bordered table-hover table-striped text-center align-middle bg-white">
@@ -212,7 +235,7 @@
 
 {% block js %}
 <script>
-// --- CSRF helper (for fetch if you later want AJAX) ---
+// --- CSRF helper (for future AJAX if needed) ---
 function getCookie(name) {
   let cookieValue = null;
   if (document.cookie && document.cookie !== "") {
@@ -230,17 +253,17 @@ function getCookie(name) {
 const csrftoken = getCookie("csrftoken");
 
 document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("reservationForm");
-  const modalEl = document.getElementById("customerModal");
-  if (!form || !modalEl) return;
-
-  const dateInput = document.getElementById("reservation_date");
-  const slotInput = document.getElementById("time_slot");
+  const form        = document.getElementById("reservationForm");
+  const modalEl     = document.getElementById("customerModal");
+  const dateInput   = document.getElementById("reservation_date");
+  const slotInput   = document.getElementById("time_slot");
   const tablesInput = document.getElementById("tables_needed");
-  const summaryEl = document.getElementById("selectedSlotSummary");
-  const tablesHint = document.getElementById("tablesRemainingHint");
+  const summaryEl   = document.getElementById("selectedSlotSummary");
+  const tablesHint  = document.getElementById("tablesRemainingHint");
 
-  // When a grid button is clicked, store date/slot in the hidden inputs
+  // -----------------------------
+  // 1) Grid click: store date/slot
+  // -----------------------------
   document.querySelectorAll("button[data-slot][data-date]").forEach((btn) => {
     btn.addEventListener("click", () => {
       if (btn.classList.contains("disabled")) {
@@ -255,15 +278,17 @@ document.addEventListener("DOMContentLoaded", () => {
       if (slotInput) slotInput.value = slotVal || "";
 
       if (summaryEl) {
+        const prettySlot = slotVal
+          ? slotVal.replace("_", ":00-").replace("_", ":00-")
+          : "";
         summaryEl.textContent =
-          `Selected: ${dateVal} – ${slotVal.replace("_", ":00-")} (tables left: ${leftVal})`;
+          `Selected: ${dateVal} – ${prettySlot} (tables left: ${leftVal})`;
       }
       if (tablesHint) {
         tablesHint.textContent =
           `There are ${leftVal} tables left for this slot.`;
       }
 
-      // Simple safety: cap tables to remaining if remaining is numeric
       const remaining = parseInt(leftVal || "0", 10);
       if (tablesInput && remaining > 0) {
         tablesInput.max = remaining;
@@ -272,43 +297,155 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      // For debugging in your browser console
       console.log("[DEBUG] Selected slot:", { dateVal, slotVal, leftVal });
     });
   });
 
-  // On form submit, ensure date/slot are there (this is what your view expects)
-  form.addEventListener("submit", (e) => {
-    const dateVal = dateInput ? dateInput.value : "";
-    const slotVal = slotInput ? slotInput.value : "";
+  // -----------------------------
+  // 2) Form submit guard
+  // -----------------------------
+  if (form) {
+    form.addEventListener("submit", (e) => {
+      const dateVal = dateInput ? dateInput.value : "";
+      const slotVal = slotInput ? slotInput.value : "";
 
-    if (!dateVal || !slotVal) {
-      e.preventDefault();
-      alert("Please click a date/time cell in the availability grid before confirming.");
-      console.warn("[DEBUG] Submit blocked: missing date or slot", { dateVal, slotVal });
+      if (!dateVal || !slotVal) {
+        e.preventDefault();
+        alert("Please click a date/time cell in the availability grid before confirming.");
+        console.warn("[DEBUG] Submit blocked: missing date or slot", { dateVal, slotVal });
+        return;
+      }
+
+      console.log("[DEBUG] Submitting reservation with:", {
+        date: dateVal,
+        slot: slotVal,
+        tables: tablesInput ? tablesInput.value : null
+      });
+    });
+  }
+
+  // -----------------------------
+  // 3) Reset modal on close
+  // -----------------------------
+  if (modalEl) {
+    modalEl.addEventListener("hidden.bs.modal", () => {
+      if (dateInput) dateInput.value = "";
+      if (slotInput) slotInput.value = "";
+      if (summaryEl) {
+        summaryEl.textContent =
+          "No time slot selected yet. Click an availability button in the grid.";
+      }
+      if (tablesHint) {
+        tablesHint.textContent =
+          "Select a time slot to see how many tables remain.";
+      }
+    });
+  }
+
+  // -----------------------------
+  // 4) Staff customer lookup
+  // -----------------------------
+  const lookupInput   = document.getElementById("customerLookup");
+  const lookupBtn     = document.getElementById("btnCustomerLookup");
+  const lookupResult  = document.getElementById("customerLookupResult");
+
+  const firstNameInput = document.getElementById("first_name");
+  const lastNameInput  = document.getElementById("last_name");
+  const emailInput     = document.getElementById("email");
+  const phoneInput     = document.getElementById("phone");
+  const mobileInput    = document.getElementById("mobile");
+
+  function applyCustomerToForm(c) {
+    if (!c) return;
+
+    if (firstNameInput && c.first_name) {
+      firstNameInput.value = c.first_name;
+    }
+    if (lastNameInput && c.last_name) {
+      lastNameInput.value = c.last_name;
+    }
+
+    if (emailInput && c.email) {
+      emailInput.value = c.email;
+    }
+    if (phoneInput && c.phone) {
+      phoneInput.value = c.phone;
+    }
+    if (mobileInput && c.mobile) {
+      mobileInput.value = c.mobile;
+    }
+  }
+
+  async function doCustomerLookup() {
+    if (!lookupInput || !lookupResult) return;
+
+    const q = lookupInput.value.trim();
+    if (!q) {
+      lookupResult.textContent =
+        "Enter email, name, phone, or reservation ID.";
       return;
     }
 
-    // Let the normal POST go through (so your existing make_reservation view runs
-    // and sends the confirmation email for both staff and online users).
-    console.log("[DEBUG] Submitting reservation with:", {
-      date: dateVal,
-      slot: slotVal,
-      tables: tablesInput ? tablesInput.value : null
-    });
-  });
+    lookupResult.textContent = "Searching...";
+    console.log("[DEBUG] Calling /ajax/lookup-customer/ with:", q);
 
-  // Optional: when modal is closed, clear the hidden fields & summary
-  modalEl.addEventListener("hidden.bs.modal", () => {
-    if (dateInput) dateInput.value = "";
-    if (slotInput) slotInput.value = "";
-    if (summaryEl) {
-      summaryEl.textContent = "No time slot selected yet. Click an availability button in the grid.";
+    try {
+      const resp = await fetch(
+        `/ajax/lookup-customer/?q=${encodeURIComponent(q)}`,
+        {
+          method: "GET",
+          headers: {
+            "X-Requested-With": "XMLHttpRequest"
+          }
+        }
+      );
+
+      if (!resp.ok) {
+        lookupResult.textContent = `Lookup failed (${resp.status}).`;
+        console.error("[DEBUG] Customer lookup HTTP error", resp.status);
+        return;
+      }
+
+      const data = await resp.json();
+      console.log("[DEBUG] Lookup JSON:", data);
+
+      if (!data || !data.success || !data.found || !data.customer) {
+        lookupResult.textContent = "No matching customer found.";
+        return;
+      }
+
+      applyCustomerToForm(data.customer);
+
+      const labelName = `${data.customer.first_name || ""} ${data.customer.last_name || ""}`.trim();
+      const labelEmail = data.customer.email || "";
+      lookupResult.textContent =
+        `Loaded customer: ${labelName || "(no name)"}${labelEmail ? " – " + labelEmail : ""}`;
+
+    } catch (err) {
+      console.error("[DEBUG] Error during customer lookup:", err);
+      lookupResult.textContent =
+        "Error performing lookup. See console.";
     }
-    if (tablesHint) {
-      tablesHint.textContent = "Select a time slot to see how many tables remain.";
-    }
-  });
+  }
+
+  if (lookupBtn && lookupInput) {
+    lookupBtn.addEventListener("click", (evt) => {
+      evt.preventDefault();
+      doCustomerLookup();
+    });
+
+    // Allow pressing Enter in the search box
+    lookupInput.addEventListener("keydown", (evt) => {
+      if (evt.key === "Enter") {
+        evt.preventDefault();
+        doCustomerLookup();
+      }
+    });
+  }
 });
 </script>
 {% endblock %}
+
+
+
+

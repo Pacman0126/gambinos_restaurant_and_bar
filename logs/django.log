@@ -5687,3 +5687,201 @@ NameError: name 'UserModel' is not defined
 [2025-12-09 18:54:21,197] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 21358
 [2025-12-09 18:54:54,850] INFO [django.server:212] "POST /reservation/37/cancel/ HTTP/1.1" 302 0
 [2025-12-09 18:54:55,306] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 19392
+[2025-12-09 19:02:42,422] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-09 19:02:48,345] INFO [django.server:212] "GET / HTTP/1.1" 200 7369
+[2025-12-09 19:02:48,382] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-09 19:02:48,441] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-09 19:02:48,441] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-09 19:02:53,615] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 6361
+[2025-12-09 19:02:56,330] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-12-09 19:02:56,335] INFO [django.server:212] "GET / HTTP/1.1" 200 7101
+[2025-12-09 19:03:32,038] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7514
+[2025-12-09 19:03:39,574] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-12-09 19:03:39,827] INFO [django.server:212] "GET / HTTP/1.1" 200 8655
+[2025-12-09 19:03:43,102] INFO [reservation_book.views:98] make_reservation called, method=GET
+[2025-12-09 19:03:43,911] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 77951
+[2025-12-09 19:04:04,604] INFO [reservation_book.views:98] make_reservation called, method=GET
+[2025-12-09 19:04:05,394] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 77951
+[2025-12-09 20:34:54,589] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-09 20:45:19,665] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-09 20:45:23,560] INFO [django.server:212] "GET / HTTP/1.1" 200 8484
+[2025-12-09 20:45:23,621] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-09 20:45:23,655] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-09 20:45:23,656] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-09 20:45:40,361] INFO [reservation_book.views:97] make_reservation called, method=GET
+[2025-12-09 20:45:41,209] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 79494
+[2025-12-09 21:10:11,997] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-09 21:10:14,876] INFO [django.server:212] "GET / HTTP/1.1" 200 8484
+[2025-12-09 21:10:14,923] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-09 21:10:14,972] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-09 21:10:14,973] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-09 21:10:19,404] INFO [reservation_book.views:97] make_reservation called, method=GET
+[2025-12-09 21:10:20,254] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 82280
+[2025-12-09 21:10:44,667] ERROR [django.request:246] Internal Server Error: /ajax/lookup-customer/
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\views\decorators\http.py", line 43, in inner
+    return func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 1185, in ajax_lookup_customer
+    matches = UserModel.objects.filter(
+              ^^^^^^^^^
+NameError: name 'UserModel' is not defined
+[2025-12-09 21:10:44,667] ERROR [django.server:212] "GET /ajax/lookup-customer/?q=paxton.hartmann%40gmail.com HTTP/1.1" 500 88143
+[2025-12-09 21:36:44,342] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-09 21:37:50,216] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-09 21:37:53,248] INFO [django.server:212] "GET / HTTP/1.1" 200 8484
+[2025-12-09 21:37:53,292] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-09 21:37:53,348] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-09 21:37:53,349] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-09 21:37:57,539] INFO [reservation_book.views:98] make_reservation called, method=GET
+[2025-12-09 21:37:58,374] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 82280
+[2025-12-09 21:38:40,151] INFO [django.server:212] "GET /ajax/lookup-customer/?q=paxton.hartmann%20%40gmail.com HTTP/1.1" 200 66
+[2025-12-09 21:38:44,921] INFO [django.server:212] "GET /ajax/lookup-customer/?q=paxton.hartmann%20%40gmail.com HTTP/1.1" 200 66
+[2025-12-09 22:03:34,193] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-09 22:03:39,933] INFO [django.server:212] "GET / HTTP/1.1" 200 8484
+[2025-12-09 22:03:39,969] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-09 22:03:39,995] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-09 22:03:39,995] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-09 22:03:45,951] INFO [reservation_book.views:98] make_reservation called, method=GET
+[2025-12-09 22:03:46,784] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 82280
+[2025-12-09 22:03:56,501] INFO [django.server:212] "GET /ajax/lookup-customer/?q=paxton.hartmann%20%40gmail.com HTTP/1.1" 200 66
+[2025-12-09 22:04:22,695] INFO [django.server:212] "GET /staff/reservations/ HTTP/1.1" 200 30726
+[2025-12-09 22:04:29,141] INFO [django.server:212] "GET /staff/customers/ HTTP/1.1" 200 8045
+[2025-12-09 22:10:03,165] INFO [reservation_book.views:98] make_reservation called, method=GET
+[2025-12-09 22:10:03,921] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 82280
+[2025-12-09 22:10:15,316] INFO [django.server:212] "GET /ajax/lookup-customer/?q=paxton.hartmann%40gmail.com HTTP/1.1" 200 252
+[2025-12-15 17:47:09,297] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-15 17:47:16,924] INFO [django.server:212] "GET / HTTP/1.1" 200 6942
+[2025-12-15 17:47:17,295] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 304 0
+[2025-12-15 17:47:17,296] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-15 17:47:17,374] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-15 17:47:17,374] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-15 17:47:18,049] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-12-15 17:47:18,051] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 4664
+[2025-12-15 17:47:23,766] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7514
+[2025-12-15 17:47:30,293] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-12-15 17:47:30,585] INFO [django.server:212] "GET / HTTP/1.1" 200 8655
+[2025-12-15 17:47:41,827] INFO [reservation_book.views:98] make_reservation called, method=GET
+[2025-12-15 17:47:42,793] ERROR [django.request:246] Internal Server Error: /staff/phone-reservation/
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 344, in make_reservation
+    next_30_days = _build_next_30_days()
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 73, in _build_next_30_days
+    remaining = max(available - demand, 0)
+                    ~~~~~~~~~~^~~~~~~~
+TypeError: unsupported operand type(s) for -: 'NoneType' and 'int'
+[2025-12-15 17:47:42,797] ERROR [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 500 91426
+[2025-12-15 18:46:34,850] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-15 18:46:39,344] INFO [django.server:212] "GET / HTTP/1.1" 200 8484
+[2025-12-15 18:46:39,384] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-15 18:46:39,412] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-15 18:46:39,413] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-15 18:46:44,411] INFO [reservation_book.views:118] make_reservation called, method=GET
+[2025-12-15 18:46:45,464] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 80923
+[2025-12-15 18:47:04,823] INFO [django.server:212] "GET /ajax/lookup-customer/?q=paxton.hartmann%20%40gmail.com HTTP/1.1" 200 66
+[2025-12-15 18:47:42,614] INFO [django.server:212] "GET /staff/reservations/ HTTP/1.1" 200 30750
+[2025-12-15 18:47:53,528] INFO [django.server:212] "GET /staff/customers/ HTTP/1.1" 200 8044
+[2025-12-15 19:11:07,691] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-15 19:11:14,902] INFO [django.server:212] "GET / HTTP/1.1" 200 8484
+[2025-12-15 19:11:14,954] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-15 19:11:15,028] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-15 19:11:15,029] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-15 19:11:20,307] INFO [reservation_book.views:118] make_reservation called, method=GET
+[2025-12-15 19:11:21,503] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 80923
+[2025-12-15 19:11:29,652] INFO [reservation_book.views:1183] [ajax_lookup_customer] raw_query='paxton.hartmann @gmail.com'
+[2025-12-15 19:11:29,740] INFO [reservation_book.views:1279] [ajax_lookup_customer] returning 6 result(s) for 'paxton.hartmann @gmail.com'
+[2025-12-15 19:11:29,741] INFO [django.server:212] "GET /ajax/lookup-customer/?q=paxton.hartmann%20%40gmail.com HTTP/1.1" 200 902
+[2025-12-15 19:11:49,746] INFO [reservation_book.views:1183] [ajax_lookup_customer] raw_query='paxton.hartmann@gmail.com'
+[2025-12-15 19:11:49,798] INFO [reservation_book.views:1279] [ajax_lookup_customer] returning 6 result(s) for 'paxton.hartmann@gmail.com'
+[2025-12-15 19:11:49,798] INFO [django.server:212] "GET /ajax/lookup-customer/?q=paxton.hartmann%40gmail.com HTTP/1.1" 200 902
+[2025-12-15 19:12:05,442] INFO [reservation_book.views:1183] [ajax_lookup_customer] raw_query='Cartman'
+[2025-12-15 19:12:05,495] INFO [reservation_book.views:1279] [ajax_lookup_customer] returning 1 result(s) for 'Cartman'
+[2025-12-15 19:12:05,496] INFO [django.server:212] "GET /ajax/lookup-customer/?q=Cartman HTTP/1.1" 200 142
+[2025-12-15 19:12:28,273] INFO [reservation_book.views:1183] [ajax_lookup_customer] raw_query='paxton.hartmann@gmail.com'
+[2025-12-15 19:12:28,326] INFO [reservation_book.views:1279] [ajax_lookup_customer] returning 6 result(s) for 'paxton.hartmann@gmail.com'
+[2025-12-15 19:12:28,326] INFO [django.server:212] "GET /ajax/lookup-customer/?q=paxton.hartmann%40gmail.com HTTP/1.1" 200 902
+[2025-12-15 19:23:10,110] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-15 19:23:12,422] INFO [django.server:212] "GET / HTTP/1.1" 200 8484
+[2025-12-15 19:23:12,456] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-15 19:23:12,489] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-15 19:23:12,489] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-15 19:23:28,461] INFO [reservation_book.views:118] make_reservation called, method=GET
+[2025-12-15 19:23:29,339] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 81055
+[2025-12-15 19:23:38,083] INFO [reservation_book.views:1183] [ajax_lookup_customer] raw_query='paxton.hartmann@gmail.com'
+[2025-12-15 19:23:38,137] INFO [reservation_book.views:1279] [ajax_lookup_customer] returning 6 result(s) for 'paxton.hartmann@gmail.com'
+[2025-12-15 19:23:38,137] INFO [django.server:212] "GET /ajax/lookup-customer/?q=paxton.hartmann%40gmail.com HTTP/1.1" 200 902
+[2025-12-15 19:23:55,860] INFO [reservation_book.views:1183] [ajax_lookup_customer] raw_query='Cartman'
+[2025-12-15 19:23:55,919] INFO [reservation_book.views:1279] [ajax_lookup_customer] returning 1 result(s) for 'Cartman'
+[2025-12-15 19:23:55,920] INFO [django.server:212] "GET /ajax/lookup-customer/?q=Cartman HTTP/1.1" 200 142
+[2025-12-15 19:45:01,230] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-15 19:45:05,754] INFO [django.server:212] "GET / HTTP/1.1" 200 8484
+[2025-12-15 19:45:05,791] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-15 19:45:05,821] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-15 19:45:05,821] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-15 19:45:10,843] INFO [reservation_book.views:118] make_reservation called, method=GET
+[2025-12-15 19:45:11,824] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 82162
+[2025-12-15 19:45:20,717] INFO [reservation_book.views:1183] [ajax_lookup_customer] raw_query='paxton.hartmann@gmail.com'
+[2025-12-15 19:45:20,776] INFO [reservation_book.views:1279] [ajax_lookup_customer] returning 6 result(s) for 'paxton.hartmann@gmail.com'
+[2025-12-15 19:45:20,777] INFO [django.server:212] "GET /ajax/lookup-customer/?q=paxton.hartmann%40gmail.com HTTP/1.1" 200 902
+[2025-12-15 19:45:31,634] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7476
+[2025-12-15 19:45:36,008] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-12-15 19:45:36,018] INFO [django.server:212] "GET / HTTP/1.1" 200 7101
+[2025-12-15 19:45:39,399] INFO [django.server:212] "GET /accounts/signup/ HTTP/1.1" 200 7623
+[2025-12-15 19:45:45,096] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7514
+[2025-12-15 19:45:53,651] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-12-15 19:45:53,917] INFO [django.server:212] "GET / HTTP/1.1" 200 8655
+[2025-12-15 19:45:58,396] INFO [reservation_book.views:118] make_reservation called, method=GET
+[2025-12-15 19:45:59,315] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 82162
+[2025-12-15 19:46:09,544] INFO [reservation_book.views:1183] [ajax_lookup_customer] raw_query='paxton.hartmann@gmail.com'
+[2025-12-15 19:46:09,611] INFO [reservation_book.views:1279] [ajax_lookup_customer] returning 6 result(s) for 'paxton.hartmann@gmail.com'
+[2025-12-15 19:46:09,612] INFO [django.server:212] "GET /ajax/lookup-customer/?q=paxton.hartmann%40gmail.com HTTP/1.1" 200 902
+[2025-12-15 20:01:46,328] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-12-15 20:01:47,158] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-15 20:12:44,117] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-12-15 20:12:45,088] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-15 20:12:52,619] INFO [django.server:212] "GET / HTTP/1.1" 200 8484
+[2025-12-15 20:12:52,657] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-15 20:12:52,720] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-15 20:12:52,752] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-15 20:12:59,943] INFO [reservation_book.views:121] make_reservation called, method=GET
+[2025-12-15 20:13:00,873] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 81844
+[2025-12-15 20:13:20,029] INFO [reservation_book.views:1178] [ajax_lookup_customer] raw_query='paxton.hartmann@gmail.com'
+[2025-12-15 20:13:20,100] INFO [reservation_book.views:1274] [ajax_lookup_customer] resolved payload={'id': 6, 'email': 'paxton.hartmann@gmail.com', 'first_name': 'Cartman', 'last_name': 'Hartmann', 'phone': '', 'mobile': ''}
+[2025-12-15 20:13:20,100] INFO [django.server:212] "GET /ajax/lookup-customer/?q=paxton.hartmann%40gmail.com HTTP/1.1" 200 170
+[2025-12-15 20:13:56,744] INFO [reservation_book.views:1178] [ajax_lookup_customer] raw_query='Cartman'
+[2025-12-15 20:13:56,824] INFO [reservation_book.views:1274] [ajax_lookup_customer] resolved payload={'id': 6, 'email': 'paxton.hartmann@gmail.com', 'first_name': 'Cartman', 'last_name': 'Hartmann', 'phone': '', 'mobile': ''}
+[2025-12-15 20:13:56,825] INFO [django.server:212] "GET /ajax/lookup-customer/?q=Cartman HTTP/1.1" 200 170
+[2025-12-15 20:14:21,764] INFO [reservation_book.views:1178] [ajax_lookup_customer] raw_query='Hartmann'
+[2025-12-15 20:14:21,852] INFO [reservation_book.views:1274] [ajax_lookup_customer] resolved payload={'id': 5, 'email': 'paxton.hartmann@gmail.com', 'first_name': 'Cartman', 'last_name': 'Hartmann', 'phone': '', 'mobile': ''}
+[2025-12-15 20:14:21,853] INFO [django.server:212] "GET /ajax/lookup-customer/?q=Hartmann HTTP/1.1" 200 170
+[2025-12-15 20:14:36,936] INFO [reservation_book.views:121] make_reservation called, method=POST
+[2025-12-15 20:14:36,992] INFO [reservation_book.views:222] Phone reservation: linked to existing user id=6, email=paxton.hartmann@gmail.com
+[2025-12-15 20:14:37,062] INFO [reservation_book.views:286] Reservation confirmed for Cartman Hartmann at 17:00–18:00 on 2025-12-20 (phone=True, user_id=6)
+[2025-12-15 20:14:38,469] INFO [reservation_book.views:329] Confirmation email sent to paxton.hartmann@gmail.com for reservation id=38
+[2025-12-15 20:14:38,475] INFO [django.server:212] "POST /reserve/ HTTP/1.1" 302 0
+[2025-12-15 20:14:40,704] INFO [reservation_book.views:121] make_reservation called, method=GET
+[2025-12-15 20:14:41,613] INFO [django.server:212] "GET /reserve/ HTTP/1.1" 200 81999
+[2025-12-15 20:15:26,822] INFO [reservation_book.views:121] make_reservation called, method=GET
+[2025-12-15 20:15:27,742] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 81844
+[2025-12-15 20:15:43,248] INFO [reservation_book.views:1178] [ajax_lookup_customer] raw_query='38'
+[2025-12-15 20:15:43,355] INFO [reservation_book.views:1274] [ajax_lookup_customer] resolved payload={'id': 6, 'email': 'paxton.hartmann@gmail.com', 'first_name': 'Cartman', 'last_name': 'Hartmann', 'phone': '', 'mobile': ''}
+[2025-12-15 20:15:43,356] INFO [django.server:212] "GET /ajax/lookup-customer/?q=38 HTTP/1.1" 200 170

@@ -46,4 +46,10 @@ urlpatterns = [
     path("staff/phone-reservation/",
          views.make_reservation,
          name="create_phone_reservation"),
+
+    path(
+        "ajax/lookup-customer/",
+        views.ajax_lookup_customer,
+        name="ajax_lookup_customer",
+    ),
 ]

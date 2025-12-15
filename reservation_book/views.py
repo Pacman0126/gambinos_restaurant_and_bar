@@ -1,3 +1,6 @@
+from .models import TableReservation  # at top of file if not already imported
+from django.db.models import Q
+from django.contrib.auth.decorators import login_required
 import logging
 from datetime import timedelta, datetime
 
@@ -5,6 +8,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import login, get_user_model
+# from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.mail import send_mail
 from django.db.models import Q, Count, Sum
@@ -15,6 +19,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.text import slugify
 from django.urls import reverse
+from django.views.decorators.http import require_GET
 
 from .models import TableReservation, TimeSlotAvailability, RestaurantConfig
 from .forms import (
@@ -24,7 +29,19 @@ from .forms import (
 )
 
 User = get_user_model()
+
 logger = logging.getLogger(__name__)
+
+
+def _to_int(value, default=0):
+    """
+    Coerce None/blank to int default.
+    """
+    try:
+        return int(value) if value is not None else default
+    except (TypeError, ValueError):
+        return default
+
 
 # --- SLOT LABELS ---
 SLOT_LABELS = {
@@ -40,6 +57,8 @@ def _build_next_30_days():
     """
     Build the same 30-day availability structure used by make_reservation,
     so staff phone-reservation can show exactly the same grid.
+
+    Defensive against NULLs in DB by coercing everything with _to_int.
     """
     today = timezone.now().date()
     next_30_days = []
@@ -65,8 +84,15 @@ def _build_next_30_days():
 
         slots = []
         for slot_key, label in SLOT_LABELS.items():
-            demand = getattr(ts, f"total_cust_demand_for_tables_{slot_key}")
-            available = getattr(ts, f"number_of_tables_available_{slot_key}")
+            demand_raw = getattr(
+                ts, f"total_cust_demand_for_tables_{slot_key}", 0
+            )
+            available_raw = getattr(
+                ts, f"number_of_tables_available_{slot_key}", default_tables
+            )
+
+            demand = _to_int(demand_raw, 0)
+            available = _to_int(available_raw, default_tables)
             remaining = max(available - demand, 0)
 
             slots.append(
@@ -88,9 +114,6 @@ def _build_next_30_days():
 def home(request):
     """Simple home view"""
     return render(request, "reservation_book/index.html")
-
-
-UserModel = get_user_model()
 
 
 @login_required
@@ -151,6 +174,9 @@ def make_reservation(request):
             slot_available = getattr(ts, f"number_of_tables_available_{slot}")
             slot_demand = getattr(ts, f"total_cust_demand_for_tables_{slot}")
 
+            slot_available = _to_int(slot_available, 0)
+            slot_demand = _to_int(slot_demand, 0)
+
             if slot_demand + tables_needed > slot_available:
                 error_msg = "Not enough tables available."
                 if is_ajax:
@@ -161,7 +187,7 @@ def make_reservation(request):
             # -----------------------------------
             # 3. Decide which user this reservation belongs to
             # -----------------------------------
-            UserModel = get_user_model()
+
             user_for_reservation = None
 
             if request.user.is_authenticated and not request.user.is_staff:
@@ -187,7 +213,7 @@ def make_reservation(request):
             else:
                 # Staff / phone reservation case:
                 # If the email already exists, attach to that user.
-                existing_user = UserModel.objects.filter(
+                existing_user = User.objects.filter(
                     email__iexact=email
                 ).first()
 
@@ -203,14 +229,14 @@ def make_reservation(request):
                     base_username = email.split("@")[0] or "guest"
                     username = base_username
                     counter = 1
-                    while UserModel.objects.filter(username=username).exists():
+                    while User.objects.filter(username=username).exists():
                         username = f"{base_username}{counter}"
                         counter += 1
 
                     # You can refine password policy later
-                    temp_password = UserModel.objects.make_random_password()
+                    temp_password = User.objects.make_random_password()
 
-                    user_for_reservation = UserModel.objects.create_user(
+                    user_for_reservation = User.objects.create_user(
                         username=username,
                         email=email,
                         password=temp_password,
@@ -223,8 +249,6 @@ def make_reservation(request):
                         user_for_reservation.username,
                         user_for_reservation.email,
                     )
-
-                    # (Optional) here you could send a "set your password" / signup link email
 
             # -----------------------------------
             # 4. Create reservation
@@ -253,7 +277,9 @@ def make_reservation(request):
             ts.save()
 
             new_demand = getattr(ts, f"total_cust_demand_for_tables_{slot}")
+            new_demand = _to_int(new_demand, 0)
             available_total = getattr(ts, f"number_of_tables_available_{slot}")
+            available_total = _to_int(available_total, 0)
             left = available_total - new_demand
             pretty_slot = SLOT_LABELS.get(slot, slot)
 
@@ -1127,4 +1153,130 @@ def update_reservation(request, reservation_id):
             "reservation": reservation,
             "current_slot_label": current_slot_label,
         },
+    )
+
+
+@require_GET
+@login_required
+def ajax_lookup_customer(request):
+    """
+    Staff AJAX endpoint to look up an existing customer by:
+
+    - email (user or phone-in)
+    - first/last name
+    - phone / mobile
+    - reservation ID (digits)
+
+    Returns a single 'best' customer payload that the front-end
+    can use to auto-fill the phone reservation form.
+    """
+    if not request.user.is_staff:
+        return JsonResponse({"success": False, "error": "Forbidden"}, status=403)
+
+    raw_query = (request.GET.get(
+        "q") or request.GET.get("email") or "").strip()
+    logger.info("[ajax_lookup_customer] raw_query=%r", raw_query)
+
+    if not raw_query:
+        return JsonResponse(
+            {
+                "success": True,
+                "found": False,
+                "customer": None,
+            }
+        )
+
+    # Normalised query (for emails etc.)
+    q = raw_query.replace(" ", "")
+
+    # ---------------------------
+    # 1) Try to find a User match
+    # ---------------------------
+    user_qs = User.objects.filter(
+        Q(email__iexact=q)
+        | Q(email__icontains=q)
+        | Q(first_name__icontains=raw_query)
+        | Q(last_name__icontains=raw_query)
+        | Q(username__icontains=raw_query)
+    ).distinct()
+
+    user_match = user_qs.filter(email__iexact=q).first() or user_qs.first()
+
+    # -----------------------------------------
+    # 2) Try to find the latest reservation(s)
+    # -----------------------------------------
+    res_qs = TableReservation.objects.all()
+
+    if q.isdigit():
+        # Treat as possible reservation ID
+        res_qs = res_qs.filter(id=int(q))
+    else:
+        res_qs = res_qs.filter(
+            Q(email__iexact=q)
+            | Q(email__icontains=q)
+            | Q(first_name__icontains=raw_query)
+            | Q(last_name__icontains=raw_query)
+            | Q(phone__icontains=raw_query)
+            | Q(mobile__icontains=raw_query)
+        )
+
+    reservation_match = (
+        res_qs.select_related("user")
+        .order_by("-timeslot_availability__calendar_date", "-created_at", "-id")
+        .first()
+    )
+
+    # -----------------------------------------
+    # 3) Build a single, merged customer payload
+    # -----------------------------------------
+    payload = None
+
+    if user_match or reservation_match:
+        payload = {
+            "id": None,
+            "email": "",
+            "first_name": "",
+            "last_name": "",
+            "phone": "",
+            "mobile": "",
+        }
+
+        # ID: prefer a real User ID if available
+        if user_match:
+            payload["id"] = user_match.id
+        elif reservation_match and reservation_match.user_id:
+            payload["id"] = reservation_match.user_id
+
+        # Email: prefer reservation email (phone-in could differ)
+        if reservation_match and reservation_match.email:
+            payload["email"] = reservation_match.email
+        elif user_match and user_match.email:
+            payload["email"] = user_match.email
+
+        # First name
+        if reservation_match and reservation_match.first_name:
+            payload["first_name"] = reservation_match.first_name
+        elif user_match and user_match.first_name:
+            payload["first_name"] = user_match.first_name
+
+        # Last name
+        if reservation_match and reservation_match.last_name:
+            payload["last_name"] = reservation_match.last_name
+        elif user_match and user_match.last_name:
+            payload["last_name"] = user_match.last_name
+
+        # Phone / mobile only exist on TableReservation in your setup
+        if reservation_match and reservation_match.phone:
+            payload["phone"] = reservation_match.phone
+        if reservation_match and reservation_match.mobile:
+            payload["mobile"] = reservation_match.mobile
+
+    logger.info("[ajax_lookup_customer] resolved payload=%s", payload)
+
+    return JsonResponse(
+        {
+            "success": True,
+            "found": bool(payload),
+            "customer": payload,
+        }
     )
