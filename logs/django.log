@@ -5885,3 +5885,102 @@ TypeError: unsupported operand type(s) for -: 'NoneType' and 'int'
 [2025-12-15 20:15:43,248] INFO [reservation_book.views:1178] [ajax_lookup_customer] raw_query='38'
 [2025-12-15 20:15:43,355] INFO [reservation_book.views:1274] [ajax_lookup_customer] resolved payload={'id': 6, 'email': 'paxton.hartmann@gmail.com', 'first_name': 'Cartman', 'last_name': 'Hartmann', 'phone': '', 'mobile': ''}
 [2025-12-15 20:15:43,356] INFO [django.server:212] "GET /ajax/lookup-customer/?q=38 HTTP/1.1" 200 170
+[2025-12-18 20:26:23,372] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-18 20:26:29,903] INFO [django.server:212] "GET / HTTP/1.1" 200 6942
+[2025-12-18 20:26:29,950] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 304 0
+[2025-12-18 20:26:29,951] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-18 20:26:30,160] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 304 0
+[2025-12-18 20:26:30,172] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-18 20:26:30,175] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-18 20:26:30,672] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-12-18 20:26:30,674] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 4664
+[2025-12-18 20:26:36,815] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7514
+[2025-12-18 20:26:46,228] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-12-18 20:26:46,473] INFO [django.server:212] "GET / HTTP/1.1" 200 8655
+[2025-12-18 20:27:01,668] INFO [reservation_book.views:121] make_reservation called, method=GET
+[2025-12-18 20:27:02,711] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 82636
+[2025-12-18 20:28:33,031] INFO [reservation_book.views:1167] [ajax_lookup_customer] raw_query='paxton.hartmann@gmail.com'
+[2025-12-18 20:28:33,599] INFO [reservation_book.views:1322] [ajax_lookup_customer] returning 3 result(s) for 'paxton.hartmann@gmail.com'
+[2025-12-18 20:28:33,600] INFO [django.server:212] "GET /ajax/lookup-customer/?q=paxton.hartmann%40gmail.com HTTP/1.1" 200 488
+[2025-12-18 20:29:09,965] INFO [reservation_book.views:1167] [ajax_lookup_customer] raw_query='Hartmann'
+[2025-12-18 20:29:10,262] INFO [reservation_book.views:1322] [ajax_lookup_customer] returning 6 result(s) for 'hartmann'
+[2025-12-18 20:29:10,263] INFO [django.server:212] "GET /ajax/lookup-customer/?q=Hartmann HTTP/1.1" 200 911
+[2025-12-18 20:30:17,109] INFO [reservation_book.views:121] make_reservation called, method=POST
+[2025-12-18 20:30:17,173] INFO [reservation_book.views:222] Phone reservation: linked to existing user id=6, email=paxton.hartmann@gmail.com
+[2025-12-18 20:30:17,246] INFO [reservation_book.views:286] Reservation confirmed for Cartman Hartmann at 17:00–18:00 on 2025-12-22 (phone=True, user_id=6)
+[2025-12-18 20:30:18,580] INFO [reservation_book.views:329] Confirmation email sent to paxton.hartmann@gmail.com for reservation id=39
+[2025-12-18 20:30:18,581] INFO [django.server:212] "POST /reserve/ HTTP/1.1" 302 0
+[2025-12-18 20:30:18,843] INFO [reservation_book.views:121] make_reservation called, method=GET
+[2025-12-18 20:30:19,675] INFO [django.server:212] "GET /reserve/ HTTP/1.1" 200 82791
+[2025-12-18 20:30:52,073] INFO [reservation_book.views:1167] [ajax_lookup_customer] raw_query='36'
+[2025-12-18 20:30:52,186] INFO [reservation_book.views:1322] [ajax_lookup_customer] returning 1 result(s) for '36'
+[2025-12-18 20:30:52,186] INFO [django.server:212] "GET /ajax/lookup-customer/?q=36 HTTP/1.1" 200 199
+[2025-12-18 20:31:17,482] INFO [reservation_book.views:1167] [ajax_lookup_customer] raw_query='Cartman'
+[2025-12-18 20:31:17,763] INFO [reservation_book.views:1322] [ajax_lookup_customer] returning 2 result(s) for 'cartman'
+[2025-12-18 20:31:17,763] INFO [django.server:212] "GET /ajax/lookup-customer/?q=Cartman HTTP/1.1" 200 337
+[2025-12-18 20:50:31,200] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-18 20:50:36,118] INFO [django.server:212] "GET / HTTP/1.1" 200 8484
+[2025-12-18 20:50:36,157] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-18 20:50:36,191] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-18 20:50:36,192] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-18 20:50:46,628] INFO [reservation_book.views:121] make_reservation called, method=GET
+[2025-12-18 20:50:47,480] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 84613
+[2025-12-18 20:50:59,669] INFO [reservation_book.views:1167] [ajax_lookup_customer] raw_query='Ca'
+[2025-12-18 20:51:00,024] INFO [reservation_book.views:1322] [ajax_lookup_customer] returning 2 result(s) for 'ca'
+[2025-12-18 20:51:00,024] INFO [django.server:212] "GET /ajax/lookup-customer/?q=Ca HTTP/1.1" 200 337
+[2025-12-18 20:51:00,338] INFO [reservation_book.views:1167] [ajax_lookup_customer] raw_query='pa'
+[2025-12-18 20:51:00,654] INFO [reservation_book.views:1322] [ajax_lookup_customer] returning 4 result(s) for 'pa'
+[2025-12-18 20:51:00,654] INFO [django.server:212] "GET /ajax/lookup-customer/?q=pa HTTP/1.1" 200 634
+[2025-12-18 20:51:03,701] INFO [reservation_book.views:1167] [ajax_lookup_customer] raw_query='pax'
+[2025-12-18 20:51:04,003] INFO [reservation_book.views:1322] [ajax_lookup_customer] returning 4 result(s) for 'pax'
+[2025-12-18 20:51:04,003] INFO [django.server:212] "GET /ajax/lookup-customer/?q=pax HTTP/1.1" 200 634
+[2025-12-18 20:51:17,892] INFO [reservation_book.views:1167] [ajax_lookup_customer] raw_query='paxt'
+[2025-12-18 20:51:18,294] INFO [reservation_book.views:1322] [ajax_lookup_customer] returning 4 result(s) for 'paxt'
+[2025-12-18 20:51:18,295] INFO [django.server:212] "GET /ajax/lookup-customer/?q=paxt HTTP/1.1" 200 634
+[2025-12-18 20:51:23,469] INFO [reservation_book.views:1167] [ajax_lookup_customer] raw_query='paxton.hartmann@gmail.com'
+[2025-12-18 20:51:23,785] INFO [reservation_book.views:1322] [ajax_lookup_customer] returning 3 result(s) for 'paxton.hartmann@gmail.com'
+[2025-12-18 20:51:23,785] INFO [django.server:212] "GET /ajax/lookup-customer/?q=paxton.hartmann%40gmail.com HTTP/1.1" 200 488
+[2025-12-18 20:51:24,889] INFO [reservation_book.views:1167] [ajax_lookup_customer] raw_query='paxton.hartmann@gmail.com'
+[2025-12-18 20:51:25,208] INFO [reservation_book.views:1322] [ajax_lookup_customer] returning 3 result(s) for 'paxton.hartmann@gmail.com'
+[2025-12-18 20:51:25,209] INFO [django.server:212] "GET /ajax/lookup-customer/?q=paxton.hartmann%40gmail.com HTTP/1.1" 200 488
+[2025-12-18 20:51:46,779] INFO [reservation_book.views:1167] [ajax_lookup_customer] raw_query='Ca'
+[2025-12-18 20:51:47,086] INFO [reservation_book.views:1322] [ajax_lookup_customer] returning 2 result(s) for 'ca'
+[2025-12-18 20:51:47,086] INFO [django.server:212] "GET /ajax/lookup-customer/?q=Ca HTTP/1.1" 200 337
+[2025-12-18 21:05:46,374] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-18 21:05:52,141] INFO [django.server:212] "GET / HTTP/1.1" 200 8484
+[2025-12-18 21:05:52,180] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-18 21:05:52,230] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-18 21:05:52,231] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-18 21:05:57,607] INFO [reservation_book.views:121] make_reservation called, method=GET
+[2025-12-18 21:05:58,472] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 84467
+[2025-12-18 21:06:07,966] INFO [reservation_book.views:1167] [ajax_lookup_customer] raw_query='Ca'
+[2025-12-18 21:06:08,669] INFO [reservation_book.views:1322] [ajax_lookup_customer] returning 2 result(s) for 'ca'
+[2025-12-18 21:06:08,670] INFO [django.server:212] "GET /ajax/lookup-customer/?q=Ca HTTP/1.1" 200 337
+[2025-12-18 21:06:25,014] INFO [reservation_book.views:1167] [ajax_lookup_customer] raw_query='Cart'
+[2025-12-18 21:06:25,357] INFO [reservation_book.views:1322] [ajax_lookup_customer] returning 2 result(s) for 'cart'
+[2025-12-18 21:06:25,357] INFO [django.server:212] "GET /ajax/lookup-customer/?q=Cart HTTP/1.1" 200 337
+[2025-12-18 21:06:29,444] INFO [reservation_book.views:1167] [ajax_lookup_customer] raw_query='Car'
+[2025-12-18 21:06:29,760] INFO [reservation_book.views:1322] [ajax_lookup_customer] returning 2 result(s) for 'car'
+[2025-12-18 21:06:29,760] INFO [django.server:212] "GET /ajax/lookup-customer/?q=Car HTTP/1.1" 200 337
+[2025-12-18 21:06:33,534] INFO [reservation_book.views:1167] [ajax_lookup_customer] raw_query='pax'
+[2025-12-18 21:06:34,060] INFO [reservation_book.views:1322] [ajax_lookup_customer] returning 4 result(s) for 'pax'
+[2025-12-18 21:06:34,061] INFO [django.server:212] "GET /ajax/lookup-customer/?q=pax HTTP/1.1" 200 634
+[2025-12-18 21:06:34,918] INFO [reservation_book.views:1167] [ajax_lookup_customer] raw_query='paxt'
+[2025-12-18 21:06:36,275] INFO [reservation_book.views:1322] [ajax_lookup_customer] returning 4 result(s) for 'paxt'
+[2025-12-18 21:06:36,276] INFO [django.server:212] "GET /ajax/lookup-customer/?q=paxt HTTP/1.1" 200 634
+[2025-12-18 21:06:50,849] INFO [reservation_book.views:1167] [ajax_lookup_customer] raw_query='paxton'
+[2025-12-18 21:06:51,171] INFO [reservation_book.views:1322] [ajax_lookup_customer] returning 4 result(s) for 'paxton'
+[2025-12-18 21:06:51,172] INFO [django.server:212] "GET /ajax/lookup-customer/?q=paxton HTTP/1.1" 200 634
+[2025-12-18 21:06:52,891] INFO [reservation_book.views:1167] [ajax_lookup_customer] raw_query='paxton.'
+[2025-12-18 21:06:53,198] INFO [reservation_book.views:1322] [ajax_lookup_customer] returning 3 result(s) for 'paxton.'
+[2025-12-18 21:06:53,198] INFO [django.server:212] "GET /ajax/lookup-customer/?q=paxton. HTTP/1.1" 200 488
+[2025-12-18 21:06:53,403] INFO [reservation_book.views:1167] [ajax_lookup_customer] raw_query='paxton.h'
+[2025-12-18 21:06:53,732] INFO [reservation_book.views:1322] [ajax_lookup_customer] returning 3 result(s) for 'paxton.h'
+[2025-12-18 21:06:53,732] INFO [django.server:212] "GET /ajax/lookup-customer/?q=paxton.h HTTP/1.1" 200 488
+[2025-12-18 21:07:57,535] INFO [reservation_book.views:121] make_reservation called, method=POST
+[2025-12-18 21:07:57,591] INFO [reservation_book.views:222] Phone reservation: linked to existing user id=6, email=paxton.hartmann@gmail.com
+[2025-12-18 21:07:57,673] INFO [reservation_book.views:286] Reservation confirmed for Cartman Hartmann at 17:00–18:00 on 2025-12-24 (phone=True, user_id=6)
+[2025-12-18 21:07:59,907] INFO [reservation_book.views:329] Confirmation email sent to paxton.hartmann@gmail.com for reservation id=40
+[2025-12-18 21:07:59,908] INFO [django.server:212] "POST /reserve/ HTTP/1.1" 302 0
+[2025-12-18 21:08:00,159] INFO [reservation_book.views:121] make_reservation called, method=GET
+[2025-12-18 21:08:01,044] INFO [django.server:212] "GET /reserve/ HTTP/1.1" 200 84622

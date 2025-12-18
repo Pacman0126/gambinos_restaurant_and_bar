@@ -1,9 +1,9 @@
-from .models import TableReservation  # at top of file if not already imported
+from datetime import timedelta, datetime
+import logging
+import re
+
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
-import logging
-from datetime import timedelta, datetime
-
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
@@ -1159,124 +1159,166 @@ def update_reservation(request, reservation_id):
 @require_GET
 @login_required
 def ajax_lookup_customer(request):
-    """
-    Staff AJAX endpoint to look up an existing customer by:
-
-    - email (user or phone-in)
-    - first/last name
-    - phone / mobile
-    - reservation ID (digits)
-
-    Returns a single 'best' customer payload that the front-end
-    can use to auto-fill the phone reservation form.
-    """
+    # Staff-only (optional but recommended)
     if not request.user.is_staff:
-        return JsonResponse({"success": False, "error": "Forbidden"}, status=403)
+        return JsonResponse({"success": False, "found": False, "results": []}, status=403)
 
-    raw_query = (request.GET.get(
-        "q") or request.GET.get("email") or "").strip()
+    raw_query = (request.GET.get("q") or "").strip()
     logger.info("[ajax_lookup_customer] raw_query=%r", raw_query)
 
     if not raw_query:
-        return JsonResponse(
-            {
-                "success": True,
-                "found": False,
-                "customer": None,
-            }
-        )
+        return JsonResponse({"success": True, "found": False, "results": []})
 
-    # Normalised query (for emails etc.)
-    q = raw_query.replace(" ", "")
+    # Normalize: collapse whitespace, fix " @ " in emails, strip
+    q = re.sub(r"\s+", " ", raw_query).strip()
+    q = q.replace(" @", "@").replace("@ ", "@")  # fixes "name @gmail.com"
+    q_lower = q.lower()
 
-    # ---------------------------
-    # 1) Try to find a User match
-    # ---------------------------
-    user_qs = User.objects.filter(
-        Q(email__iexact=q)
-        | Q(email__icontains=q)
-        | Q(first_name__icontains=raw_query)
-        | Q(last_name__icontains=raw_query)
-        | Q(username__icontains=raw_query)
-    ).distinct()
+    User = get_user_model()
+    results = []
 
-    user_match = user_qs.filter(email__iexact=q).first() or user_qs.first()
+    def add_result(first_name="", last_name="", email="", phone="", mobile="", user_id=None, username=""):
+        # Build a stable-ish dedupe key
+        key = f"{(email or '').lower()}|{(phone or '').strip()}|{(mobile or '').strip()}|{(first_name or '').lower()}|{(last_name or '').lower()}|{user_id or ''}"
+        results.append({
+            "key": key,
+            "first_name": first_name or "",
+            "last_name": last_name or "",
+            "email": email or "",
+            "phone": phone or "",
+            "mobile": mobile or "",
+            "user_id": user_id,
+            "username": username or "",
+        })
 
-    # -----------------------------------------
-    # 2) Try to find the latest reservation(s)
-    # -----------------------------------------
-    res_qs = TableReservation.objects.all()
-
+    # 1) Reservation ID lookup (numeric)
     if q.isdigit():
-        # Treat as possible reservation ID
-        res_qs = res_qs.filter(id=int(q))
+        rid = int(q)
+        r = TableReservation.objects.filter(
+            id=rid).order_by("-created_at").first()
+        if r:
+            add_result(
+                first_name=r.first_name,
+                last_name=r.last_name,
+                email=r.email,
+                phone=r.phone,
+                mobile=r.mobile,
+                user_id=r.user_id,
+                username=getattr(r.user, "username", "") if r.user_id else "",
+            )
+
+    # 2) Email lookup
+    if "@" in q:
+        # Users
+        for u in User.objects.filter(email__iexact=q).only("id", "username", "first_name", "last_name", "email")[:10]:
+            add_result(
+                first_name=u.first_name,
+                last_name=u.last_name,
+                email=u.email,
+                user_id=u.id,
+                username=u.username,
+            )
+        # Reservations
+        for r in TableReservation.objects.filter(email__iexact=q).order_by("-created_at")[:10]:
+            add_result(
+                first_name=r.first_name,
+                last_name=r.last_name,
+                email=r.email,
+                phone=r.phone,
+                mobile=r.mobile,
+                user_id=r.user_id,
+                username=getattr(r.user, "username", "") if r.user_id else "",
+            )
     else:
-        res_qs = res_qs.filter(
-            Q(email__iexact=q)
-            | Q(email__icontains=q)
-            | Q(first_name__icontains=raw_query)
-            | Q(last_name__icontains=raw_query)
-            | Q(phone__icontains=raw_query)
-            | Q(mobile__icontains=raw_query)
-        )
+        # 3) Phone-ish lookup (digits / + / spaces / hyphens)
+        phoneish = re.sub(r"[^\d+]", "", q)
+        if len(phoneish) >= 6:
+            # Reservations store phone/mobile
+            for r in TableReservation.objects.filter(
+                Q(phone__icontains=phoneish) | Q(mobile__icontains=phoneish)
+            ).order_by("-created_at")[:10]:
+                add_result(
+                    first_name=r.first_name,
+                    last_name=r.last_name,
+                    email=r.email,
+                    phone=r.phone,
+                    mobile=r.mobile,
+                    user_id=r.user_id,
+                    username=getattr(r.user, "username",
+                                     "") if r.user_id else "",
+                )
 
-    reservation_match = (
-        res_qs.select_related("user")
-        .order_by("-timeslot_availability__calendar_date", "-created_at", "-id")
-        .first()
-    )
+        # 4) Name lookup (first/last or partial)
+        parts = q.split(" ")
+        if len(parts) >= 2:
+            a, b = parts[0], parts[-1]
+            # Users
+            for u in User.objects.filter(
+                Q(first_name__icontains=a, last_name__icontains=b)
+                | Q(first_name__icontains=b, last_name__icontains=a)
+            ).only("id", "username", "first_name", "last_name", "email")[:10]:
+                add_result(
+                    first_name=u.first_name,
+                    last_name=u.last_name,
+                    email=u.email,
+                    user_id=u.id,
+                    username=u.username,
+                )
+            # Reservations
+            for r in TableReservation.objects.filter(
+                Q(first_name__icontains=a, last_name__icontains=b)
+                | Q(first_name__icontains=b, last_name__icontains=a)
+            ).order_by("-created_at")[:10]:
+                add_result(
+                    first_name=r.first_name,
+                    last_name=r.last_name,
+                    email=r.email,
+                    phone=r.phone,
+                    mobile=r.mobile,
+                    user_id=r.user_id,
+                    username=getattr(r.user, "username",
+                                     "") if r.user_id else "",
+                )
+        else:
+            # Single token: try broad match on user/reservation names
+            token = q
+            for u in User.objects.filter(
+                Q(first_name__icontains=token) | Q(
+                    last_name__icontains=token) | Q(email__icontains=token)
+            ).only("id", "username", "first_name", "last_name", "email")[:10]:
+                add_result(
+                    first_name=u.first_name,
+                    last_name=u.last_name,
+                    email=u.email,
+                    user_id=u.id,
+                    username=u.username,
+                )
+            for r in TableReservation.objects.filter(
+                Q(first_name__icontains=token) | Q(
+                    last_name__icontains=token) | Q(email__icontains=token)
+            ).order_by("-created_at")[:10]:
+                add_result(
+                    first_name=r.first_name,
+                    last_name=r.last_name,
+                    email=r.email,
+                    phone=r.phone,
+                    mobile=r.mobile,
+                    user_id=r.user_id,
+                    username=getattr(r.user, "username",
+                                     "") if r.user_id else "",
+                )
 
-    # -----------------------------------------
-    # 3) Build a single, merged customer payload
-    # -----------------------------------------
-    payload = None
+    # Dedupe + trim
+    deduped = []
+    seen = set()
+    for item in results:
+        k = item["key"]
+        if k in seen:
+            continue
+        seen.add(k)
+        item.pop("key", None)
+        deduped.append(item)
 
-    if user_match or reservation_match:
-        payload = {
-            "id": None,
-            "email": "",
-            "first_name": "",
-            "last_name": "",
-            "phone": "",
-            "mobile": "",
-        }
-
-        # ID: prefer a real User ID if available
-        if user_match:
-            payload["id"] = user_match.id
-        elif reservation_match and reservation_match.user_id:
-            payload["id"] = reservation_match.user_id
-
-        # Email: prefer reservation email (phone-in could differ)
-        if reservation_match and reservation_match.email:
-            payload["email"] = reservation_match.email
-        elif user_match and user_match.email:
-            payload["email"] = user_match.email
-
-        # First name
-        if reservation_match and reservation_match.first_name:
-            payload["first_name"] = reservation_match.first_name
-        elif user_match and user_match.first_name:
-            payload["first_name"] = user_match.first_name
-
-        # Last name
-        if reservation_match and reservation_match.last_name:
-            payload["last_name"] = reservation_match.last_name
-        elif user_match and user_match.last_name:
-            payload["last_name"] = user_match.last_name
-
-        # Phone / mobile only exist on TableReservation in your setup
-        if reservation_match and reservation_match.phone:
-            payload["phone"] = reservation_match.phone
-        if reservation_match and reservation_match.mobile:
-            payload["mobile"] = reservation_match.mobile
-
-    logger.info("[ajax_lookup_customer] resolved payload=%s", payload)
-
-    return JsonResponse(
-        {
-            "success": True,
-            "found": bool(payload),
-            "customer": payload,
-        }
-    )
+    logger.info(
+        "[ajax_lookup_customer] returning %d result(s) for %r", len(deduped), q_lower)
+    return JsonResponse({"success": True, "found": len(deduped) > 0, "results": deduped[:20]})
