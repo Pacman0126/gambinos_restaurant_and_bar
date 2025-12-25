@@ -12,11 +12,64 @@
 
         <div class="modal-header border-0">
           <h5 class="modal-title" id="customerModalLabel">
-            {% if request.user.is_staff %}
+            {% comment %} {% if request.user.is_staff %}
               Phone Reservation – Caller Details & Confirmation
             {% else %}
               Confirm Your Reservation
+            {% endif %} {% endcomment %}
+           {% if request.user.is_staff %}
+            <!-- Staff: Customer/Reservation Search with Mode Selection -->
+            <div class="mb-4">
+              <label class="form-label fw-bold">Search Customer or Reservation</label>
+
+              <!-- Mode Selection Radios -->
+              <div class="btn-group d-flex mb-3" role="group" aria-label="Search mode">
+                <input type="radio" class="btn-check" name="search_mode" id="mode_existing" value="existing" checked>
+                <label class="btn btn-outline-primary flex-fill" for="mode_existing">
+                  Existing Reservations
+                </label>
+
+                <input type="radio" class="btn-check" name="search_mode" id="mode_past" value="past">
+                <label class="btn btn-outline-primary flex-fill" for="mode_past">
+                  Past Customers / Database
+                </label>
+              </div>
+
+              <!-- Search Input -->
+              <div class="input-group">
+                <input
+                  type="text"
+                  id="customerLookup"
+                  class="form-control"
+                  placeholder="Type name, email, phone, or reservation ID..."
+                  autocomplete="off"
+                >
+                <span class="input-group-text">
+                  <i class="bi bi-search"></i>
+                </span>
+              </div>
+
+              <!-- Search Feedback -->
+              <div class="form-text text-muted mt-2" id="customerLookupResult">
+                Start typing to search for customers or reservations.
+              </div>
+
+              <!-- Dropdown for multiple results -->
+              <div id="customerLookupControls" class="mt-3" style="display: none;">
+                <label for="customerLookupSelect" class="form-label">
+                  Select a match
+                </label>
+                <select id="customerLookupSelect" class="form-select" size="7">
+                  <!-- Filled dynamically by JS -->
+                </select>
+                <div class="form-text small text-info mt-2">
+                  • <strong>Existing Reservations</strong>: Select to go directly to edit/cancel<br>
+                  • <strong>Past Customers</strong>: Select to auto-fill form for new booking
+                </div>
+              </div>
+            </div>
             {% endif %}
+
           </h5>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
@@ -28,8 +81,17 @@
           <input type="hidden" name="selected_reservation_id" id="selected_reservation_id">
 
           <!-- Summary of what was clicked -->
-          <div class="alert alert-secondary small" id="selectedSlotSummary">
+          {% comment %} <div class="alert alert-secondary small" id="selectedSlotSummary">
             No time slot selected yet. Click an availability button in the grid.
+          </div> {% endcomment %}
+          <div class="alert alert-info small" id="selectedSlotSummary">
+            {% if request.user.is_staff %}
+              <strong>Phone Reservation Mode:</strong><br>
+              • Use the search above to find existing reservations or past customers<br>
+              • Or click a time slot in the grid below to start a new booking
+            {% else %}
+              No time slot selected yet. Click an availability button in the grid.
+            {% endif %}
           </div>
 
           {% if request.user.is_staff %}
@@ -205,6 +267,11 @@
 <!-- Availability table (shared for staff + online) -->
 <h3 class="mb-3">Availability for the Next 30 Days</h3>
 <div class="table-responsive">
+  {% if request.user.is_staff %}
+  <button type="button" class="btn btn-lg btn-primary" data-bs-toggle="modal" data-bs-target="#customerModal">
+    <i class="bi bi-search me-2"></i>Lookup Customer
+  </button>
+  {% endif %}
   <table class="table table-bordered table-hover table-striped text-center align-middle bg-white">
     <thead class="table-dark">
       <tr>
@@ -250,7 +317,7 @@
 
 {% block js %}
 <script>
-// --- CSRF helper (for future AJAX if needed) ---
+// CSRF and debounce helpers
 function getCookie(name) {
   let cookieValue = null;
   if (document.cookie && document.cookie !== "") {
@@ -266,294 +333,218 @@ function getCookie(name) {
   return cookieValue;
 }
 const csrftoken = getCookie("csrftoken");
+// Detect if user is staff (from Django context)
+const requestUserIsStaff = {{ request.user.is_staff|yesno:"true,false" }};
 
-// Simple debounce helper for live search
 function debounce(fn, delay) {
-  let timeoutId = null;
-  return function (...args) {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => fn.apply(this, args), delay);
+  let timeout = null;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => fn.apply(this, args), delay);
   };
 }
 
-// Fill the form fields from a result object (customer or reservation)
-function fillCustomerFormFromResult(result) {
-  const firstNameInput = document.getElementById("first_name");
-  const lastNameInput  = document.getElementById("last_name");
-  const emailInput     = document.getElementById("email");
-  const phoneInput     = document.getElementById("phone");
-  const mobileInput    = document.getElementById("mobile");
-
-  if (firstNameInput) {
-    firstNameInput.value = result.first_name || "";
-  }
-  if (lastNameInput) {
-    lastNameInput.value = result.last_name || "";
-  }
-  if (emailInput) {
-    emailInput.value = result.email || "";
-  }
-  if (phoneInput) {
-    phoneInput.value = result.phone || "";
-  }
-  if (mobileInput) {
-    mobileInput.value = result.mobile || "";
-  }
-}
-
-// Apply a selected result: fill fields, and if it's a reservation, set IDs/slot/date
-function applySelection(result) {
-  fillCustomerFormFromResult(result);
-
-  const selectedResId = document.getElementById("selected_reservation_id");
-  const dateInput     = document.getElementById("reservation_date");
-  const slotInput     = document.getElementById("time_slot");
-
-  // If it's a reservation result, persist the reservation id so staff can update/cancel
-  if (selectedResId) {
-    if (result.type === "reservation" && result.reservation_id) {
-      selectedResId.value = result.reservation_id;
-    } else {
-      selectedResId.value = "";
-    }
-  }
-
-  // Optional convenience: pre-fill the selected date/slot for reservation hits
-  if (result.type === "reservation") {
-    if (dateInput && result.reservation_date) {
-      dateInput.value = result.reservation_date;
-    }
-    if (slotInput && result.time_slot) {
-      slotInput.value = result.time_slot;
-    }
-  }
+// Fill form with customer data
+function fillCustomerForm(result) {
+  document.getElementById("first_name").value = result.first_name || "";
+  document.getElementById("last_name").value  = result.last_name  || "";
+  document.getElementById("email").value     = result.email     || "";
+  document.getElementById("phone").value     = result.phone     || "";
+  document.getElementById("mobile").value    = result.mobile    || "";
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const form    = document.getElementById("reservationForm");
-  const modalEl = document.getElementById("customerModal");
-  if (!form || !modalEl) return;
+  // Modal and form elements
+  const modalEl       = document.getElementById("customerModal");
+  const dateInput     = document.getElementById("reservation_date");
+  const slotInput     = document.getElementById("time_slot");
+  const tablesInput   = document.getElementById("tables_needed");
+  const summaryEl     = document.getElementById("selectedSlotSummary");
+  const tablesHint    = document.getElementById("tablesRemainingHint");
 
-  const dateInput   = document.getElementById("reservation_date");
-  const slotInput   = document.getElementById("time_slot");
-  const tablesInput = document.getElementById("tables_needed");
-  const summaryEl   = document.getElementById("selectedSlotSummary");
-  const tablesHint  = document.getElementById("tablesRemainingHint");
-
-  // --- AVAILABILITY GRID HANDLING ---
-  document.querySelectorAll("button[data-slot][data-date]").forEach((btn) => {
+  // Grid button handling (unchanged – works great)
+  document.querySelectorAll("button[data-slot][data-date]").forEach(btn => {
     btn.addEventListener("click", () => {
-      if (btn.classList.contains("disabled")) {
-        return;
-      }
+      if (btn.classList.contains("disabled")) return;
 
-      const dateVal = btn.getAttribute("data-date");
-      const slotVal = btn.getAttribute("data-slot");
-      const leftVal = btn.getAttribute("data-left");
+      const date = btn.dataset.date;
+      const slot = btn.dataset.slot;
+      const left = btn.dataset.left;
 
-      if (dateInput) dateInput.value = dateVal || "";
-      if (slotInput) slotInput.value = slotVal || "";
+      dateInput.value = date;
+      slotInput.value = slot;
 
-      if (summaryEl) {
-        const prettySlot = slotVal ? slotVal.replace("_", ":00-") : "";
-        summaryEl.textContent =
-          `Selected: ${dateVal} – ${prettySlot} (tables left: ${leftVal})`;
-      }
-      if (tablesHint) {
-        tablesHint.textContent =
-          `There are ${leftVal} tables left for this slot.`;
-      }
+      const prettySlot = slot ? slot.replace("_", ":00-") : "";
+      summaryEl.textContent = `Selected: ${date} – ${prettySlot} (tables left: ${left})`;
+      tablesHint.textContent = `There are ${left} tables left for this slot.`;
 
-      const remaining = parseInt(leftVal || "0", 10);
+      const remaining = parseInt(left, 10);
       if (tablesInput && remaining > 0) {
         tablesInput.max = remaining;
-        if (parseInt(tablesInput.value || "0", 10) === 0) {
-          tablesInput.value = 1;
-        }
+        if (parseInt(tablesInput.value, 10) > remaining) tablesInput.value = 1;
       }
-
-      console.log("[DEBUG] Selected slot:", { dateVal, slotVal, leftVal });
     });
   });
 
-  // --- FORM SUBMIT SAFETY CHECK ---
-  form.addEventListener("submit", (e) => {
-    const dateVal = dateInput ? dateInput.value : "";
-    const slotVal = slotInput ? slotInput.value : "";
-
-    if (!dateVal || !slotVal) {
+  // Form submit validation
+  document.getElementById("reservationForm").addEventListener("submit", e => {
+    if (!dateInput.value || !slotInput.value) {
       e.preventDefault();
-      alert("Please click a date/time cell in the availability grid before confirming.");
-      console.warn("[DEBUG] Submit blocked: missing date or slot", { dateVal, slotVal });
-      return;
+      alert("Please select a time slot from the availability grid first.");
     }
-
-    console.log("[DEBUG] Submitting reservation with:", {
-      date: dateVal,
-      slot: slotVal,
-      tables: tablesInput ? tablesInput.value : null
-    });
   });
 
-  // Reset summary & hidden fields when modal closes
+  // Reset fields when modal closes
   modalEl.addEventListener("hidden.bs.modal", () => {
-    if (dateInput) dateInput.value = "";
-    if (slotInput) slotInput.value = "";
+    dateInput.value = "";
+    slotInput.value = "";
+    document.getElementById("selected_reservation_id").value = "";
+    tablesHint.textContent = "Select a time slot to see how many tables remain.";
+    
     if (summaryEl) {
-      summaryEl.textContent = "No time slot selected yet. Click an availability button in the grid.";
+      if (requestUserIsStaff) {  // We'll define this below
+        summaryEl.innerHTML = `
+          <strong>Phone Reservation Mode:</strong><br>
+          • Use the search above to find existing reservations or past customers<br>
+          `;
+      } else {
+        summaryEl.textContent = "No time slot selected yet. Click an availability button in the grid.";
+      }
     }
-    if (tablesHint) {
-      tablesHint.textContent = "Select a time slot to see how many tables remain.";
-    }
-    const selectedResId = document.getElementById("selected_reservation_id");
-    if (selectedResId) selectedResId.value = "";
   });
 
-  // --- STAFF LOOKUP (LIVE SEARCH + EXPANDED DROPDOWN WITH RESERVATION DETAILS) ---
-  const lookupInput    = document.getElementById("customerLookup");
-  const lookupResult   = document.getElementById("customerLookupResult");
-  const lookupControls = document.getElementById("customerLookupControls");
-  const lookupSelect   = document.getElementById("customerLookupSelect");
-  const selectedResId  = document.getElementById("selected_reservation_id");
+  // Improve summary when modal opens (especially via "Search" button)
+  modalEl.addEventListener("shown.bs.modal", () => {
+    if (!dateInput.value || !slotInput.value) {
+      if (requestUserIsStaff) {
+        summaryEl.innerHTML = `
+          <strong>Phone Reservation Mode:</strong><br>
+          • Use the search above to find existing reservations or past customers<br>        
+        `;
+      }
+      tablesInput.removeAttribute("max");
+    }
+  });
+
+  // === STAFF SEARCH LOGIC ===
+  const lookupInput     = document.getElementById("customerLookup");
+  const lookupResult    = document.getElementById("customerLookupResult");
+  const lookupControls  = document.getElementById("customerLookupControls");
+  const lookupSelect    = document.getElementById("customerLookupSelect");
 
   let lastResults = [];
 
-  function renderLookupResults(results) {
+  const getMode = () => document.querySelector('input[name="search_mode"]:checked')?.value || "past";
+
+  const renderResults = (results) => {
     lastResults = results || [];
 
-    if (!lookupControls || !lookupSelect || !lookupResult) return;
-
-    if (!lastResults.length) {
+    if (!results.length) {
       lookupControls.style.display = "none";
       lookupSelect.innerHTML = "";
-      lookupResult.textContent = "No matching customer or reservation found.";
-      if (selectedResId) selectedResId.value = "";
+      lookupResult.textContent = "No matches found.";
       return;
     }
 
-    // Exactly one result -> auto-fill and hide dropdown
-    if (lastResults.length === 1) {
-      const r = lastResults[0];
-      applySelection(r);
-      lookupControls.style.display = "none";
-      lookupSelect.innerHTML = "";
-      const fullName = `${r.first_name || ""} ${r.last_name || ""}`.trim() || "(no name)";
-      lookupResult.textContent = `Auto-filled: ${fullName}`;
-      return;
-    }
-
-    // Multiple results -> expanded dropdown
-    lookupSelect.innerHTML = "";
-    lastResults.forEach((r, index) => {
-      const opt = document.createElement("option");
-      opt.value = String(index);
-
-      const fullName = `${r.first_name || ""} ${r.last_name || ""}`.trim() || "(no name)";
-      const parts = [];
-
-      // Type marker
-      parts.push(r.type === "reservation" ? "RES" : "CUST");
-
-      // Identity
-      parts.push(fullName);
-      if (r.email) parts.push(`email: ${r.email}`);
-      if (r.phone) parts.push(`phone: ${r.phone}`);
-      if (r.mobile) parts.push(`mobile: ${r.mobile}`);
-
-      // Reservation-specific details
-      if (r.type === "reservation") {
-        const dateStr = r.reservation_date || "";
-        const timeStr = r.pretty_slot || r.time_slot || "";
-        const idStr   = r.reservation_id ? `#${r.reservation_id}` : "";
-        const status  = (r.reservation_status === false) ? "(cancelled)" : "";
-        parts.push(`${idStr} ${dateStr} ${timeStr}`.trim());
-        if (status) parts.push(status);
+    // Single result: auto-apply
+    if (results.length === 1) {
+      const r = results[0];
+      const mode = getMode();
+      if (mode === "existing" && r.type === "reservation" && r.reservation_id) {
+        window.location.href = `/reservation/${r.reservation_id}/edit/`;
+        return;
       }
+      fillCustomerForm(r);
+      lookupResult.textContent = "Auto-filled from match.";
+      lookupControls.style.display = "none";
+      return;
+    }
 
-      opt.textContent = parts.join(" | ");
+    // Multiple results: show dropdown
+    lookupSelect.innerHTML = "";
+    results.forEach((r, i) => {
+      const opt = document.createElement("option");
+      opt.value = i;
+
+      let text = "";
+      if (r.type === "reservation") {
+        const date = r.reservation_date || "?";
+        const time = r.pretty_slot || r.time_slot || "?";
+        text = `RESERVATION #${r.reservation_id} — ${r.first_name || ""} ${r.last_name || ""} — ${date} ${time}`;
+        if (r.email) text += ` — ${r.email}`;
+      } else {
+        text = `CUSTOMER — ${r.first_name || ""} ${r.last_name || ""}`;
+        if (r.email) text += ` — ${r.email}`;
+        if (r.phone || r.mobile) text += ` — ${r.phone || r.mobile}`;
+      }
+      opt.textContent = text.trim() || "(no details)";
       lookupSelect.appendChild(opt);
     });
 
-    lookupSelect.multiple = true;
-    lookupSelect.size = Math.min(lastResults.length, 8);
     lookupControls.style.display = "block";
+    lookupResult.textContent = `Found ${results.length} match(es). Select one below.`;
+  };
 
-    lookupResult.textContent =
-      `${lastResults.length} result(s). Keep typing to narrow it, then click one to auto-fill.`;
-  }
-
-  function performLookup(query) {
-    if (!query) {
-      if (lookupControls) lookupControls.style.display = "none";
-      if (lookupSelect) lookupSelect.innerHTML = "";
-      if (lookupResult) lookupResult.textContent = "";
-      if (selectedResId) selectedResId.value = "";
+  const search = (query) => {
+    if (!query.trim()) {
+      lookupControls.style.display = "none";
+      lookupResult.textContent = "Start typing to search...";
       return;
     }
 
-    if (lookupResult) {
-      lookupResult.textContent = "Searching…";
-    }
+    lookupResult.textContent = "Searching…";
+    const mode = getMode();
+    const url = `/ajax/lookup-customer/?q=${encodeURIComponent(query)}&mode=${mode}`;
 
-    fetch(`/ajax/lookup-customer/?q=${encodeURIComponent(query)}`, {
-      method: "GET",
-      headers: {
-        "X-Requested-With": "XMLHttpRequest"
-      }
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log("[DEBUG] lookup data:", data);
-        const results = data.results || [];
-        renderLookupResults(results);
-      })
-      .catch((err) => {
-        console.error("[ERROR] lookup failed:", err);
-        if (lookupResult) {
-          lookupResult.textContent = "Error while searching for customer.";
-        }
-        if (lookupControls) lookupControls.style.display = "none";
-        if (lookupSelect) lookupSelect.innerHTML = "";
-        if (selectedResId) selectedResId.value = "";
+    fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } })
+      .then(res => res.ok ? res.json() : Promise.reject())
+      .then(data => renderResults(data.results || []))
+      .catch(() => {
+        lookupResult.textContent = "Search error. Try again.";
+        lookupControls.style.display = "none";
       });
-  }
+  };
 
-  const debouncedLookup = debounce(() => {
-    if (!lookupInput) return;
-    const q = lookupInput.value.trim();
+  const debouncedSearch = debounce(() => {
+    const q = lookupInput?.value.trim() || "";
     if (q.length < 2) {
-      if (lookupControls) lookupControls.style.display = "none";
-      if (lookupSelect) lookupSelect.innerHTML = "";
-      if (lookupResult) {
-        lookupResult.textContent = "Type at least 2 characters to search.";
-      }
-      if (selectedResId) selectedResId.value = "";
+      lookupControls.style.display = "none";
+      lookupResult.textContent = "Type at least 2 characters...";
       return;
     }
-    performLookup(q);
-  }, 250);
+    search(q);
+  }, 300);
 
-  if (lookupInput) {
-    // Live search: every keystroke is effectively a "Search" click
-    lookupInput.addEventListener("input", debouncedLookup);
-  }
+  if (lookupInput) lookupInput.addEventListener("input", debouncedSearch);
 
+  // Re-search when mode changes
+  document.querySelectorAll('input[name="search_mode"]').forEach(radio => {
+    radio.addEventListener("change", () => {
+      const q = lookupInput?.value.trim();
+      if (q.length >= 2) search(q);
+    });
+  });
+
+  // Handle selection from dropdown
   if (lookupSelect) {
     lookupSelect.addEventListener("change", () => {
-      const idx = parseInt(lookupSelect.value, 10);
-      if (Number.isNaN(idx) || !lastResults[idx]) return;
-      applySelection(lastResults[idx]);
+      const idx = lookupSelect.value;
+      if (idx === "" || !lastResults[idx]) return;
+
+      const result = lastResults[idx];
+      const mode = getMode();
+
+      if (mode === "existing" && result.type === "reservation" && result.reservation_id) {
+        window.location.href = `/reservation/${result.reservation_id}/edit/`;
+      } else {
+        fillCustomerForm(result);
+        lookupResult.textContent = "Form filled from selected customer.";
+        lookupControls.style.display = "none";
+      }
     });
   }
 });
 </script>
-
-
 {% endblock %}
 
 

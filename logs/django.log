@@ -6025,3 +6025,126 @@ TypeError: unsupported operand type(s) for -: 'NoneType' and 'int'
 [2025-12-25 18:47:23,955] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 86077
 [2025-12-25 18:47:34,463] INFO [django.server:212] "GET /ajax/lookup-customer/?q=ca HTTP/1.1" 200 3224
 [2025-12-25 18:47:34,956] INFO [django.server:212] "GET /ajax/lookup-customer/?q=car HTTP/1.1" 200 3224
+[2025-12-25 19:20:58,660] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-25 19:21:02,229] INFO [django.server:212] "GET / HTTP/1.1" 200 8484
+[2025-12-25 19:21:02,275] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-25 19:21:02,330] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-25 19:21:02,332] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-25 19:21:27,550] INFO [reservation_book.views:121] make_reservation called, method=GET
+[2025-12-25 19:21:28,415] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 86078
+[2025-12-25 19:21:44,705] INFO [django.server:212] "GET /ajax/lookup-customer/?q=Cartman HTTP/1.1" 200 3224
+[2025-12-25 19:22:05,217] INFO [django.server:212] "GET /staff/reservations/ HTTP/1.1" 200 35384
+[2025-12-25 19:22:17,763] INFO [django.server:212] "GET /staff/customers/ HTTP/1.1" 200 8044
+[2025-12-25 19:30:05,115] INFO [django.server:212] "GET /staff/customer/6/history/ HTTP/1.1" 200 12015
+[2025-12-25 19:30:36,848] INFO [django.server:212] "GET /staff/customers/ HTTP/1.1" 200 8044
+[2025-12-25 19:31:02,376] INFO [reservation_book.views:121] make_reservation called, method=GET
+[2025-12-25 19:31:03,254] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 86078
+[2025-12-25 20:03:15,262] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-25 20:03:21,187] INFO [django.server:212] "GET / HTTP/1.1" 200 8484
+[2025-12-25 20:03:21,225] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-25 20:03:21,278] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-25 20:03:21,279] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-25 20:03:28,332] INFO [reservation_book.views:121] make_reservation called, method=GET
+[2025-12-25 20:03:29,491] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 85251
+[2025-12-25 20:04:06,409] INFO [django.server:212] "GET /ajax/lookup-customer/?q=Ca&mode=past HTTP/1.1" 200 425
+[2025-12-25 20:04:06,506] INFO [django.server:212] "GET /ajax/lookup-customer/?q=Car&mode=past HTTP/1.1" 200 425
+[2025-12-25 20:04:06,819] INFO [django.server:212] "GET /ajax/lookup-customer/?q=Cart&mode=past HTTP/1.1" 200 425
+[2025-12-25 20:26:03,925] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-25 20:26:07,065] INFO [django.server:212] "GET / HTTP/1.1" 200 8484
+[2025-12-25 20:26:07,101] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-25 20:26:07,130] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-25 20:26:07,130] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-25 20:26:17,185] INFO [reservation_book.views:121] make_reservation called, method=GET
+[2025-12-25 20:26:18,136] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 86623
+[2025-12-25 20:27:32,559] INFO [reservation_book.views:121] make_reservation called, method=GET
+[2025-12-25 20:27:33,465] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 86614
+[2025-12-25 20:27:33,540] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 5924
+[2025-12-25 20:27:33,892] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2025-12-25 20:27:34,015] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-12-25 20:27:34,016] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 4664
+[2025-12-25 20:29:51,128] INFO [django.server:212] "GET /ajax/lookup-customer/?q=35&mode=existing HTTP/1.1" 200 15
+[2025-12-25 20:29:54,438] INFO [django.server:212] "GET /ajax/lookup-customer/?q=36&mode=existing HTTP/1.1" 200 15
+[2025-12-25 20:29:57,391] INFO [django.server:212] "GET /ajax/lookup-customer/?q=38&mode=existing HTTP/1.1" 200 15
+[2025-12-25 20:35:23,107] INFO [django.server:212] "GET /staff/reservations/ HTTP/1.1" 200 35384
+[2025-12-25 20:35:39,021] INFO [reservation_book.views:121] make_reservation called, method=GET
+[2025-12-25 20:35:39,855] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 86614
+[2025-12-25 20:35:45,060] INFO [django.server:212] "GET /ajax/lookup-customer/?q=40&mode=existing HTTP/1.1" 200 15
+[2025-12-25 20:36:05,800] INFO [django.server:212] "GET /ajax/lookup-customer/?q=40&mode=past HTTP/1.1" 200 15
+[2025-12-25 20:47:57,523] INFO [reservation_book.views:121] make_reservation called, method=GET
+[2025-12-25 20:47:58,429] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 86472
+[2025-12-25 20:47:58,451] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 5924
+[2025-12-25 20:47:59,406] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2025-12-25 20:47:59,517] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-12-25 20:47:59,518] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 4664
+[2025-12-25 20:48:04,823] INFO [reservation_book.views:121] make_reservation called, method=GET
+[2025-12-25 20:48:05,685] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 86472
+[2025-12-25 20:56:48,165] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-12-25 20:56:49,120] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-25 20:56:54,780] INFO [reservation_book.views:121] make_reservation called, method=GET
+[2025-12-25 20:56:55,684] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 86472
+[2025-12-25 20:56:55,760] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 5924
+[2025-12-25 20:56:56,063] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2025-12-25 20:56:56,118] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-12-25 20:56:56,119] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 4664
+[2025-12-25 20:57:01,964] INFO [django.server:212] "GET /ajax/lookup-customer/?q=40&mode=existing HTTP/1.1" 200 294
+[2025-12-25 20:57:02,414] INFO [django.server:212] "GET /reservation/40/edit/ HTTP/1.1" 200 9459
+[2025-12-25 20:59:17,608] INFO [django.server:212] "GET /reservation/40/edit/ HTTP/1.1" 200 9458
+[2025-12-25 20:59:17,625] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 5924
+[2025-12-25 20:59:17,963] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2025-12-25 20:59:17,995] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-12-25 20:59:17,995] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 4664
+[2025-12-25 20:59:41,672] INFO [django.server:212] "POST /reservation/40/edit/ HTTP/1.1" 302 0
+[2025-12-25 20:59:41,946] INFO [django.server:212] "GET /my_reservations/ HTTP/1.1" 200 7196
+[2025-12-25 21:01:08,694] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7476
+[2025-12-25 21:01:10,901] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-12-25 21:01:10,907] INFO [django.server:212] "GET / HTTP/1.1" 200 7101
+[2025-12-25 21:01:10,930] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-25 21:01:10,937] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-25 21:01:10,938] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-25 21:01:14,131] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7514
+[2025-12-25 21:01:22,694] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-12-25 21:01:22,975] INFO [django.server:212] "GET / HTTP/1.1" 200 8649
+[2025-12-25 21:01:53,701] INFO [django.server:212] "GET /admin/ HTTP/1.1" 200 13463
+[2025-12-25 21:01:53,716] INFO [django.server:212] "GET /static/admin/css/base.css HTTP/1.1" 304 0
+[2025-12-25 21:01:53,743] INFO [django.server:212] "GET /static/admin/css/dark_mode.css HTTP/1.1" 304 0
+[2025-12-25 21:01:53,743] INFO [django.server:212] "GET /static/admin/css/nav_sidebar.css HTTP/1.1" 304 0
+[2025-12-25 21:01:53,746] INFO [django.server:212] "GET /static/admin/css/dashboard.css HTTP/1.1" 304 0
+[2025-12-25 21:01:53,746] INFO [django.server:212] "GET /static/admin/css/responsive.css HTTP/1.1" 304 0
+[2025-12-25 21:01:53,747] INFO [django.server:212] "GET /static/admin/js/theme.js HTTP/1.1" 304 0
+[2025-12-25 21:01:53,753] INFO [django.server:212] "GET /static/admin/js/nav_sidebar.js HTTP/1.1" 304 0
+[2025-12-25 21:01:53,758] INFO [django.server:212] "GET /static/admin/img/icon-addlink.svg HTTP/1.1" 304 0
+[2025-12-25 21:01:53,759] INFO [django.server:212] "GET /static/admin/img/icon-changelink.svg HTTP/1.1" 304 0
+[2025-12-25 21:01:53,760] INFO [django.server:212] "GET /static/admin/img/icon-deletelink.svg HTTP/1.1" 304 0
+[2025-12-25 21:02:19,525] INFO [django.server:212] "GET /admin/auth/user/ HTTP/1.1" 200 16422
+[2025-12-25 21:02:19,543] INFO [django.server:212] "GET /static/admin/css/changelists.css HTTP/1.1" 304 0
+[2025-12-25 21:02:19,552] INFO [django.server:212] "GET /static/admin/js/jquery.init.js HTTP/1.1" 304 0
+[2025-12-25 21:02:19,552] INFO [django.server:212] "GET /static/admin/js/core.js HTTP/1.1" 304 0
+[2025-12-25 21:02:19,553] INFO [django.server:212] "GET /static/admin/js/actions.js HTTP/1.1" 304 0
+[2025-12-25 21:02:19,553] INFO [django.server:212] "GET /static/admin/js/vendor/jquery/jquery.js HTTP/1.1" 304 0
+[2025-12-25 21:02:19,554] INFO [django.server:212] "GET /static/admin/js/admin/RelatedObjectLookups.js HTTP/1.1" 304 0
+[2025-12-25 21:02:19,560] INFO [django.server:212] "GET /static/admin/js/prepopulate.js HTTP/1.1" 304 0
+[2025-12-25 21:02:19,563] INFO [django.server:212] "GET /static/admin/js/urlify.js HTTP/1.1" 304 0
+[2025-12-25 21:02:19,565] INFO [django.server:212] "GET /static/admin/img/search.svg HTTP/1.1" 304 0
+[2025-12-25 21:02:19,567] INFO [django.server:212] "GET /static/admin/js/vendor/xregexp/xregexp.js HTTP/1.1" 304 0
+[2025-12-25 21:02:19,567] INFO [django.server:212] "GET /static/admin/img/icon-no.svg HTTP/1.1" 304 0
+[2025-12-25 21:02:19,574] INFO [django.server:212] "GET /static/admin/img/icon-yes.svg HTTP/1.1" 304 0
+[2025-12-25 21:02:19,579] INFO [django.server:212] "GET /static/admin/js/filters.js HTTP/1.1" 304 0
+[2025-12-25 21:02:19,790] INFO [django.server:212] "GET /admin/jsi18n/ HTTP/1.1" 200 3343
+[2025-12-25 21:02:19,811] INFO [django.server:212] "GET /static/admin/img/tooltag-add.svg HTTP/1.1" 304 0
+[2025-12-25 21:02:19,818] INFO [django.server:212] "GET /static/admin/img/sorting-icons.svg HTTP/1.1" 304 0
+[2025-12-25 21:05:16,838] INFO [django.server:212] "GET /admin/auth/user/?is_staff__exact=1 HTTP/1.1" 200 16716
+[2025-12-25 21:05:17,083] INFO [django.server:212] "GET /admin/jsi18n/ HTTP/1.1" 200 3343
+[2025-12-25 21:05:33,463] INFO [django.server:212] "GET /admin/auth/user/?is_staff__exact=1&is_superuser__exact=1 HTTP/1.1" 200 16706
+[2025-12-25 21:05:33,718] INFO [django.server:212] "GET /admin/jsi18n/ HTTP/1.1" 200 3343
+[2025-12-25 21:05:39,669] INFO [django.server:212] "GET /admin/auth/user/? HTTP/1.1" 200 16422
+[2025-12-25 21:05:39,946] INFO [django.server:212] "GET /admin/jsi18n/ HTTP/1.1" 200 3343
+[2025-12-25 21:08:42,496] INFO [django.server:212] "GET /admin/reservation_book/tablereservation/ HTTP/1.1" 200 24359
+[2025-12-25 21:08:42,757] INFO [django.server:212] "GET /admin/jsi18n/ HTTP/1.1" 200 3343
+[2025-12-25 21:10:00,608] INFO [django.server:212] "GET /admin/auth/user/ HTTP/1.1" 200 16422
+[2025-12-25 21:10:00,869] INFO [django.server:212] "GET /admin/jsi18n/ HTTP/1.1" 200 3343
+[2025-12-25 21:10:04,906] INFO [django.server:212] "GET /admin/auth/user/add/ HTTP/1.1" 200 15090
+[2025-12-25 21:10:04,927] INFO [django.server:212] "GET /static/admin/css/forms.css HTTP/1.1" 304 0
+[2025-12-25 21:10:04,938] INFO [django.server:212] "GET /static/admin/css/widgets.css HTTP/1.1" 304 0
+[2025-12-25 21:10:04,939] INFO [django.server:212] "GET /static/admin/js/prepopulate_init.js HTTP/1.1" 304 0
+[2025-12-25 21:10:04,943] INFO [django.server:212] "GET /static/admin/js/change_form.js HTTP/1.1" 304 0
+[2025-12-25 21:10:05,184] INFO [django.server:212] "GET /admin/jsi18n/ HTTP/1.1" 200 3343

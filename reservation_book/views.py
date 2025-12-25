@@ -1171,64 +1171,106 @@ def _normalize_query(q: str) -> str:
 @login_required
 @require_GET
 def ajax_lookup_customer(request):
-    """
-    Unified lookup for staff phone-reservation flow:
-    - returns reservation matches (with id/date/slot)
-    - returns customer matches (User and/or past reservation identity)
-    """
     if not request.user.is_staff:
         return JsonResponse({"results": []}, status=403)
 
-    raw_query = request.GET.get("q", "")
+    raw_query = request.GET.get("q", "").strip()
+    mode = request.GET.get("mode", "past").lower()
+
     q = _normalize_query(raw_query)
 
-    # quick short-circuit
     if len(q) < 2:
         return JsonResponse({"results": []})
 
     User = get_user_model()
+    today = timezone.now().date()
+    results = []
 
-    # ---------- Reservation hits ----------
-    # Search by email OR name OR reservation id (if numeric)
-    res_filter = (
-        Q(email__iexact=q)
-        | Q(first_name__icontains=q)
-        | Q(last_name__icontains=q)
-        | Q(email__icontains=q)
-    )
+    # ------------------- ALWAYS CHECK FOR RESERVATION ID -------------------
+    stripped_q = q.strip()
+    is_numeric_id = stripped_q.isdigit()
+    reservation_by_id = None
+    if is_numeric_id:
+        try:
+            res_by_id = TableReservation.objects.filter(
+                id=int(stripped_q)).first()
+            if res_by_id:
+                # Build the same dict format as before
+                date_val = res_by_id.reservation_date or (
+                    res_by_id.timeslot_availability.calendar_date if res_by_id.timeslot_availability else None
+                )
+                reservation_by_id = {
+                    "type": "reservation",
+                    "reservation_id": res_by_id.id,
+                    "first_name": res_by_id.first_name or "",
+                    "last_name": res_by_id.last_name or "",
+                    "email": res_by_id.email or "",
+                    "phone": res_by_id.phone or "",
+                    "mobile": res_by_id.mobile or "",
+                    "reservation_date": date_val.isoformat() if date_val else "",
+                    "time_slot": res_by_id.time_slot or "",
+                    "pretty_slot": SLOT_LABELS.get(res_by_id.time_slot, res_by_id.time_slot or ""),
+                    "reservation_status": bool(getattr(res_by_id, "reservation_status", True)),
+                }
+        except (ValueError, OverflowError):
+            pass  # Not a valid int
 
-    if q.isdigit():
-        res_filter = res_filter | Q(id=int(q))
+    # If we found a reservation by exact ID, add it immediately (prioritize it)
+    if reservation_by_id:
+        results.append(reservation_by_id)
 
-    reservations_qs = (
-        TableReservation.objects
-        .select_related("timeslot_availability")
-        .filter(res_filter)
-        .order_by("-created_at")[:10]
-    )
+        # If mode is past and we have an ID match, still return it (staff might need to edit)
+        # But continue to customer search below if needed
 
-    reservation_results = []
-    for r in reservations_qs:
-        # Prefer denormalized reservation_date if you have it, else fall back
-        date_val = r.reservation_date or (getattr(
-            r.timeslot_availability, "calendar_date", None) if r.timeslot_availability_id else None)
+    # ------------------------------------------------------------------
+    # Mode: existing → active/upcoming reservations (text + ID already added above)
+    # ------------------------------------------------------------------
+    if mode == "existing":
+        res_filter = (
+            Q(email__iexact=q)
+            | Q(email__icontains=q)
+            | Q(first_name__icontains=q)
+            | Q(last_name__icontains=q)
+        )
 
-        reservation_results.append({
-            "type": "reservation",
-            "reservation_id": r.id,
-            "first_name": r.first_name or "",
-            "last_name": r.last_name or "",
-            "email": r.email or "",
-            "phone": r.phone or "",
-            "mobile": r.mobile or "",
-            "reservation_date": date_val.isoformat() if date_val else "",
-            "time_slot": r.time_slot or "",
-            "pretty_slot": SLOT_LABELS.get(r.time_slot, r.time_slot or ""),
-            "reservation_status": bool(getattr(r, "reservation_status", True)),
-        })
+        reservations_qs = (
+            TableReservation.objects
+            .select_related("timeslot_availability")
+            .filter(res_filter)
+            .filter(reservation_status=True, reservation_date__gte=today)
+            .order_by("-reservation_date", "-created_at")[:10]
+        )
 
-    # ---------- Customer hits ----------
-    # 1) Match real registered users by email/username/first/last
+        for r in reservations_qs:
+            # Skip if already added as exact ID match
+            if reservation_by_id and r.id == reservation_by_id["reservation_id"]:
+                continue
+
+            date_val = r.reservation_date or (
+                r.timeslot_availability.calendar_date if r.timeslot_availability else None
+            )
+
+            results.append({
+                "type": "reservation",
+                "reservation_id": r.id,
+                "first_name": r.first_name or "",
+                "last_name": r.last_name or "",
+                "email": r.email or "",
+                "phone": r.phone or "",
+                "mobile": r.mobile or "",
+                "reservation_date": date_val.isoformat() if date_val else "",
+                "time_slot": r.time_slot or "",
+                "pretty_slot": SLOT_LABELS.get(r.time_slot, r.time_slot or ""),
+                "reservation_status": True,
+            })
+
+        return JsonResponse({"results": results})
+
+    # ------------------------------------------------------------------
+    # Mode: past (default) → customer profiles
+    # ------------------------------------------------------------------
+    # (If ID match already added above, it will appear first)
+
     user_filter = (
         Q(email__iexact=q)
         | Q(email__icontains=q)
@@ -1242,52 +1284,50 @@ def ajax_lookup_customer(request):
         "last_name", "first_name")[:10]
 
     customer_results = []
+    seen_emails = set()
+
     for u in users_qs:
+        email_lower = (u.email or "").lower()
+        if email_lower:
+            seen_emails.add(email_lower)
+
         customer_results.append({
             "type": "customer",
             "user_id": u.id,
             "first_name": u.first_name or "",
             "last_name": u.last_name or "",
             "email": u.email or "",
-            "phone": "",   # auth user typically doesn't store these
+            "phone": "",
             "mobile": "",
         })
 
-    # 2) Also allow “customers” derived from past reservations (non-registered callers)
-    #    Grouping/distinct varies by DB; simplest: pull recent and de-dupe by email.
-    past_qs = (
-        TableReservation.objects
-        .filter(
-            Q(email__iexact=q)
-            | Q(email__icontains=q)
-            | Q(first_name__icontains=q)
-            | Q(last_name__icontains=q)
-        )
-        .order_by("-created_at")[:25]
+    past_filter = (
+        Q(email__iexact=q)
+        | Q(email__icontains=q)
+        | Q(first_name__icontains=q)
+        | Q(last_name__icontains=q)
     )
 
-    seen_emails = {c["email"].lower()
-                   for c in customer_results if c.get("email")}
+    past_qs = TableReservation.objects.filter(
+        past_filter).order_by("-created_at")[:25]
+
     for r in past_qs:
-        em = (r.email or "").strip()
-        key = em.lower() if em else ""
-        if key and key in seen_emails:
+        em = (r.email or "").strip().lower()
+        if em and em in seen_emails:
             continue
-        if key:
-            seen_emails.add(key)
+        if em:
+            seen_emails.add(em)
 
         customer_results.append({
             "type": "customer",
             "user_id": None,
             "first_name": r.first_name or "",
             "last_name": r.last_name or "",
-            "email": em,
+            "email": r.email or "",
             "phone": r.phone or "",
             "mobile": r.mobile or "",
         })
 
-    # ---------- Combine ----------
-    # Put reservations first (helps update/cancel), then customer profiles (helps new reservations)
-    results = reservation_results + customer_results
+    results.extend(customer_results)
 
     return JsonResponse({"results": results})
