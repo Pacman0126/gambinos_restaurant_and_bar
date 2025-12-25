@@ -25,6 +25,7 @@
           <!-- ALWAYS present: hidden fields the view expects -->
           <input type="hidden" name="reservation_date" id="reservation_date">
           <input type="hidden" name="time_slot" id="time_slot">
+          <input type="hidden" name="selected_reservation_id" id="selected_reservation_id">
 
           <!-- Summary of what was clicked -->
           <div class="alert alert-secondary small" id="selectedSlotSummary">
@@ -275,7 +276,7 @@ function debounce(fn, delay) {
   };
 }
 
-// Fill the form fields from a result object
+// Fill the form fields from a result object (customer or reservation)
 function fillCustomerFormFromResult(result) {
   const firstNameInput = document.getElementById("first_name");
   const lastNameInput  = document.getElementById("last_name");
@@ -283,20 +284,48 @@ function fillCustomerFormFromResult(result) {
   const phoneInput     = document.getElementById("phone");
   const mobileInput    = document.getElementById("mobile");
 
-  if (firstNameInput && result.first_name) {
-    firstNameInput.value = result.first_name;
+  if (firstNameInput) {
+    firstNameInput.value = result.first_name || "";
   }
-  if (lastNameInput && result.last_name) {
-    lastNameInput.value = result.last_name;
+  if (lastNameInput) {
+    lastNameInput.value = result.last_name || "";
   }
-  if (emailInput && result.email) {
-    emailInput.value = result.email;
+  if (emailInput) {
+    emailInput.value = result.email || "";
   }
-  if (phoneInput && result.phone) {
-    phoneInput.value = result.phone;
+  if (phoneInput) {
+    phoneInput.value = result.phone || "";
   }
-  if (mobileInput && result.mobile) {
-    mobileInput.value = result.mobile;
+  if (mobileInput) {
+    mobileInput.value = result.mobile || "";
+  }
+}
+
+// Apply a selected result: fill fields, and if it's a reservation, set IDs/slot/date
+function applySelection(result) {
+  fillCustomerFormFromResult(result);
+
+  const selectedResId = document.getElementById("selected_reservation_id");
+  const dateInput     = document.getElementById("reservation_date");
+  const slotInput     = document.getElementById("time_slot");
+
+  // If it's a reservation result, persist the reservation id so staff can update/cancel
+  if (selectedResId) {
+    if (result.type === "reservation" && result.reservation_id) {
+      selectedResId.value = result.reservation_id;
+    } else {
+      selectedResId.value = "";
+    }
+  }
+
+  // Optional convenience: pre-fill the selected date/slot for reservation hits
+  if (result.type === "reservation") {
+    if (dateInput && result.reservation_date) {
+      dateInput.value = result.reservation_date;
+    }
+    if (slotInput && result.time_slot) {
+      slotInput.value = result.time_slot;
+    }
   }
 }
 
@@ -366,7 +395,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // When the modal is closed, reset summary & hidden fields
+  // Reset summary & hidden fields when modal closes
   modalEl.addEventListener("hidden.bs.modal", () => {
     if (dateInput) dateInput.value = "";
     if (slotInput) slotInput.value = "";
@@ -376,15 +405,17 @@ document.addEventListener("DOMContentLoaded", () => {
     if (tablesHint) {
       tablesHint.textContent = "Select a time slot to see how many tables remain.";
     }
+    const selectedResId = document.getElementById("selected_reservation_id");
+    if (selectedResId) selectedResId.value = "";
   });
 
-  // --- STAFF LOOKUP (LIVE SEARCH + EXPANDED DROPDOWN) ---
+  // --- STAFF LOOKUP (LIVE SEARCH + EXPANDED DROPDOWN WITH RESERVATION DETAILS) ---
   const lookupInput    = document.getElementById("customerLookup");
   const lookupResult   = document.getElementById("customerLookupResult");
   const lookupControls = document.getElementById("customerLookupControls");
   const lookupSelect   = document.getElementById("customerLookupSelect");
+  const selectedResId  = document.getElementById("selected_reservation_id");
 
-  // Keep a local cache of the latest results so we can re-use them when selecting
   let lastResults = [];
 
   function renderLookupResults(results) {
@@ -395,45 +426,60 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!lastResults.length) {
       lookupControls.style.display = "none";
       lookupSelect.innerHTML = "";
-      lookupResult.textContent = "No matching customer found.";
+      lookupResult.textContent = "No matching customer or reservation found.";
+      if (selectedResId) selectedResId.value = "";
       return;
     }
 
-    // Exactly one match -> auto-fill and hide dropdown
+    // Exactly one result -> auto-fill and hide dropdown
     if (lastResults.length === 1) {
       const r = lastResults[0];
-      fillCustomerFormFromResult(r);
+      applySelection(r);
       lookupControls.style.display = "none";
       lookupSelect.innerHTML = "";
-      lookupResult.textContent =
-        `Loaded customer: ${(r.first_name || "")} ${(r.last_name || "")}`.trim();
+      const fullName = `${r.first_name || ""} ${r.last_name || ""}`.trim() || "(no name)";
+      lookupResult.textContent = `Auto-filled: ${fullName}`;
       return;
     }
 
-    // Multiple hits -> expanded dropdown with all matches visible
+    // Multiple results -> expanded dropdown
     lookupSelect.innerHTML = "";
     lastResults.forEach((r, index) => {
       const opt = document.createElement("option");
-      const fullName = `${r.first_name || ""} ${r.last_name || ""}`.trim() || "(no name)";
-      const labelParts = [];
-
-      labelParts.push(fullName);
-      if (r.email) labelParts.push(`email: ${r.email}`);
-      if (r.phone) labelParts.push(`phone: ${r.phone}`);
-      if (r.mobile) labelParts.push(`mobile: ${r.mobile}`);
-
       opt.value = String(index);
-      opt.textContent = labelParts.join(" | ");
+
+      const fullName = `${r.first_name || ""} ${r.last_name || ""}`.trim() || "(no name)";
+      const parts = [];
+
+      // Type marker
+      parts.push(r.type === "reservation" ? "RES" : "CUST");
+
+      // Identity
+      parts.push(fullName);
+      if (r.email) parts.push(`email: ${r.email}`);
+      if (r.phone) parts.push(`phone: ${r.phone}`);
+      if (r.mobile) parts.push(`mobile: ${r.mobile}`);
+
+      // Reservation-specific details
+      if (r.type === "reservation") {
+        const dateStr = r.reservation_date || "";
+        const timeStr = r.pretty_slot || r.time_slot || "";
+        const idStr   = r.reservation_id ? `#${r.reservation_id}` : "";
+        const status  = (r.reservation_status === false) ? "(cancelled)" : "";
+        parts.push(`${idStr} ${dateStr} ${timeStr}`.trim());
+        if (status) parts.push(status);
+      }
+
+      opt.textContent = parts.join(" | ");
       lookupSelect.appendChild(opt);
     });
 
-    // "Expand" the dropdown: show as list with multiple visible rows
     lookupSelect.multiple = true;
-    lookupSelect.size = Math.min(lastResults.length, 6); // cap height
+    lookupSelect.size = Math.min(lastResults.length, 8);
     lookupControls.style.display = "block";
 
     lookupResult.textContent =
-      `${lastResults.length} matching customers found. Keep typing to refine, or pick one to auto-fill.`;
+      `${lastResults.length} result(s). Keep typing to narrow it, then click one to auto-fill.`;
   }
 
   function performLookup(query) {
@@ -441,6 +487,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (lookupControls) lookupControls.style.display = "none";
       if (lookupSelect) lookupSelect.innerHTML = "";
       if (lookupResult) lookupResult.textContent = "";
+      if (selectedResId) selectedResId.value = "";
       return;
     }
 
@@ -448,9 +495,7 @@ document.addEventListener("DOMContentLoaded", () => {
       lookupResult.textContent = "Searching…";
     }
 
-    const url = `/ajax/lookup-customer/?q=${encodeURIComponent(query)}`;
-
-    fetch(url, {
+    fetch(`/ajax/lookup-customer/?q=${encodeURIComponent(query)}`, {
       method: "GET",
       headers: {
         "X-Requested-With": "XMLHttpRequest"
@@ -474,40 +519,41 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         if (lookupControls) lookupControls.style.display = "none";
         if (lookupSelect) lookupSelect.innerHTML = "";
+        if (selectedResId) selectedResId.value = "";
       });
   }
 
-  // Debounced version for key-by-key typing
   const debouncedLookup = debounce(() => {
-    const q = lookupInput ? lookupInput.value.trim() : "";
+    if (!lookupInput) return;
+    const q = lookupInput.value.trim();
     if (q.length < 2) {
-      // Too short – clear list but don’t complain loudly
       if (lookupControls) lookupControls.style.display = "none";
       if (lookupSelect) lookupSelect.innerHTML = "";
       if (lookupResult) {
         lookupResult.textContent = "Type at least 2 characters to search.";
       }
+      if (selectedResId) selectedResId.value = "";
       return;
     }
     performLookup(q);
   }, 250);
 
   if (lookupInput) {
-    // Every keystroke triggers the same search logic
+    // Live search: every keystroke is effectively a "Search" click
     lookupInput.addEventListener("input", debouncedLookup);
   }
 
-  // If the select is visible and staff picks one, auto-fill the form
   if (lookupSelect) {
     lookupSelect.addEventListener("change", () => {
       const idx = parseInt(lookupSelect.value, 10);
-      if (isNaN(idx) || !lastResults[idx]) return;
-      const chosen = lastResults[idx];
-      fillCustomerFormFromResult(chosen);
+      if (Number.isNaN(idx) || !lastResults[idx]) return;
+      applySelection(lastResults[idx]);
     });
   }
 });
 </script>
+
+
 {% endblock %}
 
 
