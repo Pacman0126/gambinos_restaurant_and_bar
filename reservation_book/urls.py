@@ -52,4 +52,15 @@ urlpatterns = [
         views.ajax_lookup_customer,
         name="ajax_lookup_customer",
     ),
+
+    path('staff/management/',
+         views.staff_management,
+         name='staff_management'),
+
+    path('staff/add/',
+         views.add_staff,
+         name='add_staff'),
+    path('staff/remove/<int:user_id>/',
+         views.remove_staff,
+         name='remove_staff'),
 ]

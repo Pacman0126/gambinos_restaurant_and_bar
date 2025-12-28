@@ -3,7 +3,6 @@ import logging
 import re
 
 from django.db.models import Q
-from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
@@ -20,6 +19,8 @@ from django.utils import timezone
 from django.utils.text import slugify
 from django.urls import reverse
 from django.views.decorators.http import require_GET
+from django.utils.crypto import get_random_string
+from django.http import HttpResponseForbidden
 
 from .models import TableReservation, TimeSlotAvailability, RestaurantConfig
 from .forms import (
@@ -489,7 +490,9 @@ def cancel_reservation(request, reservation_id):
         if hasattr(refreshed, "name") and refreshed.name:
             guest_name = refreshed.name
         elif refreshed.user:
-            guest_name = refreshed.user.get_full_name() or refreshed.user.username
+            guest_name = (
+                refreshed.user.get_full_name() or refreshed.user.username
+            )
 
         lines = []
         if guest_name:
@@ -549,32 +552,47 @@ def menu(request):
 # -------------------------------------------------------------------
 # Staff dashboard (cards for Phone Reservations, Customer Stats, etc.)
 # -------------------------------------------------------------------
-@staff_member_required
+def staff_or_superuser_required(view_func):
+    """
+    Custom decorator: allow access if user is staff OR superuser.
+    Also requires authenticated and active.
+    """
+    def wrapper(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(settings.LOGIN_URL)
+        if not request.user.is_active:
+            return HttpResponseForbidden("Account inactive.")
+        if request.user.is_superuser or request.user.is_staff:
+            return view_func(request, *args, **kwargs)
+        return HttpResponseForbidden("Staff access required.")
+    return wrapper
+
+
+@staff_or_superuser_required
 def staff_dashboard(request):
     today = timezone.now().date()
 
     total_reservations = TableReservation.objects.count()
-    upcoming_reservations = TableReservation.objects.filter(
+    upcoming_reservations_count = TableReservation.objects.filter(
         timeslot_availability__calendar_date__gte=today,
         reservation_status=True,
     ).count()
-    phone_reservations = TableReservation.objects.filter(
+    phone_reservations_count = TableReservation.objects.filter(
         is_phone_reservation=True
     ).count()
-    online_reservations = TableReservation.objects.filter(
-        is_phone_reservation=False,
-        user__isnull=False,
+    registered_customers_count = User.objects.exclude(
+        reservations__isnull=True
     ).count()
-    cancelled_reservations = TableReservation.objects.filter(
+    cancelled_reservations_count = TableReservation.objects.filter(
         reservation_status=False
     ).count()
 
     context = {
         "total_reservations": total_reservations,
-        "upcoming_reservations": upcoming_reservations,
-        "phone_reservations": phone_reservations,
-        "online_reservations": online_reservations,
-        "cancelled_reservations": cancelled_reservations,
+        "upcoming_reservations_count": upcoming_reservations_count,
+        "phone_reservations_count": phone_reservations_count,
+        "registered_customers_count": registered_customers_count,
+        "cancelled_reservations_count": cancelled_reservations_count,
     }
     return render(
         request,
@@ -583,7 +601,7 @@ def staff_dashboard(request):
     )
 
 
-@staff_member_required
+@staff_or_superuser_required
 def staff_reservations(request):
     """
     Staff view: search and manage ALL reservations (online + phone-in).
@@ -640,12 +658,7 @@ def staff_reservations(request):
     )
 
 
-def is_staff_user(user):
-    return user.is_staff
-
-
-@login_required
-@user_passes_test(is_staff_user)
+@staff_or_superuser_required
 def user_reservations_overview(request):
     """
     Staff-facing overview of all customers who have at least one reservation.
@@ -700,7 +713,7 @@ def user_reservations_overview(request):
     )
 
 
-@staff_member_required
+@staff_or_superuser_required
 def user_reservation_history(request, user_id):
     """
     Staff view: full reservation history for a given registered customer.
@@ -725,7 +738,7 @@ def user_reservation_history(request, user_id):
     )
 
 
-@staff_member_required
+@staff_or_superuser_required
 def create_phone_reservation(request):
     """
     Staff UI for creating reservations for phone-in customers.
@@ -784,7 +797,8 @@ def create_phone_reservation(request):
                     request,
                     f"Not enough tables available for "
                     f"{SLOT_LABELS.get(time_slot, time_slot)} "
-                    f"on {reservation_date}. Remaining: {max(remaining, 0)}.",
+                    f"on {reservation_date}. "
+                    f"Remaining: {max(remaining, 0)}.",
                 )
                 return render(
                     request,
@@ -1331,3 +1345,125 @@ def ajax_lookup_customer(request):
     results.extend(customer_results)
 
     return JsonResponse({"results": results})
+
+
+def superuser_required(view_func):
+    """Decorator: only allow superusers"""
+    decorated_view_func = user_passes_test(
+        lambda u: u.is_superuser,
+        login_url='staff_dashboard'  # or wherever you want to redirect
+    )(view_func)
+    return decorated_view_func
+
+
+@superuser_required
+def staff_management(request):
+    staff_users = User.objects.filter(
+        is_staff=True).order_by('last_name', 'first_name')
+    return render(request, 'reservation_book/staff_management.html', {
+        'staff_users': staff_users
+    })
+
+
+@superuser_required
+def add_staff(request):
+    if request.method == 'POST':
+        first_name = request.POST.get('first_name').strip()
+        last_name = request.POST.get('last_name').strip()
+        email = request.POST.get('email').strip().lower()
+
+        if not all([first_name, last_name, email]):
+            messages.error(request, "All fields are required.")
+            return redirect('staff_management')
+
+        if User.objects.filter(email=email).exists():
+            messages.error(request, "A user with this email already exists.")
+            return redirect('staff_management')
+
+        # Generate temporary password
+        temp_password = get_random_string(length=12)
+
+        # Create user
+        user = User.objects.create_user(
+            username=email,  # Use email as username (common & secure)
+            email=email,
+            first_name=first_name,
+            last_name=last_name,
+            password=temp_password,
+            is_staff=True,
+            is_active=True
+        )
+
+        # Send email
+        # Adjust if you have custom login URL
+        login_url = request.build_absolute_uri(reverse('login'))
+        subject = "Welcome to Gambino's Restaurant - Staff Account Created"
+        message = f"""
+        Hello {first_name},
+
+        Your staff account has been created for Gambino's Restaurant & Bar.
+
+        Please log in using the details below and change your password immediately:
+
+        Login URL: {login_url}
+        Username: {email}
+        Temporary Password: {temp_password}
+
+        For security, please change your password after logging in.
+
+        Thank you,
+        Management
+        """
+
+        # try:
+        #     send_mail(
+        #         subject=subject,
+        #         message=message,
+        #         from_email=settings.DEFAULT_FROM_EMAIL,
+        #         recipient_list=[email],
+        #         fail_silently=False,
+        #     )
+        #     messages.success(
+        #         request, f"Staff member {first_name} {last_name} added and email sent.")
+        # except Exception as e:
+        #     messages.warning(
+        #         request, f"Staff added but email failed to send: {str(e)}")
+        try:
+            send_mail(
+                subject=subject,
+                message=message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[email],
+                fail_silently=False,  # This will raise if send fails
+            )
+            messages.success(
+                request, f"Staff member {first_name} {last_name} added and email sent."
+            )
+            logger.info(f"Staff welcome email sent to {email}")
+        except Exception as e:
+            logger.error(f"Email send failed for {email}: {str(e)}")
+            messages.warning(
+                request,
+                f"Staff member added, but email failed to send: {str(e)}"
+            )
+        return redirect('staff_management')
+
+    return redirect('staff_management')  # GET → just go back
+
+
+@superuser_required
+def remove_staff(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+
+    if user.is_superuser:
+        messages.error(request, "Cannot remove a superuser.")
+    elif user == request.user:
+        messages.error(request, "You cannot remove yourself.")
+    else:
+        user.is_staff = False
+        user.is_active = False  # Optional: deactivate login
+        user.save()
+        messages.success(
+            request, f"Staff access removed for {user.get_full_name() or user.email}.")
+
+    return redirect('staff_management')

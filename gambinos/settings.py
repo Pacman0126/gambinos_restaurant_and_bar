@@ -255,6 +255,8 @@ ACCOUNT_AUTHENTICATION_METHOD = "username_email"
 ACCOUNT_EMAIL_VERIFICATION = "optional"
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 
+# ==== Custom allauth adapter for role-based login redirects ====
+ACCOUNT_ADAPTER = "reservation_book.adapters.CustomAccountAdapter"
 
 # =====================================================
 # 🌍 INTERNATIONALIZATION
@@ -287,41 +289,28 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-
 # =====================================================
-# 📧 EMAIL (READY FOR SMTP)
+# 📧 EMAIL (Brevo SMTP)
 # =====================================================
-
-# .env can define:
-# EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
-# EMAIL_HOST=smtp.gmail.com
-# EMAIL_PORT=587
-# EMAIL_USE_TLS=True
-# EMAIL_HOST_USER=your_gmail@gmail.com
-# EMAIL_HOST_PASSWORD=your_app_password
-# DEFAULT_FROM_EMAIL="Gambinos Restaurant & Lounge <your_gmail@gmail.com>"
-# SERVER_EMAIL=your_gmail@gmail.com
 
 EMAIL_BACKEND = env(
     "EMAIL_BACKEND",
     default="django.core.mail.backends.console.EmailBackend",
 )
 
-EMAIL_HOST = env("EMAIL_HOST", default="localhost")
-EMAIL_PORT = env.int("EMAIL_PORT", default=25)
-EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=False)
-EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
+EMAIL_HOST = env("EMAIL_HOST", default="smtp-relay.brevo.com")
+EMAIL_PORT = env.int("EMAIL_PORT", default=587)
+EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)
+EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")  # Your Brevo login email
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD",
+                          default="")  # Your Brevo SMTP key
 
 DEFAULT_FROM_EMAIL = env(
     "DEFAULT_FROM_EMAIL",
-    default="Gambinos Restaurant & Lounge <no-reply@example.com>",
+    default="Gambinos Restaurant & Lounge <oliver.p.hartmann@gmail.com>",
 )
 
-SERVER_EMAIL = env(
-    "SERVER_EMAIL",
-    default=EMAIL_HOST_USER or "no-reply@example.com",
-)
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
 
 # =====================================================

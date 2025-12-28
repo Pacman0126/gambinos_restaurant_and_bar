@@ -6148,3 +6148,239 @@ TypeError: unsupported operand type(s) for -: 'NoneType' and 'int'
 [2025-12-25 21:10:04,939] INFO [django.server:212] "GET /static/admin/js/prepopulate_init.js HTTP/1.1" 304 0
 [2025-12-25 21:10:04,943] INFO [django.server:212] "GET /static/admin/js/change_form.js HTTP/1.1" 304 0
 [2025-12-25 21:10:05,184] INFO [django.server:212] "GET /admin/jsi18n/ HTTP/1.1" 200 3343
+[2025-12-25 22:02:33,157] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-25 22:02:38,199] INFO [django.server:212] "GET / HTTP/1.1" 200 8478
+[2025-12-25 22:02:38,249] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-25 22:02:38,322] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-25 22:02:38,322] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-25 22:02:43,028] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7470
+[2025-12-25 22:02:48,040] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-12-25 22:02:48,045] INFO [django.server:212] "GET / HTTP/1.1" 200 7101
+[2025-12-25 22:02:51,001] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7514
+[2025-12-25 22:02:54,724] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-12-25 22:02:54,994] INFO [django.server:212] "GET / HTTP/1.1" 200 8649
+[2025-12-25 22:49:05,888] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py changed, reloading.
+[2025-12-25 22:49:07,089] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-25 22:49:10,740] INFO [django.server:212] "GET / HTTP/1.1" 200 8478
+[2025-12-25 22:49:10,781] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-25 22:49:10,852] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-25 22:49:10,853] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-25 22:49:15,674] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7470
+[2025-12-25 22:49:19,025] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-12-25 22:49:19,029] INFO [django.server:212] "GET / HTTP/1.1" 200 7101
+[2025-12-25 22:49:28,851] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7514
+[2025-12-25 22:49:30,296] INFO [django.server:81] - Broken pipe from ('127.0.0.1', 54315)
+[2025-12-25 22:49:32,821] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-12-25 22:49:33,068] INFO [django.server:212] "GET / HTTP/1.1" 200 8649
+[2025-12-25 22:49:58,015] INFO [django.server:212] "GET /admin/ HTTP/1.1" 200 13463
+[2025-12-25 22:50:54,377] INFO [django.server:212] "GET /admin/auth/user/7/change/ HTTP/1.1" 200 29499
+[2025-12-25 22:50:54,402] INFO [django.server:212] "GET /static/admin/js/calendar.js HTTP/1.1" 304 0
+[2025-12-25 22:50:54,405] INFO [django.server:212] "GET /static/admin/js/admin/DateTimeShortcuts.js HTTP/1.1" 304 0
+[2025-12-25 22:50:54,407] INFO [django.server:212] "GET /static/admin/js/SelectBox.js HTTP/1.1" 304 0
+[2025-12-25 22:50:54,408] INFO [django.server:212] "GET /static/admin/js/SelectFilter2.js HTTP/1.1" 304 0
+[2025-12-25 22:50:54,885] INFO [django.server:212] "GET /admin/jsi18n/ HTTP/1.1" 200 3343
+[2025-12-25 22:50:54,954] INFO [django.server:212] "GET /static/admin/img/icon-unknown.svg HTTP/1.1" 304 0
+[2025-12-25 22:50:54,958] INFO [django.server:212] "GET /static/admin/img/selector-icons.svg HTTP/1.1" 304 0
+[2025-12-25 22:50:54,958] INFO [django.server:212] "GET /static/admin/img/icon-calendar.svg HTTP/1.1" 304 0
+[2025-12-25 22:50:54,959] INFO [django.server:212] "GET /static/admin/img/icon-clock.svg HTTP/1.1" 304 0
+[2025-12-25 22:50:54,960] INFO [django.server:212] "GET /static/admin/img/icon-unknown-alt.svg HTTP/1.1" 304 0
+[2025-12-25 22:52:03,253] INFO [django.server:212] "GET /admin/auth/user/ HTTP/1.1" 200 16422
+[2025-12-25 22:52:03,574] INFO [django.server:212] "GET /admin/jsi18n/ HTTP/1.1" 200 3343
+[2025-12-25 22:52:14,888] INFO [django.server:212] "GET /admin/auth/user/add/ HTTP/1.1" 200 15090
+[2025-12-25 22:52:15,142] INFO [django.server:212] "GET /admin/jsi18n/ HTTP/1.1" 200 3343
+[2025-12-25 22:52:28,422] INFO [django.server:212] "GET /admin/auth/user/ HTTP/1.1" 200 16422
+[2025-12-25 22:52:28,691] INFO [django.server:212] "GET /admin/jsi18n/ HTTP/1.1" 200 3343
+[2025-12-25 22:52:39,530] INFO [django.server:212] "GET /admin/auth/user/add/ HTTP/1.1" 200 15090
+[2025-12-25 22:52:39,814] INFO [django.server:212] "GET /admin/jsi18n/ HTTP/1.1" 200 3343
+[2025-12-25 22:52:44,182] INFO [django.server:212] "GET /admin/auth/user/ HTTP/1.1" 200 16422
+[2025-12-25 22:53:38,674] INFO [django.server:212] "GET /admin/ HTTP/1.1" 200 13463
+[2025-12-25 22:54:17,374] INFO [django.server:212] "GET /admin/auth/user/7/change/ HTTP/1.1" 200 29499
+[2025-12-25 22:54:17,637] INFO [django.server:212] "GET /admin/jsi18n/ HTTP/1.1" 200 3343
+[2025-12-25 22:54:43,517] INFO [django.server:212] "GET /admin/ HTTP/1.1" 200 13463
+[2025-12-25 23:00:14,705] INFO [django.server:212] "GET / HTTP/1.1" 200 8478
+[2025-12-25 23:00:14,725] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-25 23:00:14,760] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-25 23:00:14,762] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-25 23:00:19,214] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7470
+[2025-12-25 23:00:24,499] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-12-25 23:00:24,504] INFO [django.server:212] "GET / HTTP/1.1" 200 7101
+[2025-12-25 23:00:27,287] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7514
+[2025-12-25 23:20:37,773] INFO [django.utils.autoreload:265] C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\gambinos\settings.py changed, reloading.
+[2025-12-25 23:20:38,547] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-25 23:20:42,235] INFO [django.server:212] "GET / HTTP/1.1" 200 6942
+[2025-12-25 23:20:42,304] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-25 23:20:42,515] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-25 23:20:42,520] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-25 23:20:49,119] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7514
+[2025-12-25 23:20:54,284] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-12-25 23:20:54,648] INFO [django.server:212] "GET /staff/management/ HTTP/1.1" 200 9680
+[2025-12-25 23:25:21,754] INFO [django.server:212] "GET /staff/remove/7/ HTTP/1.1" 302 0
+[2025-12-25 23:25:22,269] INFO [django.server:212] "GET /staff/management/ HTTP/1.1" 200 9229
+[2025-12-25 23:29:15,310] INFO [django.server:212] "POST /staff/add/ HTTP/1.1" 302 0
+[2025-12-25 23:29:15,610] INFO [django.server:212] "GET /staff/management/ HTTP/1.1" 200 9227
+[2025-12-25 23:42:06,250] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-25 23:42:10,252] INFO [django.server:212] "GET / HTTP/1.1" 200 8478
+[2025-12-25 23:42:10,322] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-25 23:42:10,395] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-25 23:42:10,395] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-25 23:42:13,672] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7470
+[2025-12-25 23:42:16,446] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-12-25 23:42:16,451] INFO [django.server:212] "GET / HTTP/1.1" 200 7101
+[2025-12-25 23:42:18,955] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7514
+[2025-12-25 23:42:22,010] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-12-25 23:42:22,293] INFO [django.server:212] "GET /staff/management/ HTTP/1.1" 200 9219
+[2025-12-25 23:42:54,797] INFO [django.server:212] "POST /staff/add/ HTTP/1.1" 302 0
+[2025-12-25 23:42:55,311] INFO [django.server:212] "GET /staff/management/ HTTP/1.1" 200 9227
+[2025-12-27 20:34:47,394] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-27 20:34:53,597] INFO [django.server:212] "GET / HTTP/1.1" 200 6942
+[2025-12-27 20:34:54,104] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-27 20:34:54,163] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-27 20:34:54,168] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-27 20:34:54,593] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-12-27 20:34:54,595] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 5229
+[2025-12-27 20:34:58,621] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7514
+[2025-12-27 20:35:02,544] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-12-27 20:35:02,874] INFO [django.server:212] "GET /staff/management/ HTTP/1.1" 200 9219
+[2025-12-27 20:35:53,988] INFO [django.server:212] "POST /staff/add/ HTTP/1.1" 302 0
+[2025-12-27 20:35:54,260] INFO [django.server:212] "GET /staff/management/ HTTP/1.1" 200 9227
+[2025-12-27 20:53:50,081] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-27 20:54:02,202] INFO [django.server:212] "GET / HTTP/1.1" 200 8478
+[2025-12-27 20:54:02,249] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-27 20:54:02,306] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-27 20:54:02,307] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-27 20:54:07,341] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7470
+[2025-12-27 20:54:10,276] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-12-27 20:54:10,280] INFO [django.server:212] "GET / HTTP/1.1" 200 7101
+[2025-12-27 20:54:12,790] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7514
+[2025-12-27 20:54:16,010] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-12-27 20:54:16,306] INFO [django.server:212] "GET /staff/management/ HTTP/1.1" 200 9219
+[2025-12-27 20:54:41,333] INFO [django.server:212] "POST /staff/add/ HTTP/1.1" 302 0
+[2025-12-27 20:54:41,599] INFO [django.server:212] "GET /staff/management/ HTTP/1.1" 200 9227
+[2025-12-27 21:33:29,900] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-27 21:33:49,805] INFO [django.server:212] "GET / HTTP/1.1" 200 8478
+[2025-12-27 21:33:49,859] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-27 21:33:49,925] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-27 21:33:49,925] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-27 21:33:52,925] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7470
+[2025-12-27 21:33:55,398] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-12-27 21:33:55,403] INFO [django.server:212] "GET / HTTP/1.1" 200 7101
+[2025-12-27 21:33:58,135] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7514
+[2025-12-27 21:34:01,816] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-12-27 21:34:02,126] INFO [django.server:212] "GET /staff/management/ HTTP/1.1" 200 9219
+[2025-12-27 21:34:22,881] INFO [django.server:212] "POST /staff/add/ HTTP/1.1" 302 0
+[2025-12-27 21:34:23,163] INFO [django.server:212] "GET /staff/management/ HTTP/1.1" 200 9227
+[2025-12-27 23:16:33,837] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-27 23:16:36,815] INFO [django.server:212] "GET / HTTP/1.1" 200 8478
+[2025-12-27 23:16:36,848] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-27 23:16:36,929] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-27 23:16:36,929] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-27 23:16:42,429] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7470
+[2025-12-27 23:16:44,608] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-12-27 23:16:44,612] INFO [django.server:212] "GET / HTTP/1.1" 200 7101
+[2025-12-27 23:16:47,789] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7514
+[2025-12-27 23:16:51,066] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-12-27 23:16:51,387] INFO [django.server:212] "GET /staff/management/ HTTP/1.1" 200 9219
+[2025-12-27 23:17:09,614] INFO [django.server:212] "POST /staff/add/ HTTP/1.1" 302 0
+[2025-12-27 23:17:09,924] INFO [django.server:212] "GET /staff/management/ HTTP/1.1" 200 9227
+[2025-12-27 23:46:30,151] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-27 23:46:33,285] INFO [django.server:212] "GET / HTTP/1.1" 200 8478
+[2025-12-27 23:46:33,325] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-27 23:46:33,382] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-27 23:46:33,382] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-27 23:46:35,777] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7470
+[2025-12-27 23:46:37,962] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-12-27 23:46:37,967] INFO [django.server:212] "GET / HTTP/1.1" 200 7101
+[2025-12-27 23:46:40,707] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7514
+[2025-12-27 23:46:43,907] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-12-27 23:46:44,211] INFO [django.server:212] "GET /staff/management/ HTTP/1.1" 200 9219
+[2025-12-27 23:47:10,488] INFO [django.server:212] "POST /staff/add/ HTTP/1.1" 302 0
+[2025-12-27 23:47:10,769] INFO [django.server:212] "GET /staff/management/ HTTP/1.1" 200 9227
+[2025-12-27 23:54:48,657] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-27 23:55:22,489] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-27 23:55:30,327] INFO [django.server:212] "GET / HTTP/1.1" 200 8478
+[2025-12-27 23:55:30,384] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 304 0
+[2025-12-27 23:55:30,456] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 304 0
+[2025-12-27 23:55:30,457] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 304 0
+[2025-12-27 23:55:36,656] INFO [django.server:212] "GET / HTTP/1.1" 200 8478
+[2025-12-27 23:55:36,766] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 5924
+[2025-12-27 23:55:36,784] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 200 2099793
+[2025-12-27 23:55:36,903] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 200 4346620
+[2025-12-27 23:55:36,908] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 200 5238762
+[2025-12-27 23:55:37,179] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2025-12-27 23:55:37,239] WARNING [django.request:246] Not Found: /favicon.ico
+[2025-12-27 23:55:37,241] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 5229
+[2025-12-27 23:55:52,971] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7470
+[2025-12-27 23:55:55,406] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-12-27 23:55:55,411] INFO [django.server:212] "GET / HTTP/1.1" 200 7101
+[2025-12-27 23:55:58,570] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7514
+[2025-12-27 23:56:01,519] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-12-27 23:56:01,795] INFO [django.server:212] "GET /staff/management/ HTTP/1.1" 200 9219
+[2025-12-27 23:56:16,739] INFO [django.server:212] "POST /staff/add/ HTTP/1.1" 302 0
+[2025-12-27 23:56:16,998] INFO [django.server:212] "GET /staff/management/ HTTP/1.1" 200 9227
+[2025-12-28 00:24:36,313] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-28 00:26:53,610] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-28 00:26:56,651] INFO [django.server:212] "GET / HTTP/1.1" 200 8478
+[2025-12-28 00:26:59,660] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7470
+[2025-12-28 00:27:02,504] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-12-28 00:27:02,509] INFO [django.server:212] "GET / HTTP/1.1" 200 7101
+[2025-12-28 00:27:04,792] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7514
+[2025-12-28 00:27:07,906] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-12-28 00:27:08,198] INFO [django.server:212] "GET /staff/management/ HTTP/1.1" 200 9219
+[2025-12-28 00:27:22,539] INFO [django.server:212] "POST /staff/add/ HTTP/1.1" 302 0
+[2025-12-28 00:27:22,845] INFO [django.server:212] "GET /staff/management/ HTTP/1.1" 200 9227
+[2025-12-28 00:47:46,640] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-28 00:47:50,274] INFO [django.server:212] "GET / HTTP/1.1" 200 8478
+[2025-12-28 00:47:55,545] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7470
+[2025-12-28 00:47:58,725] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-12-28 00:47:58,729] INFO [django.server:212] "GET / HTTP/1.1" 200 7101
+[2025-12-28 00:48:01,816] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7514
+[2025-12-28 00:48:05,400] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-12-28 00:48:05,680] INFO [django.server:212] "GET /staff/management/ HTTP/1.1" 200 9219
+[2025-12-28 00:48:20,775] INFO [django.server:212] "POST /staff/add/ HTTP/1.1" 302 0
+[2025-12-28 00:48:21,065] INFO [django.server:212] "GET /staff/management/ HTTP/1.1" 200 9227
+[2025-12-28 01:01:47,519] ERROR [django.request:246] Internal Server Error: /staff/add/
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 1399, in add_staff
+    login_url = request.build_absolute_uri(reverse('login'))
+                                           ^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\urls\resolvers.py", line 828, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'login' not found. 'login' is not a valid view function or pattern name.
+[2025-12-28 01:01:47,522] ERROR [django.server:212] "POST /staff/add/ HTTP/1.1" 500 96058
+[2025-12-28 01:04:05,492] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-28 01:16:54,559] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-28 01:17:00,769] INFO [django.server:212] "GET / HTTP/1.1" 200 8478
+[2025-12-28 01:17:04,004] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7470
+[2025-12-28 01:17:06,958] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-12-28 01:17:06,963] INFO [django.server:212] "GET / HTTP/1.1" 200 7101
+[2025-12-28 01:17:10,177] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7514
+[2025-12-28 01:17:14,238] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-12-28 01:17:14,855] INFO [django.server:212] "GET /staff/management/ HTTP/1.1" 200 9687
+[2025-12-28 01:17:59,683] INFO [django.server:212] "GET /staff/remove/8/ HTTP/1.1" 302 0
+[2025-12-28 01:17:59,947] INFO [django.server:212] "GET /staff/management/ HTTP/1.1" 200 9231
+[2025-12-28 01:19:29,264] INFO [django.server:212] "POST /staff/add/ HTTP/1.1" 302 0
+[2025-12-28 01:19:29,546] INFO [django.server:212] "GET /staff/management/ HTTP/1.1" 200 9227
+[2025-12-28 01:29:51,068] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2025-12-28 01:29:58,824] INFO [django.server:212] "GET / HTTP/1.1" 200 8478
+[2025-12-28 01:30:01,616] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7470
+[2025-12-28 01:30:03,754] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2025-12-28 01:30:03,759] INFO [django.server:212] "GET / HTTP/1.1" 200 7101
+[2025-12-28 01:30:09,129] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7514
+[2025-12-28 01:30:12,593] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2025-12-28 01:30:12,878] INFO [django.server:212] "GET /staff/management/ HTTP/1.1" 200 9219
+[2025-12-28 01:30:37,254] INFO [django.server:212] "POST /staff/add/ HTTP/1.1" 302 0
+[2025-12-28 01:30:37,524] INFO [django.server:212] "GET /staff/management/ HTTP/1.1" 200 9227
+[2025-12-28 01:31:12,582] INFO [django.server:212] "POST /staff/add/ HTTP/1.1" 302 0
+[2025-12-28 01:31:12,849] INFO [django.server:212] "GET /staff/management/ HTTP/1.1" 200 9227
