@@ -1,98 +1,63 @@
+import datetime
+from datetime import date
+
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.db import models
+
 from django.db.models import JSONField
 from django.contrib.auth.models import User
+
+from .constants import SLOT_LABELS
 # from django.contrib.postgres.fields import JSONField
-import datetime
-from datetime import date
-
-# from . import RestaurantConfig
-# Create your models here.
 
 
-# class ContactMobile(models.Model):
-#    mobile_phone = PhoneNumberField()
+class Customer(models.Model):
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    email = models.EmailField(unique=True, null=True, blank=True)
+    phone = models.CharField(max_length=20, blank=True)
+    mobile = models.CharField(max_length=20, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
+    # New: Flag for barred/banned customers
+    barred = models.BooleanField(
+        default=False,
+        help_text="Check if this customer is not welcome (no new bookings allowed)"
+    )
 
-# class ContactPhone(models.Model):
-#    phone = PhoneNumberField()
+    # Enhanced notes field with examples
+    notes = models.TextField(
+        blank=True,
+        help_text="Staff notes: e.g., VIP, regular, allergy, restaurant critic, supplier, chef, etc."
+    )
 
+    def __str__(self):
+        base = f"{self.first_name} {self.last_name}".strip()
+        if not base:
+            base = self.email or self.phone or self.mobile or "Unknown Customer"
+        if self.barred:
+            base += " [BARRED]"
+        return base
 
-# models.py
-
-# class ReservationBook(models.Model):
-#     id = models.AutoField(primary_key=True)
-#     reservation_id = models.ForeignKey(
-#         "TableReservation",
-#         on_delete=models.CASCADE,
-#         related_name="reservation_book"
-#     )
-#     reservation_date = models.DateField()
-
-#     first_name = models.CharField(max_length=100)
-#     last_name = models.CharField(max_length=100)
-
-#     phone = PhoneNumberField(blank=True, null=True, region="GB")
-#     mobile = PhoneNumberField(blank=True, null=True, region="GB")
-#     email = models.EmailField(blank=True, null=True)
-
-#     # Link directly to the Django user who created this reservation
-#     created_by = models.ForeignKey(
-#         User,
-#         on_delete=models.CASCADE,
-#         related_name="reservations"
-#     )
-
-#     def __str__(self):
-#         return f"{self.first_name} {self.last_name} on {self.reservation_date}"
-
-
-# class TableReservation(models.Model):
-#     reservation_id = models.AutoField(primary_key=True)  # auto-increment ID
-
-#     # --- Customer details ---
-#     first_name = models.CharField(max_length=100, null=True)
-#     last_name = models.CharField(max_length=100, null=True)
-#     email = models.EmailField(blank=True, null=True)  # required
-#     phone = models.CharField(max_length=20, blank=True, null=True)   # optional
-#     mobile = models.CharField(max_length=20, blank=True, null=True)  # optional
-
-#     # --- Reservation details ---
-#     time_slot = models.CharField(max_length=15, default='time_slot')
-#     number_of_tables_required_by_patron = models.IntegerField(default=0)
-#     reservation_status = models.BooleanField(default=True)
-#     booked_on_date = models.DateTimeField(auto_now=True)
-
-#     # Link to availability per date
-#     timeslot_availability = models.ForeignKey(
-#         "TimeSlotAvailability",
-#         on_delete=models.CASCADE,
-#         to_field="calendar_date",
-#         db_column="reservation_date",
-#         related_name="reservations",
-#     )
-
-#     @property
-#     def reservation_date(self):
-#         return self.timeslot_availability.calendar_date
-
-#     def __str__(self):
-#         return f"Reservation {self.reservation_id} for {self.first_name} {self.last_name} on {self.reservation_date}"
-from datetime import date  # <-- make sure this is at the top of models.py
+    class Meta:
+        ordering = ['last_name', 'first_name']
+        verbose_name = "Customer"
+        verbose_name_plural = "Customers"
 
 
 class TableReservation(models.Model):
     id = models.BigAutoField(primary_key=True)
 
-    # Link to the Django user (optional for phone-in customers without an account)
-    user = models.ForeignKey(
-        User,
+    # Link to the customer record
+    customer = models.ForeignKey(
+        Customer,
         on_delete=models.CASCADE,
-        related_name="reservations",
         null=True,
         blank=True,
+        related_name='reservations'
     )
 
     # Link to the date + table availability record
@@ -115,6 +80,15 @@ class TableReservation(models.Model):
         help_text="Which time slot was reserved (e.g. '17_18').",
     )
 
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='created_reservations',
+        help_text="Staff member who created this reservation (for phone bookings)",
+    )
+
     # How many tables this patron is using in that slot
     number_of_tables_required_by_patron = models.PositiveIntegerField()
 
@@ -127,38 +101,37 @@ class TableReservation(models.Model):
         help_text="True if this reservation was taken over the phone by staff.",
     )
 
-    # --- Patron details ---
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    email = models.EmailField(blank=True, null=True)
-    phone = models.CharField(max_length=20, blank=True, null=True)
-    mobile = models.CharField(max_length=20, blank=True, null=True)
-
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    @property
-    def status_display(self) -> str:
-        """
-        Derived, human-friendly status for UI:
-        - 'Cancelled'  if reservation_status is False
-        - 'Completed'  if reservation_status is True but date is in the past
-        - 'Active'     otherwise (today or future, or missing date)
-        """
-        # Cancelled always wins
-        if not self.reservation_status:
-            return "Cancelled"
-
-        # If we know the date and it's in the past
-        if self.reservation_date and self.reservation_date < date.today():
-            return "Completed"
-
-        # Otherwise it's an active upcoming/today reservation
-        return "Active"
+    def get_time_slot_display(self):
+        """Return pretty time slot label (e.g., 18:00–19:00)"""
+        from reservation_book.views import SLOT_LABELS
+        return SLOT_LABELS.get(self.time_slot, self.time_slot or "Unknown")
 
     def __str__(self):
-        name = f"{self.first_name} {self.last_name}".strip() or "Guest"
-        return f"{name} - {self.time_slot}"
+        """Human-readable representation for admin and delete confirmation"""
+        # If no customer is linked
+        if not self.customer:
+            return f"Reservation #{self.id} - {self.reservation_date} {self.get_time_slot_display()}"
+
+        # Safe access to customer fields
+        name_parts = []
+        if self.customer.first_name:
+            name_parts.append(self.customer.first_name.strip())
+        if self.customer.last_name:
+            name_parts.append(self.customer.last_name.strip())
+
+        if name_parts:
+            name = " ".join(name_parts)
+            return f"{name} - {self.reservation_date} {self.get_time_slot_display()}"
+
+        # Fallback to email
+        if self.customer.email:
+            return f"{self.customer.email} - {self.reservation_date} {self.get_time_slot_display()}"
+
+        # Ultimate fallback
+        return f"Reservation #{self.id} - {self.reservation_date} {self.get_time_slot_display()}"
 
 
 class RestaurantConfig(models.Model):

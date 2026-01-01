@@ -2,6 +2,7 @@ from django.utils import timezone
 from datetime import timedelta
 from django.contrib import admin
 from .models import TimeSlotAvailability, TableReservation, RestaurantConfig
+from .models import Customer
 
 
 class TableReservationInline(admin.TabularInline):
@@ -60,29 +61,58 @@ class TimeSlotAvailabilityAdmin(admin.ModelAdmin):
 @admin.register(TableReservation)
 class TableReservationAdmin(admin.ModelAdmin):
     list_display = (
-        "user",
-        "first_name",   # directly from TableReservation
-        "last_name",    # directly from TableReservation
-        "get_calendar_date",
-        "time_slot",
-        "number_of_tables_required_by_patron",
-        "reservation_status",
+        'id',
+        'customer_name',          # Custom method
+        'customer_email',         # Custom method
+        'reservation_date',
+        'time_slot',
+        'number_of_tables_required_by_patron',
+        'is_phone_reservation',
+        'reservation_status',
+        'created_at',
     )
-    list_filter = ("time_slot", "reservation_status")
-    search_fields = (
-        "user__username",
-        "user__email",
-        "first_name",    # search by reservation's first_name
-        "last_name",     # search by reservation's last_name
-    )
+    list_filter = ('reservation_date', 'time_slot',
+                   'is_phone_reservation', 'reservation_status')
+    search_fields = ('customer__first_name',
+                     'customer__last_name', 'customer__email')
+    readonly_fields = ('created_at',)
 
-    # --- helpers ---
-    def get_calendar_date(self, obj):
-        return obj.timeslot_availability.calendar_date
-    get_calendar_date.admin_order_field = "timeslot_availability__calendar_date"
-    get_calendar_date.short_description = "Calendar Date"
+    def customer_name(self, obj):
+        if obj.customer:
+            return f"{obj.customer.first_name} {obj.customer.last_name}"
+        return "-"
+    customer_name.short_description = "Customer Name"
+
+    def customer_email(self, obj):
+        if obj.customer:
+            return obj.customer.email
+        return "-"
+    customer_email.short_description = "Email"
 
 
 @admin.register(RestaurantConfig)
 class RestaurantConfigAdmin(admin.ModelAdmin):
     list_display = ("default_tables_per_slot",)
+
+
+@admin.register(Customer)
+class CustomerAdmin(admin.ModelAdmin):
+    list_display = ('first_name', 'last_name', 'email',
+                    'phone', 'mobile', 'barred', 'created_at')
+    list_filter = ('barred', 'created_at')
+    search_fields = ('first_name', 'last_name', 'email',
+                     'phone', 'mobile', 'notes')
+    readonly_fields = ('created_at', 'updated_at')
+    fieldsets = (
+        (None, {
+            'fields': ('first_name', 'last_name', 'email', 'phone', 'mobile')
+        }),
+        ('Status & Notes', {
+            'fields': ('barred', 'notes'),
+            'description': "Use 'barred' for customers not welcome. Add notes like 'VIP', 'peanut allergy', 'restaurant critic', etc."
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )

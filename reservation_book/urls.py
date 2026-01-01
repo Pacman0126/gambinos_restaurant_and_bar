@@ -63,4 +63,8 @@ urlpatterns = [
     path('staff/remove/<int:user_id>/',
          views.remove_staff,
          name='remove_staff'),
+
+    path('first-login-setup/',
+         views.first_login_setup,
+         name='first_login_setup'),
 ]

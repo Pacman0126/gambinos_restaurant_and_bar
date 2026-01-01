@@ -149,7 +149,8 @@
             </div>
         </div>
 
-        <!-- Django admin -->
+        <!-- Django admin — VISIBLE ONLY TO SUPERUSER -->
+        {% if user.is_superuser %}
         <div class="col-12 col-md-4">
             <div class="card h-100 shadow-sm border-0">
                 <div class="card-body d-flex flex-column">
@@ -168,8 +169,9 @@
                 </div>
             </div>
         </div>
+        {% endif %}
 
-        <!-- NEW: Staff Management Card (Superuser Only) -->
+        <!-- Staff Management Card (Superuser Only) -->
         {% if user.is_superuser %}
         <div class="col-12 col-md-4">
             <div class="card h-100 shadow-sm border-0">

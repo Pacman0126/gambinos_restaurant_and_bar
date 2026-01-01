@@ -2,19 +2,19 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 # from .models import ReservationBook   # no longer needed
-from .models import TimeSlotAvailability, TableReservation
+from .models import TimeSlotAvailability, TableReservation, Customer
 
 
-class ReservationForm(forms.Form):
-    reservation_date = forms.ModelChoiceField(
-        queryset=TimeSlotAvailability.objects.all(),
-        to_field_name="calendar_date",
-        label="Choose a date"
-    )
-    time_slot = forms.ChoiceField(label="Choose a time slot")
-    number_of_tables_required_by_patron = forms.IntegerField(
-        min_value=1, label="Number of tables"
-    )
+# class ReservationForm(forms.Form):
+#     reservation_date = forms.ModelChoiceField(
+#         queryset=TimeSlotAvailability.objects.all(),
+#         to_field_name="calendar_date",
+#         label="Choose a date"
+#     )
+#     time_slot = forms.ChoiceField(label="Choose a time slot")
+#     number_of_tables_required_by_patron = forms.IntegerField(
+#         min_value=1, label="Number of tables"
+#     )
 
 
 class SignUpForm(UserCreationForm):
@@ -40,48 +40,59 @@ TIME_SLOT_CHOICES = [
 
 
 class PhoneReservationForm(forms.ModelForm):
-    """
-    Used by staff when taking a reservation over the phone.
-
-    Email is optional, but if provided we:
-    - send a confirmation email
-    - link the reservation to an existing user with that email OR
-    - create a lightweight account for that email (handled in the view)
-    """
-
-    email = forms.EmailField(
-        required=False,
-        label="Email address",
-        help_text=(
-            "Optional, but required if the guest wants a confirmation email "
-            "and online access to their reservations."
-        ),
-    )
+    # Customer fields
+    first_name = forms.CharField(
+        max_length=100, required=True, label="First Name")
+    last_name = forms.CharField(
+        max_length=100, required=True, label="Last Name")
+    email = forms.EmailField(required=True, label="Email Address")
+    phone = forms.CharField(max_length=20, required=False, label="Phone")
+    mobile = forms.CharField(max_length=20, required=False, label="Mobile")
 
     class Meta:
         model = TableReservation
         fields = [
-            "first_name",
-            "last_name",
-            "email",
-            "phone",
-            "mobile",
-            "number_of_tables_required_by_patron",
+            'reservation_date',
+            'time_slot',
+            'number_of_tables_required_by_patron',
         ]
-
         widgets = {
-            "first_name": forms.TextInput(attrs={"class": "form-control"}),
-            "last_name": forms.TextInput(attrs={"class": "form-control"}),
-            "email": forms.EmailInput(attrs={"class": "form-control"}),
-            "phone": forms.TextInput(attrs={"class": "form-control"}),
-            "mobile": forms.TextInput(attrs={"class": "form-control"}),
-            "number_of_tables_required_by_patron": forms.NumberInput(
-                attrs={
-                    "class": "form-control",
-                    "min": 1,
-                }
-            ),
+            'reservation_date': forms.HiddenInput(),
+            'time_slot': forms.HiddenInput(),
         }
+
+    def save(self, commit=True):
+        reservation = super().save(commit=False)
+
+        # Get or create customer
+        customer_data = {
+            'first_name': self.cleaned_data['first_name'],
+            'last_name': self.cleaned_data['last_name'],
+            'email': self.cleaned_data['email'],
+            'phone': self.cleaned_data['phone'],
+            'mobile': self.cleaned_data['mobile'],
+        }
+
+        customer, created = Customer.objects.get_or_create(
+            email=customer_data['email'],
+            defaults=customer_data
+        )
+        if not created:
+            for key, value in customer_data.items():
+                setattr(customer, key, value)
+            customer.save()
+
+        # BARRED CHECK WITH SUPERUSER OVERRIDE
+        if customer.barred:
+            # We can't access request here directly in form
+            # So we'll do the check in the view instead (better place anyway)
+            pass  # Remove any raise here — handle in view
+
+        reservation.customer = customer
+
+        if commit:
+            reservation.save()
+        return reservation
 
 
 class EditReservationForm(forms.ModelForm):
@@ -99,10 +110,45 @@ class EditReservationForm(forms.ModelForm):
 
     class Meta:
         model = TableReservation
-        fields = ["reservation_date", "time_slot",
-                  "number_of_tables_required_by_patron"]
+        fields = [
+            'reservation_date',
+            'time_slot',
+            'number_of_tables_required_by_patron',
+        ]
         widgets = {
             "number_of_tables_required_by_patron": forms.NumberInput(
                 attrs={"class": "form-control", "min": 1}
             ),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.customer:
+            # Pre-fill customer details in form (read-only or editable as needed)
+            self.fields['customer_first_name'] = forms.CharField(
+                initial=self.instance.customer.first_name,
+                label="First Name",
+                # disabled=True  # or remove disabled to allow edit
+            )
+            self.fields['customer_last_name'] = forms.CharField(
+                initial=self.instance.customer.last_name,
+                label="Last Name",
+                # disabled=True
+            )
+            self.fields['customer_email'] = forms.EmailField(
+                initial=self.instance.customer.email,
+                label="Email",
+                # disabled=True
+            )
+            self.fields['customer_phone'] = forms.CharField(
+                initial=self.instance.customer.phone or '',
+                label="Phone",
+                required=False,
+                # disabled=True
+            )
+            self.fields['customer_mobile'] = forms.CharField(
+                initial=self.instance.customer.mobile or '',
+                label="Mobile",
+                required=False,
+                # disabled=True
+            )

@@ -246,7 +246,9 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 
 # NEW style (for recent django-allauth)
-ACCOUNT_LOGIN_METHODS = {"username", "email"}
+ACCOUNT_LOGIN_METHODS = {"username", "email"}  # Replace deprecated settings
+# Replaces EMAIL_REQUIRED/USERNAME_REQUIRED
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
 
 # Backwards compatibility for older allauth, harmless if ignored
 ACCOUNT_AUTHENTICATION_METHOD = "username_email"

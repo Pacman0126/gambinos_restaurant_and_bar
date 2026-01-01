@@ -2,11 +2,12 @@ from datetime import timedelta, datetime
 import logging
 import re
 
-from django.db.models import Q
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import login, get_user_model
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import SetPasswordForm
 # from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.mail import send_mail
@@ -28,10 +29,19 @@ from .forms import (
     PhoneReservationForm,
     EditReservationForm,
 )
+from .constants import SLOT_LABELS
 
 User = get_user_model()
 
 logger = logging.getLogger(__name__)
+
+
+# Add a property to track first login
+def get_needs_setup(self):
+    return self.username == self.email and self.is_staff and not self.is_superuser
+
+
+User.add_to_class('needs_setup', property(get_needs_setup))
 
 
 def _to_int(value, default=0):
@@ -44,14 +54,14 @@ def _to_int(value, default=0):
         return default
 
 
-# --- SLOT LABELS ---
-SLOT_LABELS = {
-    "17_18": "17:00–18:00",
-    "18_19": "18:00–19:00",
-    "19_20": "19:00–20:00",
-    "20_21": "20:00–21:00",
-    "21_22": "21:00–22:00",
-}
+# # --- SLOT LABELS ---
+# SLOT_LABELS = {
+#     "17_18": "17:00–18:00",
+#     "18_19": "18:00–19:00",
+#     "19_20": "19:00–20:00",
+#     "20_21": "20:00–21:00",
+#     "21_22": "21:00–22:00",
+# }
 
 
 def _build_next_30_days():
@@ -858,7 +868,26 @@ def create_phone_reservation(request):
                 email=email,
                 is_phone_reservation=True,
                 timeslot_availability=timeslot_avail,
+                created_by=request.user,
             )
+
+            # BARRED CHECK WITH SUPERUSER OVERRIDE
+            if reservation.customer and reservation.customer.barred:
+                if not request.user.is_superuser:
+                    messages.error(
+                        request,
+                        f"Customer {reservation.customer} is barred. New reservations not allowed. "
+                        "Contact owner/manager to override."
+                    )
+                    return redirect('create_phone_reservation')
+
+            # Update demand
+            setattr(
+                timeslot_avail,
+                demand_field,
+                slot_demand + tables_needed,
+            )
+            timeslot_avail.save()
 
             # Update cumulative demand for that slot
             setattr(
@@ -1196,7 +1225,6 @@ def ajax_lookup_customer(request):
     if len(q) < 2:
         return JsonResponse({"results": []})
 
-    User = get_user_model()
     today = timezone.now().date()
     results = []
 
@@ -1209,69 +1237,75 @@ def ajax_lookup_customer(request):
             res_by_id = TableReservation.objects.filter(
                 id=int(stripped_q)).first()
             if res_by_id:
-                # Build the same dict format as before
                 date_val = res_by_id.reservation_date or (
                     res_by_id.timeslot_availability.calendar_date if res_by_id.timeslot_availability else None
                 )
+                customer_name = ""
+                customer_email = ""
+                customer_phone = ""
+                customer_mobile = ""
+                if res_by_id.customer:
+                    customer_name = f"{res_by_id.customer.first_name} {res_by_id.customer.last_name}".strip(
+                    )
+                    customer_email = res_by_id.customer.email or ""
+                    customer_phone = res_by_id.customer.phone or ""
+                    customer_mobile = res_by_id.customer.mobile or ""
+
                 reservation_by_id = {
                     "type": "reservation",
                     "reservation_id": res_by_id.id,
-                    "first_name": res_by_id.first_name or "",
-                    "last_name": res_by_id.last_name or "",
-                    "email": res_by_id.email or "",
-                    "phone": res_by_id.phone or "",
-                    "mobile": res_by_id.mobile or "",
+                    "first_name": customer_name.split()[0] if customer_name else "",
+                    "last_name": " ".join(customer_name.split()[1:]) if customer_name else "",
+                    "email": customer_email,
+                    "phone": customer_phone,
+                    "mobile": customer_mobile,
                     "reservation_date": date_val.isoformat() if date_val else "",
                     "time_slot": res_by_id.time_slot or "",
                     "pretty_slot": SLOT_LABELS.get(res_by_id.time_slot, res_by_id.time_slot or ""),
                     "reservation_status": bool(getattr(res_by_id, "reservation_status", True)),
                 }
         except (ValueError, OverflowError):
-            pass  # Not a valid int
+            pass
 
-    # If we found a reservation by exact ID, add it immediately (prioritize it)
     if reservation_by_id:
         results.append(reservation_by_id)
 
-        # If mode is past and we have an ID match, still return it (staff might need to edit)
-        # But continue to customer search below if needed
-
     # ------------------------------------------------------------------
-    # Mode: existing → active/upcoming reservations (text + ID already added above)
+    # Mode: existing → active/upcoming reservations
     # ------------------------------------------------------------------
     if mode == "existing":
-        res_filter = (
-            Q(email__iexact=q)
-            | Q(email__icontains=q)
-            | Q(first_name__icontains=q)
-            | Q(last_name__icontains=q)
-        )
-
         reservations_qs = (
             TableReservation.objects
-            .select_related("timeslot_availability")
-            .filter(res_filter)
+            .select_related("timeslot_availability", "customer")
             .filter(reservation_status=True, reservation_date__gte=today)
+            .filter(
+                Q(customer__first_name__icontains=q)
+                | Q(customer__last_name__icontains=q)
+                | Q(customer__email__icontains=q)
+            )
             .order_by("-reservation_date", "-created_at")[:10]
         )
 
         for r in reservations_qs:
-            # Skip if already added as exact ID match
             if reservation_by_id and r.id == reservation_by_id["reservation_id"]:
                 continue
 
             date_val = r.reservation_date or (
                 r.timeslot_availability.calendar_date if r.timeslot_availability else None
             )
+            customer_name = ""
+            if r.customer:
+                customer_name = f"{r.customer.first_name} {r.customer.last_name}".strip(
+                )
 
             results.append({
                 "type": "reservation",
                 "reservation_id": r.id,
-                "first_name": r.first_name or "",
-                "last_name": r.last_name or "",
-                "email": r.email or "",
-                "phone": r.phone or "",
-                "mobile": r.mobile or "",
+                "first_name": customer_name.split()[0] if customer_name else "",
+                "last_name": " ".join(customer_name.split()[1:]) if customer_name else "",
+                "email": r.customer.email if r.customer else "",
+                "phone": r.customer.phone if r.customer else "",
+                "mobile": r.customer.mobile if r.customer else "",
                 "reservation_date": date_val.isoformat() if date_val else "",
                 "time_slot": r.time_slot or "",
                 "pretty_slot": SLOT_LABELS.get(r.time_slot, r.time_slot or ""),
@@ -1281,65 +1315,35 @@ def ajax_lookup_customer(request):
         return JsonResponse({"results": results})
 
     # ------------------------------------------------------------------
-    # Mode: past (default) → customer profiles
+    # Mode: past (default) → customer profiles from Customer model
     # ------------------------------------------------------------------
-    # (If ID match already added above, it will appear first)
-
-    user_filter = (
+    customer_filter = (
         Q(email__iexact=q)
         | Q(email__icontains=q)
-        | Q(username__iexact=q)
-        | Q(username__icontains=q)
         | Q(first_name__icontains=q)
         | Q(last_name__icontains=q)
     )
 
-    users_qs = User.objects.filter(user_filter).order_by(
-        "last_name", "first_name")[:10]
+    customers_qs = Customer.objects.filter(
+        customer_filter).order_by("last_name", "first_name")[:15]
 
     customer_results = []
     seen_emails = set()
 
-    for u in users_qs:
-        email_lower = (u.email or "").lower()
+    for c in customers_qs:
+        email_lower = (c.email or "").lower()
+        if email_lower in seen_emails:
+            continue
         if email_lower:
             seen_emails.add(email_lower)
 
         customer_results.append({
             "type": "customer",
-            "user_id": u.id,
-            "first_name": u.first_name or "",
-            "last_name": u.last_name or "",
-            "email": u.email or "",
-            "phone": "",
-            "mobile": "",
-        })
-
-    past_filter = (
-        Q(email__iexact=q)
-        | Q(email__icontains=q)
-        | Q(first_name__icontains=q)
-        | Q(last_name__icontains=q)
-    )
-
-    past_qs = TableReservation.objects.filter(
-        past_filter).order_by("-created_at")[:25]
-
-    for r in past_qs:
-        em = (r.email or "").strip().lower()
-        if em and em in seen_emails:
-            continue
-        if em:
-            seen_emails.add(em)
-
-        customer_results.append({
-            "type": "customer",
-            "user_id": None,
-            "first_name": r.first_name or "",
-            "last_name": r.last_name or "",
-            "email": r.email or "",
-            "phone": r.phone or "",
-            "mobile": r.mobile or "",
+            "first_name": c.first_name or "",
+            "last_name": c.last_name or "",
+            "email": c.email or "",
+            "phone": c.phone or "",
+            "mobile": c.mobile or "",
         })
 
     results.extend(customer_results)
@@ -1365,6 +1369,38 @@ def staff_management(request):
     })
 
 
+@login_required
+def first_login_setup(request):
+    if not request.user.is_staff:
+        return redirect('make_reservation')
+
+    # If username has been changed from email, setup is complete
+    if request.user.username != request.user.email:
+        return redirect('staff_dashboard')
+
+    if request.method == 'POST':
+        password_form = SetPasswordForm(request.user, request.POST)
+        username = request.POST.get('username', '').strip()
+
+        if password_form.is_valid() and username:
+            user = password_form.save()
+            update_session_auth_hash(request, user)
+
+            user.username = username
+            user.save()
+
+            messages.success(
+                request, "Password and username updated successfully. Welcome!")
+            return redirect('staff_dashboard')
+    else:
+        password_form = SetPasswordForm(request.user)
+
+    return render(request, 'reservation_book/first_login_setup.html', {
+        'password_form': password_form,
+        'current_email': request.user.email,
+    })
+
+
 @superuser_required
 def add_staff(request):
     if request.method == 'POST':
@@ -1376,32 +1412,45 @@ def add_staff(request):
             messages.error(request, "All fields are required.")
             return redirect('staff_management')
 
-        if User.objects.filter(email=email).exists():
-            messages.error(request, "A user with this email already exists.")
-            return redirect('staff_management')
+        existing_user = User.objects.filter(email=email).first()
 
-        # Generate temporary password
-        temp_password = get_random_string(length=12)
+        temp_password = get_random_string(length=12)  # ← Define it early
 
-        # Create user
-        user = User.objects.create_user(
-            username=email,  # Use email as username (common & secure)
-            email=email,
-            first_name=first_name,
-            last_name=last_name,
-            password=temp_password,
-            is_staff=True,
-            is_active=True
-        )
+        if existing_user:
+            if existing_user.is_staff:
+                messages.error(request, "This user is already a staff member.")
+                return redirect('staff_management')
+            else:
+                # Re-activate existing user as staff
+                existing_user.first_name = first_name
+                existing_user.last_name = last_name
+                existing_user.is_staff = True
+                existing_user.is_active = True
+                existing_user.set_password(temp_password)  # Reset password
+                existing_user.save()
+                messages.success(
+                    request, f"Staff member {first_name} {last_name} re-activated and new password emailed.")
+        else:
+            # Create new staff user
+            user = User.objects.create_user(
+                username=email,
+                email=email,
+                first_name=first_name,
+                last_name=last_name,
+                password=temp_password,  # Uses the same temp_password
+                is_staff=True,
+                is_active=True
+            )
+            messages.success(
+                request, f"Staff member {first_name} {last_name} added and password emailed.")
 
-        # Send email
-        # Adjust if you have custom login URL
-        login_url = request.build_absolute_uri(reverse('login'))
-        subject = "Welcome to Gambino's Restaurant - Staff Account Created"
+        # Send email (same for new and re-added)
+        login_url = request.build_absolute_uri(reverse('account_login'))
+        subject = "Gambino's Restaurant - Staff Account Access"
         message = f"""
         Hello {first_name},
 
-        Your staff account has been created for Gambino's Restaurant & Bar.
+        Your staff account for Gambino's Restaurant & Bar has been created (or re-activated).
 
         Please log in using the details below and change your password immediately:
 
@@ -1415,40 +1464,22 @@ def add_staff(request):
         Management
         """
 
-        # try:
-        #     send_mail(
-        #         subject=subject,
-        #         message=message,
-        #         from_email=settings.DEFAULT_FROM_EMAIL,
-        #         recipient_list=[email],
-        #         fail_silently=False,
-        #     )
-        #     messages.success(
-        #         request, f"Staff member {first_name} {last_name} added and email sent.")
-        # except Exception as e:
-        #     messages.warning(
-        #         request, f"Staff added but email failed to send: {str(e)}")
         try:
             send_mail(
                 subject=subject,
                 message=message,
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[email],
-                fail_silently=False,  # This will raise if send fails
+                fail_silently=False,
             )
-            messages.success(
-                request, f"Staff member {first_name} {last_name} added and email sent."
-            )
-            logger.info(f"Staff welcome email sent to {email}")
         except Exception as e:
-            logger.error(f"Email send failed for {email}: {str(e)}")
             messages.warning(
-                request,
-                f"Staff member added, but email failed to send: {str(e)}"
-            )
+                request, f"Staff added but email failed: {str(e)}")
+            logger.error(f"Email failed for {email}: {str(e)}")
+
         return redirect('staff_management')
 
-    return redirect('staff_management')  # GET → just go back
+    return redirect('staff_management')
 
 
 @superuser_required
@@ -1460,10 +1491,8 @@ def remove_staff(request, user_id):
     elif user == request.user:
         messages.error(request, "You cannot remove yourself.")
     else:
-        user.is_staff = False
-        user.is_active = False  # Optional: deactivate login
-        user.save()
+        user.delete()  # Completely delete from database
         messages.success(
-            request, f"Staff access removed for {user.get_full_name() or user.email}.")
+            request, f"Staff member {user.get_full_name() or user.email} completely removed from database.")
 
     return redirect('staff_management')
