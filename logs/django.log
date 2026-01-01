@@ -6869,3 +6869,106 @@ DETAIL:  Key (id)=(6) is still referenced from table "reservation_book_tablerese
 [2025-12-29 00:50:44,386] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 200 7770
 [2025-12-29 00:50:57,419] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 200 7770
 [2025-12-29 00:51:41,216] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 200 7773
+[2026-01-01 19:03:08,493] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2026-01-01 19:03:17,479] INFO [django.server:212] "GET / HTTP/1.1" 200 6942
+[2026-01-01 19:03:17,814] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 304 0
+[2026-01-01 19:03:18,362] WARNING [django.request:246] Not Found: /favicon.ico
+[2026-01-01 19:03:18,363] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 5420
+[2026-01-01 19:03:22,547] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7514
+[2026-01-01 19:03:26,164] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2026-01-01 19:03:27,517] INFO [django.server:212] "GET /staff/management/ HTTP/1.1" 200 10307
+[2026-01-01 19:03:46,427] INFO [django.server:212] "GET /admin/ HTTP/1.1" 200 14963
+[2026-01-01 19:03:56,901] INFO [django.server:212] "GET /admin/auth/user/ HTTP/1.1" 200 16777
+[2026-01-01 19:03:57,184] INFO [django.server:212] "GET /admin/jsi18n/ HTTP/1.1" 200 3343
+[2026-01-01 19:04:43,702] INFO [django.server:212] "POST /admin/auth/user/ HTTP/1.1" 200 12516
+[2026-01-01 19:04:45,733] INFO [django.server:212] "POST /admin/auth/user/ HTTP/1.1" 302 0
+[2026-01-01 19:04:46,099] INFO [django.server:212] "GET /admin/auth/user/ HTTP/1.1" 200 16047
+[2026-01-01 19:04:46,641] INFO [django.server:212] "GET /admin/jsi18n/ HTTP/1.1" 200 3343
+[2026-01-01 19:04:54,630] INFO [django.server:212] "GET / HTTP/1.1" 200 8478
+[2026-01-01 19:07:52,275] WARNING [django.request:246] Not Found: /.well-known/appspecific/com.chrome.devtools.json
+[2026-01-01 19:07:52,276] WARNING [django.server:212] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 5531
+[2026-01-01 19:07:54,210] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2026-01-01 19:12:31,929] INFO [django.server:212] "GET / HTTP/1.1" 200 8476
+[2026-01-01 19:12:31,955] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 5924
+[2026-01-01 19:12:31,976] WARNING [django.request:246] Not Found: /.well-known/appspecific/com.chrome.devtools.json
+[2026-01-01 19:12:31,977] WARNING [django.server:212] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 5531
+[2026-01-01 19:12:31,985] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 200 2099793
+[2026-01-01 19:12:32,222] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 200 4346620
+[2026-01-01 19:12:32,325] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 200 5238762
+[2026-01-01 19:12:32,599] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2026-01-01 19:12:32,751] WARNING [django.request:246] Not Found: /favicon.ico
+[2026-01-01 19:12:32,752] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 5420
+[2026-01-01 19:14:17,826] INFO [django.server:212] "GET / HTTP/1.1" 200 8474
+[2026-01-01 19:14:17,849] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 5924
+[2026-01-01 19:14:17,877] WARNING [django.request:246] Not Found: /.well-known/appspecific/com.chrome.devtools.json
+[2026-01-01 19:14:17,880] WARNING [django.server:212] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 5531
+[2026-01-01 19:14:17,886] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 200 2099793
+[2026-01-01 19:14:18,059] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 200 4346620
+[2026-01-01 19:14:18,075] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 200 5238762
+[2026-01-01 19:14:18,445] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2026-01-01 19:14:18,550] WARNING [django.request:246] Not Found: /favicon.ico
+[2026-01-01 19:14:18,551] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 5420
+[2026-01-01 19:17:21,370] INFO [django.server:212] "GET / HTTP/1.1" 200 8397
+[2026-01-01 19:17:21,385] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 5924
+[2026-01-01 19:17:21,399] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 200 2099793
+[2026-01-01 19:17:21,580] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 200 4346620
+[2026-01-01 19:17:21,587] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 200 5238762
+[2026-01-01 19:17:21,883] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2026-01-01 19:17:21,932] WARNING [django.request:246] Not Found: /favicon.ico
+[2026-01-01 19:17:21,932] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 5420
+[2026-01-01 19:18:21,038] INFO [django.server:212] "GET / HTTP/1.1" 200 8397
+[2026-01-01 19:18:21,051] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 5924
+[2026-01-01 19:18:21,062] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 200 2099793
+[2026-01-01 19:18:21,235] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 200 4346620
+[2026-01-01 19:18:21,238] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 200 5238762
+[2026-01-01 19:18:21,484] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2026-01-01 19:18:21,563] WARNING [django.request:246] Not Found: /favicon.ico
+[2026-01-01 19:18:21,563] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 5420
+[2026-01-01 19:18:42,751] INFO [django.server:212] "GET / HTTP/1.1" 200 8397
+[2026-01-01 19:18:42,764] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 5924
+[2026-01-01 19:18:42,781] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 200 2099793
+[2026-01-01 19:18:42,969] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 200 4346620
+[2026-01-01 19:18:42,974] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 200 5238762
+[2026-01-01 19:18:43,189] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2026-01-01 19:18:43,237] WARNING [django.request:246] Not Found: /favicon.ico
+[2026-01-01 19:18:43,238] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 5420
+[2026-01-01 19:26:55,324] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7470
+[2026-01-01 19:26:58,098] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2026-01-01 19:26:58,103] INFO [django.server:212] "GET / HTTP/1.1" 200 7020
+[2026-01-01 19:27:01,074] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7514
+[2026-01-01 19:27:05,271] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2026-01-01 19:27:05,535] INFO [django.server:212] "GET /staff/management/ HTTP/1.1" 200 9454
+[2026-01-01 19:39:14,809] INFO [django.server:212] "GET /staff/management/ HTTP/1.1" 200 9060
+[2026-01-01 19:39:14,823] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 5924
+[2026-01-01 19:39:15,177] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2026-01-01 19:39:15,776] WARNING [django.request:246] Not Found: /favicon.ico
+[2026-01-01 19:39:15,777] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 5420
+[2026-01-01 19:39:35,473] INFO [django.server:212] "GET /admin/ HTTP/1.1" 200 14942
+[2026-01-01 19:39:42,327] INFO [django.server:212] "GET / HTTP/1.1" 200 8397
+[2026-01-01 19:39:55,709] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7470
+[2026-01-01 19:39:58,009] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2026-01-01 19:39:58,013] INFO [django.server:212] "GET / HTTP/1.1" 200 7020
+[2026-01-01 19:40:00,515] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7514
+[2026-01-01 19:40:03,907] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2026-01-01 19:40:04,211] INFO [django.server:212] "GET /staff/management/ HTTP/1.1" 200 9461
+[2026-01-01 19:40:22,922] INFO [django.server:212] "GET / HTTP/1.1" 200 8397
+[2026-01-01 19:50:35,707] INFO [django.server:212] "GET / HTTP/1.1" 200 8619
+[2026-01-01 19:50:35,732] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 5924
+[2026-01-01 19:50:35,742] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 200 2099793
+[2026-01-01 19:50:35,988] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 200 4346620
+[2026-01-01 19:50:35,990] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 200 5238762
+[2026-01-01 19:50:36,237] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2026-01-01 19:50:36,311] WARNING [django.request:246] Not Found: /favicon.ico
+[2026-01-01 19:50:36,312] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 5420
+[2026-01-01 19:50:55,508] INFO [django.server:212] "GET /staff/management/ HTTP/1.1" 200 9288
+[2026-01-01 19:51:07,170] INFO [django.server:212] "GET / HTTP/1.1" 200 8619
+[2026-01-01 19:57:31,193] INFO [django.server:212] "GET / HTTP/1.1" 200 8605
+[2026-01-01 19:57:31,193] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 5924
+[2026-01-01 19:57:31,219] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 200 2099793
+[2026-01-01 19:57:35,436] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 200 4346620
+[2026-01-01 19:57:35,447] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 200 5238762
+[2026-01-01 19:57:35,778] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2026-01-01 19:57:35,864] WARNING [django.request:246] Not Found: /favicon.ico
+[2026-01-01 19:57:35,865] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 5420
+[2026-01-01 19:57:44,103] INFO [django.server:212] "GET /staff/management/ HTTP/1.1" 200 9274
+[2026-01-01 19:57:50,000] INFO [django.server:212] "GET /admin/ HTTP/1.1" 200 14942

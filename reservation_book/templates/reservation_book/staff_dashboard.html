@@ -5,7 +5,8 @@
 <div class="container py-4">
 
     <!-- Header -->
-    <div class="row mb-4">
+         <!-- Header -->
+    <div class="row mb-4 align-items-center">
         <div class="col">
             <h1 class="display-5 fw-bold text-white">
                 Staff Dashboard
@@ -14,7 +15,15 @@
                 Quick overview of reservations and shortcuts for daily tasks.
             </p>
         </div>
+        <div class="col-auto">
+            {% if user.is_superuser %}
+            <a href="{% url 'staff_management' %}" class="btn btn-success btn-lg">
+                <i class="bi bi-person-gear"></i> Manage Staff
+            </a>
+            {% endif %}
+        </div>
     </div>
+
 
     <!-- KPI Cards -->
     <div class="row g-3 mb-4">
