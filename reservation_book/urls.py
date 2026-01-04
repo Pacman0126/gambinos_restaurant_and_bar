@@ -39,13 +39,13 @@ urlpatterns = [
         name="user_reservations_overview",
     ),
     path(
-        "staff/customer/<int:user_id>/history/",
+        "staff/customer/<int:customer_id>/history/",
         views.user_reservation_history,
         name="user_reservation_history",
     ),
     path("staff/phone-reservation/",
-         views.make_reservation,
-         name="create_phone_reservation"),
+         views.create_phone_reservation,
+         name="create_phone_reservation"),  # Changed to create_phone_reservation view
 
     path(
         "ajax/lookup-customer/",

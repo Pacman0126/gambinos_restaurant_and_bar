@@ -69,22 +69,17 @@
                                                     <td class="text-center">
                                                         <button
                                                             type="button"
-                                                            class="btn btn-sm {% if remaining > 0 %}btn-outline-light{% else %}btn-outline-secondary{% endif %} slot-button"
+                                                            class="btn btn-outline-light btn-sm w-100"
                                                             data-slot-button="1"
                                                             data-date="{{ ts.calendar_date|date:'Y-m-d' }}"
                                                             data-slot="{{ slot.key }}"
                                                             {% if remaining <= 0 %}disabled{% endif %}
                                                         >
-                                                            <div class="fw-semibold">
-                                                                {{ slot.label }}
-                                                            </div>
-                                                            <div class="small">
-                                                                {% if remaining > 0 %}
-                                                                    {{ remaining }} left
-                                                                {% else %}
-                                                                    Full
-                                                                {% endif %}
-                                                            </div>
+                                                            {% if remaining <= 0 %}
+                                                                FULL
+                                                            {% else %}
+                                                                {{ remaining }}
+                                                            {% endif %}
                                                         </button>
                                                     </td>
                                                 {% endwith %}
@@ -95,76 +90,32 @@
                             </table>
                         </div>
                     {% else %}
-                        <p class="text-muted mb-0">
-                            Availability data is not loaded. Make sure
-                            <code>next_30_days</code> is passed from
-                            <code>create_phone_reservation</code> view
-                            (same as in <code>make_reservation</code>).
-                        </p>
+                        <p class="text-muted">No availability data found. Please contact admin.</p>
                     {% endif %}
                 </div>
             </div>
         </div>
 
         {# ------------------------------ #}
-        {# RIGHT: Phone customer form     #}
+        {# RIGHT: Customer Details Form   #}
         {# ------------------------------ #}
         <div class="col-lg-5">
             <div class="card bg-dark border-secondary h-100">
                 <div class="card-header border-secondary">
                     <h5 class="card-title mb-0">
-                        Caller Details &amp; Confirmation
+                        Caller Details
                     </h5>
                 </div>
                 <div class="card-body">
-                    <form method="post" novalidate>
+                    <form method="post" action="{% url 'create_phone_reservation' %}">  {# Changed action to correct URL #}
                         {% csrf_token %}
 
-                        {# Reservation details: date, time slot, tables #}
-                        <h6 class="text-uppercase small text-muted mb-2">
-                            Reservation Details
-                        </h6>
-
-                        <div class="mb-3">
-                            <label for="id_reservation_date" class="form-label">
-                                Reservation Date
-                            </label>
-                            {{ form.reservation_date }}
-                            <div class="form-text">
-                                This is auto-filled when you click a slot in the calendar.
-                            </div>
+                        {# Customer Lookup #}
+                        <div id="customerLookupControls" class="mb-4" style="display: none;">
+                            <select class="form-select mb-3" id="lookupSelect">
+                                <option value="">Select a match...</option>
+                            </select>
                         </div>
-
-                        <div class="mb-3">
-                            <label for="id_time_slot" class="form-label">
-                                Time Slot
-                            </label>
-                            {{ form.time_slot }}
-                            <div class="form-text">
-                                Also auto-filled from the calendar; you can still override it.
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="id_number_of_tables_required_by_patron" class="form-label">
-                                Tables Needed
-                            </label>
-                            {{ form.number_of_tables_required_by_patron }}
-                        </div>
-
-                        {% if remaining_for_slot is not None %}
-                            <div class="alert alert-info py-2">
-                                Remaining tables for selected slot:
-                                <strong>{{ remaining_for_slot }}</strong>
-                            </div>
-                        {% endif %}
-
-                        <hr class="border-secondary">
-
-                        {# Caller / guest details #}
-                        <h6 class="text-uppercase small text-muted mb-2">
-                            Caller / Guest Details
-                        </h6>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
@@ -178,13 +129,12 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="id_email" class="form-label">Email (optional)</label>
+                            <label for="id_email" class="form-label">Email</label>
                             {{ form.email }}
-                            <div class="form-text">
-                                If this email matches an existing online customer,
-                                the booking will be linked to their account and a confirmation
+                            <small class="form-text text-muted">
+                                If the caller has an existing account, the booking will be linked to their account and a confirmation
                                 email will be sent.
-                            </div>
+                            </small>
                         </div>
 
                         <div class="row">
@@ -238,7 +188,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             if (slot) {
-                // For a normal <select>, try to set the matching option
                 const option = Array.from(slotSelect.options).find(
                     (opt) => opt.value === slot
                 );

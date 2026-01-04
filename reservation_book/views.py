@@ -2,6 +2,7 @@ from datetime import timedelta, datetime
 import logging
 import re
 
+from django.db.models import Q
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
@@ -23,7 +24,7 @@ from django.views.decorators.http import require_GET
 from django.utils.crypto import get_random_string
 from django.http import HttpResponseForbidden
 
-from .models import TableReservation, TimeSlotAvailability, RestaurantConfig
+from .models import TableReservation, TimeSlotAvailability, RestaurantConfig, Customer
 from .forms import (
     SignUpForm,
     PhoneReservationForm,
@@ -31,17 +32,20 @@ from .forms import (
 )
 from .constants import SLOT_LABELS
 
+
+def superuser_required(view_func):
+    """Decorator to restrict view to superusers only"""
+    @login_required
+    def wrapper(request, *args, **kwargs):
+        if not request.user.is_superuser:
+            return HttpResponseForbidden("You do not have permission to access this page.")
+        return view_func(request, *args, **kwargs)
+    return wrapper
+
+
 User = get_user_model()
 
 logger = logging.getLogger(__name__)
-
-
-# Add a property to track first login
-def get_needs_setup(self):
-    return self.username == self.email and self.is_staff and not self.is_superuser
-
-
-User.add_to_class('needs_setup', property(get_needs_setup))
 
 
 def _to_int(value, default=0):
@@ -54,14 +58,7 @@ def _to_int(value, default=0):
         return default
 
 
-# # --- SLOT LABELS ---
-# SLOT_LABELS = {
-#     "17_18": "17:00–18:00",
-#     "18_19": "18:00–19:00",
-#     "19_20": "19:00–20:00",
-#     "20_21": "20:00–21:00",
-#     "21_22": "21:00–22:00",
-# }
+# --- SLOT LABELS --- moved to constants.py
 
 
 def _build_next_30_days():
@@ -196,87 +193,58 @@ def make_reservation(request):
                 return redirect("make_reservation")
 
             # -----------------------------------
-            # 3. Decide which user this reservation belongs to
+            # 3. Get or create Customer
             # -----------------------------------
+            customer_data = {
+                'first_name': first_name,
+                'last_name': last_name,
+                'email': email,
+                'phone': phone,
+                'mobile': mobile,
+            }
 
+            customer, created = Customer.objects.get_or_create(
+                email=email,
+                defaults=customer_data
+            )
+            if not created:
+                # Update existing customer
+                for key, value in customer_data.items():
+                    setattr(customer, key, value)
+                customer.save()
+
+            # -----------------------------------
+            # 4. Decide which user this reservation belongs to (for authenticated users)
+            # -----------------------------------
             user_for_reservation = None
-
             if request.user.is_authenticated and not request.user.is_staff:
-                # Normal online user booking for themselves
                 user_for_reservation = request.user
 
-                # If they changed the email, optionally keep it in sync
-                if email and email.lower() != request.user.email.lower():
-                    request.user.email = email
-                    request.user.save(update_fields=["email"])
-
-                # Also update first/last name if they left them empty in their profile
-                updated_fields = []
-                if first_name and not request.user.first_name:
-                    request.user.first_name = first_name
-                    updated_fields.append("first_name")
-                if last_name and not request.user.last_name:
-                    request.user.last_name = last_name
-                    updated_fields.append("last_name")
-                if updated_fields:
-                    request.user.save(update_fields=updated_fields)
-
-            else:
-                # Staff / phone reservation case:
-                # If the email already exists, attach to that user.
-                existing_user = User.objects.filter(
-                    email__iexact=email
-                ).first()
-
-                if existing_user:
-                    user_for_reservation = existing_user
-                    logger.info(
-                        "Phone reservation: linked to existing user id=%s, email=%s",
-                        existing_user.id,
-                        existing_user.email,
-                    )
-                else:
-                    # Create a minimal account so this customer can log in later
-                    base_username = email.split("@")[0] or "guest"
-                    username = base_username
-                    counter = 1
-                    while User.objects.filter(username=username).exists():
-                        username = f"{base_username}{counter}"
-                        counter += 1
-
-                    # You can refine password policy later
-                    temp_password = User.objects.make_random_password()
-
-                    user_for_reservation = User.objects.create_user(
-                        username=username,
-                        email=email,
-                        password=temp_password,
-                        first_name=first_name,
-                        last_name=last_name,
-                    )
-                    logger.info(
-                        "Phone reservation: created new user id=%s, username=%s, email=%s",
-                        user_for_reservation.id,
-                        user_for_reservation.username,
-                        user_for_reservation.email,
-                    )
+                # Optionally sync user details to customer
+                updated = False
+                if first_name and not user_for_reservation.first_name:
+                    user_for_reservation.first_name = first_name
+                    updated = True
+                if last_name and not user_for_reservation.last_name:
+                    user_for_reservation.last_name = last_name
+                    updated = True
+                if email.lower() != user_for_reservation.email.lower():
+                    user_for_reservation.email = email
+                    updated = True
+                if updated:
+                    user_for_reservation.save()
 
             # -----------------------------------
-            # 4. Create reservation
+            # 5. Create reservation
             # -----------------------------------
             reservation = TableReservation.objects.create(
-                user=user_for_reservation,
                 is_phone_reservation=request.user.is_staff,
                 time_slot=slot,
                 number_of_tables_required_by_patron=tables_needed,
                 timeslot_availability=ts,
                 reservation_status=True,
                 reservation_date=ts.calendar_date,
-                first_name=first_name,
-                last_name=last_name,
-                email=email,
-                phone=phone,
-                mobile=mobile,
+                customer=customer,  # Link to the Customer object we created/updated
             )
 
             # Update demand
@@ -305,20 +273,14 @@ def make_reservation(request):
             )
 
             # -----------------------------------
-            # 5. Send confirmation email
+            # 6. Send confirmation email
             # -----------------------------------
             if email:
                 try:
                     if request.user.is_staff:
-                        # Staff / phone reservation template
-                        template_name = (
-                            "reservation_book/emails/phone_reservation_confirmation.txt"
-                        )
+                        template_name = "reservation_book/emails/phone_reservation_confirmation.txt"
                     else:
-                        # Normal online reservation template (the one you had working before)
-                        template_name = (
-                            "reservation_book/emails/reservation_confirmation.txt"
-                        )
+                        template_name = "reservation_book/emails/reservation_confirmation.txt"
 
                     message = render_to_string(
                         template_name,
@@ -348,7 +310,7 @@ def make_reservation(request):
                     )
 
             # -----------------------------------
-            # 6. Response (AJAX or normal)
+            # 7. Response (AJAX or normal)
             # -----------------------------------
             if is_ajax:
                 return JsonResponse(
@@ -374,9 +336,7 @@ def make_reservation(request):
             messages.error(request, f"Error processing reservation: {e}")
             return redirect("make_reservation")
 
-    # ----------------
     # GET branch – same as before
-    # ----------------
     next_30_days = _build_next_30_days()
 
     return render(
@@ -455,7 +415,6 @@ def cancel_reservation(request, reservation_id):
 
     # --- Update demand: release tables from that date/slot ---
     try:
-        ts = TimeSlotAvailability.DoesNotExist
         ts = TimeSlotAvailability.objects.get(calendar_date=old_date)
     except TimeSlotAvailability.DoesNotExist:
         ts = None
@@ -578,21 +537,161 @@ def staff_or_superuser_required(view_func):
     return wrapper
 
 
+@superuser_required
+def staff_management(request):
+    staff_users = User.objects.filter(
+        is_staff=True).order_by('last_name', 'first_name')
+    return render(request, 'reservation_book/staff_management.html', {
+        'staff_users': staff_users,
+    })
+
+
+@superuser_required
+def add_staff(request):
+    """Add a new staff member or re-activate an existing one"""
+    if request.method == 'POST':
+        first_name = request.POST.get('first_name').strip()
+        last_name = request.POST.get('last_name').strip()
+        email = request.POST.get('email').strip().lower()
+
+        if not all([first_name, last_name, email]):
+            messages.error(request, "All fields are required.")
+            return redirect('staff_management')
+
+        temp_password = get_random_string(length=12)
+
+        existing_user = User.objects.filter(email=email).first()
+
+        if existing_user:
+            if existing_user.is_staff:
+                messages.error(request, "This user is already a staff member.")
+                return redirect('staff_management')
+            else:
+                # Re-activate former staff
+                existing_user.first_name = first_name
+                existing_user.last_name = last_name
+                existing_user.is_staff = True
+                existing_user.is_active = True
+                existing_user.set_password(temp_password)
+                existing_user.save()
+                messages.success(
+                    request, f"Staff member {first_name} {last_name} re-activated and new password emailed.")
+        else:
+            # Create new staff
+            User.objects.create_user(
+                username=email,
+                email=email,
+                first_name=first_name,
+                last_name=last_name,
+                password=temp_password,
+                is_staff=True,
+                is_active=True
+            )
+            messages.success(
+                request, f"Staff member {first_name} {last_name} added and password emailed.")
+
+        # Send welcome email
+        login_url = request.build_absolute_uri(reverse('account_login'))
+        subject = "Gambino's Restaurant - Staff Account Access"
+        message = f"""
+Hello {first_name},
+
+Your staff account for Gambino's Restaurant & Bar has been created (or re-activated).
+
+Please log in using the details below and change your password immediately:
+
+Login URL: {login_url}
+Username: {email}
+Temporary Password: {temp_password}
+
+For security, please change your password after logging in.
+
+Thank you,
+Management
+        """
+
+        try:
+            send_mail(
+                subject=subject,
+                message=message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[email],
+                fail_silently=False,
+            )
+        except Exception as e:
+            messages.warning(
+                request, f"Staff added but email failed: {str(e)}")
+            logger.error(f"Email failed for {email}: {str(e)}")
+
+        return redirect('staff_management')
+
+    return redirect('staff_management')
+
+
+@superuser_required
+def remove_staff(request, user_id):
+    """Completely remove a staff member from the database"""
+    user = get_object_or_404(User, id=user_id)
+
+    if user.is_superuser:
+        messages.error(request, "Cannot remove a superuser.")
+    elif user == request.user:
+        messages.error(request, "You cannot remove yourself.")
+    else:
+        full_name = user.get_full_name() or user.email
+        user.delete()
+        messages.success(
+            request, f"Staff member {full_name} completely removed.")
+
+    return redirect('staff_management')
+
+
+@login_required
+def first_login_setup(request):
+    """Force new staff to change username and password on first login"""
+    if not request.user.is_staff:
+        return redirect('make_reservation')
+
+    # If username has been changed from email, they've already completed setup
+    if request.user.username != request.user.email:
+        return redirect('staff_dashboard')
+
+    if request.method == 'POST':
+        password_form = SetPasswordForm(request.user, request.POST)
+        username = request.POST.get('username', '').strip()
+
+        if password_form.is_valid() and username:
+            user = password_form.save()
+            update_session_auth_hash(request, user)  # Keep logged in
+
+            user.username = username
+            user.save()
+
+            messages.success(
+                request, "Password and username updated successfully. Welcome!")
+            return redirect('staff_dashboard')
+    else:
+        password_form = SetPasswordForm(request.user)
+
+    return render(request, 'reservation_book/first_login_setup.html', {
+        'password_form': password_form,
+        'current_email': request.user.email,
+    })
+
+
 @staff_or_superuser_required
 def staff_dashboard(request):
-    today = timezone.now().date()
+    today = timezone.localdate()
 
     total_reservations = TableReservation.objects.count()
     upcoming_reservations_count = TableReservation.objects.filter(
-        timeslot_availability__calendar_date__gte=today,
+        reservation_date__gte=today,
         reservation_status=True,
     ).count()
     phone_reservations_count = TableReservation.objects.filter(
         is_phone_reservation=True
     ).count()
-    registered_customers_count = User.objects.exclude(
-        reservations__isnull=True
-    ).count()
+    registered_customers_count = Customer.objects.count()
     cancelled_reservations_count = TableReservation.objects.filter(
         reservation_status=False
     ).count()
@@ -619,7 +718,7 @@ def staff_reservations(request):
     Search by:
     - Booking ID (exact, if q is all digits)
     - username
-    - email (user or phone-in email)
+    - email (user or customer email)
     - first/last name
     - phone or mobile
     """
@@ -627,9 +726,9 @@ def staff_reservations(request):
 
     qs = (
         TableReservation.objects.select_related(
-            "user", "timeslot_availability")
-        .order_by(
-            "-timeslot_availability__calendar_date",
+            "customer", "timeslot_availability"
+        ).order_by(
+            "-reservation_date",
             "-time_slot",
             "-created_at",
         )
@@ -642,18 +741,12 @@ def staff_reservations(request):
         if query.isdigit():
             combined |= Q(id=int(query))
 
-        # Username / email (user or phone-in)
-        combined |= Q(user__username__icontains=query)
-        combined |= Q(user__email__icontains=query)
-        combined |= Q(email__icontains=query)
-
-        # First / last name
-        combined |= Q(first_name__icontains=query)
-        combined |= Q(last_name__icontains=query)
-
-        # Phone fields that actually exist on your model
-        combined |= Q(phone__icontains=query)
-        combined |= Q(mobile__icontains=query)
+        # Customer fields
+        combined |= Q(customer__first_name__icontains=query)
+        combined |= Q(customer__last_name__icontains=query)
+        combined |= Q(customer__email__icontains=query)
+        combined |= Q(customer__phone__icontains=query)
+        combined |= Q(customer__mobile__icontains=query)
 
         qs = qs.filter(combined)
 
@@ -682,8 +775,8 @@ def user_reservations_overview(request):
     """
     today = timezone.localdate()
 
-    users = (
-        User.objects.filter(reservations__isnull=False)
+    customers = (
+        Customer.objects.filter(reservations__isnull=False)
         .annotate(
             total_reservations=Count("reservations", distinct=True),
             active_reservations=Count(
@@ -719,21 +812,21 @@ def user_reservations_overview(request):
     return render(
         request,
         "reservation_book/user_reservations_overview.html",
-        {"users": users},
+        {"customers": customers},
     )
 
 
 @staff_or_superuser_required
-def user_reservation_history(request, user_id):
+def user_reservation_history(request, customer_id):
     """
     Staff view: full reservation history for a given registered customer.
     """
-    history_user = get_object_or_404(User, id=user_id)
+    history_customer = get_object_or_404(Customer, id=customer_id)
     reservations = (
-        TableReservation.objects.filter(user=history_user)
+        TableReservation.objects.filter(customer=history_customer)
         .select_related("timeslot_availability")
         .order_by(
-            "-timeslot_availability__calendar_date",
+            "-reservation_date",
             "-time_slot",
         )
     )
@@ -742,7 +835,7 @@ def user_reservation_history(request, user_id):
         request,
         "reservation_book/user_reservation_history.html",
         {
-            "history_user": history_user,
+            "history_customer": history_customer,
             "reservations": reservations,
         },
     )
@@ -752,197 +845,86 @@ def user_reservation_history(request, user_id):
 def create_phone_reservation(request):
     """
     Staff UI for creating reservations for phone-in customers.
-
-    - Shows the same 30-day availability grid as make_reservation.
-    - Email field is used to:
-        * Link to an existing user if the email matches.
-        * Otherwise create a new User with that email so future bookings
-          are tied to the same account.
-    - Sends a reservation confirmation email.
-    - For newly created users, also includes a 'set your password' link
-      so they can access their account later.
     """
-    # Build the same availability grid used by make_reservation
     next_30_days = _build_next_30_days()
 
-    selected_date = None
-
     if request.method == "POST":
-        # Try to parse date early so PhoneReservationForm can validate
-        raw_date = request.POST.get("reservation_date")
-        if raw_date:
-            try:
-                selected_date = datetime.strptime(raw_date, "%Y-%m-%d").date()
-            except ValueError:
-                selected_date = None
-
-        form = PhoneReservationForm(request.POST, for_date=selected_date)
-
+        form = PhoneReservationForm(request.POST)
         if form.is_valid():
-            cd = form.cleaned_data
-            reservation_date = cd["reservation_date"]
-            time_slot = cd["time_slot"]
-            tables_needed = cd["number_of_tables_required_by_patron"]
-            first_name = cd["first_name"]
-            last_name = cd["last_name"]
-            phone = cd["phone"]
-            mobile = cd["mobile"]
-            # should be present, but stay defensive
-            email = cd.get("email") or None
-
-            # Get or create availability row for the chosen date
-            timeslot_avail, _ = TimeSlotAvailability.objects.get_or_create(
-                calendar_date=reservation_date
-            )
-
-            avail_field = f"number_of_tables_available_{time_slot}"
-            demand_field = f"total_cust_demand_for_tables_{time_slot}"
-
-            slot_available = getattr(timeslot_avail, avail_field, 0) or 0
-            slot_demand = getattr(timeslot_avail, demand_field, 0) or 0
-            remaining = slot_available - slot_demand
-
-            if tables_needed > remaining:
-                messages.error(
-                    request,
-                    f"Not enough tables available for "
-                    f"{SLOT_LABELS.get(time_slot, time_slot)} "
-                    f"on {reservation_date}. "
-                    f"Remaining: {max(remaining, 0)}.",
-                )
-                return render(
-                    request,
-                    "reservation_book/create_phone_reservation.html",
-                    {
-                        "form": form,
-                        "slot_labels": SLOT_LABELS,
-                        "remaining_for_slot": max(remaining, 0),
-                        "next_30_days": next_30_days,
-                    },
-                )
-
-            # --- Link to existing online customer by email, or create one ---
-            linked_user = None
-            new_user_created = False
-
-            if email:
-                try:
-                    existing_user = User.objects.get(email__iexact=email)
-                    linked_user = existing_user
-                except User.DoesNotExist:
-                    existing_user = None
-
-                if existing_user is None:
-                    # Create a new User record so this email now has an account
-                    base_username = email.split("@")[0]
-                    candidate_username = slugify(
-                        f"{first_name}-{last_name}-{base_username}"
-                    )[:150] or base_username[:150]
-
-                    # Ensure uniqueness of username
-                    original = candidate_username
-                    counter = 1
-                    while User.objects.filter(username=candidate_username).exists():
-                        candidate_username = f"{original}-{counter}"
-                        counter += 1
-
-                    linked_user = User.objects.create_user(
-                        username=candidate_username,
-                        email=email,
-                        first_name=first_name,
-                        last_name=last_name,
-                        password=User.objects.make_random_password(),
-                    )
-                    new_user_created = True
-
-            # --- Create the reservation ---
-            reservation = TableReservation.objects.create(
-                user=linked_user,
-                reservation_date=reservation_date,
-                time_slot=time_slot,
-                number_of_tables_required_by_patron=tables_needed,
-                first_name=first_name,
-                last_name=last_name,
-                phone=phone,
-                mobile=mobile,
-                email=email,
-                is_phone_reservation=True,
-                timeslot_availability=timeslot_avail,
-                created_by=request.user,
-            )
-
-            # BARRED CHECK WITH SUPERUSER OVERRIDE
-            if reservation.customer and reservation.customer.barred:
-                if not request.user.is_superuser:
-                    messages.error(
-                        request,
-                        f"Customer {reservation.customer} is barred. New reservations not allowed. "
-                        "Contact owner/manager to override."
-                    )
-                    return redirect('create_phone_reservation')
+            reservation = form.save(commit=False)
+            reservation.is_phone_reservation = True
+            reservation.created_by = request.user
+            reservation.save()
 
             # Update demand
-            setattr(
-                timeslot_avail,
-                demand_field,
-                slot_demand + tables_needed,
-            )
+            time_slot = reservation.time_slot
+            timeslot_avail = reservation.timeslot_availability
+            demand_field = f"total_cust_demand_for_tables_{time_slot}"
+            current_demand = getattr(timeslot_avail, demand_field, 0) or 0
+            tables_needed = reservation.number_of_tables_required_by_patron
+            setattr(timeslot_avail, demand_field,
+                    current_demand + tables_needed)
             timeslot_avail.save()
 
-            # Update cumulative demand for that slot
-            setattr(
-                timeslot_avail,
-                demand_field,
-                slot_demand + tables_needed,
-            )
-            timeslot_avail.save()
+            # Send confirmation email
+            # --- Send confirmation email ---
+            # Send confirmation email
+            if reservation.customer and reservation.customer.email:
+                pretty_slot = SLOT_LABELS.get(
+                    reservation.time_slot, reservation.time_slot)
 
-            # --- Email: confirmation + (for new users) account setup link ---
-            if email:
+                # Check if this is a first-time customer (no User account yet)
+                user_account = User.objects.filter(
+                    email=reservation.customer.email).first()
+                is_new_customer = user_account is None
+
+                temp_password = None
+                login_url = request.build_absolute_uri(
+                    reverse('account_login'))
+
+                if is_new_customer:
+                    temp_password = get_random_string(length=12)
+                    User.objects.create_user(
+                        username=reservation.customer.email,
+                        email=reservation.customer.email,
+                        password=temp_password,
+                        first_name=reservation.customer.first_name,
+                        last_name=reservation.customer.last_name,
+                    )
+
+                # DEBUG PRINTS
+                print(f"DEBUG EMAIL: is_new_customer = {is_new_customer}")
+                print(
+                    f"DEBUG EMAIL: Customer email = {reservation.customer.email}")
+                print(
+                    f"DEBUG EMAIL: Existing User count = {User.objects.filter(email=reservation.customer.email).count()}")
+
                 context = {
                     "reservation": reservation,
-                    "slot_label": SLOT_LABELS.get(time_slot, time_slot),
+                    "time_slot_pretty": pretty_slot,
+                    "tables_needed": reservation.number_of_tables_required_by_patron,
+                    "is_new_customer": is_new_customer,
+                    "temp_password": temp_password,
+                    "login_url": login_url,
                 }
 
-                subject = "Your Gambinos reservation (phone booking)"
                 message = render_to_string(
                     "reservation_book/emails/phone_reservation_confirmation.txt",
                     context,
                 )
 
-                # If we just created a user, give them a password-reset link
-                # so they can set their password and log in later.
-                if new_user_created:
-                    reset_url = (
-                        request.build_absolute_uri(
-                            reverse("account_reset_password")
-                        )
-                        + f"?email={email}"
-                    )
-                    message += (
-                        "\n\nWe’ve set up an online account for you with this email."
-                        "\nTo set your password and manage your bookings online, "
-                        f"visit: {reset_url}"
-                    )
-
                 send_mail(
-                    subject,
-                    message,
-                    settings.DEFAULT_FROM_EMAIL,
-                    [email],
-                    fail_silently=True,
+                    subject="Your Gambino's Reservation is Confirmed",
+                    message=message,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[reservation.customer.email],
+                    fail_silently=False,
                 )
 
-            pretty_slot = SLOT_LABELS.get(time_slot, time_slot)
-            messages.success(
-                request,
-                f"Phone reservation created for {first_name} {last_name} on "
-                f"{reservation_date} at {pretty_slot}.",
-            )
-
-            # After creating a phone reservation, redirect to staff overview
-            return redirect("user_reservations_overview")
-
+            messages.success(request, "Phone reservation created!")
+            return redirect("staff_dashboard")
+        else:
+            messages.error(request, "Please correct the errors below.")
     else:
         form = PhoneReservationForm()
 
@@ -989,7 +971,7 @@ def update_reservation(request, reservation_id):
                 if not val:
                     return fallback
                 try:
-                    return datetime.strptime(val, "%Y-%m-%d").date()
+                    return datetime.strptime(val, "%Y-m-d").date()
                 except ValueError:
                     return fallback
 
@@ -1170,7 +1152,7 @@ def update_reservation(request, reservation_id):
     else:
         # GET: take a snapshot of what the user sees *before* editing
         if reservation.reservation_date:
-            date_str = reservation.reservation_date.strftime("%Y-%m-%d")
+            date_str = reservation.reservation_date.strftime("%Y-m-d")
         else:
             date_str = ""
 
@@ -1203,7 +1185,7 @@ def _normalize_query(q: str) -> str:
     """
     - strips
     - collapses whitespace
-    - removes whitespace around '@' in emails ("name @gmail.com" -> "name@gmail.com")
+    - removes whitespace around '@' in emails ("name @gmail.com" → "name@gmail.com")
     """
     q = (q or "").strip()
     q = re.sub(r"\s+", " ", q)
@@ -1349,150 +1331,3 @@ def ajax_lookup_customer(request):
     results.extend(customer_results)
 
     return JsonResponse({"results": results})
-
-
-def superuser_required(view_func):
-    """Decorator: only allow superusers"""
-    decorated_view_func = user_passes_test(
-        lambda u: u.is_superuser,
-        login_url='staff_dashboard'  # or wherever you want to redirect
-    )(view_func)
-    return decorated_view_func
-
-
-@superuser_required
-def staff_management(request):
-    staff_users = User.objects.filter(
-        is_staff=True).order_by('last_name', 'first_name')
-    return render(request, 'reservation_book/staff_management.html', {
-        'staff_users': staff_users
-    })
-
-
-@login_required
-def first_login_setup(request):
-    if not request.user.is_staff:
-        return redirect('make_reservation')
-
-    # If username has been changed from email, setup is complete
-    if request.user.username != request.user.email:
-        return redirect('staff_dashboard')
-
-    if request.method == 'POST':
-        password_form = SetPasswordForm(request.user, request.POST)
-        username = request.POST.get('username', '').strip()
-
-        if password_form.is_valid() and username:
-            user = password_form.save()
-            update_session_auth_hash(request, user)
-
-            user.username = username
-            user.save()
-
-            messages.success(
-                request, "Password and username updated successfully. Welcome!")
-            return redirect('staff_dashboard')
-    else:
-        password_form = SetPasswordForm(request.user)
-
-    return render(request, 'reservation_book/first_login_setup.html', {
-        'password_form': password_form,
-        'current_email': request.user.email,
-    })
-
-
-@superuser_required
-def add_staff(request):
-    if request.method == 'POST':
-        first_name = request.POST.get('first_name').strip()
-        last_name = request.POST.get('last_name').strip()
-        email = request.POST.get('email').strip().lower()
-
-        if not all([first_name, last_name, email]):
-            messages.error(request, "All fields are required.")
-            return redirect('staff_management')
-
-        existing_user = User.objects.filter(email=email).first()
-
-        temp_password = get_random_string(length=12)  # ← Define it early
-
-        if existing_user:
-            if existing_user.is_staff:
-                messages.error(request, "This user is already a staff member.")
-                return redirect('staff_management')
-            else:
-                # Re-activate existing user as staff
-                existing_user.first_name = first_name
-                existing_user.last_name = last_name
-                existing_user.is_staff = True
-                existing_user.is_active = True
-                existing_user.set_password(temp_password)  # Reset password
-                existing_user.save()
-                messages.success(
-                    request, f"Staff member {first_name} {last_name} re-activated and new password emailed.")
-        else:
-            # Create new staff user
-            user = User.objects.create_user(
-                username=email,
-                email=email,
-                first_name=first_name,
-                last_name=last_name,
-                password=temp_password,  # Uses the same temp_password
-                is_staff=True,
-                is_active=True
-            )
-            messages.success(
-                request, f"Staff member {first_name} {last_name} added and password emailed.")
-
-        # Send email (same for new and re-added)
-        login_url = request.build_absolute_uri(reverse('account_login'))
-        subject = "Gambino's Restaurant - Staff Account Access"
-        message = f"""
-        Hello {first_name},
-
-        Your staff account for Gambino's Restaurant & Bar has been created (or re-activated).
-
-        Please log in using the details below and change your password immediately:
-
-        Login URL: {login_url}
-        Username: {email}
-        Temporary Password: {temp_password}
-
-        For security, please change your password after logging in.
-
-        Thank you,
-        Management
-        """
-
-        try:
-            send_mail(
-                subject=subject,
-                message=message,
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[email],
-                fail_silently=False,
-            )
-        except Exception as e:
-            messages.warning(
-                request, f"Staff added but email failed: {str(e)}")
-            logger.error(f"Email failed for {email}: {str(e)}")
-
-        return redirect('staff_management')
-
-    return redirect('staff_management')
-
-
-@superuser_required
-def remove_staff(request, user_id):
-    user = get_object_or_404(User, id=user_id)
-
-    if user.is_superuser:
-        messages.error(request, "Cannot remove a superuser.")
-    elif user == request.user:
-        messages.error(request, "You cannot remove yourself.")
-    else:
-        user.delete()  # Completely delete from database
-        messages.success(
-            request, f"Staff member {user.get_full_name() or user.email} completely removed from database.")
-
-    return redirect('staff_management')

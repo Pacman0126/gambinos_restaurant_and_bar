@@ -48,6 +48,14 @@ class Customer(models.Model):
         verbose_name_plural = "Customers"
 
 
+DURATION_CHOICES = [
+    (1, '1 hour'),
+    (2, '2 hours'),
+    (3, '3 hours'),
+    (4, '4 hours'),  # ← Now supports 4 hours
+]
+
+
 class TableReservation(models.Model):
     id = models.BigAutoField(primary_key=True)
 
@@ -87,6 +95,12 @@ class TableReservation(models.Model):
         blank=True,
         related_name='created_reservations',
         help_text="Staff member who created this reservation (for phone bookings)",
+    )
+
+    duration_hours = models.PositiveSmallIntegerField(
+        choices=DURATION_CHOICES,
+        default=1,
+        help_text="How many consecutive hours this booking requires (max 4)"
     )
 
     # How many tables this patron is using in that slot
