@@ -174,7 +174,7 @@ class RestaurantConfig(models.Model):
 
 class TimeSlotAvailability(models.Model):
     # Keep this as primary key — correct for your system
-    calendar_date = models.DateField(primary_key=True)
+    calendar_date = models.DateField(unique=True)
 
     # --- D E M A N D  (always >= 0, never null) ---
     total_cust_demand_for_tables_17_18 = models.PositiveIntegerField(default=0)

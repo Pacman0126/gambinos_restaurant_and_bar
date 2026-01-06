@@ -2797,3 +2797,102 @@ Traceback (most recent call last):
     raise TemplateSyntaxError("Invalid filter: '%s'" % filter_name)
 django.template.exceptions.TemplateSyntaxError: Invalid filter: 'int'
 [2026-01-06 21:26:02,653] ERROR [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 500 415120
+[2026-01-06 22:40:13,999] ERROR [django.request:246] Internal Server Error: /staff/phone-reservation/
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 880, in _resolve_lookup
+    current = current[bit]
+              ~~~~~~~^^^^^
+KeyError: 'calendar_date'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 890, in _resolve_lookup
+    current = getattr(current, bit)
+              ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'calendar_date'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 896, in _resolve_lookup
+    current = current[int(bit)]
+                      ^^^^^^^^
+ValueError: invalid literal for int() with base 10: 'calendar_date'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 563, in wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 957, in create_phone_reservation
+    return render(
+           ^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\backends\django.py", line 61, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 175, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 157, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 63, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 238, in render
+    nodelist.append(node.render_annotated(context))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 539, in render
+    values = {key: val.resolve(context) for key, val in self.extra_context.items()}
+                   ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 736, in resolve
+    arg_vals.append(arg.resolve(context))
+                    ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 847, in resolve
+    value = self._resolve_lookup(context)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 903, in _resolve_lookup
+    raise VariableDoesNotExist(
+django.template.base.VariableDoesNotExist: Failed lookup for key [calendar_date] in {'date': datetime.date(2026, 1, 6), 'timeslot': <TimeSlotAvailability: TimeSlotAvailability object (2026-01-06)>, 'slots': [{'key': '17_18', 'label': '17:00–18:00', 'demand': 0, 'available': 20, 'remaining': 20}, {'key': '18_19', 'label': '18:00–19:00', 'demand': 0, 'available': 20, 'remaining': 20}, {'key': '19_20', 'label': '19:00–20:00', 'demand': 0, 'available': 20, 'remaining': 20}, {'key': '20_21', 'label': '20:00–21:00', 'demand': 0, 'available': 20, 'remaining': 20}, {'key': '21_22', 'label': '21:00–22:00', 'demand': 0, 'available': 20, 'remaining': 20}]}
+[2026-01-06 22:40:14,018] ERROR [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 500 374072

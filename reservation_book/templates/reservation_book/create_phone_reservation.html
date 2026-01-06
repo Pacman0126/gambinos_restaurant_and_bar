@@ -3,236 +3,175 @@
 {% load slot_filters %}
 
 {% block content %}
-<div class="container py-5 text-white">
-    <div class="row mb-4">
-        <div class="col-12 text-center">
-            <h1 class="mb-2">Staff Phone Reservation</h1>
-            <p class="lead mb-0">
-                Use the 30-day availability grid to pick a date &amp; time slot,
-                then enter the caller’s details to complete the booking.
-            </p>
-        </div>
+<div class="container my-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">Phone Reservation</h2>
+    <a href="{% url 'staff_dashboard' %}" class="btn btn-outline-light">Back to Dashboard</a>
+  </div>
+
+  <p class="text-muted">
+    Click an availability cell to select a date/time slot, then complete caller details and confirm.
+  </p>
+
+  <div class="card bg-dark text-light shadow-sm mb-4">
+    <div class="card-header">
+      <strong>Next 30 days availability</strong>
     </div>
 
-    {# --- Messages (errors/success) --- #}
-    {% if messages %}
-        <div class="row mb-3">
-            <div class="col-12">
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }} mb-2">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-    {% endif %}
+    <div class="card-body p-2">
+      <div class="table-responsive">
+        <table class="table table-dark table-bordered align-middle mb-0">
+          <thead>
+            <tr>
+              <th style="min-width: 180px;">Date</th>
+              {% for slot in slot_labels.items %}
+                <th class="text-center">{{ slot.1 }}</th>
+              {% endfor %}
+            </tr>
+          </thead>
 
-    <div class="row g-4">
-        {# ------------------------------ #}
-        {# LEFT: 30-day availability grid #}
-        {# ------------------------------ #}
-        <div class="col-lg-7">
-            <div class="card bg-dark border-secondary h-100">
-                <div class="card-header border-secondary">
-                    <h5 class="card-title mb-0">
-                        30-Day Table Availability
-                    </h5>
-                </div>
-                <div class="card-body">
-                    {% if next_30_days %}
-                        <div class="small text-muted mb-2">
-                            Click a time slot to select it for the phone reservation.
-                            Slots with no remaining tables are disabled.
-                        </div>
+          {# ✅ FIXED TBODY: correct variables + correct date/id mapping #}
+            <tbody>
+                {% for day_data in next_30_days %}
+                    {# day_data is a dict: has "date", "timeslot", "slots" #}
 
-                        <div class="table-responsive">
-                            <table class="table table-sm table-dark align-middle mb-0">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Date</th>
-                                        {% for key, label in slot_labels.items %}
-                                            <th scope="col" class="text-center">
-                                                {{ label }}
-                                            </th>
-                                        {% endfor %}
-                                    </tr>
-                                </thead>
-                                {% comment %} <tbody>
-                                    {% for ts in next_30_days %}
-                                        <tr>
-                                            <td class="fw-semibold">
-                                                {{ ts.calendar_date|date:"D, M j" }}
-                                            </td>
-                                            {% for slot in ts.slots %}
-                                                {# slot dict: key, label, demand, available, remaining #}
-                                                {% with remaining=slot.remaining %}
-                                                    <td class="text-center">
-                                                        <button
-                                                            type="button"
-                                                            class="btn {% if remaining <= 0 %}btn-secondary disabled{% else %}btn-outline-light{% endif %} btn-sm w-100"
-                                                            data-slot-button="1"
-                                                            data-date="{{ ts.calendar_date|date:'Y-m-d' }}"
-                                                            data-slot="{{ slot.key }}"
-                                                            data-timeslot-id="{{ ts.id }}"
-                                                            {% if remaining <= 0 %}disabled{% endif %}
-                                                        >
-                                                            {% if remaining <= 0 %}
-                                                                FULL
-                                                            {% else %}
-                                                                {{ remaining }}/{{ ts.available_for(slot.key) }}
-                                                            {% endif %}
-                                                        </button>
-                                                        {# Debug: show remaining value #}
-                                                        <small class="d-block text-muted mt-1">
-                                                            Debug: remaining = {{ remaining }}
-                                                        </small>
-                                                    </td>
-                                                {% endwith %}
-                                            {% endfor %}
-                                        </tr>
-                                    {% endfor %}
-                                </tbody> {% endcomment %}
-                                                                <tbody>
-                                    {% for day_data in next_30_days %}
-                                        <tr>
-                                            <td class="fw-semibold">
-                                                {{ day_data.date|date:"D, M j" }}
-                                            </td>
-                                            {% for slot in day_data.slots %}
-                                                {% with remaining=slot.remaining %}
-                                                    <td class="text-center">
-                                                        <button
-                                                        <button
-                                                            type="button"
-                                                            class="btn {% if remaining <= 0 %}btn-secondary disabled{% else %}btn-outline-light{% endif %} btn-sm w-100"
-                                                            data-slot-button="1"
-                                                            data-date="{{ ts.calendar_date|date:'Y-m-d' }}"
-                                                            data-slot="{{ slot.key }}"
-                                                            data-timeslot-id="{{ day_data.timeslot.id }}"
-                                                            onclick="console.log('Button clicked: date={{ ts.calendar_date|date:'Y-m-d' }}, slot={{ slot.key }}, remaining={{ remaining }}')"
-                                                            {% if remaining <= 0 %}disabled{% endif %}
-                                                        >
-                                                            {% if remaining <= 0 %}
-                                                                FULL
-                                                            {% else %}
-                                                                {{ remaining }} / {{ slot.available }}
-                                                            {% endif %}
-                                                        </button>
-                                                        <small class="d-block text-muted mt-1">
-                                                            Debug: remaining = {{ remaining }}
-                                                        </small>                    
-                                                    </td>
-                                                {% endwith %}
-                                            {% endfor %}
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
+                    {% if day_data.date %}
+                    {% with d=day_data.date d_iso=day_data.date|date:"Y-m-d" %}
+                        <tr>
+                        <td class="align-middle">
+                            {{ d|date:"D, M j, Y" }}
+                        </td>
+
+                        {% for slot in day_data.slots %}
+                            {% with remaining=slot.remaining available=slot.available %}
+                            <td class="p-1">
+                                <button
+                                type="button"
+                                class="btn btn-sm w-100 {% if remaining <= 0 %}btn-secondary disabled{% else %}btn-light text-dark{% endif %}"
+                                data-slot-button="1"
+                                data-date="{{ d_iso }}"
+                                data-slot="{{ slot.key }}"
+                                data-timeslot-id="{{ day_data.timeslot.id }}"
+                                {% if remaining <= 0 %}disabled{% endif %}
+                                >
+                                {% if remaining <= 0 %}
+                                    FULL
+                                {% else %}
+                                    {{ remaining }} / {{ available }}
+                                {% endif %}
+                                </button>
+                            </td>
+                            {% endwith %}
+                        {% endfor %}
+                        </tr>
+                    {% endwith %}
+
                     {% else %}
-                        <p class="text-muted">No availability data found. Please contact admin.</p>
+                    {# Fallback: if for some reason "date" is missing, use the model #}
+                    {% with d=day_data.timeslot.calendar_date d_iso=day_data.timeslot.calendar_date|date:"Y-m-d" %}
+                        <tr>
+                        <td class="align-middle">
+                            {{ d|date:"D, M j, Y" }}
+                        </td>
+
+                        {% for slot in day_data.slots %}
+                            {% with remaining=slot.remaining available=slot.available %}
+                            <td class="p-1">
+                                <button
+                                    type="button"
+                                    class="btn {% if remaining <= 0 %}btn-secondary disabled{% else %}btn-outline-light{% endif %} btn-sm w-100"
+                                    data-slot-button="1"
+                                    data-date="{{ day_data.date|date:'Y-m-d' }}"
+                                    data-slot="{{ slot.key }}"
+                                    data-timeslot-id="{{ day_data.timeslot.id }}"
+                                    {% if remaining <= 0 %}disabled{% endif %}
+                                >
+                                {% if remaining <= 0 %}
+                                    FULL
+                                {% else %}
+                                    {{ remaining }} / {{ available }}
+                                {% endif %}
+                                </button>
+                            </td>
+                            {% endwith %}
+                        {% endfor %}
+                        </tr>
+                    {% endwith %}
                     {% endif %}
-                </div>
-            </div>
-        </div>
 
-        {# ------------------------------ #}
-        {# RIGHT: Customer Details Form   #}
-        {# ------------------------------ #}
-        <div class="col-lg-5">
-            <div class="card bg-dark border-secondary h-100">
-                <div class="card-header border-secondary">
-                    <h5 class="card-title mb-0">
-                        Caller Details
-                    </h5>
-                </div>
-                <div class="card-body">
-                        <form method="post" action="{% url 'create_phone_reservation' %}" id="phoneReservationForm">
-                        {% csrf_token %}
+                {% empty %}
+                    <tr>
+                    <td colspan="6" class="text-center text-muted py-4">
+                        No availability data found.
+                    </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
 
-                        {# Hidden fields for date and slot #}
-                        {{ form.reservation_date }}
-                        {{ form.time_slot }}
-                        {{ form.timeslot_availability }}
 
-                        {# Customer Lookup #}
-                        <div id="customerLookupControls" class="mb-4" style="display: none;">
-                            <select class="form-select mb-3" id="lookupSelect">
-                                <option value="">Select a match...</option>
-                            </select>
-                        </div>
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="id_first_name" class="form-label">First Name *</label>
-                                {{ form.first_name }}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="id_last_name" class="form-label">Last Name *</label>
-                                {{ form.last_name }}
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="id_email" class="form-label">Email *</label>
-                            {{ form.email }}
-                            <small class="form-text text-muted">
-                                Required for confirmation and account creation.
-                            </small>
-                        </div>
-                        <div class="mb-3">
-                            <label for="id_number_of_tables_required_by_patron" class="form-label">Number of Tables *</label>
-                            {{ form.number_of_tables_required_by_patron }}
-                            <small class="form-text text-muted">
-                                How many tables does the customer need?
-                            </small>
-                        </div>                        
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="id_phone" class="form-label">Phone</label>
-                                {{ form.phone }}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="id_mobile" class="form-label">Mobile</label>
-                                {{ form.mobile }}
-                            </div>
-                        </div>
-
-                        {# Alert if no slot selected #}
-                        <div id="slotAlert" class="alert alert-warning d-none" role="alert">
-                            <i class="fa-solid fa-exclamation-triangle me-2"></i>
-                            Please select a time slot from the availability grid before submitting.
-                        </div>
-
-                        <div class="d-flex justify-content-between mt-4">
-                            <a href="{% url 'staff_dashboard' %}" class="btn btn-outline-secondary">
-                                <i class="fa-solid fa-arrow-left me-1"></i>
-                                Back to Dashboard
-                            </a>
-                            <button type="submit" class="btn btn-danger" id="confirmButton">
-                                <i class="fa-solid fa-phone me-1"></i>
-                                Confirm Phone Reservation
-                            </button>
-                        </div>
-                    </form>       
-                </div>
-            </div>
-        </div>
+        </table>
+      </div>
     </div>
+  </div>
+
+  <div class="card bg-dark text-light shadow-sm">
+    <div class="card-header">
+      <strong>Caller details & confirmation</strong>
+    </div>
+
+    <div class="card-body">
+      <form id="phoneReservationForm" method="post" action="{% url 'create_phone_reservation' %}">
+        {% csrf_token %}
+
+        {# These MUST be set by the grid click #}
+        {{ form.reservation_date }}
+        {{ form.time_slot }}
+        {{ form.timeslot_availability }}
+
+        <div class="alert alert-secondary small mb-3">
+          <div><strong>Selected slot:</strong> <span id="selectedSlotDisplay">None</span></div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">First name</label>
+            {{ form.first_name }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Last name</label>
+            {{ form.last_name }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Email</label>
+            {{ form.email }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Phone</label>
+            {{ form.phone }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Mobile</label>
+            {{ form.mobile }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Tables needed</label>
+            {{ form.number_of_tables_required_by_patron }}
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end mt-4">
+          <button type="submit" class="btn btn-danger">
+            Confirm Phone Reservation
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
 {% endblock %}
 
 {% block js %}
-{# ------------------------------ #}
-{# JS: hook grid → form fields    #}
-{# ------------------------------ #}
-<script>
-console.log("DEBUG: Page loaded - checking for available slots");
-const availableButtons = document.querySelectorAll("[data-slot-button]:not([disabled])");
-console.log("DEBUG: Found", availableButtons.length, "clickable slot buttons");
-</script>
-
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     const dateInput = document.getElementById("id_reservation_date");
@@ -243,26 +182,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let slotSelected = false;
 
-    console.log("DEBUG: Script loaded");
-
     const slotButtons = document.querySelectorAll("[data-slot-button]");
-    console.log("DEBUG: Found", slotButtons.length, "slot buttons");
 
     slotButtons.forEach(function (btn) {
         btn.addEventListener("click", function () {
-            console.log("DEBUG: Slot button clicked");
-
             const date = this.getAttribute("data-date");
             const slot = this.getAttribute("data-slot");
-            const timeslotId = this.getAttribute("data-timeslot-id");
-
-            console.log("DEBUG: date =", date, "slot =", slot, "timeslotId =", timeslotId);
+            const timeslotId = this.getAttribute("data-timeslot-id");  // <-- ID
 
             dateInput.value = date || "";
             slotInput.value = slot || "";
-            timeslotInput.value = timeslotId || "";
-
-            console.log("DEBUG: Hidden fields set - date:", dateInput.value, "slot:", slotInput.value, "timeslot:", timeslotInput.value);
+            timeslotInput.value = timeslotId || "";  // <-- Set the ID
 
             slotSelected = true;
 
@@ -280,10 +210,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     form.addEventListener("submit", function (e) {
-        console.log("DEBUG: Submit attempted");
-        console.log("DEBUG: slotSelected =", slotSelected);
-        console.log("DEBUG: timeslot value =", timeslotInput.value);
-
         if (!slotSelected || !timeslotInput.value) {
             e.preventDefault();
             if (alert) {
@@ -295,10 +221,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Auto-select first available
     const first = document.querySelector("[data-slot-button]:not([disabled])");
-    if (first) {
-        console.log("DEBUG: Auto-clicking first available slot");
-        first.click();
-    }
+    if (first) first.click();
 });
 </script>
 {% endblock %}

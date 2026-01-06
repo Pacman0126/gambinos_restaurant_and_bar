@@ -8385,3 +8385,211 @@ django.template.exceptions.TemplateSyntaxError: Invalid filter: 'int'
 [2026-01-06 21:33:48,506] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
 [2026-01-06 21:33:48,953] INFO [django.server:212] "GET /staff/dashboard/ HTTP/1.1" 200 12794
 [2026-01-06 21:33:54,136] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 277979
+[2026-01-06 21:46:29,413] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2026-01-06 21:46:33,078] INFO [django.server:212] "GET / HTTP/1.1" 200 8603
+[2026-01-06 21:46:43,811] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 277892
+[2026-01-06 22:06:12,658] WARNING [django.request:246] Not Found: /.well-known/appspecific/com.chrome.devtools.json
+[2026-01-06 22:06:12,658] WARNING [django.server:212] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 5535
+[2026-01-06 22:16:03,480] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2026-01-06 22:16:06,200] INFO [django.server:212] "GET / HTTP/1.1" 200 8603
+[2026-01-06 22:16:17,132] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7676
+[2026-01-06 22:16:20,194] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2026-01-06 22:16:20,198] INFO [django.server:212] "GET / HTTP/1.1" 200 6878
+[2026-01-06 22:16:22,739] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7372
+[2026-01-06 22:16:39,158] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2026-01-06 22:16:39,605] INFO [django.server:212] "GET /staff/dashboard/ HTTP/1.1" 200 12794
+[2026-01-06 22:16:44,143] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 134681
+[2026-01-06 22:21:13,937] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 147731
+[2026-01-06 22:21:14,029] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 5924
+[2026-01-06 22:21:14,429] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2026-01-06 22:21:14,541] WARNING [django.request:246] Not Found: /favicon.ico
+[2026-01-06 22:21:14,541] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 5424
+[2026-01-06 22:21:43,916] WARNING [django.request:246] Not Found: /.well-known/appspecific/com.chrome.devtools.json
+[2026-01-06 22:21:43,917] WARNING [django.server:212] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 5535
+[2026-01-06 22:24:37,349] WARNING [django.request:246] Not Found: /.well-known/appspecific/com.chrome.devtools.json
+[2026-01-06 22:24:37,350] WARNING [django.server:212] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 5535
+[2026-01-06 22:33:31,067] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2026-01-06 22:33:34,261] INFO [django.server:212] "GET / HTTP/1.1" 200 8603
+[2026-01-06 22:33:54,823] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7676
+[2026-01-06 22:33:57,404] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2026-01-06 22:33:57,409] INFO [django.server:212] "GET / HTTP/1.1" 200 6878
+[2026-01-06 22:34:00,329] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7372
+[2026-01-06 22:34:19,185] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2026-01-06 22:34:19,621] INFO [django.server:212] "GET /staff/dashboard/ HTTP/1.1" 200 12794
+[2026-01-06 22:34:24,539] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 160631
+[2026-01-06 22:34:36,024] WARNING [django.request:246] Not Found: /.well-known/appspecific/com.chrome.devtools.json
+[2026-01-06 22:34:36,025] WARNING [django.server:212] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 5535
+[2026-01-06 22:38:56,678] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7676
+[2026-01-06 22:38:59,261] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2026-01-06 22:38:59,267] INFO [django.server:212] "GET / HTTP/1.1" 200 6878
+[2026-01-06 22:39:09,440] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2026-01-06 22:39:32,890] INFO [django.server:212] "GET / HTTP/1.1" 200 6719
+[2026-01-06 22:39:36,093] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7372
+[2026-01-06 22:39:44,652] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2026-01-06 22:39:45,044] INFO [django.server:212] "GET /staff/dashboard/ HTTP/1.1" 200 12794
+[2026-01-06 22:40:13,999] ERROR [django.request:246] Internal Server Error: /staff/phone-reservation/
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 880, in _resolve_lookup
+    current = current[bit]
+              ~~~~~~~^^^^^
+KeyError: 'calendar_date'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 890, in _resolve_lookup
+    current = getattr(current, bit)
+              ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'calendar_date'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 896, in _resolve_lookup
+    current = current[int(bit)]
+                      ^^^^^^^^
+ValueError: invalid literal for int() with base 10: 'calendar_date'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 563, in wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\reservation_book\views.py", line 957, in create_phone_reservation
+    return render(
+           ^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\backends\django.py", line 61, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 175, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 157, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\loader_tags.py", line 63, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 238, in render
+    nodelist.append(node.render_annotated(context))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\defaulttags.py", line 539, in render
+    values = {key: val.resolve(context) for key, val in self.extra_context.items()}
+                   ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 736, in resolve
+    arg_vals.append(arg.resolve(context))
+                    ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 847, in resolve
+    value = self._resolve_lookup(context)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\paxto\Desktop\My Web Sites\gambinos_restaurant_and_lounge\.venv\Lib\site-packages\django\template\base.py", line 903, in _resolve_lookup
+    raise VariableDoesNotExist(
+django.template.base.VariableDoesNotExist: Failed lookup for key [calendar_date] in {'date': datetime.date(2026, 1, 6), 'timeslot': <TimeSlotAvailability: TimeSlotAvailability object (2026-01-06)>, 'slots': [{'key': '17_18', 'label': '17:00–18:00', 'demand': 0, 'available': 20, 'remaining': 20}, {'key': '18_19', 'label': '18:00–19:00', 'demand': 0, 'available': 20, 'remaining': 20}, {'key': '19_20', 'label': '19:00–20:00', 'demand': 0, 'available': 20, 'remaining': 20}, {'key': '20_21', 'label': '20:00–21:00', 'demand': 0, 'available': 20, 'remaining': 20}, {'key': '21_22', 'label': '21:00–22:00', 'demand': 0, 'available': 20, 'remaining': 20}]}
+[2026-01-06 22:40:14,018] ERROR [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 500 374072
+[2026-01-06 22:50:10,278] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 124793
+[2026-01-06 22:50:10,366] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 5924
+[2026-01-06 22:50:10,677] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2026-01-06 22:50:14,470] WARNING [django.request:246] Not Found: /favicon.ico
+[2026-01-06 22:50:14,471] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 5424
+[2026-01-06 22:50:48,741] INFO [django.server:212] "POST /staff/phone-reservation/ HTTP/1.1" 200 125094
+[2026-01-06 22:52:58,049] INFO [django.server:212] "POST /staff/phone-reservation/ HTTP/1.1" 200 175060
+[2026-01-06 22:52:58,074] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 5924
+[2026-01-06 22:52:58,474] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2026-01-06 22:52:58,563] WARNING [django.request:246] Not Found: /favicon.ico
+[2026-01-06 22:52:58,564] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 5424
+[2026-01-06 22:54:27,277] WARNING [django.request:246] Not Found: /.well-known/appspecific/com.chrome.devtools.json
+[2026-01-06 22:54:27,278] WARNING [django.server:212] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 5535
+[2026-01-06 22:56:04,667] INFO [django.server:212] "POST /staff/phone-reservation/ HTTP/1.1" 200 137345
+[2026-01-06 22:56:04,700] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 5924
+[2026-01-06 22:56:09,050] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2026-01-06 22:56:09,152] WARNING [django.request:246] Not Found: /favicon.ico
+[2026-01-06 22:56:09,152] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 5424
+[2026-01-06 22:56:21,637] INFO [django.server:212] "POST /staff/phone-reservation/ HTTP/1.1" 200 137345
+[2026-01-06 23:15:02,208] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2026-01-06 23:15:05,979] INFO [django.server:212] "GET / HTTP/1.1" 200 8603
+[2026-01-06 23:15:09,249] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7676
+[2026-01-06 23:15:11,282] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2026-01-06 23:15:11,287] INFO [django.server:212] "GET / HTTP/1.1" 200 6878
+[2026-01-06 23:15:17,539] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7372
+[2026-01-06 23:15:26,177] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2026-01-06 23:15:26,629] INFO [django.server:212] "GET /staff/dashboard/ HTTP/1.1" 200 12794
+[2026-01-06 23:15:32,517] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 137143
+[2026-01-06 23:16:03,859] INFO [django.server:212] "POST /staff/phone-reservation/ HTTP/1.1" 200 137444
+[2026-01-06 23:18:29,682] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7676
+[2026-01-06 23:18:31,651] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2026-01-06 23:18:31,656] INFO [django.server:212] "GET / HTTP/1.1" 200 6878
+[2026-01-06 23:19:32,870] INFO [django.server:212] "GET / HTTP/1.1" 200 6719
+[2026-01-06 23:19:32,977] INFO [django.server:212] "GET /static/css/style.css HTTP/1.1" 200 5924
+[2026-01-06 23:19:32,996] INFO [django.server:212] "GET /static/images/obny/dishes/Seared-Octopus.jpg HTTP/1.1" 200 2099793
+[2026-01-06 23:19:33,205] INFO [django.server:212] "GET /static/images/hero/hero1.jpg HTTP/1.1" 200 4346620
+[2026-01-06 23:19:33,214] INFO [django.server:212] "GET /static/images/hero/hero2.jpg HTTP/1.1" 200 5238762
+[2026-01-06 23:19:33,459] INFO [django.server:212] "GET /static/images/hero/brown-concrete-wall-with-scratches-vector.jpg HTTP/1.1" 200 38571995
+[2026-01-06 23:19:33,528] WARNING [django.request:246] Not Found: /favicon.ico
+[2026-01-06 23:19:33,530] WARNING [django.server:212] "GET /favicon.ico HTTP/1.1" 404 5424
+[2026-01-06 23:19:38,278] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7372
+[2026-01-06 23:19:49,166] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2026-01-06 23:19:49,568] INFO [django.server:212] "GET /staff/dashboard/ HTTP/1.1" 200 12794
+[2026-01-06 23:22:30,281] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 137143
+[2026-01-06 23:22:46,866] WARNING [django.request:246] Not Found: /.well-known/appspecific/com.chrome.devtools.json
+[2026-01-06 23:22:46,867] WARNING [django.server:212] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 5535
+[2026-01-06 23:23:22,549] INFO [django.server:212] "POST /staff/phone-reservation/ HTTP/1.1" 200 137443
+[2026-01-06 23:25:26,460] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7676
+[2026-01-06 23:25:28,761] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2026-01-06 23:25:28,766] INFO [django.server:212] "GET / HTTP/1.1" 200 6878
+[2026-01-06 23:25:31,371] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7372
+[2026-01-06 23:25:55,412] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2026-01-06 23:26:01,284] INFO [django.server:212] "GET / HTTP/1.1" 200 6719
+[2026-01-06 23:26:04,402] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7372
+[2026-01-06 23:26:12,991] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2026-01-06 23:26:13,417] INFO [django.server:212] "GET /staff/dashboard/ HTTP/1.1" 200 12794
+[2026-01-06 23:26:18,193] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 137075
+[2026-01-06 23:26:38,678] INFO [django.server:212] "POST /staff/phone-reservation/ HTTP/1.1" 200 137376
+[2026-01-06 23:29:57,795] INFO [django.server:212] "GET /accounts/logout/ HTTP/1.1" 200 7676
+[2026-01-06 23:29:59,925] INFO [django.server:212] "POST /accounts/logout/ HTTP/1.1" 302 0
+[2026-01-06 23:29:59,930] INFO [django.server:212] "GET / HTTP/1.1" 200 6878
+[2026-01-06 23:30:09,136] INFO [django.utils.autoreload:667] Watching for file changes with StatReloader
+[2026-01-06 23:30:23,295] INFO [django.server:212] "GET / HTTP/1.1" 200 6719
+[2026-01-06 23:30:26,959] INFO [django.server:212] "GET /accounts/login/ HTTP/1.1" 200 7372
+[2026-01-06 23:30:34,247] INFO [django.server:212] "POST /accounts/login/ HTTP/1.1" 302 0
+[2026-01-06 23:30:34,654] INFO [django.server:212] "GET /staff/dashboard/ HTTP/1.1" 200 12794
+[2026-01-06 23:30:39,533] INFO [django.server:212] "GET /staff/phone-reservation/ HTTP/1.1" 200 135169
