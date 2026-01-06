@@ -55,10 +55,12 @@ class PhoneReservationForm(forms.ModelForm):
             'reservation_date',
             'time_slot',
             'number_of_tables_required_by_patron',
+            'timeslot_availability',
         ]
         widgets = {
             'reservation_date': forms.HiddenInput(),
             'time_slot': forms.HiddenInput(),
+            'timeslot_availability': forms.HiddenInput(),
         }
 
     def save(self, commit=True):
@@ -78,16 +80,12 @@ class PhoneReservationForm(forms.ModelForm):
             defaults=customer_data
         )
         if not created:
+            # Update existing customer if details changed
             for key, value in customer_data.items():
                 setattr(customer, key, value)
             customer.save()
 
-        # BARRED CHECK WITH SUPERUSER OVERRIDE
-        if customer.barred:
-            # We can't access request here directly in form
-            # So we'll do the check in the view instead (better place anyway)
-            pass  # Remove any raise here — handle in view
-
+        # Link the customer to the reservation
         reservation.customer = customer
 
         if commit:

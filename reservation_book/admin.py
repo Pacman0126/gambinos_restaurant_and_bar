@@ -89,6 +89,20 @@ class TableReservationAdmin(admin.ModelAdmin):
         return "-"
     customer_email.short_description = "Email"
 
+    def delete_queryset(self, request, queryset):
+        for reservation in queryset:
+            if reservation.timeslot_availability:
+                time_slot = reservation.time_slot
+                demand_field = f"total_cust_demand_for_tables_{time_slot}"
+                current_demand = getattr(
+                    reservation.timeslot_availability, demand_field, 0) or 0
+                new_demand = max(
+                    0, current_demand - reservation.number_of_tables_required_by_patron)
+                setattr(reservation.timeslot_availability,
+                        demand_field, new_demand)
+                reservation.timeslot_availability.save()
+        queryset.delete()
+
 
 @admin.register(RestaurantConfig)
 class RestaurantConfigAdmin(admin.ModelAdmin):

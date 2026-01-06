@@ -75,46 +75,74 @@ def _build_next_30_days():
     config = RestaurantConfig.objects.first()
     default_tables = config.default_tables_per_slot if config else 10
 
+    # for i in range(30):
+    #     day = today + timedelta(days=i)
+
+    #     # Ensure a TimeSlotAvailability row exists for this day
+    #     ts, created = TimeSlotAvailability.objects.get_or_create(
+    #         calendar_date=day,
+    #         defaults={
+    #             "number_of_tables_available_17_18": default_tables,
+    #             "number_of_tables_available_18_19": default_tables,
+    #             "number_of_tables_available_19_20": default_tables,
+    #             "number_of_tables_available_20_21": default_tables,
+    #             "number_of_tables_available_21_22": default_tables,
+    #         },
+    #     )
+
+    #     slots = []
+    #     for slot_key, label in SLOT_LABELS.items():
+    #         demand_raw = getattr(
+    #             ts, f"total_cust_demand_for_tables_{slot_key}", 0
+    #         )
+    #         available_raw = getattr(
+    #             ts, f"number_of_tables_available_{slot_key}", default_tables
+    #         )
+
+    #         demand = _to_int(demand_raw, 0)
+    #         available = _to_int(available_raw, default_tables)
+    #         remaining = max(available - demand, 0)
+
+    #         slots.append(
+    #             {
+    #                 "key": slot_key,
+    #                 "label": label,
+    #                 "demand": demand,
+    #                 "available": available,
+    #                 "remaining": remaining,
+    #             }
+    #         )
     for i in range(30):
         day = today + timedelta(days=i)
 
-        # Ensure a TimeSlotAvailability row exists for this day
         ts, created = TimeSlotAvailability.objects.get_or_create(
             calendar_date=day,
-            defaults={
-                "number_of_tables_available_17_18": default_tables,
-                "number_of_tables_available_18_19": default_tables,
-                "number_of_tables_available_19_20": default_tables,
-                "number_of_tables_available_20_21": default_tables,
-                "number_of_tables_available_21_22": default_tables,
-            },
+            defaults={...}
         )
 
         slots = []
         for slot_key, label in SLOT_LABELS.items():
-            demand_raw = getattr(
-                ts, f"total_cust_demand_for_tables_{slot_key}", 0
-            )
-            available_raw = getattr(
-                ts, f"number_of_tables_available_{slot_key}", default_tables
-            )
-
-            demand = _to_int(demand_raw, 0)
-            available = _to_int(available_raw, default_tables)
+            demand = _to_int(
+                getattr(ts, f"total_cust_demand_for_tables_{slot_key}", 0))
+            available = ts.available_for(slot_key)
             remaining = max(available - demand, 0)
 
-            slots.append(
-                {
-                    "key": slot_key,
-                    "label": label,
-                    "demand": demand,
-                    "available": available,
-                    "remaining": remaining,
-                }
-            )
+            slots.append({
+                "key": slot_key,
+                "label": label,
+                "demand": demand,
+                "available": available,
+                "remaining": remaining,
+            })
 
-        ts.slots = slots
-        next_30_days.append(ts)
+        next_30_days.append({
+            "date": day,
+            "timeslot": ts,
+            "slots": slots,  # Pass as dict, not on model
+        })
+
+    # ts.slots = slots
+    # next_30_days.append(ts)
 
     return next_30_days
 
@@ -854,6 +882,10 @@ def create_phone_reservation(request):
             reservation = form.save(commit=False)
             reservation.is_phone_reservation = True
             reservation.created_by = request.user
+            # Set timeslot_availability from the selected date
+            reservation.timeslot_availability = TimeSlotAvailability.objects.get(
+                calendar_date=reservation.reservation_date
+            )
             reservation.save()
 
             # Update demand
@@ -868,7 +900,6 @@ def create_phone_reservation(request):
 
             # Send confirmation email
             # --- Send confirmation email ---
-            # Send confirmation email
             if reservation.customer and reservation.customer.email:
                 pretty_slot = SLOT_LABELS.get(
                     reservation.time_slot, reservation.time_slot)
@@ -891,13 +922,6 @@ def create_phone_reservation(request):
                         first_name=reservation.customer.first_name,
                         last_name=reservation.customer.last_name,
                     )
-
-                # DEBUG PRINTS
-                print(f"DEBUG EMAIL: is_new_customer = {is_new_customer}")
-                print(
-                    f"DEBUG EMAIL: Customer email = {reservation.customer.email}")
-                print(
-                    f"DEBUG EMAIL: Existing User count = {User.objects.filter(email=reservation.customer.email).count()}")
 
                 context = {
                     "reservation": reservation,
@@ -924,6 +948,8 @@ def create_phone_reservation(request):
             messages.success(request, "Phone reservation created!")
             return redirect("staff_dashboard")
         else:
+            print("FORM ERRORS:", form.errors)  # This will print to terminal
+            print("FORM DATA:", form.data)
             messages.error(request, "Please correct the errors below.")
     else:
         form = PhoneReservationForm()
