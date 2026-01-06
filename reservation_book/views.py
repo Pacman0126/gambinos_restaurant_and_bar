@@ -900,14 +900,13 @@ def create_phone_reservation(request):
 
             # Send confirmation email
             # --- Send confirmation email ---
+            # Send confirmation email
             if reservation.customer and reservation.customer.email:
                 pretty_slot = SLOT_LABELS.get(
                     reservation.time_slot, reservation.time_slot)
 
-                # Check if this is a first-time customer (no User account yet)
-                user_account = User.objects.filter(
-                    email=reservation.customer.email).first()
-                is_new_customer = user_account is None
+                # Permanent: Onboarding if Customer was created today (new to phone bookings)
+                is_new_customer = reservation.customer.created_at.date() == timezone.now().date()
 
                 temp_password = None
                 login_url = request.build_absolute_uri(

@@ -174,6 +174,7 @@ class RestaurantConfig(models.Model):
 
 class TimeSlotAvailability(models.Model):
     # Keep this as primary key — correct for your system
+    id = models.BigAutoField(primary_key=True)  # ← Add this line explicitly
     calendar_date = models.DateField(unique=True)
 
     # --- D E M A N D  (always >= 0, never null) ---
