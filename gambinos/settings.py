@@ -13,9 +13,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 import sys
-from django.conf import settings
 import logging.config
-import dj_database_url  # kept in case you want it later
+
 import environ
 from dotenv import load_dotenv
 
@@ -30,32 +29,22 @@ if env_file.exists():
     load_dotenv(env_file)  # lets os.environ see values from .env
 
 # Initialise django-environ
-env = environ.Env(
-    DEBUG=(bool, False),
-)
+env = environ.Env(DEBUG=(bool, False))
 
 # read .env again via environ (uses same .env)
 if env_file.exists():
     environ.Env.read_env(env_file)
 
 TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
-SITE_ID = 1
-LOGIN_REDIRECT_URL = "home"
-LOGOUT_REDIRECT_URL = "home"
 
+SITE_ID = 1
 
 # =====================================================
 # 🔐 SECURITY / DEBUG
 # =====================================================
-
-# SECRET_KEY must be defined in .env
-# e.g. SECRET_KEY=django-insecure-xxxxxxxxxxxxxxxxxxxx
 SECRET_KEY = env("SECRET_KEY")
-
-# DEBUG from .env (default False for safety)
 DEBUG = env.bool("DEBUG", default=False)
 
-# Allowed hosts – can override from .env if you want
 ALLOWED_HOSTS = env.list(
     "ALLOWED_HOSTS",
     default=[".herokuapp.com", "127.0.0.1", "localhost"],
@@ -69,12 +58,9 @@ CSRF_TRUSTED_ORIGINS = env.list(
     ],
 )
 
-
 # =====================================================
 # 📜 LOGGING
 # =====================================================
-
-# production-friendly logging config that outputs to both the console and a rotating log file
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -83,20 +69,14 @@ LOGGING = {
             "format": "[{asctime}] {levelname} [{name}:{lineno}] {message}",
             "style": "{",
         },
-        "simple": {
-            "format": "{levelname} {message}",
-            "style": "{",
-        },
+        "simple": {"format": "{levelname} {message}", "style": "{"},
     },
     "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "verbose",
-        },
+        "console": {"class": "logging.StreamHandler", "formatter": "verbose"},
         "file": {
             "class": "logging.handlers.RotatingFileHandler",
             "filename": os.path.join(BASE_DIR, "logs/django.log"),
-            "maxBytes": 5 * 1024 * 1024,  # 5 MB
+            "maxBytes": 5 * 1024 * 1024,
             "backupCount": 5,
             "formatter": "verbose",
         },
@@ -105,13 +85,13 @@ LOGGING = {
             "filename": os.path.join(BASE_DIR, "logs/errors.log"),
             "maxBytes": 5 * 1024 * 1024,
             "backupCount": 5,
-            "level": "ERROR",  # only log errors+
+            "level": "ERROR",
             "formatter": "verbose",
         },
     },
     "root": {
         "handlers": ["console", "file", "errors_file"],
-        "level": "DEBUG",  # change to INFO / WARNING for prod
+        "level": "DEBUG",
     },
     "loggers": {
         "django": {
@@ -127,11 +107,9 @@ LOGGING = {
     },
 }
 
-
 # =====================================================
 # 🔌 APPLICATION DEFINITION
 # =====================================================
-
 INSTALLED_APPS = [
     "django_admin_dracula",
     "django.contrib.admin",
@@ -141,17 +119,15 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_summernote",
-    # "reservation_book",
     "phonenumber_field",
     "django_tables2",
     "django.contrib.sites",
     "reservation_book.apps.ReservationBookConfig",
-
-    # Required by allauth
+    # allauth
     "allauth",
     "allauth.account",
-    "allauth.socialaccount",  # optional but recommended
-
+    "allauth.socialaccount",
+    # crispy
     "crispy_forms",
     "crispy_bootstrap5",
 ]
@@ -191,111 +167,123 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
             ],
         },
-    },
+    }
 ]
 
 WSGI_APPLICATION = "gambinos.wsgi.application"
 
-
 # =====================================================
-# 🗄 DATABASE – POSTGRES VIA DATABASE_URL WITH SQLITE FALLBACK
+# 🗄 DATABASE – HEROKU POSTGRES VIA DATABASE_URL
+#    - Local fallback: SQLite
+#    - Pytest: force SQLite (avoids Postgres test-db locking)
 # =====================================================
+RUNNING_TESTS = (
+    "PYTEST_CURRENT_TEST" in os.environ
+    or any("pytest" in arg or "py.test" in arg for arg in sys.argv)
+)
 
-# .env should contain:
-# DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/DBNAME?sslmode=require
-#
-# If DATABASE_URL is present -> Postgres (or whatever URL points to).
-# If DATABASE_URL is missing -> falls back to local SQLite, and
-# crucially no sslmode is passed to sqlite3 (so no TypeError).
+if RUNNING_TESTS:
+    DATABASES = {"default": {
+        "ENGINE": "django.db.backends.sqlite3", "NAME": ":memory:"}}
+else:
+    DATABASES = {
+        "default": env.db(
+            "DATABASE_URL",
+            default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        )
+    }
 
-DATABASES = {
-    "default": env.db(
-        "DATABASE_URL",
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-    )
-}
-
+    # Postgres-only tuning after env.db() (no pylint false positives)
+    if DATABASES["default"]["ENGINE"] != "django.db.backends.sqlite3":
+        DATABASES["default"]["CONN_MAX_AGE"] = env.int(
+            "CONN_MAX_AGE", default=600)
+        DATABASES["default"]["ATOMIC_REQUESTS"] = True
 
 # =====================================================
 # 🔐 PASSWORD VALIDATION
 # =====================================================
-
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-# ==== dj-allauth authentication behaviour ====
+# =====================================================
+# ✅ DJ-ALLAUTH (NEW SETTINGS FORMAT)
+# =====================================================
 
-# Keep usernames around and usable
+# Keep username field (so you can store username),
+# but do NOT require username on signup.
+# tolerated by older allauth; remove once you're sure
+ACCOUNT_USERNAME_REQUIRED = False
+# keep standard Django User.username
 ACCOUNT_USER_MODEL_USERNAME_FIELD = "username"
-ACCOUNT_USERNAME_REQUIRED = True
 
-# Still collect emails and enforce them being unique
-ACCOUNT_EMAIL_REQUIRED = True
+# Email behavior
+ACCOUNT_EMAIL_REQUIRED = True  # tolerated by older allauth; remove once you're sure
 ACCOUNT_UNIQUE_EMAIL = True
 
-# NEW style (for recent django-allauth)
-ACCOUNT_LOGIN_METHODS = {"username", "email"}  # Replace deprecated settings
-# ACCOUNT_LOGIN_METHODS = {"email"}  # Replace deprecated settings
-# Replaces EMAIL_REQUIRED/USERNAME_REQUIRED
-ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
+# NEW: how users can log in
+# replaces deprecated ACCOUNT_AUTHENTICATION_METHOD
+ACCOUNT_LOGIN_METHODS = {"email", "username"}
 
-# Backwards compatibility for older allauth, harmless if ignored
-ACCOUNT_AUTHENTICATION_METHOD = "username_email"
+# NEW: what fields appear on signup
+# Your custom signup form can still control username=email if you want.
+ACCOUNT_SIGNUP_FIELDS = ["email*", "username*", "password1*", "password2*"]
 
-# For development, don’t block logins just because emails aren’t verified
+# Email verification
 ACCOUNT_EMAIL_VERIFICATION = "optional"
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 
-# ==== Custom allauth adapter for role-based login redirects ====
+# Redirects
+ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = True
+LOGIN_REDIRECT_URL = "my_reservations"
+LOGOUT_REDIRECT_URL = "home"
+
+# Custom adapter (role-based redirect logic etc.)
 ACCOUNT_ADAPTER = "reservation_book.adapters.CustomAccountAdapter"
+
+# Use your signup form (you said it sets username=email)
+ACCOUNT_FORMS = {
+    "signup": "reservation_book.forms.CustomerSignupForm",
+}
 
 # =====================================================
 # 🌍 INTERNATIONALIZATION
 # =====================================================
-
 LANGUAGE_CODE = "en-us"
-
-TIME_ZONE = "UTC"
-
+TIME_ZONE = "Europe/Berlin"
 USE_I18N = True
-
 USE_TZ = True
 
 PHONENUMBER_DB_FORMAT = "INTERNATIONAL"
 PHONENUMBER_DEFAULT_REGION = "DE"
 
+# =====================================================
+# 🔒 Heroku / reverse-proxy SSL settings (safe locally too)
+# =====================================================
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+if not DEBUG:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 # =====================================================
 # 📦 STATIC FILES
 # =====================================================
-
 STATIC_URL = "static/"
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
-
 # =====================================================
 # 🔑 PRIMARY KEY DEFAULT
 # =====================================================
-
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # =====================================================
 # 📧 EMAIL (Brevo SMTP)
 # =====================================================
-
 EMAIL_BACKEND = env(
     "EMAIL_BACKEND",
     default="django.core.mail.backends.console.EmailBackend",
@@ -304,30 +292,11 @@ EMAIL_BACKEND = env(
 EMAIL_HOST = env("EMAIL_HOST", default="smtp-relay.brevo.com")
 EMAIL_PORT = env.int("EMAIL_PORT", default=587)
 EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)
-EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")  # Your Brevo login email
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD",
-                          default="")  # Your Brevo SMTP key
+EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
 
 DEFAULT_FROM_EMAIL = env(
     "DEFAULT_FROM_EMAIL",
     default="Gambinos Restaurant & Lounge <oliver.p.hartmann@gmail.com>",
 )
-
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
-
-
-# =====================================================
-# 📨 FUTURE INTEGRATIONS (COMMENTED)
-# =====================================================
-
-# --- SendGrid Email Settings ---
-# EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
-# SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY")
-# SENDGRID_SANDBOX_MODE_IN_DEBUG = False  # True = don’t really send emails
-# SENDGRID_ECHO_TO_STDOUT = False         # Print emails to console in development
-# DEFAULT_FROM_EMAIL = "oliver.p.hartmann@gmail.com"
-
-# Twilio configuration
-# TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID")
-# TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN")
-# TWILIO_PHONE_NUMBER = os.environ.get("TWILIO_PHONE_NUMBER")

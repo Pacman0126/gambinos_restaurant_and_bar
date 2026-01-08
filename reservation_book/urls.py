@@ -45,7 +45,7 @@ urlpatterns = [
     ),
     path("staff/phone-reservation/",
          views.create_phone_reservation,
-         name="create_phone_reservation"),  # Changed to create_phone_reservation view
+         name="create_phone_reservation",),  # Changed to create_phone_reservation view
 
     path(
         "ajax/lookup-customer/",
@@ -55,16 +55,21 @@ urlpatterns = [
 
     path('staff/management/',
          views.staff_management,
-         name='staff_management'),
+         name='staff_management',),
 
     path('staff/add/',
          views.add_staff,
-         name='add_staff'),
+         name='add_staff',),
     path('staff/remove/<int:user_id>/',
          views.remove_staff,
-         name='remove_staff'),
+         name='remove_staff',),
 
     path('first-login-setup/',
          views.first_login_setup,
-         name='first_login_setup'),
+         name='first_login_setup',),
+
+    path('onboarding/set-password/<uidb64>/<token>/',
+         views.onboarding_set_password,
+         name="onboarding_set_password",),
+
 ]

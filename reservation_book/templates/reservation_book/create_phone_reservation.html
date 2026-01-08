@@ -30,85 +30,45 @@
             </tr>
           </thead>
 
-          {# ✅ FIXED TBODY: correct variables + correct date/id mapping #}
-            <tbody>
-                {% for day_data in next_30_days %}
-                    {# day_data is a dict: has "date", "timeslot", "slots" #}
+          <tbody>
+            {% for day_data in next_30_days %}
 
-                    {% if day_data.date %}
-                    {% with d=day_data.date d_iso=day_data.date|date:"Y-m-d" %}
-                        <tr>
-                        <td class="align-middle">
-                            {{ d|date:"D, M j, Y" }}
-                        </td>
+              {% with d=day_data.date d_iso=day_data.date|date:"Y-m-d" %}
+                <tr>
+                  <td class="align-middle">
+                    {{ d|date:"D, M j, Y" }}
+                  </td>
 
-                        {% for slot in day_data.slots %}
-                            {% with remaining=slot.remaining available=slot.available %}
-                            <td class="p-1">
-                                <button
-                                type="button"
-                                class="btn btn-sm w-100 {% if remaining <= 0 %}btn-secondary disabled{% else %}btn-light text-dark{% endif %}"
-                                data-slot-button="1"
-                                data-date="{{ d_iso }}"
-                                data-slot="{{ slot.key }}"
-                                data-timeslot-id="{{ day_data.timeslot.id }}"
-                                {% if remaining <= 0 %}disabled{% endif %}
-                                >
-                                {% if remaining <= 0 %}
-                                    FULL
-                                {% else %}
-                                    {{ remaining }} / {{ available }}
-                                {% endif %}
-                                </button>
-                            </td>
-                            {% endwith %}
-                        {% endfor %}
-                        </tr>
+                  {% for slot in day_data.slots %}
+                    {% with remaining=slot.remaining available=slot.available %}
+                      <td class="p-1">
+                        <button
+                          type="button"
+                          class="btn btn-outline-light btn-sm w-100"
+                          data-slot-button="1"
+                          data-slot="{{ slot.key }}"
+                          data-date="{{ d_iso }}"
+                          data-timeslot-pk="{{ d_iso }}"
+                          data-left="{{ slot.remaining }}"
+                        >
+
+                        {{ slot.remaining }} / {{ slot.available }}
+
+                        </button>
+                      </td>
                     {% endwith %}
+                  {% endfor %}
+                </tr>
+              {% endwith %}
 
-                    {% else %}
-                    {# Fallback: if for some reason "date" is missing, use the model #}
-                    {% with d=day_data.timeslot.calendar_date d_iso=day_data.timeslot.calendar_date|date:"Y-m-d" %}
-                        <tr>
-                        <td class="align-middle">
-                            {{ d|date:"D, M j, Y" }}
-                        </td>
-
-                        {% for slot in day_data.slots %}
-                            {% with remaining=slot.remaining available=slot.available %}
-                            <td class="p-1">
-                                <button
-                                    type="button"
-                                    class="btn {% if remaining <= 0 %}btn-secondary disabled{% else %}btn-outline-light{% endif %} btn-sm w-100"
-                                    data-slot-button="1"
-                                    data-date="{{ day_data.date|date:'Y-m-d' }}"
-                                    data-slot="{{ slot.key }}"
-                                    data-timeslot-id="{{ day_data.timeslot.id }}"
-                                    {% if remaining <= 0 %}disabled{% endif %}
-                                >
-                                {% if remaining <= 0 %}
-                                    FULL
-                                {% else %}
-                                    {{ remaining }} / {{ available }}
-                                {% endif %}
-                                </button>
-                            </td>
-                            {% endwith %}
-                        {% endfor %}
-                        </tr>
-                    {% endwith %}
-                    {% endif %}
-
-                {% empty %}
-                    <tr>
-                    <td colspan="6" class="text-center text-muted py-4">
-                        No availability data found.
-                    </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-
-
+            {% empty %}
+              <tr>
+                <td colspan="6" class="text-center text-muted py-4">
+                  No availability data found.
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
 
         </table>
       </div>
@@ -129,8 +89,15 @@
         {{ form.time_slot }}
         {{ form.timeslot_availability }}
 
+        <div id="slotAlert" class="alert alert-danger d-none mb-3">
+          Please click a date/time cell in the availability grid before confirming.
+        </div>
+
         <div class="alert alert-secondary small mb-3">
-          <div><strong>Selected slot:</strong> <span id="selectedSlotDisplay">None</span></div>
+          <div>
+            <strong>Selected slot:</strong>
+            <span id="selectedSlotDisplay">None</span>
+          </div>
         </div>
 
         <div class="row g-3">
@@ -174,54 +141,73 @@
 {% block js %}
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    const dateInput = document.getElementById("id_reservation_date");
-    const slotInput = document.getElementById("id_time_slot");
-    const timeslotInput = document.getElementById("id_timeslot_availability");
-    const form = document.getElementById("phoneReservationForm");
-    const alert = document.getElementById("slotAlert");
+  const dateInput     = document.getElementById("id_reservation_date");
+  const slotInput     = document.getElementById("id_time_slot");
+  const timeslotInput = document.getElementById("id_timeslot_availability");
+  const form          = document.getElementById("phoneReservationForm");
+  const alertBox      = document.getElementById("slotAlert");
+  const selectedEl    = document.getElementById("selectedSlotDisplay");
 
-    let slotSelected = false;
+  const slotButtons = Array.from(document.querySelectorAll("[data-slot-button]"));
 
-    const slotButtons = document.querySelectorAll("[data-slot-button]");
-
-    slotButtons.forEach(function (btn) {
-        btn.addEventListener("click", function () {
-            const date = this.getAttribute("data-date");
-            const slot = this.getAttribute("data-slot");
-            const timeslotId = this.getAttribute("data-timeslot-id");  // <-- ID
-
-            dateInput.value = date || "";
-            slotInput.value = slot || "";
-            timeslotInput.value = timeslotId || "";  // <-- Set the ID
-
-            slotSelected = true;
-
-            // Highlight
-            slotButtons.forEach(b => b.classList.remove("btn-light", "text-dark"));
-            slotButtons.forEach(b => b.classList.add("btn-outline-light"));
-
-            if (!this.disabled) {
-                this.classList.remove("btn-outline-light");
-                this.classList.add("btn-light", "text-dark");
-            }
-
-            if (alert) alert.classList.add("d-none");
-        });
+  function clearHighlights() {
+    slotButtons.forEach(b => {
+      b.classList.remove("btn-light", "text-dark");
+      if (!b.disabled) {
+        b.classList.add("btn-outline-light");
+      }
     });
+  }
 
-    form.addEventListener("submit", function (e) {
-        if (!slotSelected || !timeslotInput.value) {
-            e.preventDefault();
-            if (alert) {
-                alert.classList.remove("d-none");
-                alert.scrollIntoView({ behavior: "smooth" });
-            }
-        }
+  function setSelected(dateISO, slotKey, timeslotPK) {
+    if (dateInput) dateInput.value = dateISO || "";
+    if (slotInput) slotInput.value = slotKey || "";
+
+    // IMPORTANT:
+    // TimeSlotAvailability PK is calendar_date (DateField primary_key=True),
+    // so the form field must receive YYYY-MM-DD, NOT a human date string.
+    if (timeslotInput) timeslotInput.value = timeslotPK || "";
+
+    if (selectedEl) {
+      selectedEl.textContent = (dateISO && slotKey) ? `${dateISO} @ ${slotKey}` : "None";
+    }
+
+    if (alertBox) alertBox.classList.add("d-none");
+  }
+
+  slotButtons.forEach((btn) => {
+    btn.addEventListener("click", function () {
+      if (this.disabled) return;
+
+      const dateISO   = this.getAttribute("data-date") || "";
+      const slotKey   = this.getAttribute("data-slot") || "";
+      const timeslotPK = this.getAttribute("data-timeslot-pk") || dateISO;
+
+      setSelected(dateISO, slotKey, timeslotPK);
+
+      clearHighlights();
+      this.classList.remove("btn-outline-light");
+      this.classList.add("btn-light", "text-dark");
     });
+  });
 
-    // Auto-select first available
-    const first = document.querySelector("[data-slot-button]:not([disabled])");
-    if (first) first.click();
+  form.addEventListener("submit", function (e) {
+    const dateVal = dateInput ? dateInput.value : "";
+    const slotVal = slotInput ? slotInput.value : "";
+    const tsVal   = timeslotInput ? timeslotInput.value : "";
+
+    if (!dateVal || !slotVal || !tsVal) {
+      e.preventDefault();
+      if (alertBox) {
+        alertBox.classList.remove("d-none");
+        alertBox.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+  });
+
+  // Auto-select first available slot button
+  const firstAvailable = document.querySelector("[data-slot-button]:not([disabled])");
+  if (firstAvailable) firstAvailable.click();
 });
 </script>
 {% endblock %}

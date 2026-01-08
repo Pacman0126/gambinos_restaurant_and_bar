@@ -1,35 +1,28 @@
-Subject: Your table reservation at Gambinos Restaurant & Lounge
+Subject: Your reservation at Gambinos Restaurant & Lounge is confirmed
 
-Dear {{ reservation.customer.first_name }} {{ reservation.customer.last_name }},
+Hello {{ reservation.customer.first_name|default:"Guest" }},
 
-Thank you for your reservation at Gambinos Restaurant & Lounge.
-This reservation was made by our staff over the phone.
+Your reservation at Gambinos Restaurant & Lounge has been confirmed.
 
-Here are your reservation details:
+Reservation details:
+Date: {{ reservation.reservation_date|date:"M. j, Y" }}
+Time: {{ time_slot_pretty }}
+Tables reserved: {{ tables_needed }}
+Reservation ID: {{ reservation.id }}
 
-- Date: {{ reservation.reservation_date|date:"M. j, Y" }}
-- Time: {{ time_slot_pretty }}
-- Number of tables: {{ tables_needed }}
-- Reservation ID: {{ reservation.id }}
 
-{% if is_new_customer %}
-We have created an online account for you using this email address so you can manage your reservations.
+{% if needs_password_setup and password_setup_url %}
+An online account has been created for you so you can manage your reservations.
 
-Please log in using the details below and change your password immediately:
+To set your password securely, please visit the link below:
+{{ password_setup_url }}
 
-Login URL: {{ login_url }}
-Username: {{ reservation.customer.email }}
-Temporary Password: {{ temp_password }}
-
-For security, please change your password after logging in.
-
-You will then be able to view, modify, or cancel your reservations anytime.
+Once your password is set, you’ll be able to log in and view or cancel reservations online.
 {% else %}
-If you have an existing account, you can log in to view 
-or manage this reservation at:{{ login_url }}
+You can manage your reservations by logging in here:
+{{ login_url }}
 {% endif %}
 
-We look forward to welcoming you!
+If you have any questions, feel free to contact us directly.
 
-Best regards,
-Gambinos Restaurant & Lounge
+Thank you for choosing Gambinos Restaurant & Lounge.

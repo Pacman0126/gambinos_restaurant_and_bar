@@ -173,18 +173,17 @@ class RestaurantConfig(models.Model):
 
 
 class TimeSlotAvailability(models.Model):
-    # Keep this as primary key — correct for your system
-    id = models.BigAutoField(primary_key=True)  # ← Add this line explicitly
-    calendar_date = models.DateField(unique=True)
+    # Back to the original schema your DB actually has:
+    calendar_date = models.DateField(primary_key=True)
 
-    # --- D E M A N D  (always >= 0, never null) ---
+    # --- D E M A N D ---
     total_cust_demand_for_tables_17_18 = models.PositiveIntegerField(default=0)
     total_cust_demand_for_tables_18_19 = models.PositiveIntegerField(default=0)
     total_cust_demand_for_tables_19_20 = models.PositiveIntegerField(default=0)
     total_cust_demand_for_tables_20_21 = models.PositiveIntegerField(default=0)
     total_cust_demand_for_tables_21_22 = models.PositiveIntegerField(default=0)
 
-    # --- A V A I L A B I L I T Y  (never null, use default=0 so views can replace with config fallback) ---
+    # --- A V A I L A B I L I T Y ---
     number_of_tables_available_17_18 = models.PositiveIntegerField(default=0)
     number_of_tables_available_18_19 = models.PositiveIntegerField(default=0)
     number_of_tables_available_19_20 = models.PositiveIntegerField(default=0)
@@ -192,37 +191,26 @@ class TimeSlotAvailability(models.Model):
     number_of_tables_available_21_22 = models.PositiveIntegerField(default=0)
 
     def _get_default_capacity(self):
-        """Pull default from RestaurantConfig, fallback to 10."""
         config = RestaurantConfig.objects.first()
         return config.default_tables_per_slot if config else 10
 
     def available_for(self, slot: str) -> int:
-        """
-        Availability rules:
-        - If field is 0 (meaning not configured), fallback to restaurant default capacity.
-        - Never return None.
-        """
-        val = getattr(self, f"number_of_tables_available_{slot}", 0)
+        val = getattr(self, f"number_of_tables_available_{slot}", 0) or 0
         return val if val > 0 else self._get_default_capacity()
 
     def demand_for(self, slot: str) -> int:
-        return getattr(self, f"total_cust_demand_for_tables_{slot}", 0)
+        return getattr(self, f"total_cust_demand_for_tables_{slot}", 0) or 0
 
     def left_for(self, slot: str) -> int:
-        return self.available_for(slot) - self.demand_for(slot)
+        left = self.available_for(slot) - self.demand_for(slot)
+        return left if left > 0 else 0
 
     def save(self, *args, **kwargs):
-        """
-        On NEW record:
-            Any availability fields left as 0 will be populated
-            with the default capacity.
-        Existing records are left untouched (your demand math remains stable).
-        """
-        if not self.pk:
+        # On NEW record: fill any 0 availability fields with default capacity
+        if self._state.adding:
             default_tables = self._get_default_capacity()
             for slot in ["17_18", "18_19", "19_20", "20_21", "21_22"]:
                 field_name = f"number_of_tables_available_{slot}"
-                if getattr(self, field_name) == 0:
+                if (getattr(self, field_name, 0) or 0) == 0:
                     setattr(self, field_name, default_tables)
-
         super().save(*args, **kwargs)
