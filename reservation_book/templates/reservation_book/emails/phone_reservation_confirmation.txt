@@ -4,12 +4,22 @@ Hello {{ reservation.customer.first_name|default:"Guest" }},
 
 Your reservation at Gambinos Restaurant & Lounge has been confirmed.
 
+{% if reservations and reservations|length > 1 %}
+Reservation details ({{ reservations|length }} days):
+{% for r in reservations %}
+- Date: {{ r.reservation_date|date:"M. j, Y" }} | Time: {{ time_slot_pretty }} | Tables reserved: {{ tables_needed }} | Reservation ID: {{ r.id }}
+{% endfor %}
+{% else %}
 Reservation details:
 Date: {{ reservation.reservation_date|date:"M. j, Y" }}
 Time: {{ time_slot_pretty }}
 Tables reserved: {{ tables_needed }}
 Reservation ID: {{ reservation.id }}
+{% endif %}
 
+{% if duration_hours|default:1|add:0 > 1 %}
+This booking is for {{ duration_hours }} consecutive hour(s).
+{% endif %}
 
 {% if needs_password_setup and password_setup_url %}
 An online account has been created for you so you can manage your reservations.

@@ -1,3 +1,4 @@
+from django.conf import settings
 import datetime
 from datetime import date
 
@@ -101,6 +102,15 @@ class TableReservation(models.Model):
         choices=DURATION_CHOICES,
         default=1,
         help_text="How many consecutive hours this booking requires (max 4)"
+    )
+
+    series = models.ForeignKey(
+        "ReservationSeries",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="reservations",
+        help_text="If set, this reservation is part of a multi-day series booking.",
     )
 
     # How many tables this patron is using in that slot
@@ -214,3 +224,29 @@ class TimeSlotAvailability(models.Model):
                 if (getattr(self, field_name, 0) or 0) == 0:
                     setattr(self, field_name, default_tables)
         super().save(*args, **kwargs)
+
+
+class ReservationSeries(models.Model):
+    """
+    Groups multiple TableReservation rows into one 'series' booking
+    (e.g. conference: 18:00–20:00 for 4 consecutive days).
+    """
+    customer = models.ForeignKey(
+        "Customer",
+        on_delete=models.CASCADE,
+        related_name="reservation_series",
+    )
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="created_series",
+    )
+    title = models.CharField(max_length=200, blank=True, default="")
+    notes = models.TextField(blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        label = self.title.strip() or "Series"
+        return f"{label} (#{self.pk})"

@@ -43,6 +43,18 @@ urlpatterns = [
         views.user_reservation_history,
         name="user_reservation_history",
     ),
+
+    # path(
+    #     "staff/customers/<int:customer_id>/resend-setup-link/",
+    #     views.resend_password_setup_link,
+    #     name="resend_password_setup_link",
+    # ),
+    path(
+        "staff/resend-password-setup/",
+        views.resend_password_setup_link,
+        name="resend_password_setup_link",
+    ),
+
     path("staff/phone-reservation/",
          views.create_phone_reservation,
          name="create_phone_reservation",),  # Changed to create_phone_reservation view
@@ -60,6 +72,7 @@ urlpatterns = [
     path('staff/add/',
          views.add_staff,
          name='add_staff',),
+
     path('staff/remove/<int:user_id>/',
          views.remove_staff,
          name='remove_staff',),

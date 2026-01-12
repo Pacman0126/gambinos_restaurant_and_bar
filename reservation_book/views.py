@@ -1,40 +1,35 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import get_user_model, login
-from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from datetime import timedelta, datetime
 import logging
 import re
-from functools import wraps
+
+import datetime
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.contrib.auth.tokens import default_token_generator
 from django.db.models import Q
 from django.conf import settings
 from django.contrib import messages
 # from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth import login, get_user_model
+from django.contrib.auth import login, get_user_model, authenticate
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import SetPasswordForm
-from django.contrib.auth.tokens import default_token_generator
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes, force_str
 # from django.contrib.auth.models import User
-
-from django.contrib.auth.views import redirect_to_login
 from django.contrib.auth.decorators import login_required, user_passes_test
 
 
 from django.core.mail import send_mail
-from django.db.models import Count, Sum
+from django.db.models import Q, Count, Sum
 from django.template.loader import render_to_string
-from django.http import JsonResponse, HttpResponseForbidden
+from django.http import JsonResponse
 from django.db.models.functions import Coalesce
 from django.db import IntegrityError, transaction
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.text import slugify
 from django.urls import reverse
-from django.views.decorators.http import require_GET
+from django.views.decorators.http import require_GET, require_http_methods
 from django.utils.crypto import get_random_string
-
-
+from django.http import HttpResponseForbidden
 from allauth.account.models import EmailAddress
 
 # from .decorators import staff_or_superuser_required
@@ -47,52 +42,6 @@ from .forms import (
 )
 from .constants import SLOT_LABELS
 SLOT_KEYS = list(SLOT_LABELS.keys())
-
-
-def _customer_for_logged_in_user(request):
-    """
-    Returns the Customer record that matches the logged-in user's email.
-    If user has no email or no matching Customer exists, returns None.
-    """
-    if not request.user.is_authenticated:
-        return None
-
-    email = (getattr(request.user, "email", "") or "").strip().lower()
-    if not email:
-        return None
-
-    return Customer.objects.filter(email__iexact=email).first()
-
-
-def _get_customer_for_request_user(request):
-    """
-    Map logged-in User -> Customer by email.
-    Returns Customer or None.
-    """
-    email = (getattr(request.user, "email", "") or "").strip().lower()
-    if not email:
-        return None
-    return Customer.objects.filter(email__iexact=email).first()
-
-
-def _require_customer_profile(request):
-    """
-    Returns (customer, response).
-    If response is not None, return it immediately from the view.
-    """
-    customer = _get_customer_for_request_user(request)
-    if customer:
-        return customer, None
-
-    # If they’re logged in but there is no matching Customer record:
-    # This can happen if the user signed up online before any Customer record exists,
-    # or if emails don’t match.
-    messages.error(
-        request,
-        "We couldn’t find your customer profile yet. Please make a reservation online first "
-        "or contact the restaurant so we can link your account."
-    )
-    return None, redirect("make_reservation")
 
 
 def _default_tables_per_slot() -> int:
@@ -141,6 +90,83 @@ def _safe_int(val, fallback=0):
         return fallback
 
 # --- SLOT LABELS --- moved to constants.py
+
+
+def _slot_order():
+    """Return time-slot keys in chronological order."""
+    try:
+        return list(SLOT_LABELS.keys())
+    except Exception:
+        # Fallback: keep a stable common order
+        return ["17_18", "18_19", "19_20", "20_21", "21_22"]
+
+
+# def onboarding_set_password(request, uidb64, token):
+#     """
+#     One-time onboarding link:
+#     - user sets a password
+#     - then we log them in safely (even with multiple AUTHENTICATION_BACKENDS)
+
+#     URL kwargs must be: uidb64, token
+#     """
+#     User = get_user_model()
+
+#     try:
+#         uid = force_str(urlsafe_base64_decode(uidb64))
+#         user = User.objects.get(pk=uid)
+#     except Exception:
+#         user = None
+
+#     if user is None or not default_token_generator.check_token(user, token):
+#         messages.error(
+#             request, "This password setup link is invalid or has expired.")
+#         return redirect("account_login")
+
+#     if request.method == "POST":
+#         form = SetPasswordForm(user, request.POST)
+#         if form.is_valid():
+#             form.save()
+
+#             # Attach backend properly in multi-backend setups:
+#             new_password = form.cleaned_data["new_password1"]
+
+#             # Try authenticating using username
+#             authed = authenticate(
+#                 request, username=user.get_username(), password=new_password)
+
+#             # Optional: if your auth backend supports email login, try that too
+#             if authed is None and getattr(user, "email", None):
+#                 authed = authenticate(
+#                     request, email=user.email, password=new_password)
+
+#             if authed is not None:
+#                 login(request, authed)
+#             else:
+#                 # Absolute fallback: force a known backend
+#                 # If you use allauth backend, swap to:
+#                 # "allauth.account.auth_backends.AuthenticationBackend"
+#                 login(request, user,
+#                       backend="django.contrib.auth.backends.ModelBackend")
+
+#             messages.success(
+#                 request, "Password set successfully. You’re now logged in.")
+#             return redirect("my_reservations")
+#     else:
+#         form = SetPasswordForm(user)
+
+#     return render(
+#         request,
+#         "reservation_book/onboarding_set_password.html",
+#         {"form": form, "user": user},
+#     )
+
+
+# def _build_set_password_link(request, user):
+#     """Build a one-time onboarding link for setting a password (no temp passwords)."""
+#     uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+#     token = default_token_generator.make_token(user)
+#     path = reverse("onboarding_set_password", args=[uidb64, token])
+#     return request.build_absolute_uri(path)
 
 
 def _build_next_30_days():
@@ -429,116 +455,137 @@ def signup(request):
 
 @login_required
 def cancel_reservation(request, reservation_id):
-    """
-    Cancel flow with your current schema:
-    - Staff/superusers can cancel any reservation.
-    - A logged-in customer can cancel reservations if the reservation.customer.email
-      matches request.user.email (case-insensitive).
-    """
     reservation = get_object_or_404(TableReservation, id=reservation_id)
-    is_ajax = request.headers.get("x-requested-with") == "XMLHttpRequest"
 
     # --- Permissions ---
-    if request.user.is_staff or request.user.is_superuser:
-        allowed = True
+    # Online user can always cancel their own reservation
+    # Staff/owner can cancel any (incl. phone reservations)
+    if reservation.user:
+        if reservation.user != request.user and not request.user.is_staff:
+            if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                return JsonResponse(
+                    {
+                        "success": False,
+                        "error": "You are not allowed to cancel this reservation.",
+                    },
+                    status=403,
+                )
+            messages.error(
+                request, "You cannot cancel someone else's reservation.")
+            return redirect("my_reservations")
     else:
-        user_customer = _customer_for_logged_in_user(request)
-        allowed = bool(
-            user_customer
-            and reservation.customer_id
-            and reservation.customer.email
-            and user_customer.email
-            and reservation.customer.email.lower() == user_customer.email.lower()
-        )
-
-    if not allowed:
-        msg = "You are not allowed to cancel this reservation."
-        if is_ajax:
-            return JsonResponse({"success": False, "error": msg}, status=403)
-        messages.error(request, msg)
-        return redirect("my_reservations")
+        if not request.user.is_staff:
+            if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                return JsonResponse(
+                    {
+                        "success": False,
+                        "error": "You are not allowed to cancel this reservation.",
+                    },
+                    status=403,
+                )
+            messages.error(
+                request, "You are not allowed to cancel this reservation.")
+            return redirect("my_reservations")
 
     # Already cancelled?
     if reservation.reservation_status is False:
-        if is_ajax:
+        if request.headers.get("x-requested-with") == "XMLHttpRequest":
             return JsonResponse({"success": True})
         messages.info(request, "This reservation has already been cancelled.")
         return redirect("my_reservations")
 
-    # Snapshot OLD values for demand rollback
+    # Snapshot OLD values
     old_date = reservation.reservation_date
     old_slot = reservation.time_slot
     old_tables = reservation.number_of_tables_required_by_patron
 
-    # Mark as cancelled
+    # Mark as cancelled (this will also bump updated_at)
     reservation.reservation_status = False
-    reservation.save(update_fields=["reservation_status", "updated_at"])
+    reservation.save()
+
+    refreshed = TableReservation.objects.get(id=reservation_id)
 
     # --- Update demand: release tables from that date/slot ---
-    ts = TimeSlotAvailability.objects.filter(calendar_date=old_date).first()
+    try:
+        ts = TimeSlotAvailability.objects.get(calendar_date=old_date)
+    except TimeSlotAvailability.DoesNotExist:
+        ts = None
+
     if ts:
         demand_field = f"total_cust_demand_for_tables_{old_slot}"
         current_demand = getattr(ts, demand_field, 0) or 0
-        new_demand = max(0, current_demand - (old_tables or 0))
+        new_demand = max(0, current_demand - old_tables)
         setattr(ts, demand_field, new_demand)
-        ts.save(update_fields=[demand_field])
+        ts.save()
 
-    # --- Email cancellation notice (optional, safe) ---
+    # --- Build & send cancellation email with timestamps ---
     recipient_email = None
-    if reservation.customer and reservation.customer.email:
-        recipient_email = reservation.customer.email
+    if refreshed.user and refreshed.user.email:
+        recipient_email = refreshed.user.email
+    elif getattr(refreshed, "email", None):
+        recipient_email = refreshed.email
 
     if recipient_email:
-        try:
-            pretty_slot = SLOT_LABELS.get(old_slot, old_slot)
+        subject = "Your Gambinos reservation has been cancelled"
 
-            subject = "Your Gambinos reservation has been cancelled"
+        def fmt_dt(dt):
+            return dt.strftime("%b %d, %Y at %H:%M:%S")
 
-            def fmt_dt(dt):
-                return dt.strftime("%b %d, %Y at %H:%M:%S")
+        def fmt_day_slot(d, slot):
+            try:
+                day = d.strftime("%b %d, %Y")
+            except Exception:
+                day = str(d)
+            return f"{day} at {SLOT_LABELS.get(slot, slot)}"
 
-            created_on = fmt_dt(reservation.created_at)
-            cancelled_on = fmt_dt(reservation.updated_at)
-            when_str = f"{old_date} at {pretty_slot}"
+        def plural_s(n: int) -> str:
+            return "" if n == 1 else "s"
 
-            guest_name = ""
-            if reservation.customer:
-                guest_name = (
-                    f"{reservation.customer.first_name or ''} {reservation.customer.last_name or ''}".strip()
-                    or reservation.customer.email
-                )
+        created_on = fmt_dt(refreshed.created_at)
+        # updated_at reflects cancellation time
+        cancelled_on = fmt_dt(refreshed.updated_at)
+        when_str = fmt_day_slot(old_date, old_slot)
 
-            lines = []
-            if guest_name:
-                lines.append(f"Hello {guest_name},")
-                lines.append("")
-
-            lines.append(
-                f"The reservation (created on {created_on})\n"
-                f"for {old_tables} table{'s' if old_tables != 1 else ''} on {when_str}\n"
-                f"was cancelled on {cancelled_on}."
+        # Name for greeting
+        guest_name = ""
+        if hasattr(refreshed, "name") and refreshed.name:
+            guest_name = refreshed.name
+        elif refreshed.user:
+            guest_name = (
+                refreshed.user.get_full_name() or refreshed.user.username
             )
-            lines.append("")
-            lines.append(f"Reservation ID: {reservation.id}")
-            if request.user.is_staff or request.user.is_superuser:
-                lines.append(f"Cancelled by: STAFF ({request.user.username})")
-            else:
-                lines.append(f"Cancelled by: {request.user.username}")
-            lines.append("")
-            lines.append(
-                "Thank you for choosing Gambinos Restaurant & Lounge.")
 
-            send_mail(
-                subject,
-                "\n".join(lines),
-                settings.DEFAULT_FROM_EMAIL,
-                [recipient_email],
-                fail_silently=True,
-            )
-        except Exception:
-            logger.exception("Error sending cancellation email")
+        lines = []
+        if guest_name:
+            lines.append(f"Hello {guest_name},")
+            lines.append("")
 
-    if is_ajax:
+        lines.append(
+            f"The reservation (created on {created_on})\n"
+            f"for {old_tables} table{plural_s(old_tables)} on {when_str}\n"
+            f"was cancelled on {cancelled_on}."
+        )
+        lines.append("")
+        lines.append(f"Reservation ID: {refreshed.id}")
+        if request.user.is_staff:
+            lines.append(f"Cancelled by: STAFF ({request.user.username})")
+        else:
+            lines.append(f"Cancelled by: {request.user.username}")
+        lines.append("")
+        lines.append("Thank you for choosing Gambinos Restaurant & Lounge.")
+
+        message = "\n".join(lines)
+
+        send_mail(
+            subject,
+            message,
+            settings.DEFAULT_FROM_EMAIL,
+            [recipient_email],
+            fail_silently=True,
+        )
+
+    # JSON vs redirect response
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
         return JsonResponse({"success": True})
 
     messages.success(request, "Your reservation has been cancelled.")
@@ -547,31 +594,11 @@ def cancel_reservation(request, reservation_id):
 
 @login_required
 def my_reservations(request):
-    """
-    Customer portal: show active reservations for the logged-in user.
-
-    IMPORTANT:
-    TableReservation has no `user` FK in your model, so we match by:
-        request.user.email -> Customer.email -> TableReservation.customer
-    """
-    customer = _customer_for_logged_in_user(request)
-
-    if not customer:
-        # Customer may have logged in but never made/received a reservation yet,
-        # or their email doesn't match any Customer record.
-        messages.info(
-            request,
-            "We couldn't find reservations for your account email yet. "
-            "If you made a booking by phone, make sure you log in with the same email address.",
-        )
-        reservations = TableReservation.objects.none()
-    else:
-        reservations = (
-            TableReservation.objects.filter(
-                customer=customer, reservation_status=True)
-            .order_by("timeslot_availability__calendar_date", "time_slot")
-        )
-
+    reservations = (
+        TableReservation.objects.filter(
+            user=request.user, reservation_status=True)
+        .order_by("timeslot_availability__calendar_date", "time_slot")
+    )
     return render(
         request,
         "reservation_book/my_reservations.html",
@@ -586,36 +613,18 @@ def menu(request):
 # -------------------------------------------------------------------
 # Staff dashboard (cards for Phone Reservations, Customer Stats, etc.)
 # -------------------------------------------------------------------
-# def staff_or_superuser_required(view_func):
-#     """
-#     Custom decorator: allow access if user is staff OR superuser.
-#     Also requires authenticated and active.
-#     """
-#     def wrapper(request, *args, **kwargs):
-#         if not request.user.is_authenticated:
-#             return redirect(settings.LOGIN_URL)
-#         if not request.user.is_active:
-#             return HttpResponseForbidden("Account inactive.")
-#         if request.user.is_superuser or request.user.is_staff:
-#             return view_func(request, *args, **kwargs)
-#         return HttpResponseForbidden("Staff access required.")
-#     return wrapper
-
-
 def staff_or_superuser_required(view_func):
-    @wraps(view_func)
+    """
+    Custom decorator: allow access if user is staff OR superuser.
+    Also requires authenticated and active.
+    """
     def wrapper(request, *args, **kwargs):
-        user = request.user
-
-        if not user.is_authenticated:
-            return redirect_to_login(request.get_full_path())
-
-        if not user.is_active:
+        if not request.user.is_authenticated:
+            return redirect(settings.LOGIN_URL)
+        if not request.user.is_active:
             return HttpResponseForbidden("Account inactive.")
-
-        if user.is_staff or user.is_superuser:
+        if request.user.is_superuser or request.user.is_staff:
             return view_func(request, *args, **kwargs)
-
         return HttpResponseForbidden("Staff access required.")
     return wrapper
 
@@ -924,67 +933,9 @@ def user_reservation_history(request, customer_id):
     )
 
 
-def _build_set_password_link(request, user):
-    uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
-    token = default_token_generator.make_token(user)
-    return request.build_absolute_uri(
-        reverse(
-            "onboarding_set_password",
-            kwargs={"uidb64": uidb64, "token": token},
-        )
-    )
-
-
-def onboarding_set_password(request, uidb64, token):
-    """
-    One-time onboarding link: user sets password, then we log them in.
-
-    Fix:
-    - With multiple AUTHENTICATION_BACKENDS, login() must be given a backend.
-    - Since you use django-allauth, explicitly use allauth backend here.
-    """
-    User = get_user_model()
-
-    try:
-        uid = force_str(urlsafe_base64_decode(uidb64))
-        user = User.objects.get(pk=uid)
-    except Exception:
-        user = None
-
-    if user is None or not default_token_generator.check_token(user, token):
-        messages.error(
-            request, "This password setup link is invalid or has expired.")
-        return redirect("account_login")
-
-    if request.method == "POST":
-        form = SetPasswordForm(user, request.POST)
-        if form.is_valid():
-            form.save()
-
-            # IMPORTANT: Explicit backend fixes "multiple authentication backends" crash
-            login(
-                request,
-                user,
-                backend="allauth.account.auth_backends.AuthenticationBackend",
-            )
-
-            messages.success(
-                request, "Password set successfully. You’re now logged in.")
-            return redirect("my_reservations")
-    else:
-        form = SetPasswordForm(user)
-
-    return render(
-        request,
-        "reservation_book/onboarding_set_password.html",
-        {"form": form, "user": user},
-    )
-
-
 @staff_or_superuser_required
 def create_phone_reservation(request):
-    """
-    Staff UI for creating reservations for phone-in customers (Option B).
+    """Staff UI for creating reservations for phone-in customers (Option B + time blocks).
 
     Rules enforced:
     - Reuse existing Customer by email
@@ -993,76 +944,130 @@ def create_phone_reservation(request):
     - If Customer is NEW (first time in DB) => ALWAYS send set-password onboarding link
     - Else if User has unusable password => send set-password onboarding link
     - Else => send login link
-    - Ensure allauth EmailAddress exists
+    - Ensure allauth EmailAddress exists and is primary+verified
+    - Supports:
+        * single-day time blocks (duration_hours OR 'until close')
+        * conference series: same block for N consecutive days
     """
     User = get_user_model()
     next_30_days = _build_next_30_days()
 
     if request.method == "POST":
         form = PhoneReservationForm(request.POST)
-        if form.is_valid():
-            reservation = form.save(commit=False)
-            reservation.is_phone_reservation = True
-            reservation.created_by = request.user
-
-            # ----------------------------
-            # Normalize + upsert Customer
-            # ----------------------------
-            raw_customer = reservation.customer
-            email = ((getattr(raw_customer, "email", "") or "").strip().lower())
-
-            if not email:
-                messages.error(request, "Customer email is required.")
-                return render(
-                    request,
-                    "reservation_book/create_phone_reservation.html",
-                    {"form": form, "slot_labels": SLOT_LABELS,
-                        "next_30_days": next_30_days},
-                )
-
-            customer_defaults = {
-                "first_name": (getattr(raw_customer, "first_name", "") or "").strip(),
-                "last_name": (getattr(raw_customer, "last_name", "") or "").strip(),
-                "phone": getattr(raw_customer, "phone", "") or "",
-                "mobile": getattr(raw_customer, "mobile", "") or "",
-            }
-
-            customer, created_customer = Customer.objects.get_or_create(
-                email=email,
-                defaults={**customer_defaults, "email": email},
+        if not form.is_valid():
+            messages.error(request, "Please correct the errors below.")
+            return render(
+                request,
+                "reservation_book/create_phone_reservation.html",
+                {"form": form, "slot_labels": SLOT_LABELS,
+                    "next_30_days": next_30_days},
             )
 
-            # Only update fields if we have non-empty values (avoid wiping good data)
-            cust_changed = False
-            for field, val in customer_defaults.items():
-                if val and getattr(customer, field, "") != val:
-                    setattr(customer, field, val)
-                    cust_changed = True
-            if cust_changed:
-                customer.save()
+        # contains an UNSAVED Customer instance
+        proto = form.save(commit=False)
+        proto.is_phone_reservation = True
+        proto.created_by = request.user
 
-            reservation.customer = customer
+        # ----------------------------
+        # Normalize + upsert Customer
+        # ----------------------------
+        raw_customer = proto.customer
+        email = ((getattr(raw_customer, "email", "") or "").strip().lower())
+        if not email:
+            messages.error(request, "Customer email is required.")
+            return render(
+                request,
+                "reservation_book/create_phone_reservation.html",
+                {"form": form, "slot_labels": SLOT_LABELS,
+                    "next_30_days": next_30_days},
+            )
 
-            # ----------------------------
-            # Timeslot + User handling
-            # ----------------------------
+        customer_defaults = {
+            "first_name": (getattr(raw_customer, "first_name", "") or "").strip(),
+            "last_name": (getattr(raw_customer, "last_name", "") or "").strip(),
+            "phone": getattr(raw_customer, "phone", "") or "",
+            "mobile": getattr(raw_customer, "mobile", "") or "",
+        }
+
+        customer, created_customer = Customer.objects.get_or_create(
+            email=email,
+            defaults={**customer_defaults, "email": email},
+        )
+
+        # Only update fields if we have non-empty values (avoid wiping good data)
+        cust_changed = False
+        for field, val in customer_defaults.items():
+            if val and getattr(customer, field, "") != val:
+                setattr(customer, field, val)
+                cust_changed = True
+        if cust_changed:
+            customer.save()
+
+        # ----------------------------
+        # Booking parameters (READ FROM cleaned_data, not proto)
+        # ----------------------------
+        start_date = form.cleaned_data.get("reservation_date")
+        start_slot = form.cleaned_data.get("time_slot")
+        tables_needed = int(form.cleaned_data.get(
+            "number_of_tables_required_by_patron") or 0)
+
+        if not start_date or not start_slot:
+            messages.error(
+                request,
+                "Please click a date/time cell in the availability grid before confirming.",
+            )
+            return render(
+                request,
+                "reservation_book/create_phone_reservation.html",
+                {"form": form, "slot_labels": SLOT_LABELS,
+                    "next_30_days": next_30_days},
+            )
+
+        slots = _slot_order()
+        if start_slot not in slots:
+            messages.error(request, "Invalid time slot selection.")
+            return render(
+                request,
+                "reservation_book/create_phone_reservation.html",
+                {"form": form, "slot_labels": SLOT_LABELS,
+                    "next_30_days": next_30_days},
+            )
+
+        start_index = slots.index(start_slot)
+
+        # Duration: either explicit duration_hours, or 'book_until_close'
+        max_choice = max(int(c[0]) for c in TableReservation._meta.get_field(
+            "duration_hours").choices)
+
+        until_close = bool(form.cleaned_data.get(
+            "book_until_close"))  # ✅ correct name
+        if until_close:
+            duration = len(slots) - start_index
+            duration = max(1, min(duration, max_choice))
+        else:
+            duration = int(form.cleaned_data.get("duration_hours") or 1)
+            duration = max(1, min(duration, max_choice))
+
+        series_days = int(form.cleaned_data.get("series_days") or 1)
+        series_days = max(1, min(series_days, 14))
+
+        affected_slots = slots[start_index: start_index + duration]
+
+        # ----------------------------
+        # Timeslot + availability + User handling (atomic)
+        # ----------------------------
+        created_reservations = []
+        user = None
+
+        try:
             with transaction.atomic():
-                ts, _ = TimeSlotAvailability.objects.get_or_create(
-                    calendar_date=reservation.reservation_date,
-                    defaults=_timeslot_defaults(),
-                )
-                reservation.timeslot_availability = ts
-
-                # Find existing user by email or by username=email
+                # Find or create user (once per booking)
                 user = (
                     User.objects.filter(email__iexact=email).first()
                     or User.objects.filter(username__iexact=email).first()
                 )
 
-                user_created = False
-
                 if user is None:
-                    # Create user with UNUSABLE password (must set it via onboarding link)
                     user = User.objects.create_user(
                         username=email,
                         email=email,
@@ -1072,7 +1077,6 @@ def create_phone_reservation(request):
                     )
                     user.set_unusable_password()
                     user.save(update_fields=["password"])
-                    user_created = True
                 else:
                     # Safe sync of missing profile bits
                     user_changed = False
@@ -1088,77 +1092,138 @@ def create_phone_reservation(request):
                     if user_changed:
                         user.save()
 
-                # Ensure allauth EmailAddress exists
-                EmailAddress.objects.get_or_create(
+                # Ensure allauth EmailAddress exists and is usable for auth flows
+                ea, _ = EmailAddress.objects.get_or_create(
                     user=user,
                     email=email,
                     defaults={"primary": True, "verified": True},
                 )
+                needs_ea_update = False
+                if not ea.primary:
+                    ea.primary = True
+                    needs_ea_update = True
+                if not ea.verified:
+                    ea.verified = True
+                    needs_ea_update = True
+                if needs_ea_update:
+                    ea.save(update_fields=["primary", "verified"])
 
-                # NOTE: Your TableReservation model does NOT have a `user` FK right now,
-                # so we DO NOT try to set reservation.user here.
+                # Book N consecutive days
+                for day_offset in range(series_days):
+                    day = start_date + datetime.timedelta(days=day_offset)
 
-                reservation.save()
+                    ts, _ = TimeSlotAvailability.objects.get_or_create(
+                        calendar_date=day,
+                        defaults=_timeslot_defaults(),
+                    )
+                    # Lock row for consistent demand updates
+                    ts = TimeSlotAvailability.objects.select_for_update().get(pk=ts.pk)
 
-                # Update demand
-                slot = reservation.time_slot
-                demand_field = f"total_cust_demand_for_tables_{slot}"
-                current = getattr(ts, demand_field, 0) or 0
-                setattr(
-                    ts,
-                    demand_field,
-                    current
-                    + (reservation.number_of_tables_required_by_patron or 0),
-                )
-                ts.save()
+                    # Capacity check across all affected slots
+                    for s in affected_slots:
+                        slot_available = _to_int(
+                            getattr(ts, f"number_of_tables_available_{s}", 0), 0)
+                        slot_demand = _to_int(
+                            getattr(ts, f"total_cust_demand_for_tables_{s}", 0), 0)
+                        if slot_demand + tables_needed > slot_available:
+                            raise ValueError(
+                                f"Not enough tables available for {day} in slot {SLOT_LABELS.get(s, s)}."
+                            )
 
-            # ----------------------------
-            # Email decision (this is the core fix)
-            # ----------------------------
-            pretty_slot = SLOT_LABELS.get(
-                reservation.time_slot, reservation.time_slot)
-            login_url = request.build_absolute_uri(reverse("account_login"))
+                    # Create ONE reservation row per day (start slot + duration_hours)
+                    r = TableReservation(
+                        customer=customer,
+                        timeslot_availability=ts,
+                        reservation_date=day,
+                        time_slot=start_slot,
+                        duration_hours=duration,
+                        number_of_tables_required_by_patron=tables_needed,
+                        reservation_status=True,
+                        is_phone_reservation=True,
+                        created_by=request.user,
+                    )
+                    r.save()
+                    created_reservations.append(r)
 
-            # ✅ Option B decision:
-            # New CUSTOMER in DB => onboarding link (always)
-            # Existing customer but unusable password => onboarding link
-            # Else => login link
-            needs_password_setup = bool(created_customer) or (
-                not user.has_usable_password())
+                    # Update demand for each affected slot
+                    update_fields = []
+                    for s in affected_slots:
+                        demand_field = f"total_cust_demand_for_tables_{s}"
+                        current = _to_int(getattr(ts, demand_field, 0), 0)
+                        setattr(ts, demand_field, current + tables_needed)
+                        update_fields.append(demand_field)
+                    ts.save(update_fields=update_fields)
 
-            password_setup_url = None
-            if needs_password_setup:
-                password_setup_url = _build_set_password_link(request, user)
-
-            context = {
-                "reservation": reservation,
-                "time_slot_pretty": pretty_slot,
-                "tables_needed": reservation.number_of_tables_required_by_patron,
-                "login_url": login_url,
-                "needs_password_setup": needs_password_setup,
-                "password_setup_url": password_setup_url,
-            }
-
-            message = render_to_string(
-                "reservation_book/emails/phone_reservation_confirmation.txt",
-                context,
+        except ValueError as e:
+            messages.error(request, str(e))
+            return render(
+                request,
+                "reservation_book/create_phone_reservation.html",
+                {"form": form, "slot_labels": SLOT_LABELS,
+                    "next_30_days": next_30_days},
             )
 
-            send_mail(
-                subject="Your reservation at Gambinos Restaurant & Lounge is confirmed",
-                message=message,
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[email],
-                fail_silently=False,
-            )
+        # ----------------------------
+        # Email decision (Option B)
+        # ----------------------------
+        login_url = request.build_absolute_uri(reverse("account_login"))
 
-            messages.success(request, "Phone reservation created.")
-            return redirect("staff_dashboard")
+        # New CUSTOMER in DB => onboarding link
+        # Existing customer but unusable password => onboarding link
+        needs_password_setup = bool(created_customer) or (
+            not user.has_usable_password())
 
-        messages.error(request, "Please correct the errors below.")
-    else:
-        form = PhoneReservationForm()
+        password_setup_url = None
+        if needs_password_setup:
+            password_setup_url = _build_set_password_link(request, user)
 
+        # Pretty time range (start–end)
+        def _range_pretty(slots_list):
+            if not slots_list:
+                return ""
+            first_label = SLOT_LABELS.get(slots_list[0], slots_list[0])
+            last_label = SLOT_LABELS.get(slots_list[-1], slots_list[-1])
+            try:
+                start_t = first_label.split("–")[0].strip()
+                end_t = last_label.split("–")[1].strip()
+                return f"{start_t}–{end_t}"
+            except Exception:
+                return first_label
+
+        time_range_pretty = _range_pretty(
+            affected_slots) if duration > 1 else SLOT_LABELS.get(start_slot, start_slot)
+
+        context = {
+            "reservation": created_reservations[0] if created_reservations else proto,
+            "reservations": created_reservations,
+            "time_slot_pretty": time_range_pretty,
+            "tables_needed": tables_needed,
+            "login_url": login_url,
+            "needs_password_setup": needs_password_setup,
+            "password_setup_url": password_setup_url,
+            "series_days": series_days,
+            "duration_hours": duration,
+            "until_close": until_close,
+        }
+
+        message = render_to_string(
+            "reservation_book/emails/phone_reservation_confirmation.txt",
+            context,
+        )
+
+        send_mail(
+            subject="Your reservation at Gambinos Restaurant & Lounge is confirmed",
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[email],
+            fail_silently=False,
+        )
+
+        messages.success(request, "Phone reservation created.")
+        return redirect("staff_dashboard")
+
+    # GET
+    form = PhoneReservationForm()
     return render(
         request,
         "reservation_book/create_phone_reservation.html",
@@ -1168,136 +1233,317 @@ def create_phone_reservation(request):
 
 @login_required
 def update_reservation(request, reservation_id):
-    """
-    Customer edit reservation.
-
-    IMPORTANT:
-    TableReservation has NO `user` FK. Permissions are enforced via:
-      request.user.email -> Customer.email -> reservation.customer
-
-    Rules:
-    - Staff/superuser can edit any reservation.
-    - Customer can edit only if reservation.customer.email matches their login email.
-    """
-
     reservation = get_object_or_404(TableReservation, id=reservation_id)
-    is_ajax = request.headers.get("x-requested-with") == "XMLHttpRequest"
+    session_key = f"reservation_edit_snapshot_{reservation_id}"
 
-    # ---------- Permissions ----------
-    if request.user.is_staff or request.user.is_superuser:
-        allowed = True
+    # --- Permissions ---
+    if reservation.user:
+        # Online booking: only that user OR staff can update
+        if reservation.user != request.user and not request.user.is_staff:
+            messages.error(
+                request, "You are not allowed to update this reservation."
+            )
+            return redirect("my_reservations")
     else:
-        user_email = (getattr(request.user, "email", "") or "").strip().lower()
-        res_email = (
-            (reservation.customer.email or "").strip().lower()
-            if reservation.customer and reservation.customer.email
-            else ""
-        )
-        allowed = bool(user_email and res_email and user_email == res_email)
+        # Phone reservation (no linked user): only staff/owner can update
+        if not request.user.is_staff:
+            messages.error(
+                request, "You are not allowed to update this phone reservation."
+            )
+            return redirect("my_reservations")
 
-    if not allowed:
-        msg = "You are not allowed to edit this reservation."
-        if is_ajax:
-            return JsonResponse({"success": False, "error": msg}, status=403)
-        messages.error(request, msg)
-        return redirect("my_reservations")
-
-    # ---------- Edit ----------
     if request.method == "POST":
         form = EditReservationForm(request.POST, instance=reservation)
 
-        if not form.is_valid():
-            if is_ajax:
-                return JsonResponse({"success": False, "error": "Please correct the errors."}, status=400)
-            messages.error(request, "Please correct the errors below.")
-            return render(
-                request,
-                "reservation_book/edit_reservation.html",
-                {"form": form, "reservation": reservation,
-                    "slot_labels": SLOT_LABELS},
+        if form.is_valid():
+            # --- OLD values: from snapshot stored when Edit page was opened ---
+            snap = request.session.get(session_key, {})
+
+            def parse_date(val, fallback):
+                if not val:
+                    return fallback
+                try:
+                    return datetime.strptime(val, "%Y-m-d").date()
+                except ValueError:
+                    return fallback
+
+            def parse_int(val, fallback):
+                try:
+                    return int(val)
+                except (TypeError, ValueError):
+                    return fallback
+
+            old_date = parse_date(
+                snap.get("date"),
+                reservation.reservation_date,
+            )
+            old_slot = snap.get("slot", reservation.time_slot)
+            old_tables = parse_int(
+                snap.get("tables"),
+                reservation.number_of_tables_required_by_patron,
             )
 
-        # Snapshot OLD values for demand rollback
-        old_date = reservation.reservation_date
-        old_slot = reservation.time_slot
-        old_tables = reservation.number_of_tables_required_by_patron or 0
+            # --- NEW values: read directly from POST ---
+            date_str = request.POST.get("reservation_date")
+            new_date = parse_date(date_str, old_date)
 
-        # Apply changes (not saved yet)
-        updated_res = form.save(commit=False)
-        new_date = updated_res.reservation_date
-        new_slot = updated_res.time_slot
-        new_tables = updated_res.number_of_tables_required_by_patron or 0
+            new_slot = request.POST.get("time_slot") or old_slot
 
-        try:
-            with transaction.atomic():
-                # Ensure a timeslot availability row exists for the new date
-                new_ts, _ = TimeSlotAvailability.objects.get_or_create(
-                    calendar_date=new_date,
-                    defaults=_timeslot_defaults(),
+            tables_str = request.POST.get(
+                "number_of_tables_required_by_patron")
+            new_tables = parse_int(tables_str, old_tables)
+
+            # --- Release OLD demand from TimeSlotAvailability ---
+            old_ts = None
+            old_demand_field = None
+            old_demand_value = None
+
+            try:
+                old_ts = TimeSlotAvailability.objects.get(
+                    calendar_date=old_date)
+            except TimeSlotAvailability.DoesNotExist:
+                old_ts = None
+
+            if old_ts:
+                old_demand_field = f"total_cust_demand_for_tables_{old_slot}"
+                old_demand_value = getattr(old_ts, old_demand_field, 0) or 0
+                setattr(
+                    old_ts,
+                    old_demand_field,
+                    max(0, old_demand_value - old_tables),
+                )
+                old_ts.save()
+
+            # --- Check NEW slot availability ---
+            new_ts, _ = TimeSlotAvailability.objects.get_or_create(
+                calendar_date=new_date
+            )
+
+            avail_field = f"number_of_tables_available_{new_slot}"
+            demand_field = f"total_cust_demand_for_tables_{new_slot}"
+
+            slot_available = getattr(new_ts, avail_field, 0) or 0
+            slot_demand = getattr(new_ts, demand_field, 0) or 0
+            remaining = slot_available - slot_demand
+
+            if new_tables > remaining:
+                # Not enough capacity in the new slot
+                messages.error(
+                    request,
+                    f"Not enough tables available for "
+                    f"{SLOT_LABELS.get(new_slot, new_slot)} on {new_date}. "
+                    f"Remaining: {max(remaining, 0)}.",
                 )
 
-                # Check capacity on the NEW slot/date, considering that we may be moving
-                new_available = _to_int(
-                    getattr(new_ts, f"number_of_tables_available_{new_slot}", 0), 0)
-                new_demand = _to_int(
-                    getattr(new_ts, f"total_cust_demand_for_tables_{new_slot}", 0), 0)
+                # roll back OLD demand if we changed it
+                if (
+                    old_ts
+                    and old_demand_field is not None
+                    and old_demand_value is not None
+                ):
+                    setattr(old_ts, old_demand_field, old_demand_value)
+                    old_ts.save()
 
-                # If same date+slot, you can "reuse" your existing tables in the math
-                if old_date == new_date and old_slot == new_slot:
-                    effective_demand = max(0, new_demand - old_tables)
+                return render(
+                    request,
+                    "reservation_book/edit_reservation.html",
+                    {"form": form, "reservation": reservation},
+                )
+
+            # --- Commit NEW demand ---
+            setattr(new_ts, demand_field, slot_demand + new_tables)
+            new_ts.save()
+
+            # --- Save reservation with NEW values (including other form fields) ---
+            new_reservation = form.save(commit=False)
+            new_reservation.reservation_date = new_date
+            new_reservation.time_slot = new_slot
+            new_reservation.number_of_tables_required_by_patron = new_tables
+            new_reservation.timeslot_availability = new_ts
+            new_reservation.save()
+
+            # Snapshot no longer needed
+            if session_key in request.session:
+                del request.session[session_key]
+
+            refreshed = TableReservation.objects.get(id=reservation_id)
+
+            # --- Build & send detailed UPDATE email with timestamps ---
+            recipient_email = None
+            if refreshed.user and refreshed.user.email:
+                recipient_email = refreshed.user.email
+            elif getattr(refreshed, "email", None):
+                recipient_email = refreshed.email
+
+            # Name for greeting
+            guest_name = ""
+            if hasattr(refreshed, "name") and refreshed.name:
+                guest_name = refreshed.name
+            elif refreshed.user:
+                guest_name = (
+                    refreshed.user.get_full_name() or refreshed.user.username
+                )
+
+            if recipient_email:
+                subject = "Your Gambinos reservation has been updated"
+
+                def fmt_dt(dt):
+                    return dt.strftime("%b %d, %Y at %H:%M:%S")
+
+                def fmt_day_slot(d, slot):
+                    try:
+                        day = d.strftime("%b %d, %Y")
+                    except Exception:
+                        day = str(d)
+                    return f"{day} at {SLOT_LABELS.get(slot, slot)}"
+
+                def plural_s(n: int) -> str:
+                    return "" if n == 1 else "s"
+
+                created_on = fmt_dt(refreshed.created_at)
+                updated_on = fmt_dt(refreshed.updated_at)
+                old_when = fmt_day_slot(old_date, old_slot)
+                new_when = fmt_day_slot(new_date, new_slot)
+
+                lines = []
+                if guest_name:
+                    lines.append(f"Hello {guest_name},")
+                    lines.append("")
+
+                lines.append(
+                    f"The reservation (created on {created_on})\n"
+                    f"for {old_tables} table{plural_s(old_tables)} on {old_when}\n"
+                    f"was updated on {updated_on}\n"
+                    f"to {new_tables} table{plural_s(new_tables)} on {new_when}."
+                )
+                lines.append("")
+                lines.append(f"Reservation ID: {refreshed.id}")
+                if request.user.is_staff:
+                    lines.append(
+                        f"Updated by: STAFF ({request.user.username})")
                 else:
-                    effective_demand = new_demand
+                    lines.append(f"Updated by: {request.user.username}")
+                lines.append("")
+                lines.append(
+                    "Thank you for choosing Gambinos Restaurant & Lounge."
+                )
 
-                if effective_demand + new_tables > new_available:
-                    msg = "Not enough tables available for that time slot."
-                    if is_ajax:
-                        return JsonResponse({"success": False, "error": msg}, status=400)
-                    messages.error(request, msg)
-                    return redirect("my_reservations")
+                message = "\n".join(lines)
 
-                # Roll back OLD demand
-                old_ts = TimeSlotAvailability.objects.filter(
-                    calendar_date=old_date).first()
-                if old_ts:
-                    old_field = f"total_cust_demand_for_tables_{old_slot}"
-                    old_current = _to_int(getattr(old_ts, old_field, 0), 0)
-                    setattr(old_ts, old_field, max(
-                        0, old_current - old_tables))
-                    old_ts.save(update_fields=[old_field])
+                send_mail(
+                    subject,
+                    message,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [recipient_email],
+                    fail_silently=True,
+                )
 
-                # Apply NEW demand
-                new_field = f"total_cust_demand_for_tables_{new_slot}"
-                # Reload demand to avoid using stale pre-rollback numbers if old_ts == new_ts
-                new_ts.refresh_from_db()
-                new_current = _to_int(getattr(new_ts, new_field, 0), 0)
-                setattr(new_ts, new_field, new_current + new_tables)
-                new_ts.save(update_fields=[new_field])
-
-                # Save reservation linking
-                updated_res.timeslot_availability = new_ts
-                # keep denormalized date consistent
-                updated_res.reservation_date = new_ts.calendar_date
-                updated_res.save()
-
-        except Exception as e:
-            if is_ajax:
-                return JsonResponse({"success": False, "error": str(e)}, status=500)
-            messages.error(request, f"Error updating reservation: {e}")
+            messages.success(request, "Your reservation has been updated.")
             return redirect("my_reservations")
 
-        if is_ajax:
-            return JsonResponse({"success": True, "reservation_id": updated_res.id})
+    else:
+        # GET: take a snapshot of what the user sees *before* editing
+        if reservation.reservation_date:
+            date_str = reservation.reservation_date.strftime("%Y-m-d")
+        else:
+            date_str = ""
 
-        messages.success(request, "Reservation updated.")
-        return redirect("my_reservations")
+        request.session[session_key] = {
+            "date": date_str,
+            "slot": reservation.time_slot,
+            "tables": str(
+                reservation.number_of_tables_required_by_patron
+            ),
+        }
 
-    # GET: show form
-    form = EditReservationForm(instance=reservation)
+        form = EditReservationForm(instance=reservation)
+
+    current_slot_label = SLOT_LABELS.get(
+        reservation.time_slot, reservation.time_slot
+    )
+
     return render(
         request,
         "reservation_book/edit_reservation.html",
-        {"form": form, "reservation": reservation, "slot_labels": SLOT_LABELS},
+        {
+            "form": form,
+            "reservation": reservation,
+            "current_slot_label": current_slot_label,
+        },
     )
+
+
+# @staff_or_superuser_required
+# def resend_password_setup_link(request, customer_id):
+#     """
+#     Staff action: resend a customer's set-password onboarding link.
+
+#     Sends ONLY if:
+#     - The customer exists and has an email
+#     - A matching user exists or can be found by email/username=email
+#     - The user does NOT have a usable password yet
+#     """
+
+#     customer = get_object_or_404(Customer, pk=customer_id)
+#     email = (customer.email or "").strip().lower()
+
+#     if not email:
+#         messages.error(request, "This customer has no email address on file.")
+#         # adjust to your actual staff customers page name
+#         return redirect("staff_customers")
+
+#     User = get_user_model()
+#     user = (
+#         User.objects.filter(email__iexact=email).first()
+#         or User.objects.filter(username__iexact=email).first()
+#     )
+
+#     if user is None:
+#         messages.error(
+#             request, "No user account exists for this customer yet.")
+#         return redirect("staff_customers")
+
+#     # Ensure allauth EmailAddress exists (helps with login/email flows)
+#     ea, _ = EmailAddress.objects.get_or_create(
+#         user=user,
+#         email=email,
+#         defaults={"primary": True, "verified": True},
+#     )
+#     if not ea.primary or not ea.verified:
+#         ea.primary = True
+#         ea.verified = True
+#         ea.save(update_fields=["primary", "verified"])
+
+#     if user.has_usable_password():
+#         messages.info(
+#             request, "This customer already has a password set. No link was sent.")
+#         return redirect("staff_customers")
+
+#     # Build direct onboarding link
+#     password_setup_url = _build_set_password_link(request, user)
+
+#     # Email content (simple + consistent with your other emails)
+#     context = {
+#         "customer": customer,
+#         "password_setup_url": password_setup_url,
+#         "login_url": request.build_absolute_uri(reverse("account_login")),
+#     }
+
+#     message = render_to_string(
+#         "reservation_book/emails/resend_password_setup_link.txt",
+#         context,
+#     )
+
+#     send_mail(
+#         subject="Set up your Gambinos account password",
+#         message=message,
+#         from_email=settings.DEFAULT_FROM_EMAIL,
+#         recipient_list=[email],
+#         fail_silently=False,
+#     )
+
+#     messages.success(request, f"Password setup link sent to {email}.")
+#     return redirect("staff_customers")
 
 
 def _normalize_query(q: str) -> str:
@@ -1312,11 +1558,11 @@ def _normalize_query(q: str) -> str:
     return q
 
 
-@staff_or_superuser_required
+@login_required
 @require_GET
 def ajax_lookup_customer(request):
-    # if not request.user.is_staff:
-    #     return JsonResponse({"results": []}, status=403)
+    if not request.user.is_staff:
+        return JsonResponse({"results": []}, status=403)
 
     raw_query = request.GET.get("q", "").strip()
     mode = request.GET.get("mode", "past").lower()
@@ -1452,31 +1698,119 @@ def ajax_lookup_customer(request):
     return JsonResponse({"results": results})
 
 
-def _send_set_password_link_email(request, user, recipient_email: str):
+def _build_set_password_link(request, user):
     """
-    Email a one-time set-password link to the customer.
-    Works for brand-new users and users that exist but have no usable password.
+    Builds a one-time onboarding link that lets a user SET their password (not reset-request flow).
     """
     uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
     token = default_token_generator.make_token(user)
-
-    link = request.build_absolute_uri(
-        reverse("onboarding_set_password", args=[uidb64, token])
+    return request.build_absolute_uri(
+        reverse("onboarding_set_password", kwargs={
+                "uidb64": uidb64, "token": token})
     )
 
-    subject = "Set your Gambinos password"
-    message = (
-        f"Hello {user.get_full_name() or user.username},\n\n"
-        "An account was created/updated for you so you can manage your reservations.\n\n"
-        f"Set your password here (one-time link):\n{link}\n\n"
-        "If you did not request this, you can ignore this email.\n\n"
-        "— Gambinos Restaurant & Lounge"
+
+@require_http_methods(["GET", "POST"])
+def onboarding_set_password(request, uidb64, token):
+    """
+    One-time onboarding link: user sets password, then we log them in.
+    Works even with multiple AUTHENTICATION_BACKENDS configured.
+    """
+    User = get_user_model()
+
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except Exception:
+        user = None
+
+    if user is None or not default_token_generator.check_token(user, token):
+        messages.error(
+            request, "This password setup link is invalid or has expired.")
+        return redirect("account_login")
+
+    if request.method == "POST":
+        form = SetPasswordForm(user, request.POST)
+        if form.is_valid():
+            form.save()
+
+            new_password = form.cleaned_data["new_password1"]
+
+            # Authenticate so Django knows which backend was used (fixes multi-backend login() errors)
+            authed = authenticate(
+                request, username=user.get_username(), password=new_password)
+            if authed is None and getattr(user, "email", None):
+                authed = authenticate(
+                    request, email=user.email, password=new_password)
+
+            if authed is not None:
+                login(request, authed)
+            else:
+                # Fallback: explicitly specify backend (keeps you from crashing)
+                login(
+                    request,
+                    user,
+                    backend="allauth.account.auth_backends.AuthenticationBackend",
+                )
+
+            messages.success(
+                request, "Password set successfully. You’re now logged in.")
+            return redirect("my_reservations")
+
+    else:
+        form = SetPasswordForm(user)
+
+    return render(
+        request,
+        "reservation_book/onboarding_set_password.html",
+        {"form": form, "user": user},
     )
+
+
+@staff_or_superuser_required
+@require_http_methods(["POST"])
+def resend_password_setup_link(request):
+    """
+    Staff button: resend the onboarding set-password link to a customer by email.
+    Expected POST field: email
+    """
+    email = (request.POST.get("email") or "").strip().lower()
+    if not email:
+        messages.error(request, "Email is required.")
+        # change if your staff page name differs
+        return redirect("staff_management")
+
+    User = get_user_model()
+    user = (
+        User.objects.filter(email__iexact=email).first()
+        or User.objects.filter(username__iexact=email).first()
+    )
+
+    if not user:
+        messages.error(request, "No user found for that email.")
+        return redirect("staff_management")
+
+    # Ensure EmailAddress row exists for allauth
+    EmailAddress.objects.get_or_create(
+        user=user,
+        email=email,
+        defaults={"primary": True, "verified": True},
+    )
+
+    password_setup_url = _build_set_password_link(request, user)
+
+    # You can reuse your existing phone confirmation template or create a small staff resend template
+    context = {"password_setup_url": password_setup_url, "user": user}
+    message = render_to_string(
+        "reservation_book/emails/resend_password_setup.txt", context)
 
     send_mail(
-        subject=subject,
+        subject="Set your password for Gambinos Restaurant & Lounge",
         message=message,
         from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[recipient_email],
+        recipient_list=[email],
         fail_silently=False,
     )
+
+    messages.success(request, "Password setup link resent.")
+    return redirect("staff_management")

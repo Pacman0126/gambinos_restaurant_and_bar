@@ -40,7 +40,13 @@ TIME_SLOT_CHOICES = [
 
 
 class PhoneReservationForm(forms.ModelForm):
-    # Customer fields
+    """Staff form for phone-in reservations.
+
+    Important: We do NOT write Customer to the DB in the form.
+    The view is responsible for upserting Customer and for all capacity checks.
+    """
+
+    # Customer fields (not part of TableReservation model)
     first_name = forms.CharField(
         max_length=100, required=True, label="First Name")
     last_name = forms.CharField(
@@ -49,45 +55,67 @@ class PhoneReservationForm(forms.ModelForm):
     phone = forms.CharField(max_length=20, required=False, label="Phone")
     mobile = forms.CharField(max_length=20, required=False, label="Mobile")
 
+    # Booking extensions
+    until_close = forms.BooleanField(
+        required=False,
+        label="Book from selected start until kitchen close",
+        help_text="If checked, duration will be auto-set to the last available slot of the day.",
+    )
+    series_days = forms.IntegerField(
+        required=False,
+        min_value=1,
+        max_value=14,
+        initial=1,
+        label="Consecutive days (series)",
+        help_text="For conferences: book the same time block for N consecutive days (including the start date).",
+    )
+
     class Meta:
         model = TableReservation
         fields = [
-            'reservation_date',
-            'time_slot',
-            'number_of_tables_required_by_patron',
-            'timeslot_availability',
+            "reservation_date",
+            "time_slot",
+            "duration_hours",
+            "number_of_tables_required_by_patron",
+            "timeslot_availability",
         ]
         widgets = {
-            'reservation_date': forms.HiddenInput(),
-            'time_slot': forms.HiddenInput(),
-            'timeslot_availability': forms.HiddenInput(),
+            "reservation_date": forms.HiddenInput(),
+            "time_slot": forms.HiddenInput(),
+            "timeslot_availability": forms.HiddenInput(),
         }
+
+    def clean_email(self):
+        email = (self.cleaned_data.get("email") or "").strip().lower()
+        if not email:
+            raise forms.ValidationError("Email is required.")
+        return email
+
+    def clean_series_days(self):
+        val = self.cleaned_data.get("series_days")
+        return 1 if not val else int(val)
 
     def save(self, commit=True):
+        """Return an unsaved reservation with an *unsaved* Customer attached.
+
+        The view will:
+          - upsert Customer by email
+          - create/reuse the auth User
+          - enforce capacity + update demand
+          - save one or more reservations
+        """
         reservation = super().save(commit=False)
 
-        # Get or create customer
-        customer_data = {
-            'first_name': self.cleaned_data['first_name'],
-            'last_name': self.cleaned_data['last_name'],
-            'email': self.cleaned_data['email'],
-            'phone': self.cleaned_data['phone'],
-            'mobile': self.cleaned_data['mobile'],
-        }
-
-        customer, created = Customer.objects.get_or_create(
-            email=customer_data['email'],
-            defaults=customer_data
+        customer = Customer(
+            first_name=(self.cleaned_data.get("first_name") or "").strip(),
+            last_name=(self.cleaned_data.get("last_name") or "").strip(),
+            email=(self.cleaned_data.get("email") or "").strip().lower(),
+            phone=(self.cleaned_data.get("phone") or "").strip(),
+            mobile=(self.cleaned_data.get("mobile") or "").strip(),
         )
-        if not created:
-            # Update existing customer if details changed
-            for key, value in customer_data.items():
-                setattr(customer, key, value)
-            customer.save()
-
-        # Link the customer to the reservation
         reservation.customer = customer
 
+        # Do not save here; view decides if/how many reservations exist.
         if commit:
             reservation.save()
         return reservation
