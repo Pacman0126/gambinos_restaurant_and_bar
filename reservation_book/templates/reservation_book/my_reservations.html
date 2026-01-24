@@ -35,7 +35,7 @@
                                 {{ reservation.timeslot_availability.calendar_date|date:"D d M Y" }}
                             </td>
                             <td>
-                                {{ reservation.time_slot|slot_label }}
+                                {{ reservation.time_range_pretty }}
                             </td>
                             <td>
                                 {{ reservation.number_of_tables_required_by_patron }}

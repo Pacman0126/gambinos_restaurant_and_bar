@@ -44,6 +44,20 @@ from .constants import SLOT_LABELS
 SLOT_KEYS = list(SLOT_LABELS.keys())
 
 
+def menu(request):
+    return render(request, "reservation_book/menu.html")
+
+
+def _customer_for_logged_in_user(request):
+    if not request.user.is_authenticated:
+        return None
+    if not request.user.email:
+        return None
+    return Customer.objects.filter(
+        email__iexact=request.user.email.strip()
+    ).first()
+
+
 def _default_tables_per_slot() -> int:
     config = RestaurantConfig.objects.first()
     return int(getattr(config, "default_tables_per_slot", 20) or 20)
@@ -56,6 +70,39 @@ def _timeslot_defaults() -> dict:
         d[f"number_of_tables_available_{key}"] = default_cap
         d[f"total_cust_demand_for_tables_{key}"] = 0
     return d
+
+
+def _update_ts_demand(ts, slots, tables_needed: int, delta_sign: int):
+    """
+    delta_sign: +1 to add demand, -1 to subtract demand
+    """
+    if tables_needed <= 0 or not slots:
+        return
+
+    update_fields = []
+    for s in slots:
+        field = f"total_cust_demand_for_tables_{s}"
+        current = _to_int(getattr(ts, field, 0), 0)
+        new_val = max(current + (delta_sign * tables_needed), 0)
+        setattr(ts, field, new_val)
+        update_fields.append(field)
+
+    ts.save(update_fields=update_fields)
+
+
+def _capacity_ok(ts, slots, tables_needed: int):
+    """
+    Ensure for each slot:
+        demand + tables_needed <= available
+    """
+    for s in slots:
+        avail_field = f"number_of_tables_available_{s}"
+        demand_field = f"total_cust_demand_for_tables_{s}"
+        available = _to_int(getattr(ts, avail_field, 0), 0)
+        demand = _to_int(getattr(ts, demand_field, 0), 0)
+        if demand + tables_needed > available:
+            return False, s, available, demand
+    return True, None, None, None
 
 
 def superuser_required(view_func):
@@ -100,6 +147,601 @@ def _slot_order():
         # Fallback: keep a stable common order
         return ["17_18", "18_19", "19_20", "20_21", "21_22"]
 
+
+def _pretty_range_from_start_and_duration(start_slot: str, duration_hours: int) -> str:
+    """
+    Converts ('17_18', 4) => '17:00–21:00'
+    Falls back safely to the single slot label.
+    """
+    slots = _slot_order()
+    if start_slot not in slots:
+        return SLOT_LABELS.get(start_slot, start_slot)
+
+    duration_hours = int(duration_hours or 1)
+    duration_hours = max(1, duration_hours)
+
+    start_idx = slots.index(start_slot)
+    end_idx = min(start_idx + duration_hours - 1, len(slots) - 1)
+
+    first_label = SLOT_LABELS.get(
+        slots[start_idx], slots[start_idx])  # "17:00–18:00"
+    last_label = SLOT_LABELS.get(
+        slots[end_idx], slots[end_idx])      # "20:00–21:00" for 4h
+
+    try:
+        start_t = first_label.split("–")[0].strip()
+        end_t = last_label.split("–")[1].strip()
+        return f"{start_t}–{end_t}"
+    except Exception:
+        return first_label
+
+
+def _affected_slots(start_slot: str, duration: int, until_close: bool = False):
+    slots = _slot_order()
+    if start_slot not in slots:
+        return []
+    start_index = slots.index(start_slot)
+    if until_close:
+        return slots[start_index:]
+    end_index = min(start_index + max(int(duration or 1), 1), len(slots))
+    return slots[start_index:end_index]
+
+
+# @transaction.atomic
+# def _cancel_and_release(reservation):
+#     if not reservation.reservation_status:
+#         return  # already cancelled
+
+#     ts = TimeSlotAvailability.objects.select_for_update().get(
+#         pk=reservation.timeslot_availability_id)
+
+#     slots = _affected_slots(
+#         start_slot=reservation.time_slot,
+#         duration=reservation.duration_hours or 1,
+#         until_close=False,  # you stored duration_hours as final duration already
+#     )
+#     tables_needed = _to_int(reservation.number_of_tables_required_by_patron, 0)
+
+#     # mark cancelled
+#     reservation.reservation_status = False
+#     reservation.save(update_fields=["reservation_status"])
+
+#     # release demand
+#     _update_ts_demand(ts, slots, tables_needed, delta_sign=-1)
+def _cancel_and_release(reservation: TableReservation) -> None:
+    """
+    Cancel a reservation and RELEASE table demand back into TimeSlotAvailability.
+
+    Handles:
+    - Single-hour reservations
+    - Multi-hour blocks via duration_hours
+      (releases demand across consecutive slot keys starting at reservation.time_slot)
+    - Safe atomic update (locks the TimeSlotAvailability row)
+    - Idempotent: calling twice will not double-release
+    - Never deletes Customer/User data; only marks reservation_status=False
+
+    Assumptions (based on your project):
+    - TableReservation has:
+        * reservation_date (date)
+        * time_slot (slot key like "17_18")
+        * duration_hours (int, default 1)
+        * number_of_tables_required_by_patron (int)
+        * timeslot_availability FK (may or may not be set)
+        * reservation_status boolean (True=active, False=cancelled)
+    - TimeSlotAvailability has demand fields:
+        total_cust_demand_for_tables_<slot_key>
+      and capacity fields:
+        number_of_tables_available_<slot_key>
+    - You have helper _timeslot_defaults() available.
+    - You have SLOT_KEYS (preferred ordering) OR SLOT_LABELS (fallback ordering).
+    """
+
+    # -----------------------------------------
+    # 0) Idempotency: already cancelled => stop
+    # -----------------------------------------
+    if not getattr(reservation, "reservation_status", True):
+        return
+
+    # -----------------------------------------
+    # 1) Determine slot ordering + affected slots
+    # -----------------------------------------
+    # Prefer the canonical ordering you already use in the app.
+    # If SLOT_KEYS exists, that's the best source of truth.
+    try:
+        slot_keys = list(SLOT_KEYS)  # noqa: F821 (SLOT_KEYS is global in your project)
+    except Exception:
+        # Fallback: use SLOT_LABELS keys (ordering may not be ideal but avoids crashing)
+        slot_labels = globals().get("SLOT_LABELS", {}) or {}
+        try:
+            slot_keys = list(slot_labels.keys())
+        except Exception:
+            slot_keys = []
+
+    start_slot = getattr(reservation, "time_slot", None)
+
+    # tables needed (safe int)
+    try:
+        tables_needed = int(
+            getattr(reservation, "number_of_tables_required_by_patron", 0) or 0)
+    except Exception:
+        tables_needed = 0
+
+    # duration safeguards (min 1)
+    try:
+        duration = int(getattr(reservation, "duration_hours", 1) or 1)
+    except Exception:
+        duration = 1
+    duration = max(1, duration)
+
+    # Compute affected slots:
+    # - If we can locate start_slot in slot_keys, take a slice for duration
+    # - Else, fall back to only start_slot
+    affected_slots = []
+    if start_slot and start_slot in slot_keys:
+        start_index = slot_keys.index(start_slot)
+        affected_slots = slot_keys[start_index: start_index + duration]
+    elif start_slot:
+        affected_slots = [start_slot]
+
+    # -----------------------------------------
+    # 2) Atomic cancellation + demand release
+    # -----------------------------------------
+    from django.db import transaction  # local import to avoid missing import issues
+
+    with transaction.atomic():
+        # 2a) Mark cancelled first (so mid-transaction readers see it cancelled)
+        reservation.reservation_status = False
+        reservation.save(update_fields=["reservation_status"])
+
+        # 2b) Get the TimeSlotAvailability row for that date
+        ts = getattr(reservation, "timeslot_availability", None)
+
+        # If FK isn't set (or you want to be defensive), recover by reservation_date
+        if ts is None and getattr(reservation, "reservation_date", None):
+            ts, _ = TimeSlotAvailability.objects.get_or_create(
+                calendar_date=reservation.reservation_date,
+                defaults=_timeslot_defaults(),  # assumes your existing helper
+            )
+
+        # If still no TSA row, nothing to release into
+        if ts is None:
+            return
+
+        # 2c) Lock the TSA row for consistent demand adjustment
+        ts = TimeSlotAvailability.objects.select_for_update().get(pk=ts.pk)
+
+        # 2d) Release demand across all affected slots
+        update_fields = []
+        for slot in affected_slots:
+            if not slot:
+                continue
+
+            demand_field = f"total_cust_demand_for_tables_{slot}"
+
+            # current demand (safe int)
+            try:
+                current = int(getattr(ts, demand_field, 0) or 0)
+            except Exception:
+                current = 0
+
+            # subtract tables needed but never go below 0
+            new_val = max(0, current - tables_needed)
+            setattr(ts, demand_field, new_val)
+            update_fields.append(demand_field)
+
+        # 2e) Save only the fields we changed (efficient + clear)
+        if update_fields:
+            ts.save(update_fields=update_fields)
+
+
+def _reservation_contact_email(reservation: TableReservation) -> str | None:
+    """
+    Best email to contact the guest for this reservation.
+
+    Since TableReservation has no `user` FK, we use:
+    - reservation.customer.email (preferred)
+    - fallback: None
+    """
+    cust = getattr(reservation, "customer", None)
+    email = (getattr(cust, "email", "") or "").strip()
+    return email or None
+
+
+def _reservation_owner_email(reservation) -> str:
+    """
+    TableReservation has no `user` FK in this project.
+    Ownership is by email: request.user.email <-> reservation.customer.email
+    """
+    c = getattr(reservation, "customer", None)
+    return ((getattr(c, "email", "") or "").strip().lower())
+
+
+def _request_user_email(request) -> str:
+    return ((getattr(request.user, "email", "") or "").strip().lower())
+
+
+def _attach_time_range_pretty(reservations):
+    """
+    Adds r.time_range_pretty = '17:00–21:00' for templates.
+    Uses your existing helper _pretty_range_from_start_and_duration.
+    """
+    for r in reservations:
+        try:
+            r.time_range_pretty = _pretty_range_from_start_and_duration(
+                r.time_slot,
+                getattr(r, "duration_hours", 1) or 1,
+            )
+        except Exception:
+            # Safe fallback
+            r.time_range_pretty = SLOT_LABELS.get(r.time_slot, r.time_slot)
+    return reservations
+
+
+@login_required
+def _reservation_edit_allowed(request, reservation: TableReservation) -> bool:
+    """
+    Permissions for editing a reservation.
+
+    IMPORTANT:
+    TableReservation has NO `user` FK in your model.
+
+    Rules:
+    - Staff/superuser can edit anything.
+    - Otherwise the logged-in user may edit ONLY if:
+        request.user.email matches reservation.customer.email
+      (via your Customer model).
+    """
+    # Staff can always edit
+    if request.user.is_staff or request.user.is_superuser:
+        return True
+
+    # Must be logged in (decorator enforces, but keep safe)
+    if not getattr(request, "user", None) or not request.user.is_authenticated:
+        return False
+
+    # Must have an email to match
+    user_email = (getattr(request.user, "email", "") or "").strip().lower()
+    if not user_email:
+        return False
+
+    # Reservation must have a customer with an email
+    cust = getattr(reservation, "customer", None)
+    cust_email = (getattr(cust, "email", "") or "").strip().lower()
+
+    return bool(cust_email and cust_email == user_email)
+
+
+def _reservation_contact_name(
+    reservation: TableReservation,
+    fallback_user=None,
+) -> str:
+    """
+    Best display name for the guest.
+
+    Since TableReservation has no `user` FK, we use:
+    - reservation.customer.first_name / last_name (preferred)
+    - fallback_user.get_full_name() or fallback_user.username (if provided)
+    - "" if nothing is available
+    """
+    cust = getattr(reservation, "customer", None)
+    first = (getattr(cust, "first_name", "") or "").strip()
+    last = (getattr(cust, "last_name", "") or "").strip()
+    full = (f"{first} {last}").strip()
+    if full:
+        return full
+
+    if fallback_user is not None:
+        try:
+            name = (fallback_user.get_full_name() or "").strip()
+        except Exception:
+            name = ""
+        if name:
+            return name
+        return (getattr(fallback_user, "username", "") or "").strip()
+
+    return ""
+
+
+@login_required
+def cancel_reservation(request, reservation_id):
+    """
+    Cancel a reservation (no deletes), and release demand back to availability.
+
+    IMPORTANT:
+    TableReservation has NO `user` FK. Permissions via email match:
+      request.user.email -> Customer.email -> reservation.customer
+    """
+    reservation = get_object_or_404(TableReservation, id=reservation_id)
+    is_ajax = request.headers.get("x-requested-with") == "XMLHttpRequest"
+
+    if not _reservation_edit_allowed(request, reservation):
+        msg = "You cannot cancel this reservation."
+        if is_ajax:
+            return JsonResponse({"success": False, "error": msg}, status=403)
+        messages.error(request, msg)
+        return redirect("my_reservations")
+
+    # Idempotent: if already cancelled, treat as success
+    if reservation.reservation_status is False:
+        if is_ajax:
+            return JsonResponse({"success": True})
+        messages.info(request, "This reservation has already been cancelled.")
+        return redirect("my_reservations")
+
+    # Uses your atomic helper that releases demand across duration_hours slots
+    _cancel_and_release(reservation)
+
+    # -------- Optional: send cancellation email --------
+    refreshed = TableReservation.objects.get(id=reservation_id)
+    recipient_email = _reservation_contact_email(refreshed)
+    guest_name = _reservation_contact_name(
+        refreshed, fallback_user=request.user)
+
+    if recipient_email:
+        subject = "Your Gambinos reservation has been cancelled"
+
+        def fmt_day_slot(d, slot):
+            try:
+                day = d.strftime("%b %d, %Y")
+            except Exception:
+                day = str(d)
+            return f"{day} at {SLOT_LABELS.get(slot, slot)}"
+
+        def plural_s(n: int) -> str:
+            return "" if n == 1 else "s"
+
+        when_str = fmt_day_slot(
+            refreshed.reservation_date, refreshed.time_slot)
+        tables = int(
+            getattr(refreshed, "number_of_tables_required_by_patron", 0) or 0)
+
+        lines = []
+        if guest_name:
+            lines.append(f"Hello {guest_name},")
+            lines.append("")
+
+        lines.append(
+            f"Your reservation for {tables} table{plural_s(tables)} on {when_str} "
+            f"has been cancelled."
+        )
+        lines.append("")
+        lines.append(f"Reservation ID: {refreshed.id}")
+        if request.user.is_staff:
+            lines.append(f"Cancelled by: STAFF ({request.user.username})")
+        else:
+            lines.append(f"Cancelled by: {request.user.username}")
+        lines.append("")
+        lines.append("Thank you for choosing Gambinos Restaurant & Lounge.")
+
+        send_mail(
+            subject=subject,
+            message="\n".join(lines),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[recipient_email],
+            fail_silently=True,
+        )
+
+    if is_ajax:
+        return JsonResponse({"success": True})
+
+    messages.success(request, "Reservation cancelled.")
+    return redirect("my_reservations")
+
+
+@login_required
+def update_reservation(request, reservation_id):
+    """
+    Customer edit reservation.
+
+    IMPORTANT:
+    TableReservation has NO `user` FK. Permissions are enforced via:
+      request.user.email -> Customer.email -> reservation.customer
+
+    Notes:
+    - Availability math is updated using _apply_reservation_change() which handles duration_hours blocks.
+    - We do NOT delete Customer/User on edit.
+    """
+    reservation = get_object_or_404(TableReservation, id=reservation_id)
+    is_ajax = request.headers.get("x-requested-with") == "XMLHttpRequest"
+
+    # ---------- Permissions ----------
+    if not _reservation_edit_allowed(request, reservation):
+        msg = "You are not allowed to edit this reservation."
+        if is_ajax:
+            return JsonResponse({"success": False, "error": msg}, status=403)
+        messages.error(request, msg)
+        return redirect("my_reservations")
+
+    # ---------- Edit ----------
+    if request.method == "POST":
+        form = EditReservationForm(request.POST, instance=reservation)
+
+        if not form.is_valid():
+            if is_ajax:
+                return JsonResponse(
+                    {"success": False, "error": "Please correct the errors."},
+                    status=400,
+                )
+            messages.error(request, "Please correct the errors below.")
+            return render(
+                request,
+                "reservation_book/edit_reservation.html",
+                {
+                    "form": form,
+                    "reservation": reservation,
+                    "slot_labels": SLOT_LABELS,
+                },
+            )
+
+        # OLD snapshot (for email text only)
+        old_date = reservation.reservation_date
+        old_slot = reservation.time_slot
+        old_tables = reservation.number_of_tables_required_by_patron
+        old_duration = getattr(reservation, "duration_hours", 1) or 1
+
+        # NEW values (from form)
+        new_date = form.cleaned_data.get("reservation_date")
+        new_slot = form.cleaned_data.get("time_slot")
+        new_tables = form.cleaned_data.get(
+            "number_of_tables_required_by_patron")
+
+        # Duration is not currently editable in EditReservationForm,
+        # so preserve the existing stored duration_hours.
+        new_duration = old_duration
+
+        # Apply change + save reservation + update demand in ONE place.
+        # If there are extra editable fields on the form, push them
+        # onto the instance BEFORE applying the change.
+        #
+        # (If the EditReservationForm only includes date/slot/tables,
+        # this still works and avoids double-saving.)
+
+        # Pull any other form fields onto the instance without saving yet
+        reservation = form.save(commit=False)
+
+        try:
+            _apply_reservation_change(
+                reservation,
+                new_date=new_date,
+                new_start_slot=new_slot,
+                new_duration=new_duration,
+                new_tables_needed=new_tables,
+            )
+        except ValueError as e:
+            # _apply_reservation_change already rolls back demand safely
+            msg = str(e)
+            if is_ajax:
+                return JsonResponse({"success": False, "error": msg}, status=400)
+            messages.error(request, msg)
+            return render(
+                request,
+                "reservation_book/edit_reservation.html",
+                {
+                    "form": form,
+                    "reservation": reservation,
+                    "slot_labels": SLOT_LABELS,
+                },
+            )
+
+        # Save any other editable fields from the form (if any)
+        form.save()
+
+        # -------- Optional: send update email --------
+        refreshed = TableReservation.objects.get(id=reservation_id)
+        recipient_email = _reservation_contact_email(refreshed)
+        guest_name = _reservation_contact_name(
+            refreshed, fallback_user=request.user)
+
+        if recipient_email:
+            subject = "Your Gambinos reservation has been updated"
+
+            def fmt_day_slot(d, slot):
+                try:
+                    day = d.strftime("%b %d, %Y")
+                except Exception:
+                    day = str(d)
+                return f"{day} at {SLOT_LABELS.get(slot, slot)}"
+
+            def plural_s(n: int) -> str:
+                return "" if n == 1 else "s"
+
+            old_when = fmt_day_slot(old_date, old_slot)
+            new_when = fmt_day_slot(new_date, new_slot)
+
+            lines = []
+            if guest_name:
+                lines.append(f"Hello {guest_name},")
+                lines.append("")
+
+            lines.append(
+                f"Your reservation for {old_tables} table{plural_s(int(old_tables or 0))} on {old_when}\n"
+                f"was updated to {new_tables} table{plural_s(int(new_tables or 0))} on {new_when}."
+            )
+            lines.append("")
+            lines.append(f"Reservation ID: {refreshed.id}")
+            if request.user.is_staff:
+                lines.append(f"Updated by: STAFF ({request.user.username})")
+            else:
+                lines.append(f"Updated by: {request.user.username}")
+            lines.append("")
+            lines.append(
+                "Thank you for choosing Gambinos Restaurant & Lounge.")
+
+            send_mail(
+                subject=subject,
+                message="\n".join(lines),
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[recipient_email],
+                fail_silently=True,
+            )
+
+        if is_ajax:
+            return JsonResponse({"success": True})
+
+        messages.success(request, "Your reservation has been updated.")
+        return redirect("my_reservations")
+
+    # GET
+    form = EditReservationForm(instance=reservation)
+    current_slot_label = SLOT_LABELS.get(
+        reservation.time_slot, reservation.time_slot)
+
+    return render(
+        request,
+        "reservation_book/edit_reservation.html",
+        {
+            "form": form,
+            "reservation": reservation,
+            "current_slot_label": current_slot_label,
+            "slot_labels": SLOT_LABELS,
+        },
+    )
+
+
+@transaction.atomic
+def _apply_reservation_change(reservation, *, new_date, new_start_slot, new_duration, new_tables_needed):
+    old_ts = TimeSlotAvailability.objects.select_for_update().get(
+        pk=reservation.timeslot_availability_id)
+
+    # resolve / create new day record
+    new_ts, _ = TimeSlotAvailability.objects.get_or_create(
+        calendar_date=new_date,
+        defaults=_timeslot_defaults(),
+    )
+    new_ts = TimeSlotAvailability.objects.select_for_update().get(pk=new_ts.pk)
+
+    old_slots = _affected_slots(
+        reservation.time_slot, reservation.duration_hours or 1, until_close=False)
+    old_tables = _to_int(reservation.number_of_tables_required_by_patron, 0)
+
+    new_slots = _affected_slots(
+        new_start_slot, new_duration or 1, until_close=False)
+    new_tables = _to_int(new_tables_needed, 0)
+
+    # 1) release old demand (only if active)
+    if reservation.reservation_status:
+        _update_ts_demand(old_ts, old_slots, old_tables, delta_sign=-1)
+
+    # 2) capacity check on new TS
+    ok, bad_slot, avail, demand = _capacity_ok(new_ts, new_slots, new_tables)
+    if not ok:
+        # put old demand back (since we released it above)
+        if reservation.reservation_status:
+            _update_ts_demand(old_ts, old_slots, old_tables, delta_sign=+1)
+        raise ValueError(
+            f"Not enough tables for {new_date} slot {SLOT_LABELS.get(bad_slot, bad_slot)}.")
+
+    # 3) save new reservation values
+    reservation.reservation_date = new_date
+    reservation.timeslot_availability = new_ts
+    reservation.time_slot = new_start_slot
+    reservation.duration_hours = new_duration
+    reservation.number_of_tables_required_by_patron = new_tables
+    reservation.save()
+
+    # 4) consume new demand
+    if reservation.reservation_status:
+        _update_ts_demand(new_ts, new_slots, new_tables, delta_sign=+1)
 
 # def onboarding_set_password(request, uidb64, token):
 #     """
@@ -453,161 +1095,230 @@ def signup(request):
     return render(request, "registration/signup.html", {"form": form})
 
 
-@login_required
-def cancel_reservation(request, reservation_id):
-    reservation = get_object_or_404(TableReservation, id=reservation_id)
+# @login_required
+# def cancel_reservation(request, reservation_id):
+#     reservation = get_object_or_404(TableReservation, id=reservation_id)
 
-    # --- Permissions ---
-    # Online user can always cancel their own reservation
-    # Staff/owner can cancel any (incl. phone reservations)
-    if reservation.user:
-        if reservation.user != request.user and not request.user.is_staff:
-            if request.headers.get("x-requested-with") == "XMLHttpRequest":
-                return JsonResponse(
-                    {
-                        "success": False,
-                        "error": "You are not allowed to cancel this reservation.",
-                    },
-                    status=403,
-                )
-            messages.error(
-                request, "You cannot cancel someone else's reservation.")
-            return redirect("my_reservations")
-    else:
-        if not request.user.is_staff:
-            if request.headers.get("x-requested-with") == "XMLHttpRequest":
-                return JsonResponse(
-                    {
-                        "success": False,
-                        "error": "You are not allowed to cancel this reservation.",
-                    },
-                    status=403,
-                )
-            messages.error(
-                request, "You are not allowed to cancel this reservation.")
-            return redirect("my_reservations")
+#     # --- Permissions ---
+#     # Online user can always cancel their own reservation
+#     # Staff/owner can cancel any (incl. phone reservations)
+#     if reservation.user:
+#         if reservation.user != request.user and not request.user.is_staff:
+#             if request.headers.get("x-requested-with") == "XMLHttpRequest":
+#                 return JsonResponse(
+#                     {
+#                         "success": False,
+#                         "error": "You are not allowed to cancel this reservation.",
+#                     },
+#                     status=403,
+#                 )
+#             messages.error(
+#                 request, "You cannot cancel someone else's reservation.")
+#             return redirect("my_reservations")
+#     else:
+#         if not request.user.is_staff:
+#             if request.headers.get("x-requested-with") == "XMLHttpRequest":
+#                 return JsonResponse(
+#                     {
+#                         "success": False,
+#                         "error": "You are not allowed to cancel this reservation.",
+#                     },
+#                     status=403,
+#                 )
+#             messages.error(
+#                 request, "You are not allowed to cancel this reservation.")
+#             return redirect("my_reservations")
 
-    # Already cancelled?
-    if reservation.reservation_status is False:
-        if request.headers.get("x-requested-with") == "XMLHttpRequest":
-            return JsonResponse({"success": True})
-        messages.info(request, "This reservation has already been cancelled.")
-        return redirect("my_reservations")
+#     # Already cancelled?
+#     if reservation.reservation_status is False:
+#         if request.headers.get("x-requested-with") == "XMLHttpRequest":
+#             return JsonResponse({"success": True})
+#         messages.info(request, "This reservation has already been cancelled.")
+#         return redirect("my_reservations")
 
-    # Snapshot OLD values
-    old_date = reservation.reservation_date
-    old_slot = reservation.time_slot
-    old_tables = reservation.number_of_tables_required_by_patron
+#     # Snapshot OLD values
+#     old_date = reservation.reservation_date
+#     old_slot = reservation.time_slot
+#     old_tables = reservation.number_of_tables_required_by_patron
 
-    # Mark as cancelled (this will also bump updated_at)
-    reservation.reservation_status = False
-    reservation.save()
+#     # Mark as cancelled (this will also bump updated_at)
+#     reservation.reservation_status = False
+#     reservation.save()
 
-    refreshed = TableReservation.objects.get(id=reservation_id)
+#     refreshed = TableReservation.objects.get(id=reservation_id)
 
-    # --- Update demand: release tables from that date/slot ---
-    try:
-        ts = TimeSlotAvailability.objects.get(calendar_date=old_date)
-    except TimeSlotAvailability.DoesNotExist:
-        ts = None
+#     # --- Update demand: release tables from that date/slot ---
+#     try:
+#         ts = TimeSlotAvailability.objects.get(calendar_date=old_date)
+#     except TimeSlotAvailability.DoesNotExist:
+#         ts = None
 
-    if ts:
-        demand_field = f"total_cust_demand_for_tables_{old_slot}"
-        current_demand = getattr(ts, demand_field, 0) or 0
-        new_demand = max(0, current_demand - old_tables)
-        setattr(ts, demand_field, new_demand)
-        ts.save()
+#     if ts:
+#         demand_field = f"total_cust_demand_for_tables_{old_slot}"
+#         current_demand = getattr(ts, demand_field, 0) or 0
+#         new_demand = max(0, current_demand - old_tables)
+#         setattr(ts, demand_field, new_demand)
+#         ts.save()
 
-    # --- Build & send cancellation email with timestamps ---
-    recipient_email = None
-    if refreshed.user and refreshed.user.email:
-        recipient_email = refreshed.user.email
-    elif getattr(refreshed, "email", None):
-        recipient_email = refreshed.email
+#     # --- Build & send cancellation email with timestamps ---
+#     recipient_email = None
+#     if refreshed.user and refreshed.user.email:
+#         recipient_email = refreshed.user.email
+#     elif getattr(refreshed, "email", None):
+#         recipient_email = refreshed.email
 
-    if recipient_email:
-        subject = "Your Gambinos reservation has been cancelled"
+#     if recipient_email:
+#         subject = "Your Gambinos reservation has been cancelled"
 
-        def fmt_dt(dt):
-            return dt.strftime("%b %d, %Y at %H:%M:%S")
+#         def fmt_dt(dt):
+#             return dt.strftime("%b %d, %Y at %H:%M:%S")
 
-        def fmt_day_slot(d, slot):
-            try:
-                day = d.strftime("%b %d, %Y")
-            except Exception:
-                day = str(d)
-            return f"{day} at {SLOT_LABELS.get(slot, slot)}"
+#         def fmt_day_slot(d, slot):
+#             try:
+#                 day = d.strftime("%b %d, %Y")
+#             except Exception:
+#                 day = str(d)
+#             return f"{day} at {SLOT_LABELS.get(slot, slot)}"
 
-        def plural_s(n: int) -> str:
-            return "" if n == 1 else "s"
+#         def plural_s(n: int) -> str:
+#             return "" if n == 1 else "s"
 
-        created_on = fmt_dt(refreshed.created_at)
-        # updated_at reflects cancellation time
-        cancelled_on = fmt_dt(refreshed.updated_at)
-        when_str = fmt_day_slot(old_date, old_slot)
+#         created_on = fmt_dt(refreshed.created_at)
+#         # updated_at reflects cancellation time
+#         cancelled_on = fmt_dt(refreshed.updated_at)
+#         when_str = fmt_day_slot(old_date, old_slot)
 
-        # Name for greeting
-        guest_name = ""
-        if hasattr(refreshed, "name") and refreshed.name:
-            guest_name = refreshed.name
-        elif refreshed.user:
-            guest_name = (
-                refreshed.user.get_full_name() or refreshed.user.username
-            )
+#         # Name for greeting
+#         guest_name = ""
+#         if hasattr(refreshed, "name") and refreshed.name:
+#             guest_name = refreshed.name
+#         elif refreshed.user:
+#             guest_name = (
+#                 refreshed.user.get_full_name() or refreshed.user.username
+#             )
 
-        lines = []
-        if guest_name:
-            lines.append(f"Hello {guest_name},")
-            lines.append("")
+#         lines = []
+#         if guest_name:
+#             lines.append(f"Hello {guest_name},")
+#             lines.append("")
 
-        lines.append(
-            f"The reservation (created on {created_on})\n"
-            f"for {old_tables} table{plural_s(old_tables)} on {when_str}\n"
-            f"was cancelled on {cancelled_on}."
-        )
-        lines.append("")
-        lines.append(f"Reservation ID: {refreshed.id}")
-        if request.user.is_staff:
-            lines.append(f"Cancelled by: STAFF ({request.user.username})")
-        else:
-            lines.append(f"Cancelled by: {request.user.username}")
-        lines.append("")
-        lines.append("Thank you for choosing Gambinos Restaurant & Lounge.")
+#         lines.append(
+#             f"The reservation (created on {created_on})\n"
+#             f"for {old_tables} table{plural_s(old_tables)} on {when_str}\n"
+#             f"was cancelled on {cancelled_on}."
+#         )
+#         lines.append("")
+#         lines.append(f"Reservation ID: {refreshed.id}")
+#         if request.user.is_staff:
+#             lines.append(f"Cancelled by: STAFF ({request.user.username})")
+#         else:
+#             lines.append(f"Cancelled by: {request.user.username}")
+#         lines.append("")
+#         lines.append("Thank you for choosing Gambinos Restaurant & Lounge.")
 
-        message = "\n".join(lines)
+#         message = "\n".join(lines)
 
-        send_mail(
-            subject,
-            message,
-            settings.DEFAULT_FROM_EMAIL,
-            [recipient_email],
-            fail_silently=True,
-        )
+#         send_mail(
+#             subject,
+#             message,
+#             settings.DEFAULT_FROM_EMAIL,
+#             [recipient_email],
+#             fail_silently=True,
+#         )
 
-    # JSON vs redirect response
-    if request.headers.get("x-requested-with") == "XMLHttpRequest":
-        return JsonResponse({"success": True})
+#     # JSON vs redirect response
+#     if request.headers.get("x-requested-with") == "XMLHttpRequest":
+#         return JsonResponse({"success": True})
 
-    messages.success(request, "Your reservation has been cancelled.")
-    return redirect("my_reservations")
+#     messages.success(request, "Your reservation has been cancelled.")
+#     return redirect("my_reservations")
 
 
 @login_required
 def my_reservations(request):
-    reservations = (
-        TableReservation.objects.filter(
-            user=request.user, reservation_status=True)
-        .order_by("timeslot_availability__calendar_date", "time_slot")
-    )
+    """
+    Customer-facing list of reservations.
+
+    IMPORTANT:
+    TableReservation has no `user` FK in your model, so we match by:
+        request.user.email -> Customer.email -> TableReservation.customer
+    """
+    customer = _customer_for_logged_in_user(request)
+
+    if not customer:
+        messages.error(
+            request,
+            "We couldn't find a customer profile for your account email. "
+            "Please contact the restaurant.",
+        )
+        reservations = TableReservation.objects.none()
+    else:
+        reservations = (
+            TableReservation.objects
+            .filter(customer=customer, reservation_status=True)
+            .select_related("customer", "timeslot_availability")
+            .order_by("reservation_date", "time_slot", "id")
+        )
+
+    # -----------------------------------------
+    # Display helper: show true multi-hour range
+    # -----------------------------------------
+    def _pretty_time_range(start_slot_key: str, duration_hours: int) -> str:
+        """
+        Convert (start_slot_key + duration_hours) -> "HH:MM–HH:MM".
+        Falls back safely if slot keys/labels are missing.
+        """
+        start_label = SLOT_LABELS.get(start_slot_key, start_slot_key)
+
+        # duration not set or 1 hour -> show normal label
+        try:
+            dur = int(duration_hours or 1)
+        except Exception:
+            dur = 1
+        if dur <= 1:
+            return start_label
+
+        # Prefer your canonical slot ordering helper if it exists
+        try:
+            slots = _slot_order()  # <-- if you have this helper in views.py
+        except Exception:
+            slots = SLOT_KEYS      # <-- fallback to your constant
+
+        # find end slot key by walking slots
+        try:
+            start_index = slots.index(start_slot_key)
+        except ValueError:
+            return start_label
+
+        end_index = min(start_index + dur - 1, len(slots) - 1)
+        end_slot_key = slots[end_index]
+        end_label = SLOT_LABELS.get(end_slot_key, end_slot_key)
+
+        # try to build "start–end" using the labels’ “–” format
+        try:
+            start_time = start_label.split("–")[0].strip()
+            end_time = end_label.split("–")[1].strip()
+            return f"{start_time}–{end_time}"
+        except Exception:
+            # fallback: just return start label if parsing fails
+            return start_label
+
+    # Attach display-only helpers onto each reservation object for templates
+    for r in reservations:
+        # Don’t overwrite a real model property/method if you add it later
+        if not hasattr(r.__class__, "time_range_pretty"):
+            r.time_range_pretty = _pretty_time_range(
+                r.time_slot, getattr(r, "duration_hours", 1)
+            )
+
     return render(
         request,
         "reservation_book/my_reservations.html",
-        {"reservations": reservations},
+        {
+            "customer": customer,
+            "reservations": reservations,
+        },
     )
-
-
-def menu(request):
-    return render(request, "reservation_book/menu.html")
 
 
 # -------------------------------------------------------------------
@@ -627,6 +1338,97 @@ def staff_or_superuser_required(view_func):
             return view_func(request, *args, **kwargs)
         return HttpResponseForbidden("Staff access required.")
     return wrapper
+
+
+@staff_or_superuser_required
+def staff_reservations(request):
+    """
+    Staff-facing list of reservations.
+
+    IMPORTANT:
+    - TableReservation has NO `user` FK in your project.
+    - Staff can view all ACTIVE reservations (reservation_status=True).
+    - Display must reflect multi-hour blocks using duration_hours.
+
+    Fixes:
+    - Do NOT assign to model @property (e.g. time_range_pretty) -> can raise:
+        "property ... has no setter"
+    - Instead, attach a separate display-only attribute:
+        reservation.time_range_display
+    """
+
+    # -----------------------------------------
+    # Pull ACTIVE reservations only
+    # -----------------------------------------
+    reservations = (
+        TableReservation.objects
+        .filter(reservation_status=True)
+        .select_related("customer", "timeslot_availability")
+        .order_by("reservation_date", "time_slot", "id")
+    )
+
+    # -----------------------------------------
+    # Helper: compute "HH:MM–HH:MM" for duration
+    # -----------------------------------------
+    def _pretty_time_range(start_slot_key: str, duration_hours: int) -> str:
+        """
+        Convert (start_slot_key + duration_hours) -> "HH:MM–HH:MM".
+
+        Uses SLOT_KEYS ordering to walk forward across slots.
+        Falls back safely to the base slot label if anything is missing.
+        """
+        start_label = SLOT_LABELS.get(start_slot_key, start_slot_key)
+
+        # Normalize duration
+        try:
+            dur = int(duration_hours or 1)
+        except Exception:
+            dur = 1
+        if dur <= 1:
+            return start_label
+
+        # We need an ordering of slot keys to find the end slot
+        try:
+            slot_keys = list(SLOT_KEYS)
+        except Exception:
+            # fallback: preserve SLOT_LABELS order if SLOT_KEYS not available
+            slot_keys = list(SLOT_LABELS.keys())
+
+        if start_slot_key not in slot_keys:
+            return start_label
+
+        start_index = slot_keys.index(start_slot_key)
+        end_index = min(start_index + dur - 1, len(slot_keys) - 1)
+        end_slot_key = slot_keys[end_index]
+        end_label = SLOT_LABELS.get(end_slot_key, end_slot_key)
+
+        # Try to derive end time from slot labels like "17:00–18:00"
+        try:
+            start_time = start_label.split("–")[0].strip()
+            end_time = end_label.split("–")[1].strip()
+            return f"{start_time}–{end_time}"
+        except Exception:
+            # Fallback: show start label only
+            return start_label
+
+    # -----------------------------------------
+    # Attach display-only time range attribute
+    # -----------------------------------------
+    # IMPORTANT: do NOT use "time_range_pretty" because you may have it as @property
+    for r in reservations:
+        r.time_range_display = _pretty_time_range(
+            r.time_slot,
+            getattr(r, "duration_hours", 1),
+        )
+
+    return render(
+        request,
+        "reservation_book/staff_reservations.html",
+        {
+            "reservations": reservations,
+            "slot_labels": SLOT_LABELS,
+        },
+    )
 
 
 @superuser_required
@@ -803,57 +1605,6 @@ def staff_dashboard(request):
 
 
 @staff_or_superuser_required
-def staff_reservations(request):
-    """
-    Staff view: search and manage ALL reservations (online + phone-in).
-
-    Search by:
-    - Booking ID (exact, if q is all digits)
-    - username
-    - email (user or customer email)
-    - first/last name
-    - phone or mobile
-    """
-    query = request.GET.get("q", "").strip()
-
-    qs = (
-        TableReservation.objects.select_related(
-            "customer", "timeslot_availability"
-        ).order_by(
-            "-reservation_date",
-            "-time_slot",
-            "-created_at",
-        )
-    )
-
-    if query:
-        combined = Q()
-
-        # If it's purely digits, treat as possible Booking ID
-        if query.isdigit():
-            combined |= Q(id=int(query))
-
-        # Customer fields
-        combined |= Q(customer__first_name__icontains=query)
-        combined |= Q(customer__last_name__icontains=query)
-        combined |= Q(customer__email__icontains=query)
-        combined |= Q(customer__phone__icontains=query)
-        combined |= Q(customer__mobile__icontains=query)
-
-        qs = qs.filter(combined)
-
-    context = {
-        "reservations": qs,
-        "query": query,
-    }
-    return render(
-        request,
-        "reservation_book/staff_reservations.html",
-        context,
-    )
-
-
-@staff_or_superuser_required
 def user_reservations_overview(request):
     """
     Staff-facing overview of all customers who have at least one reservation.
@@ -956,6 +1707,7 @@ def create_phone_reservation(request):
         form = PhoneReservationForm(request.POST)
         if not form.is_valid():
             messages.error(request, "Please correct the errors below.")
+            print("PHONE FORM ERRORS:", form.errors)
             return render(
                 request,
                 "reservation_book/create_phone_reservation.html",
@@ -1231,246 +1983,164 @@ def create_phone_reservation(request):
     )
 
 
-@login_required
-def update_reservation(request, reservation_id):
-    reservation = get_object_or_404(TableReservation, id=reservation_id)
-    session_key = f"reservation_edit_snapshot_{reservation_id}"
+# @login_required
+# def update_reservation(request, reservation_id):
+#     """
+#     Customer edit reservation.
 
-    # --- Permissions ---
-    if reservation.user:
-        # Online booking: only that user OR staff can update
-        if reservation.user != request.user and not request.user.is_staff:
-            messages.error(
-                request, "You are not allowed to update this reservation."
-            )
-            return redirect("my_reservations")
-    else:
-        # Phone reservation (no linked user): only staff/owner can update
-        if not request.user.is_staff:
-            messages.error(
-                request, "You are not allowed to update this phone reservation."
-            )
-            return redirect("my_reservations")
+#     IMPORTANT:
+#     TableReservation has NO `user` FK. Permissions are enforced via:
+#       request.user.email -> Customer.email -> reservation.customer
 
-    if request.method == "POST":
-        form = EditReservationForm(request.POST, instance=reservation)
+#     Notes:
+#     - Availability math is updated using _apply_reservation_change() which handles duration_hours blocks.
+#     - We do NOT delete Customer/User on edit.
+#     """
+#     reservation = get_object_or_404(TableReservation, id=reservation_id)
+#     is_ajax = request.headers.get("x-requested-with") == "XMLHttpRequest"
 
-        if form.is_valid():
-            # --- OLD values: from snapshot stored when Edit page was opened ---
-            snap = request.session.get(session_key, {})
+#     # ---------- Permissions ----------
+#     if not _reservation_edit_allowed(request, reservation):
+#         msg = "You are not allowed to edit this reservation."
+#         if is_ajax:
+#             return JsonResponse({"success": False, "error": msg}, status=403)
+#         messages.error(request, msg)
+#         return redirect("my_reservations")
 
-            def parse_date(val, fallback):
-                if not val:
-                    return fallback
-                try:
-                    return datetime.strptime(val, "%Y-m-d").date()
-                except ValueError:
-                    return fallback
+#     # ---------- Edit ----------
+#     if request.method == "POST":
+#         form = EditReservationForm(request.POST, instance=reservation)
 
-            def parse_int(val, fallback):
-                try:
-                    return int(val)
-                except (TypeError, ValueError):
-                    return fallback
+#         if not form.is_valid():
+#             if is_ajax:
+#                 return JsonResponse(
+#                     {"success": False, "error": "Please correct the errors."},
+#                     status=400,
+#                 )
+#             messages.error(request, "Please correct the errors below.")
+#             return render(
+#                 request,
+#                 "reservation_book/edit_reservation.html",
+#                 {
+#                     "form": form,
+#                     "reservation": reservation,
+#                     "slot_labels": SLOT_LABELS,
+#                 },
+#             )
 
-            old_date = parse_date(
-                snap.get("date"),
-                reservation.reservation_date,
-            )
-            old_slot = snap.get("slot", reservation.time_slot)
-            old_tables = parse_int(
-                snap.get("tables"),
-                reservation.number_of_tables_required_by_patron,
-            )
+#         # OLD snapshot (for email text only)
+#         old_date = reservation.reservation_date
+#         old_slot = reservation.time_slot
+#         old_tables = reservation.number_of_tables_required_by_patron
+#         old_duration = getattr(reservation, "duration_hours", 1) or 1
 
-            # --- NEW values: read directly from POST ---
-            date_str = request.POST.get("reservation_date")
-            new_date = parse_date(date_str, old_date)
+#         # NEW values (from form)
+#         new_date = form.cleaned_data.get("reservation_date")
+#         new_slot = form.cleaned_data.get("time_slot")
+#         new_tables = form.cleaned_data.get(
+#             "number_of_tables_required_by_patron")
 
-            new_slot = request.POST.get("time_slot") or old_slot
+#         # Duration is not currently editable in your EditReservationForm,
+#         # so preserve the existing stored duration_hours.
+#         new_duration = old_duration
 
-            tables_str = request.POST.get(
-                "number_of_tables_required_by_patron")
-            new_tables = parse_int(tables_str, old_tables)
+#         try:
+#             _apply_reservation_change(
+#                 reservation,
+#                 new_date=new_date,
+#                 new_start_slot=new_slot,
+#                 new_duration=new_duration,
+#                 new_tables_needed=new_tables,
+#             )
+#         except ValueError as e:
+#             # _apply_reservation_change already rolls back demand safely
+#             msg = str(e)
+#             if is_ajax:
+#                 return JsonResponse({"success": False, "error": msg}, status=400)
+#             messages.error(request, msg)
+#             return render(
+#                 request,
+#                 "reservation_book/edit_reservation.html",
+#                 {
+#                     "form": form,
+#                     "reservation": reservation,
+#                     "slot_labels": SLOT_LABELS,
+#                 },
+#             )
 
-            # --- Release OLD demand from TimeSlotAvailability ---
-            old_ts = None
-            old_demand_field = None
-            old_demand_value = None
+#         # Save any other editable fields from the form (if any)
+#         form.save()
 
-            try:
-                old_ts = TimeSlotAvailability.objects.get(
-                    calendar_date=old_date)
-            except TimeSlotAvailability.DoesNotExist:
-                old_ts = None
+#         # -------- Optional: send update email --------
+#         refreshed = TableReservation.objects.get(id=reservation_id)
+#         recipient_email = _reservation_contact_email(refreshed)
+#         guest_name = _reservation_contact_name(
+#             refreshed, fallback_user=request.user)
 
-            if old_ts:
-                old_demand_field = f"total_cust_demand_for_tables_{old_slot}"
-                old_demand_value = getattr(old_ts, old_demand_field, 0) or 0
-                setattr(
-                    old_ts,
-                    old_demand_field,
-                    max(0, old_demand_value - old_tables),
-                )
-                old_ts.save()
+#         if recipient_email:
+#             subject = "Your Gambinos reservation has been updated"
 
-            # --- Check NEW slot availability ---
-            new_ts, _ = TimeSlotAvailability.objects.get_or_create(
-                calendar_date=new_date
-            )
+#             def fmt_day_slot(d, slot):
+#                 try:
+#                     day = d.strftime("%b %d, %Y")
+#                 except Exception:
+#                     day = str(d)
+#                 return f"{day} at {SLOT_LABELS.get(slot, slot)}"
 
-            avail_field = f"number_of_tables_available_{new_slot}"
-            demand_field = f"total_cust_demand_for_tables_{new_slot}"
+#             def plural_s(n: int) -> str:
+#                 return "" if n == 1 else "s"
 
-            slot_available = getattr(new_ts, avail_field, 0) or 0
-            slot_demand = getattr(new_ts, demand_field, 0) or 0
-            remaining = slot_available - slot_demand
+#             old_when = fmt_day_slot(old_date, old_slot)
+#             new_when = fmt_day_slot(new_date, new_slot)
 
-            if new_tables > remaining:
-                # Not enough capacity in the new slot
-                messages.error(
-                    request,
-                    f"Not enough tables available for "
-                    f"{SLOT_LABELS.get(new_slot, new_slot)} on {new_date}. "
-                    f"Remaining: {max(remaining, 0)}.",
-                )
+#             lines = []
+#             if guest_name:
+#                 lines.append(f"Hello {guest_name},")
+#                 lines.append("")
 
-                # roll back OLD demand if we changed it
-                if (
-                    old_ts
-                    and old_demand_field is not None
-                    and old_demand_value is not None
-                ):
-                    setattr(old_ts, old_demand_field, old_demand_value)
-                    old_ts.save()
+#             lines.append(
+#                 f"Your reservation for {old_tables} table{plural_s(int(old_tables or 0))} on {old_when}\n"
+#                 f"was updated to {new_tables} table{plural_s(int(new_tables or 0))} on {new_when}."
+#             )
+#             lines.append("")
+#             lines.append(f"Reservation ID: {refreshed.id}")
+#             if request.user.is_staff:
+#                 lines.append(f"Updated by: STAFF ({request.user.username})")
+#             else:
+#                 lines.append(f"Updated by: {request.user.username}")
+#             lines.append("")
+#             lines.append(
+#                 "Thank you for choosing Gambinos Restaurant & Lounge.")
 
-                return render(
-                    request,
-                    "reservation_book/edit_reservation.html",
-                    {"form": form, "reservation": reservation},
-                )
+#             send_mail(
+#                 subject=subject,
+#                 message="\n".join(lines),
+#                 from_email=settings.DEFAULT_FROM_EMAIL,
+#                 recipient_list=[recipient_email],
+#                 fail_silently=True,
+#             )
 
-            # --- Commit NEW demand ---
-            setattr(new_ts, demand_field, slot_demand + new_tables)
-            new_ts.save()
+#         if is_ajax:
+#             return JsonResponse({"success": True})
 
-            # --- Save reservation with NEW values (including other form fields) ---
-            new_reservation = form.save(commit=False)
-            new_reservation.reservation_date = new_date
-            new_reservation.time_slot = new_slot
-            new_reservation.number_of_tables_required_by_patron = new_tables
-            new_reservation.timeslot_availability = new_ts
-            new_reservation.save()
+#         messages.success(request, "Your reservation has been updated.")
+#         return redirect("my_reservations")
 
-            # Snapshot no longer needed
-            if session_key in request.session:
-                del request.session[session_key]
+#     # GET
+#     form = EditReservationForm(instance=reservation)
+#     current_slot_label = SLOT_LABELS.get(
+#         reservation.time_slot, reservation.time_slot)
 
-            refreshed = TableReservation.objects.get(id=reservation_id)
-
-            # --- Build & send detailed UPDATE email with timestamps ---
-            recipient_email = None
-            if refreshed.user and refreshed.user.email:
-                recipient_email = refreshed.user.email
-            elif getattr(refreshed, "email", None):
-                recipient_email = refreshed.email
-
-            # Name for greeting
-            guest_name = ""
-            if hasattr(refreshed, "name") and refreshed.name:
-                guest_name = refreshed.name
-            elif refreshed.user:
-                guest_name = (
-                    refreshed.user.get_full_name() or refreshed.user.username
-                )
-
-            if recipient_email:
-                subject = "Your Gambinos reservation has been updated"
-
-                def fmt_dt(dt):
-                    return dt.strftime("%b %d, %Y at %H:%M:%S")
-
-                def fmt_day_slot(d, slot):
-                    try:
-                        day = d.strftime("%b %d, %Y")
-                    except Exception:
-                        day = str(d)
-                    return f"{day} at {SLOT_LABELS.get(slot, slot)}"
-
-                def plural_s(n: int) -> str:
-                    return "" if n == 1 else "s"
-
-                created_on = fmt_dt(refreshed.created_at)
-                updated_on = fmt_dt(refreshed.updated_at)
-                old_when = fmt_day_slot(old_date, old_slot)
-                new_when = fmt_day_slot(new_date, new_slot)
-
-                lines = []
-                if guest_name:
-                    lines.append(f"Hello {guest_name},")
-                    lines.append("")
-
-                lines.append(
-                    f"The reservation (created on {created_on})\n"
-                    f"for {old_tables} table{plural_s(old_tables)} on {old_when}\n"
-                    f"was updated on {updated_on}\n"
-                    f"to {new_tables} table{plural_s(new_tables)} on {new_when}."
-                )
-                lines.append("")
-                lines.append(f"Reservation ID: {refreshed.id}")
-                if request.user.is_staff:
-                    lines.append(
-                        f"Updated by: STAFF ({request.user.username})")
-                else:
-                    lines.append(f"Updated by: {request.user.username}")
-                lines.append("")
-                lines.append(
-                    "Thank you for choosing Gambinos Restaurant & Lounge."
-                )
-
-                message = "\n".join(lines)
-
-                send_mail(
-                    subject,
-                    message,
-                    settings.DEFAULT_FROM_EMAIL,
-                    [recipient_email],
-                    fail_silently=True,
-                )
-
-            messages.success(request, "Your reservation has been updated.")
-            return redirect("my_reservations")
-
-    else:
-        # GET: take a snapshot of what the user sees *before* editing
-        if reservation.reservation_date:
-            date_str = reservation.reservation_date.strftime("%Y-m-d")
-        else:
-            date_str = ""
-
-        request.session[session_key] = {
-            "date": date_str,
-            "slot": reservation.time_slot,
-            "tables": str(
-                reservation.number_of_tables_required_by_patron
-            ),
-        }
-
-        form = EditReservationForm(instance=reservation)
-
-    current_slot_label = SLOT_LABELS.get(
-        reservation.time_slot, reservation.time_slot
-    )
-
-    return render(
-        request,
-        "reservation_book/edit_reservation.html",
-        {
-            "form": form,
-            "reservation": reservation,
-            "current_slot_label": current_slot_label,
-        },
-    )
+#     return render(
+#         request,
+#         "reservation_book/edit_reservation.html",
+#         {
+#             "form": form,
+#             "reservation": reservation,
+#             "current_slot_label": current_slot_label,
+#             "slot_labels": SLOT_LABELS,
+#         },
+#     )
 
 
 # @staff_or_superuser_required

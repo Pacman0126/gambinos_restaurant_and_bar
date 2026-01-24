@@ -1,280 +1,285 @@
 {% extends "base.html" %}
-{% load reservation_extras %}
 {% load static %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="container py-4">
 
   <h2 class="mb-3">Create Phone Reservation</h2>
 
-  <p class="text-muted">
-    Step 1: Click a date + time slot in the grid below.<br>
-    Step 2: Fill in customer details, choose duration / options, then confirm.
-  </p>
+  {% if messages %}
+    <div class="mb-3">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} mb-2" role="alert">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
 
-  <style>
-    /* --- Grid readability + contrast (protect against theme/background CSS) --- */
-    .availability-grid table { width: 100%; }
-    .availability-grid th, .availability-grid td { vertical-align: middle; }
-    .availability-grid .slot-btn {
-      font-weight: 700;
-      font-size: 0.85rem;
-      line-height: 1.2;
-      padding: 0.35rem 0.25rem;
-      border-radius: 0.35rem;
-      border: 1px solid rgba(0,0,0,.15);
-      white-space: nowrap;
-    }
-    .availability-grid .slot-btn.enabled {
-      background: #198754; /* bootstrap success */
-      color: #fff;
-    }
-    .availability-grid .slot-btn.enabled:hover {
-      filter: brightness(0.95);
-    }
-    .availability-grid .slot-btn.disabled {
-      background: #6c757d; /* bootstrap secondary */
-      color: #fff;
-      opacity: 0.75;
-      border-color: rgba(0,0,0,.10);
-    }
-    .availability-grid .slot-btn.is-selected {
-      outline: 3px solid rgba(13,110,253,.35); /* bootstrap primary-ish */
-      box-shadow: 0 0 0 3px rgba(13,110,253,.15);
-    }
-    .availability-grid .free-count {
-      display: inline-block;
-      min-width: 3.5ch;
-    }
-  </style>
-
-  <form method="post" novalidate id="phoneReservationForm">
+  <form method="post" id="phoneReservationForm">
     {% csrf_token %}
 
-    {# Hidden fields controlled by the grid click #}
+    {# Hidden fields that MUST be populated by clicking the grid #}
     {{ form.reservation_date }}
     {{ form.time_slot }}
     {{ form.timeslot_availability }}
 
-    <div class="row">
-      <div class="col-lg-8">
-
-        <div class="card mb-3">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="card shadow-sm">
           <div class="card-header">
-            Availability Grid (next 30 days)
+            <strong>Customer</strong>
           </div>
-          <div class="card-body availability-grid">
+          <div class="card-body">
+            <div class="row g-2">
+              <div class="col-md-6">
+                <label class="form-label">{{ form.first_name.label }}</label>
+                {{ form.first_name }}
+                {% if form.first_name.errors %}
+                  <div class="text-danger small">{{ form.first_name.errors|striptags }}</div>
+                {% endif %}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">{{ form.last_name.label }}</label>
+                {{ form.last_name }}
+                {% if form.last_name.errors %}
+                  <div class="text-danger small">{{ form.last_name.errors|striptags }}</div>
+                {% endif %}
+              </div>
 
-            <div class="mb-2">
-              <strong>Selected slot:</strong>
-              <span id="selected-slot-display" class="text-primary">None</span>
+              <div class="col-12">
+                <label class="form-label">{{ form.email.label }}</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                  <div class="text-danger small">{{ form.email.errors|striptags }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">{{ form.phone.label }}</label>
+                {{ form.phone }}
+                {% if form.phone.errors %}
+                  <div class="text-danger small">{{ form.phone.errors|striptags }}</div>
+                {% endif %}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">{{ form.mobile.label }}</label>
+                {{ form.mobile }}
+                {% if form.mobile.errors %}
+                  <div class="text-danger small">{{ form.mobile.errors|striptags }}</div>
+                {% endif %}
+              </div>
+
             </div>
-
-            <div class="table-responsive">
-              <table class="table table-sm align-middle">
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    {% for slot_key, slot_label in slot_labels.items %}
-                      <th class="text-center">{{ slot_label }}</th>
-                    {% endfor %}
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {% for day_data in next_30_days %}
-                    <tr>
-                      <td>
-                        {{ day_data.date|date:"D M j, Y" }}
-                      </td>
-
-                      {% for slot_key, slot_label in slot_labels.items %}
-                        {% with info=day_data.slots|get_item:slot_key %}
-                          <td class="text-center p-1">
-                            {% if info and info.enabled %}
-                              <button
-                                type="button"
-                                class="slot-btn enabled w-100"
-                                data-date="{{ day_data.date|date:'Y-m-d' }}"
-                                data-slot="{{ slot_key }}"
-                                data-slot-label="{{ slot_label }}"
-                                data-timeslot-pk="{{ day_data.timeslot_pk }}"
-                              >
-                                <span class="free-count">{{ info.available }}</span> free
-                              </button>
-                            {% else %}
-                              <button
-                                type="button"
-                                class="slot-btn disabled w-100"
-                                disabled
-                                aria-disabled="true"
-                              >
-                                {% if info %}
-                                  <span class="free-count">{{ info.available }}</span> free
-                                {% else %}
-                                  —
-                                {% endif %}
-                              </button>
-                            {% endif %}
-                          </td>
-                        {% endwith %}
-                      {% endfor %}
-
-                    </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div>
-
-            <div class="small text-muted mt-2">
-              Green buttons are selectable. Disabled buttons are full/unavailable.
-            </div>
-
           </div>
         </div>
-
       </div>
 
-      <div class="col-lg-4">
-
-        <div class="card mb-3">
-          <div class="card-header">Customer Details</div>
-          <div class="card-body">
-
-            <div class="mb-2">
-              <label class="form-label">First Name</label>
-              {{ form.first_name }}
-              {% if form.first_name.errors %}<div class="text-danger small">{{ form.first_name.errors }}</div>{% endif %}
-            </div>
-
-            <div class="mb-2">
-              <label class="form-label">Last Name</label>
-              {{ form.last_name }}
-              {% if form.last_name.errors %}<div class="text-danger small">{{ form.last_name.errors }}</div>{% endif %}
-            </div>
-
-            <div class="mb-2">
-              <label class="form-label">Email</label>
-              {{ form.email }}
-              {% if form.email.errors %}<div class="text-danger small">{{ form.email.errors }}</div>{% endif %}
-            </div>
-
-            <div class="mb-2">
-              <label class="form-label">Phone</label>
-              {{ form.phone }}
-              {% if form.phone.errors %}<div class="text-danger small">{{ form.phone.errors }}</div>{% endif %}
-            </div>
-
-            <div class="mb-3">
-              <label class="form-label">Mobile</label>
-              {{ form.mobile }}
-              {% if form.mobile.errors %}<div class="text-danger small">{{ form.mobile.errors }}</div>{% endif %}
-            </div>
-
+      <div class="col-md-6">
+        <div class="card shadow-sm">
+          <div class="card-header">
+            <strong>Booking Options</strong>
           </div>
-        </div>
-
-        <div class="card mb-3">
-          <div class="card-header">Reservation Options</div>
           <div class="card-body">
 
-            <div class="mb-2">
-              <label class="form-label">Tables needed</label>
-              {{ form.number_of_tables_required_by_patron }}
-              {% if form.number_of_tables_required_by_patron.errors %}<div class="text-danger small">{{ form.number_of_tables_required_by_patron.errors }}</div>{% endif %}
-            </div>
+            <div class="row g-2 align-items-end">
+              <div class="col-md-6">
+                {% if form.duration_hours %}
+                  <label class="form-label">{{ form.duration_hours.label }}</label>
+                  {{ form.duration_hours }}
+                  {% if form.duration_hours.errors %}
+                    <div class="text-danger small">{{ form.duration_hours.errors|striptags }}</div>
+                  {% endif %}
+                {% else %}
+                  <div class="small text-muted">
+                    Duration is not available on this form yet (duration_hours field missing).
+                  </div>
+                {% endif %}
+              </div>
 
-            <div class="mb-2">
-              <label class="form-label">Duration (hours)</label>
-              {{ form.duration_hours }}
-              {% if form.duration_hours.errors %}<div class="text-danger small">{{ form.duration_hours.errors }}</div>{% endif %}
-              <div class="small text-muted">Books consecutive hours starting from the selected slot.</div>
-            </div>
+              <div class="col-md-6">
+                {% if form.until_close %}
+                  <div class="form-check mt-4">
+                    {{ form.until_close }}
+                    <label class="form-check-label" for="{{ form.until_close.id_for_label }}">
+                      {{ form.until_close.label }}
+                    </label>
+                  </div>
+                  {% if form.until_close.errors %}
+                    <div class="text-danger small">{{ form.until_close.errors|striptags }}</div>
+                  {% endif %}
+                {% else %}
+                  <div class="small text-muted mt-4">
+                    “Book until kitchen close” not available (until_close field missing).
+                  </div>
+                {% endif %}
+              </div>
 
-            <div class="form-check mb-3">
-              {{ form.book_until_close }}
-              <label class="form-check-label" for="{{ form.book_until_close.id_for_label }}">
-                Book from selected start until kitchen close
-              </label>
-              <div class="small text-muted">Overrides duration and books all remaining slots that day.</div>
-            </div>
+              <div class="col-12">
+                {% if form.series_days %}
+                  <label class="form-label">{{ form.series_days.label }}</label>
+                  {{ form.series_days }}
+                  <div class="form-text">
+                    Conference series: books the same time block for N consecutive days.
+                  </div>
+                  {% if form.series_days.errors %}
+                    <div class="text-danger small">{{ form.series_days.errors|striptags }}</div>
+                  {% endif %}
+                {% else %}
+                  <div class="small text-muted">
+                    Multi-day series not available (series_days field missing).
+                  </div>
+                {% endif %}
+              </div>
 
-            <hr>
-
-            <div class="mb-2">
-              <label class="form-label">Conference series (days)</label>
-              {{ form.series_days }}
-              {% if form.series_days.errors %}<div class="text-danger small">{{ form.series_days.errors }}</div>{% endif %}
-              <div class="small text-muted">
-                If &gt; 1, books the same slot (and duration/until-close rule) for consecutive days.
+              <div class="col-12 mt-2">
+                <label class="form-label">{{ form.number_of_tables_required_by_patron.label|default:"Tables needed" }}</label>
+                {{ form.number_of_tables_required_by_patron }}
+                {% if form.number_of_tables_required_by_patron.errors %}
+                  <div class="text-danger small">{{ form.number_of_tables_required_by_patron.errors|striptags }}</div>
+                {% endif %}
               </div>
             </div>
 
+            <hr class="my-3">
+
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+              <div>
+                <strong class="selected-slot-label">Selected slot:</strong>
+                <span id="selected-slot-display" class="ms-1 text-primary selected-slot-value">None</span>
+              </div>
+              <button type="submit" class="btn btn-primary">
+                Confirm Phone Reservation
+              </button>
+            </div>
+
+            {% if form.non_field_errors %}
+              <div class="text-danger small mt-2">{{ form.non_field_errors|striptags }}</div>
+            {% endif %}
           </div>
         </div>
+      </div>
+    </div>
 
-        <button type="submit" class="btn btn-primary w-100">
-          Confirm Phone Reservation
-        </button>
+    <div class="card shadow-sm mt-4">
+      <div class="card-header">
+        <strong>Availability Grid (next 30 days)</strong>
+      </div>
+      <div class="card-body">
+
+        <div class="table-responsive phone-reservation-grid">
+          <table class="table table-sm align-middle">
+            <thead>
+              <tr>
+                <th style="min-width: 160px;">Date</th>
+                {% for slot_key, slot_label in slot_labels.items %}
+                  <th class="text-center" style="min-width: 130px;">{{ slot_label }}</th>
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for day_data in next_30_days %}
+                <tr>
+                  <td class="date-cell">
+                    <div class="fw-semibold">{{ day_data.date|date:"D M j, Y" }}</div>
+                  </td>
+
+                  {# day_data.slots is a LIST in the same order as SLOT_KEYS #}
+                  {% for slot in day_data.slots %}
+                    <td class="text-center p-1">
+                      {% if slot.remaining > 0 %}
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-outline-success w-100 slot-btn"
+                          data-date="{{ day_data.date|date:'Y-m-d' }}"
+                          data-slot="{{ slot.key }}"
+                          data-timeslot-pk="{{ day_data.timeslot.calendar_date|date:'Y-m-d' }}"
+                          data-slot-label="{{ slot.label }}"
+                        >
+                          {{ slot.remaining }} / {{ slot.available }}
+                        </button>
+                      {% else %}
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-outline-secondary w-100"
+                          disabled
+                        >
+                          FULL
+                        </button>
+                      {% endif %}
+                    </td>
+                  {% endfor %}
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="6" class="text-center text-muted py-4">
+                    No availability data found.
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="small text-muted mt-2">
+          Cells show <strong>remaining / total</strong> tables. “FULL” means no remaining tables.
+        </div>
 
       </div>
     </div>
 
   </form>
-
 </div>
 
 <script>
 (function () {
+  const selectedSlotDisplay = document.getElementById("selectedSlotDisplay");
   const form = document.getElementById("phoneReservationForm");
 
-  // Robust lookup: ID first, then name
-  function byIdOrName(id, name) {
-    return document.getElementById(id) || document.querySelector(`[name="${name}"]`);
+  const inputDate = document.getElementById("id_reservation_date");
+  const inputSlot = document.getElementById("id_time_slot");
+  const inputTS  = document.getElementById("id_timeslot_availability");
+
+  const buttons = document.querySelectorAll(".slot-btn");
+
+  function clearActive() {
+    buttons.forEach(btn => {
+      btn.classList.remove("btn-success");
+      btn.classList.add("btn-outline-success");
+    });
   }
 
-  const reservationDateInput = byIdOrName("id_reservation_date", "reservation_date");
-  const timeSlotInput = byIdOrName("id_time_slot", "time_slot");
-  const timeslotAvailabilityInput = byIdOrName("id_timeslot_availability", "timeslot_availability");
-
-  const display = document.getElementById("selected-slot-display");
-
-  let lastSelectedBtn = null;
-
-  document.querySelectorAll(".slot-btn.enabled").forEach(btn => {
+  buttons.forEach(btn => {
     btn.addEventListener("click", () => {
-      const date = btn.dataset.date || "";
-      const slot = btn.dataset.slot || "";
-      const slotLabel = btn.dataset.slotLabel || slot;
-      const tsPk = btn.dataset.timeslotPk || "";
+      const date = btn.dataset.date;
+      const slot = btn.dataset.slot;
+      const tsPk = btn.dataset.timeslotPk;
+      const label = btn.dataset.slotLabel;
 
-      if (!reservationDateInput || !timeSlotInput) return;
+      if (!date || !slot || !tsPk) return;
 
-      reservationDateInput.value = date;
-      timeSlotInput.value = slot;
-      if (timeslotAvailabilityInput && tsPk) {
-        timeslotAvailabilityInput.value = tsPk;
-      }
+      clearActive();
+      btn.classList.remove("btn-outline-success");
+      btn.classList.add("btn-success");
 
-      // Visual highlight
-      if (lastSelectedBtn) lastSelectedBtn.classList.remove("is-selected");
-      btn.classList.add("is-selected");
-      lastSelectedBtn = btn;
+      if (inputDate) inputDate.value = date;
+      if (inputSlot) inputSlot.value = slot;
+      if (inputTS)   inputTS.value   = tsPk;
 
-      display.textContent = `${date} / ${slotLabel}`;
+      selectedSlotDisplay.textContent = `${date} • ${label}`;
     });
   });
 
   form.addEventListener("submit", (e) => {
-    const hasDate = reservationDateInput && reservationDateInput.value;
-    const hasSlot = timeSlotInput && timeSlotInput.value;
+    const dateVal = inputDate ? inputDate.value : "";
+    const slotVal = inputSlot ? inputSlot.value : "";
+    const tsVal   = inputTS ? inputTS.value : "";
 
-    if (!hasDate || !hasSlot) {
+    if (!dateVal || !slotVal || !tsVal) {
       e.preventDefault();
       alert("Please click a date/time cell in the availability grid before confirming.");
     }
   });
 })();
 </script>
-
 {% endblock %}

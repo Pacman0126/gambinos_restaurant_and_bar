@@ -55,6 +55,14 @@ class PhoneReservationForm(forms.ModelForm):
     phone = forms.CharField(max_length=20, required=False, label="Phone")
     mobile = forms.CharField(max_length=20, required=False, label="Mobile")
 
+    # ✅ Ensure tables defaults to 1 (form-level)
+    number_of_tables_required_by_patron = forms.IntegerField(
+        min_value=1,
+        initial=1,
+        label="Tables",
+        widget=forms.NumberInput(attrs={"class": "form-control", "min": 1}),
+    )
+
     # Booking extensions
     until_close = forms.BooleanField(
         required=False,
@@ -83,6 +91,7 @@ class PhoneReservationForm(forms.ModelForm):
             "reservation_date": forms.HiddenInput(),
             "time_slot": forms.HiddenInput(),
             "timeslot_availability": forms.HiddenInput(),
+            "duration_hours": forms.Select(attrs={"class": "form-select"}),
         }
 
     def clean_email(self):
@@ -115,7 +124,6 @@ class PhoneReservationForm(forms.ModelForm):
         )
         reservation.customer = customer
 
-        # Do not save here; view decides if/how many reservations exist.
         if commit:
             reservation.save()
         return reservation
@@ -178,3 +186,9 @@ class EditReservationForm(forms.ModelForm):
                 required=False,
                 # disabled=True
             )
+
+        # ✅ Default tables to 1 if something ever comes through blank/None
+        if not self.initial.get("number_of_tables_required_by_patron"):
+            current = getattr(
+                self.instance, "number_of_tables_required_by_patron", None)
+            self.initial["number_of_tables_required_by_patron"] = current or 1

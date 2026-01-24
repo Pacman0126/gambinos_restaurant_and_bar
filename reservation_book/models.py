@@ -22,6 +22,8 @@ class Customer(models.Model):
     mobile = models.CharField(max_length=20, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    # number_of_tables_required_by_patron = models.PositiveIntegerField(
+    #     default=1)
 
     # New: Flag for barred/banned customers
     barred = models.BooleanField(
@@ -114,7 +116,8 @@ class TableReservation(models.Model):
     )
 
     # How many tables this patron is using in that slot
-    number_of_tables_required_by_patron = models.PositiveIntegerField()
+    number_of_tables_required_by_patron = models.PositiveIntegerField(
+        default=1)
 
     # True = active, False = cancelled
     reservation_status = models.BooleanField(default=True)
@@ -127,6 +130,35 @@ class TableReservation(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    @property
+    def time_range_pretty(self):
+        """
+        Returns a human-readable time range like:
+        17:00–21:00 for multi-hour bookings
+        """
+        from reservation_book.views import SLOT_LABELS, _slot_order
+
+        slots = _slot_order()
+
+        if self.time_slot not in slots:
+            return SLOT_LABELS.get(self.time_slot, self.time_slot)
+
+        start_index = slots.index(self.time_slot)
+        end_index = min(
+            start_index + max(self.duration_hours, 1) - 1,
+            len(slots) - 1,
+        )
+
+        start_label = SLOT_LABELS.get(slots[start_index], "")
+        end_label = SLOT_LABELS.get(slots[end_index], "")
+
+        try:
+            start_time = start_label.split("–")[0].strip()
+            end_time = end_label.split("–")[1].strip()
+            return f"{start_time}–{end_time}"
+        except Exception:
+            return start_label
 
     def get_time_slot_display(self):
         """Return pretty time slot label (e.g., 18:00–19:00)"""
