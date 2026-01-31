@@ -33,7 +33,8 @@ from django.http import HttpResponseForbidden
 from allauth.account.models import EmailAddress
 
 # from .decorators import staff_or_superuser_required
-
+from .constants import SLOT_LABELS
+from .models import SLOT_KEYS
 from .models import TableReservation, TimeSlotAvailability, RestaurantConfig, Customer
 from .forms import (
     SignUpForm,
@@ -214,68 +215,67 @@ def _cancel_and_release(reservation: TableReservation) -> None:
 
     Handles:
     - Single-hour reservations
-    - Multi-hour blocks via duration_hours
-      (releases demand across consecutive slot keys starting at reservation.time_slot)
+    - Multi-hour blocks via duration_hours (releases demand across consecutive slot keys)
     - Safe atomic update (locks the TimeSlotAvailability row)
-    - Idempotent: calling twice will not double-release
-    - Never deletes Customer/User data; only marks reservation_status=False
+    - Never deletes Customer/User data; only cancels and updates availability
 
-    Assumptions (based on your project):
-    - TableReservation has:
-        * reservation_date (date)
-        * time_slot (slot key like "17_18")
-        * duration_hours (int, default 1)
-        * number_of_tables_required_by_patron (int)
-        * timeslot_availability FK (may or may not be set)
-        * reservation_status boolean (True=active, False=cancelled)
-    - TimeSlotAvailability has demand fields:
-        total_cust_demand_for_tables_<slot_key>
-      and capacity fields:
-        number_of_tables_available_<slot_key>
-    - You have helper _timeslot_defaults() available.
-    - You have SLOT_KEYS (preferred ordering) OR SLOT_LABELS (fallback ordering).
+    IMPORTANT:
+    If your model has BOTH:
+        - legacy boolean: reservation_status
+        - new lifecycle field: status
+    we update BOTH so admin + reporting stay correct.
     """
 
-    # -----------------------------------------
-    # 0) Idempotency: already cancelled => stop
-    # -----------------------------------------
-    if not getattr(reservation, "reservation_status", True):
-        return
+    # ----------------------------
+    # Idempotent: already cancelled?
+    # ----------------------------
+    # New system
+    if hasattr(reservation, "status"):
+        if reservation.status == getattr(TableReservation, "STATUS_CANCELLED", "cancelled"):
+            return
 
-    # -----------------------------------------
-    # 1) Determine slot ordering + affected slots
-    # -----------------------------------------
-    # Prefer the canonical ordering you already use in the app.
-    # If SLOT_KEYS exists, that's the best source of truth.
+    # Legacy system
+    if hasattr(reservation, "reservation_status"):
+        if reservation.reservation_status is False:
+            # Still also ensure status is cancelled if the field exists
+            if hasattr(reservation, "status") and reservation.status != getattr(TableReservation, "STATUS_CANCELLED", "cancelled"):
+                reservation.status = getattr(
+                    TableReservation, "STATUS_CANCELLED", "cancelled")
+                if hasattr(reservation, "cancelled_at"):
+                    reservation.cancelled_at = timezone.now()
+                    reservation.save(update_fields=["status", "cancelled_at"])
+                else:
+                    reservation.save(update_fields=["status"])
+            return
+
+    # ----------------------------
+    # Determine slot key ordering
+    # ----------------------------
+    # Prefer SLOT_KEYS if it exists; otherwise fall back to SLOT_LABELS.keys()
     try:
-        slot_keys = list(SLOT_KEYS)  # noqa: F821 (SLOT_KEYS is global in your project)
+        slot_keys = list(SLOT_KEYS)  # uses your global ordering if present
     except Exception:
-        # Fallback: use SLOT_LABELS keys (ordering may not be ideal but avoids crashing)
-        slot_labels = globals().get("SLOT_LABELS", {}) or {}
+        labels = globals().get("SLOT_LABELS", {}) or {}
         try:
-            slot_keys = list(slot_labels.keys())
+            slot_keys = list(labels.keys())
         except Exception:
             slot_keys = []
 
     start_slot = getattr(reservation, "time_slot", None)
 
-    # tables needed (safe int)
     try:
         tables_needed = int(
             getattr(reservation, "number_of_tables_required_by_patron", 0) or 0)
     except Exception:
         tables_needed = 0
 
-    # duration safeguards (min 1)
     try:
         duration = int(getattr(reservation, "duration_hours", 1) or 1)
     except Exception:
         duration = 1
-    duration = max(1, duration)
+    if duration < 1:
+        duration = 1
 
-    # Compute affected slots:
-    # - If we can locate start_slot in slot_keys, take a slice for duration
-    # - Else, fall back to only start_slot
     affected_slots = []
     if start_slot and start_slot in slot_keys:
         start_index = slot_keys.index(start_slot)
@@ -283,55 +283,77 @@ def _cancel_and_release(reservation: TableReservation) -> None:
     elif start_slot:
         affected_slots = [start_slot]
 
-    # -----------------------------------------
-    # 2) Atomic cancellation + demand release
-    # -----------------------------------------
-    from django.db import transaction  # local import to avoid missing import issues
-
+    # ----------------------------
+    # Apply cancellation + release
+    # ----------------------------
     with transaction.atomic():
-        # 2a) Mark cancelled first (so mid-transaction readers see it cancelled)
-        reservation.reservation_status = False
-        reservation.save(update_fields=["reservation_status"])
+        # 1) Mark reservation cancelled (NEW + legacy)
+        update_fields = []
 
-        # 2b) Get the TimeSlotAvailability row for that date
+        if hasattr(reservation, "mark_cancelled"):
+            # Your model helper should set: status + cancelled_at + reservation_status (if exists)
+            reservation.mark_cancelled()
+
+            # Build update_fields safely
+            if hasattr(reservation, "status"):
+                update_fields.append("status")
+            if hasattr(reservation, "cancelled_at"):
+                update_fields.append("cancelled_at")
+            if hasattr(reservation, "reservation_status"):
+                update_fields.append("reservation_status")
+        else:
+            # Fallback if helper not present
+            if hasattr(reservation, "status"):
+                reservation.status = getattr(
+                    TableReservation, "STATUS_CANCELLED", "cancelled")
+                update_fields.append("status")
+            if hasattr(reservation, "cancelled_at"):
+                reservation.cancelled_at = timezone.now()
+                update_fields.append("cancelled_at")
+            if hasattr(reservation, "reservation_status"):
+                reservation.reservation_status = False
+                update_fields.append("reservation_status")
+
+        if update_fields:
+            reservation.save(update_fields=update_fields)
+        else:
+            reservation.save()
+
+        # 2) Locate/lock TSA row
         ts = getattr(reservation, "timeslot_availability", None)
 
-        # If FK isn't set (or you want to be defensive), recover by reservation_date
+        # If reservation doesn't have TSA linked (should be rare), fall back to date-based TSA
         if ts is None and getattr(reservation, "reservation_date", None):
             ts, _ = TimeSlotAvailability.objects.get_or_create(
                 calendar_date=reservation.reservation_date,
-                defaults=_timeslot_defaults(),  # assumes your existing helper
+                defaults=_timeslot_defaults(),  # assumes your helper exists
             )
 
-        # If still no TSA row, nothing to release into
         if ts is None:
             return
 
-        # 2c) Lock the TSA row for consistent demand adjustment
         ts = TimeSlotAvailability.objects.select_for_update().get(pk=ts.pk)
 
-        # 2d) Release demand across all affected slots
-        update_fields = []
-        for slot in affected_slots:
-            if not slot:
-                continue
+        # 3) Release demand across all affected slots
+        tsa_update_fields = []
+        if affected_slots and tables_needed > 0:
+            for slot in affected_slots:
+                if not slot:
+                    continue
 
-            demand_field = f"total_cust_demand_for_tables_{slot}"
+                demand_field = f"total_cust_demand_for_tables_{slot}"
 
-            # current demand (safe int)
-            try:
+                # Guard: only touch fields that actually exist on the TSA model
+                if not hasattr(ts, demand_field):
+                    continue
+
                 current = int(getattr(ts, demand_field, 0) or 0)
-            except Exception:
-                current = 0
+                new_val = max(0, current - tables_needed)
+                setattr(ts, demand_field, new_val)
+                tsa_update_fields.append(demand_field)
 
-            # subtract tables needed but never go below 0
-            new_val = max(0, current - tables_needed)
-            setattr(ts, demand_field, new_val)
-            update_fields.append(demand_field)
-
-        # 2e) Save only the fields we changed (efficient + clear)
-        if update_fields:
-            ts.save(update_fields=update_fields)
+        if tsa_update_fields:
+            ts.save(update_fields=tsa_update_fields)
 
 
 def _reservation_contact_email(reservation: TableReservation) -> str | None:
@@ -1240,7 +1262,7 @@ def my_reservations(request):
     Customer-facing list of reservations.
 
     IMPORTANT:
-    TableReservation has no `user` FK in your model, so we match by:
+    TableReservation has no `user` FK in your project, so we match by:
         request.user.email -> Customer.email -> TableReservation.customer
     """
     customer = _customer_for_logged_in_user(request)
@@ -1253,63 +1275,20 @@ def my_reservations(request):
         )
         reservations = TableReservation.objects.none()
     else:
+        # ACTIVE only (new status + legacy boolean)
         reservations = (
             TableReservation.objects
-            .filter(customer=customer, reservation_status=True)
+            .active()
+            .filter(customer=customer)
             .select_related("customer", "timeslot_availability")
             .order_by("reservation_date", "time_slot", "id")
         )
 
-    # -----------------------------------------
-    # Display helper: show true multi-hour range
-    # -----------------------------------------
-    def _pretty_time_range(start_slot_key: str, duration_hours: int) -> str:
-        """
-        Convert (start_slot_key + duration_hours) -> "HH:MM–HH:MM".
-        Falls back safely if slot keys/labels are missing.
-        """
-        start_label = SLOT_LABELS.get(start_slot_key, start_slot_key)
-
-        # duration not set or 1 hour -> show normal label
-        try:
-            dur = int(duration_hours or 1)
-        except Exception:
-            dur = 1
-        if dur <= 1:
-            return start_label
-
-        # Prefer your canonical slot ordering helper if it exists
-        try:
-            slots = _slot_order()  # <-- if you have this helper in views.py
-        except Exception:
-            slots = SLOT_KEYS      # <-- fallback to your constant
-
-        # find end slot key by walking slots
-        try:
-            start_index = slots.index(start_slot_key)
-        except ValueError:
-            return start_label
-
-        end_index = min(start_index + dur - 1, len(slots) - 1)
-        end_slot_key = slots[end_index]
-        end_label = SLOT_LABELS.get(end_slot_key, end_slot_key)
-
-        # try to build "start–end" using the labels’ “–” format
-        try:
-            start_time = start_label.split("–")[0].strip()
-            end_time = end_label.split("–")[1].strip()
-            return f"{start_time}–{end_time}"
-        except Exception:
-            # fallback: just return start label if parsing fails
-            return start_label
-
-    # Attach display-only helpers onto each reservation object for templates
+    # Attach any template-friendly display flags without touching model @properties
     for r in reservations:
-        # Don’t overwrite a real model property/method if you add it later
-        if not hasattr(r.__class__, "time_range_pretty"):
-            r.time_range_pretty = _pretty_time_range(
-                r.time_slot, getattr(r, "duration_hours", 1)
-            )
+        # Your template uses reservation.status_display already.
+        # It is now provided by the model property, so no need to compute here.
+        pass
 
     return render(
         request,
@@ -1317,13 +1296,14 @@ def my_reservations(request):
         {
             "customer": customer,
             "reservations": reservations,
+            "slot_labels": SLOT_LABELS,
         },
     )
-
-
 # -------------------------------------------------------------------
 # Staff dashboard (cards for Phone Reservations, Customer Stats, etc.)
 # -------------------------------------------------------------------
+
+
 def staff_or_superuser_required(view_func):
     """
     Custom decorator: allow access if user is staff OR superuser.
@@ -1347,7 +1327,7 @@ def staff_reservations(request):
 
     IMPORTANT:
     - TableReservation has NO `user` FK in your project.
-    - Staff can view all ACTIVE reservations (reservation_status=True).
+    - Staff can view all ACTIVE reservations.
     - Display must reflect multi-hour blocks using duration_hours.
 
     Fixes:
@@ -1360,9 +1340,9 @@ def staff_reservations(request):
     # -----------------------------------------
     # Pull ACTIVE reservations only
     # -----------------------------------------
-    reservations = (
+    qs = (
         TableReservation.objects
-        .filter(reservation_status=True)
+        .active()
         .select_related("customer", "timeslot_availability")
         .order_by("reservation_date", "time_slot", "id")
     )
@@ -1379,7 +1359,6 @@ def staff_reservations(request):
         """
         start_label = SLOT_LABELS.get(start_slot_key, start_slot_key)
 
-        # Normalize duration
         try:
             dur = int(duration_hours or 1)
         except Exception:
@@ -1387,12 +1366,7 @@ def staff_reservations(request):
         if dur <= 1:
             return start_label
 
-        # We need an ordering of slot keys to find the end slot
-        try:
-            slot_keys = list(SLOT_KEYS)
-        except Exception:
-            # fallback: preserve SLOT_LABELS order if SLOT_KEYS not available
-            slot_keys = list(SLOT_LABELS.keys())
+        slot_keys = list(SLOT_KEYS) if SLOT_KEYS else list(SLOT_LABELS.keys())
 
         if start_slot_key not in slot_keys:
             return start_label
@@ -1402,24 +1376,27 @@ def staff_reservations(request):
         end_slot_key = slot_keys[end_index]
         end_label = SLOT_LABELS.get(end_slot_key, end_slot_key)
 
-        # Try to derive end time from slot labels like "17:00–18:00"
         try:
             start_time = start_label.split("–")[0].strip()
             end_time = end_label.split("–")[1].strip()
             return f"{start_time}–{end_time}"
         except Exception:
-            # Fallback: show start label only
             return start_label
 
     # -----------------------------------------
-    # Attach display-only time range attribute
+    # Attach display-only attributes for template
     # -----------------------------------------
-    # IMPORTANT: do NOT use "time_range_pretty" because you may have it as @property
+    reservations = list(qs)
+
     for r in reservations:
         r.time_range_display = _pretty_time_range(
             r.time_slot,
             getattr(r, "duration_hours", 1),
         )
+
+        # Optional: staff template may want a friendly status label
+        # (model now provides r.status_display)
+        # r.status_display is safe to use directly.
 
     return render(
         request,

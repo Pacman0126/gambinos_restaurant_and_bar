@@ -16,14 +16,27 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 # from reservation_book import views as reservation_book_views
 
 urlpatterns = [
     path('', include('reservation_book.urls')),
     path('admin/', admin.site.urls),
-    path('summernote/', include('django_summernote.urls')),
+    # path('summernote/', include('django_summernote.urls')),
     # Provides: account_login, account_logout, account_signup, etc.
     path("accounts/", include("allauth.urls")),
     # path('reservations/', reservation_book_views.reservations,  name='reservations'),
 
 ]
+
+if "django_summernote" in settings.INSTALLED_APPS:
+    urlpatterns += [path("summernote/", include("django_summernote.urls"))]
+
+# ----------------------------
+# Media serving in development
+# ----------------------------
+# This is correct and required for local uploads (DEBUG=True).
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT,)

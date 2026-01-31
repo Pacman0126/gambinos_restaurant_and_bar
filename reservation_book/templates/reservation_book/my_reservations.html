@@ -29,64 +29,150 @@
                 </thead>
                 <tbody>
                     {% for reservation in reservations %}
-                        <tr>
-                            <td>{{ reservation.id }}</td>
-                            <td>
-                                {{ reservation.timeslot_availability.calendar_date|date:"D d M Y" }}
-                            </td>
-                            <td>
-                                {{ reservation.time_range_pretty }}
-                            </td>
-                            <td>
-                                {{ reservation.number_of_tables_required_by_patron }}
-                            </td>
-                            <td>
-                                {{ reservation.first_name }} {{ reservation.last_name }}
-                            </td>
-                            {% comment %} <td>
-                                {% if reservation.reservation_status %}
-                                    <span class="badge bg-success">Active</span>
-                                {% else %}
-                                    <span class="badge bg-secondary">Cancelled</span>
-                                {% endif %}
-                            </td> {% endcomment %}
-                            <td>
-                                {% if reservation.status_display == "Active" %}
-                                    <span class="badge bg-success">Active</span>
-                                {% elif reservation.status_display == "Completed" %}
-                                    <span class="badge bg-secondary">Completed</span>
-                                {% elif reservation.status_display == "Cancelled" %}
-                                    <span class="badge bg-danger">Cancelled</span>
-                                {% else %}
-                                    <span class="badge bg-light text-dark">{{ reservation.status_display }}</span>
-                                {% endif %}
-                            </td>
+                        {# ---------------------------------------------
+                           Derive "is active" safely:
+                           - Prefer new status field if present
+                           - Else fall back to legacy reservation_status boolean
+                           --------------------------------------------- #}
+                        {% with status_text=reservation.get_status_display|default_if_none:"" %}
+                            {% if status_text %}
+                                {% with is_active=reservation.is_active %}
 
+                                    <tr>
+                                        <td>{{ reservation.id }}</td>
 
-                            <td class="text-end">
-                                {% if reservation.reservation_status %}
-                                    <a href="{% url 'update_reservation' reservation.id %}"
-                                       class="btn btn-sm btn-outline-light me-2">
-                                        <i class="fa-solid fa-pen-to-square me-1"></i>
-                                        Edit
-                                    </a>
+                                        <td>
+                                            {{ reservation.timeslot_availability.calendar_date|date:"D d M Y" }}
+                                        </td>
 
-                                    <form method="post"
-                                          action="{% url 'cancel_reservation' reservation.id %}"
-                                          class="d-inline">
-                                        {% csrf_token %}
-                                        <button type="submit"
-                                                class="btn btn-sm btn-outline-danger"
-                                                onclick="return confirm('Are you sure you want to cancel this reservation?');">
-                                            <i class="fa-solid fa-xmark me-1"></i>
-                                            Cancel
-                                        </button>
-                                    </form>
-                                {% else %}
-                                    <span class="text-muted">No actions</span>
-                                {% endif %}
-                            </td>
-                        </tr>
+                                        <td>
+                                            {{ reservation.time_range_pretty }}
+                                        </td>
+
+                                        <td>
+                                            {{ reservation.number_of_tables_required_by_patron }}
+                                        </td>
+
+                                        <td>
+                                            {% if reservation.customer %}
+                                                {% with fn=reservation.customer.first_name|default:"" ln=reservation.customer.last_name|default:"" %}
+                                                    {% if fn or ln %}
+                                                        {{ fn }} {{ ln }}
+                                                    {% else %}
+                                                        {{ reservation.customer.email|default:"-" }}
+                                                    {% endif %}
+                                                {% endwith %}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </td>
+
+                                        <td>
+                                            {% if status_text == "Active" %}
+                                                <span class="badge bg-success">Active</span>
+                                            {% elif status_text == "Completed" %}
+                                                <span class="badge bg-secondary">Completed</span>
+                                            {% elif status_text == "Cancelled" %}
+                                                <span class="badge bg-danger">Cancelled</span>
+                                            {% elif status_text == "No-show" %}
+                                                <span class="badge bg-warning text-dark">No-show</span>
+                                            {% else %}
+                                                <span class="badge bg-light text-dark">{{ status_text }}</span>
+                                            {% endif %}
+                                        </td>
+
+                                        <td class="text-end">
+                                            {% if is_active %}
+                                                <a href="{% url 'update_reservation' reservation.id %}"
+                                                   class="btn btn-sm btn-outline-light me-2">
+                                                    <i class="fa-solid fa-pen-to-square me-1"></i>
+                                                    Edit
+                                                </a>
+
+                                                <form method="post"
+                                                      action="{% url 'cancel_reservation' reservation.id %}"
+                                                      class="d-inline">
+                                                    {% csrf_token %}
+                                                    <button type="submit"
+                                                            class="btn btn-sm btn-outline-danger"
+                                                            onclick="return confirm('Are you sure you want to cancel this reservation?');">
+                                                        <i class="fa-solid fa-xmark me-1"></i>
+                                                        Cancel
+                                                    </button>
+                                                </form>
+                                            {% else %}
+                                                <span class="text-muted">No actions</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endwith %}
+                            {% else %}
+                                {# Legacy fallback: reservation_status boolean #}
+                                {% with is_active=reservation.reservation_status %}
+                                    <tr>
+                                        <td>{{ reservation.id }}</td>
+
+                                        <td>
+                                            {{ reservation.timeslot_availability.calendar_date|date:"D d M Y" }}
+                                        </td>
+
+                                        <td>
+                                            {{ reservation.time_range_pretty }}
+                                        </td>
+
+                                        <td>
+                                            {{ reservation.number_of_tables_required_by_patron }}
+                                        </td>
+
+                                        <td>
+                                            {% if reservation.customer %}
+                                                {% with fn=reservation.customer.first_name|default:"" ln=reservation.customer.last_name|default:"" %}
+                                                    {% if fn or ln %}
+                                                        {{ fn }} {{ ln }}
+                                                    {% else %}
+                                                        {{ reservation.customer.email|default:"-" }}
+                                                    {% endif %}
+                                                {% endwith %}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </td>
+
+                                        <td>
+                                            {% if is_active %}
+                                                <span class="badge bg-success">Active</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">Cancelled</span>
+                                            {% endif %}
+                                        </td>
+
+                                        <td class="text-end">
+                                            {% if is_active %}
+                                                <a href="{% url 'update_reservation' reservation.id %}"
+                                                   class="btn btn-sm btn-outline-light me-2">
+                                                    <i class="fa-solid fa-pen-to-square me-1"></i>
+                                                    Edit
+                                                </a>
+
+                                                <form method="post"
+                                                      action="{% url 'cancel_reservation' reservation.id %}"
+                                                      class="d-inline">
+                                                    {% csrf_token %}
+                                                    <button type="submit"
+                                                            class="btn btn-sm btn-outline-danger"
+                                                            onclick="return confirm('Are you sure you want to cancel this reservation?');">
+                                                        <i class="fa-solid fa-xmark me-1"></i>
+                                                        Cancel
+                                                    </button>
+                                                </form>
+                                            {% else %}
+                                                <span class="text-muted">No actions</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endwith %}
+                            {% endif %}
+                        {% endwith %}
                     {% endfor %}
                 </tbody>
             </table>

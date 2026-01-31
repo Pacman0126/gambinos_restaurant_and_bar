@@ -63,9 +63,7 @@
           <tr>
             <td>{{ r.id }}</td>
 
-            <td>
-              {{ r.reservation_date|date:"M d, Y" }}
-            </td>
+            <td>{{ r.reservation_date|date:"M d, Y" }}</td>
 
             <td>
               {{ r.time_range_display }}
@@ -88,10 +86,16 @@
             </td>
 
             <td>
-              {% if r.reservation_status %}
+              {% if r.status_display == "Active" %}
                 <span class="badge bg-success">Active</span>
-              {% else %}
+              {% elif r.status_display == "Cancelled" %}
                 <span class="badge bg-secondary">Cancelled</span>
+              {% elif r.status_display == "Completed" %}
+                <span class="badge bg-secondary">Completed</span>
+              {% elif r.status_display == "No-show" %}
+                <span class="badge bg-warning text-dark">No-show</span>
+              {% else %}
+                <span class="badge bg-light text-dark">{{ r.status_display }}</span>
               {% endif %}
             </td>
 
@@ -100,7 +104,7 @@
                 Edit
               </a>
 
-              {% if r.reservation_status %}
+              {% if r.is_active_display %}
                 <form method="post" action="{% url 'cancel_reservation' r.id %}" class="d-inline">
                   {% csrf_token %}
                   <button type="submit" class="btn btn-sm btn-outline-danger">
