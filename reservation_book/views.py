@@ -866,10 +866,13 @@ def _build_next_30_days():
                 "remaining": max(available - demand, 0),
             })
 
+        # ✅ IMPORTANT: match what templates render: ts.calendar_date and ts.slots
         days.append({
+            "calendar_date": ts.calendar_date,  # or `date`
+            "slots": slots,
+            # keep these if anything else relies on them (harmless):
             "date": date,
             "timeslot": ts,
-            "slots": slots,
         })
 
     return days

@@ -1,420 +1,346 @@
-/* =====================
-   Global
-===================== */
+/* =========================================
+   Site-wide base styles
+   ========================================= */
+
 body {
-  background: url("../images/hero/brown-concrete-wall-with-scratches-vector.jpg") no-repeat center center fixed;
-  background-size: cover;
-
-  font-family: 'Lato', sans-serif;
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  background-color: #0f0f0f;
+  color: #f8f9fa;
 }
 
-/* =====================
-   Table availability calendar grid
-===================== */
-.availability-panel {
-  background: rgba(0, 0, 0, .65);
-  border-radius: 10px;
-  padding: 16px;
-}
-
-.availability-panel h4,
-.availability-panel th,
-.availability-panel td,
-.availability-panel .text-light {
-  color: #fff !important;
-}
-
-.slot-btn.selected {
-  outline: 3px solid #fff;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, .35);
-}
-
-/* Date column */
-.availability-grid td.date-cell,
-.availability-grid th.date-cell {
-  color: #f8f9fa !important;
-  /* light text */
-  font-weight: 600;
-  background: rgba(0, 0, 0, 0.45);
-  /* dark translucent backing */
-  white-space: nowrap;
-}
-
-/* Slot header row */
-.availability-grid thead th {
-  color: #ffffff !important;
-  background: rgba(0, 0, 0, 0.65);
-  text-align: center;
-  font-weight: 700;
-}
-
-/* Selected slot display */
-.selected-slot-label,
-.selected-slot-value {
-  color: #ffffff !important;
-  font-weight: 600;
-}
-
-/* Slot buttons */
-.slot-btn {
-  font-weight: 600;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
-}
-
-.slot-btn.btn-outline-success {
-  color: #0f5132;
-  background-color: #d1e7dd;
-  border-color: #badbcc;
-}
-
-.slot-btn.btn-outline-secondary {
-  color: #adb5bd;
-}
-
-/* =====================
-   Branding
-===================== */
-.brand {
-  font-size: 1.6rem;
-  font-weight: 700;
+/* Links */
+a {
   color: #d4af37;
-  /* gold accent */
-}
-
-.red-o {
-  color: #b22222;
-  /* rich red */
-}
-
-.thin {
-  font-weight: 300;
-  color: #f8f9fa;
-}
-
-/* =====================
-   Background Helpers
-===================== */
-.light-bg {
-  background-color: #fff;
-}
-
-.dark-bg {
-  background-color: #1a1a1a;
-}
-
-
-/* =====================
-   Navbar
-===================== */
-.navbar {
-  background-color: #1a1a1a !important;
-}
-
-.navbar-brand,
-.nav-link {
-  color: #f8f9fa !important;
-}
-
-.nav-link.active {
-  font-weight: bold;
-  border-bottom: 2px solid #d4af37;
-  /* gold underline for active */
-}
-
-/* =====================
-   Cards / Containers
-===================== */
-.card {
-  border: none;
-  background-color: rgba(26, 26, 26, 0.85);
-  color: #f8f9fa;
-}
-
-/* ===== HIGH-CONTRAST TYPOGRAPHY FOR DARK BACKGROUNDS ===== */
-
-/* Applies to all cards in dark sections */
-.card.bg-dark,
-.card.bg-dark .card-body,
-.card.bg-dark .card-header {
-  background-color: #1e1e1e !important;
-  color: #f5f5f5 !important;
-}
-
-/* Generic dark background containers (your reservation history sections) */
-.dark-section,
-.my-reservations,
-.reservation-history {
-  color: #f5f5f5 !important;
-  /* text readable */
-}
-
-.dark-section p,
-.my-reservations p,
-.reservation-history p {
-  color: #eaeaea !important;
-  /* high visibility paragraphs */
-  line-height: 1.55;
-}
-
-.dark-section h1,
-.dark-section h2,
-.dark-section h3,
-.dark-section h4,
-.dark-section h5,
-.my-reservations h1,
-.my-reservations h2,
-.my-reservations h3,
-.my-reservations h4,
-.my-reservations h5,
-.reservation-history h1,
-.reservation-history h2,
-.reservation-history h3,
-.reservation-history h4,
-.reservation-history h5 {
-  color: #ffffff !important;
-  font-weight: 600;
-}
-
-/* Strong text inside cards */
-.dark-section strong,
-.my-reservations strong,
-.reservation-history strong {
-  color: #ffffff !important;
-}
-
-/* Table text inside dark sections */
-.dark-section table,
-.dark-section table td,
-.dark-section table th,
-.my-reservations table,
-.my-reservations table td,
-.my-reservations table th,
-.reservation-history table,
-.reservation-history table td,
-.reservation-history table th {
-  color: #f5f5f5 !important;
-  background-color: #1e1e1e !important;
-  border-color: #444 !important;
-}
-
-/* Links on dark backgrounds */
-.dark-section a,
-.my-reservations a,
-.reservation-history a {
-  color: #ffd55c !important;
-}
-
-.dark-section a:hover,
-.my-reservations a:hover,
-.reservation-history a:hover {
-  color: #ffe9a3 !important;
-}
-
-/* Buttons on dark backgrounds */
-.dark-section .btn,
-.my-reservations .btn,
-.reservation-history .btn {
-  color: #fff !important;
-}
-
-
-/* =====================
-   Hero / Masthead
-===================== */
-.hero-banner,
-.masthead {
-  margin-top: 10px;
-  overflow: hidden;
-  position: relative;
-  display: inline-block;
-  height: 50vh;
-  width: 100%;
-}
-
-.hero-banner .overlay,
-.masthead-text {
-  position: absolute;
-  bottom: 20%;
-  left: 5%;
-  color: #fff;
-  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
-}
-
-.masthead-image:after {
-  content: none;
-  /* remove skew effect for clean images */
-}
-
-/* =====================
-   Links
-===================== */
-a,
-.post-link {
   text-decoration: none;
-  color: #d4af37;
 }
 
-a:hover,
-.post-link:hover {
-  color: #f1c40f;
+a:hover {
+  color: #f1d27a;
   text-decoration: underline;
 }
 
-/* =====================
-   Buttons
-===================== */
-.btn-danger {
-  background-color: #800000;
-  border: none;
+/* Cards */
+.card {
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  background-color: #121212;
+  color: #f8f9fa;
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 
-.btn-danger:hover {
-  background-color: #b22222;
+.card-header {
+  background-color: #1e1e1e;
+  color: #f8f9fa;
+  font-weight: 600;
+  border-bottom: 2px solid #d4af37;
 }
 
-.btn-outline-light:hover {
-  background-color: #d4af37;
-  color: #000;
+.card-body {
+  background-color: #121212;
 }
 
-.btn-signup,
-.btn-edit {
-  background-color: #b22222;
-  color: #fff;
+/* Buttons */
+.btn-primary {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
 }
 
-.btn-signup:hover {
-  background-color: #fff;
-  color: #800000;
+.btn-primary:hover {
+  background-color: #0b5ed7;
+  border-color: #0b5ed7;
 }
 
-/* =====================
-   Footer
-===================== */
-.footer {
-  background-color: #1a1a1a;
+/* =========================================
+   Modal (original section from your file)
+   ========================================= */
+
+/* Modal styling */
+#customerModal .modal-content {
+  background-color: #121212;
+  color: #f8f9fa;
+  border: 1px solid rgba(212, 175, 55, 0.25);
+}
+
+#customerModal .modal-header {
+  border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+}
+
+#customerModal .modal-title {
   color: #f8f9fa;
 }
 
-.footer p {
-  margin: 0.3rem 0;
-  font-size: 0.9rem;
-}
-
-/* Reset modal to Bootstrap defaults */
-.modal-content {
-  background-color: #fff !important;
-  color: #212529 !important;
-  /* Bootstrap's default text color */
-}
-
-.modal-header,
-.modal-body,
-.modal-footer {
-  background-color: #fff !important;
-  color: #212529 !important;
-}
-
-/* Fix Bootstrap modal text and form fields */
-.modal-content {
-  background-color: #fff !important;
-  color: #212529 !important;
-  /* Bootstrap default text color */
-}
-
-.modal-content label,
-.modal-content h5,
-.modal-content .form-label,
-.modal-content .form-control,
-.modal-content .form-select,
-.modal-content option {
-  color: #212529 !important;
-}
-
-.modal-content input,
-.modal-content select,
-.modal-content textarea {
-  background-color: #fff !important;
-  color: #212529 !important;
-}
-
-/* =====================
-   Fix Reservation Modal
-===================== */
-#customerModal .modal-content {
-  background-color: #fff !important;
-  color: #212529 !important;
-}
-
-#customerModal .modal-header,
-#customerModal .modal-body,
 #customerModal .modal-footer {
-  background-color: #fff !important;
-  color: #212529 !important;
+  border-top: 1px solid rgba(212, 175, 55, 0.25);
 }
 
-#customerModal label,
-#customerModal h5,
-#customerModal .form-label {
-  color: #212529 !important;
+/* =========================================
+   Phone reservation grid styles
+   ========================================= */
+
+.table-responsive.phone-reservation-grid {
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background-color: #121212;
 }
 
-#customerModal input,
-#customerModal select,
-#customerModal textarea {
-  background-color: #fff !important;
-  color: #212529 !important;
-  border: 1px solid #ced4da !important;
-}
-
-#customerModal option {
-  color: #212529 !important;
-}
-
-/* =====================
-   PHONE RESERVATION GRID – HIGH CONTRAST FIX
-===================== */
-
-.phone-reservation-grid {
-  background: rgba(0, 0, 0, 0.55);
-  border-radius: 10px;
-  padding: 12px;
+.phone-reservation-grid table {
+  margin-bottom: 0;
 }
 
 .phone-reservation-grid thead th {
-  background: rgba(0, 0, 0, 0.85) !important;
-  color: #cfe2ff !important;
-  text-align: center;
-  font-weight: 700;
+  background-color: #1e1e1e !important;
+  color: #f8f9fa !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 .phone-reservation-grid tbody td {
-  background: rgba(0, 0, 0, 0.55) !important;
-  color: #e9f2ff !important;
+  background-color: #121212;
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
 .phone-reservation-grid .date-cell {
-  background: rgba(0, 0, 0, 0.7) !important;
-  color: #9ecbff !important;
-  font-weight: 700;
+  background-color: #1e1e1e !important;
+  color: #f8f9fa !important;
+  font-weight: 600;
+  text-align: left;
   white-space: nowrap;
 }
 
-.phone-reservation-grid .slot-btn.btn-outline-success {
-  background-color: rgba(13, 110, 253, 0.15) !important;
-  color: #cfe2ff !important;
-  border-color: #6ea8fe !important;
+/* Slot buttons used in grid */
+.slot-btn {
   font-weight: 600;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.25rem;
+  line-height: 1.1;
 }
 
-.phone-reservation-grid .slot-btn.btn-success {
+/* NOTE: These are your existing styles */
+.slot-btn.btn-outline-success {
+  color: #198754;
+  border-color: #198754;
+}
+
+.slot-btn.btn-outline-success:hover {
+  color: #fff;
+  background-color: #198754;
+  border-color: #198754;
+}
+
+.slot-btn.btn-success {
+  background-color: #198754;
+  border-color: #198754;
+  color: #fff;
+}
+
+.slot-btn.btn-outline-secondary.disabled,
+.slot-btn.btn-secondary.disabled {
+  opacity: 0.6;
+}
+
+/* =========================================
+   Misc
+   ========================================= */
+
+.table {
+  color: #f8f9fa;
+}
+
+.table-striped>tbody>tr:nth-of-type(odd)>* {
+  --bs-table-accent-bg: rgba(255, 255, 255, 0.02);
+}
+
+.table-hover>tbody>tr:hover>* {
+  --bs-table-accent-bg: rgba(212, 175, 55, 0.06);
+}
+
+/* ==========================================================
+   OVERRIDES (2026-02) — Modal theme + keep slot buttons BLUE
+   (Added to fix customerModal styling without changing grid logic)
+   ========================================================== */
+
+/* Reservation Details modal should match dark card scheme */
+#customerModal .modal-content {
+  background-color: rgba(26, 26, 26, 0.96);
+  color: #f8f9fa;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  /* subtle gold edge */
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+#customerModal .modal-header {
+  background-color: #1e1e1e;
+  color: #f8f9fa;
+  border-bottom: 2px solid #d4af37;
+  /* gold accent like card header */
+}
+
+#customerModal .modal-title {
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+#customerModal .modal-body {
+  background-color: transparent;
+}
+
+#customerModal .modal-footer {
+  background-color: #1e1e1e;
+  border-top: 1px solid rgba(212, 175, 55, 0.25);
+}
+
+/* Make form controls readable on dark modal */
+#customerModal .form-label {
+  color: #eaeaea;
+}
+
+#customerModal .form-control,
+#customerModal .form-select {
+  background-color: rgba(255, 255, 255, 0.06);
+  color: #f8f9fa;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+#customerModal .form-control::placeholder {
+  color: rgba(248, 249, 250, 0.55);
+}
+
+#customerModal .form-control:focus,
+#customerModal .form-select:focus {
+  border-color: rgba(212, 175, 55, 0.65);
+  box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.18);
+}
+
+#customerModal .alert {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* Keep the slot grid BLUE everywhere.
+   Your templates may use .slot-btn with btn-outline-success/btn-success.
+   These overrides force those slot buttons to use Bootstrap "primary" coloring
+   WITHOUT touching other .btn-success buttons elsewhere. */
+.slot-btn.btn-outline-success {
+  color: #0d6efd !important;
+  border-color: #0d6efd !important;
+  background-color: transparent !important;
+}
+
+.slot-btn.btn-outline-success:hover,
+.slot-btn.btn-outline-success:focus {
+  color: #fff !important;
   background-color: #0d6efd !important;
   border-color: #0d6efd !important;
+}
+
+.slot-btn.btn-success {
+  background-color: #0d6efd !important;
+  border-color: #0d6efd !important;
+  color: #fff !important;
+}
+
+.slot-btn.btn-success:hover,
+.slot-btn.btn-success:focus {
+  background-color: #0b5ed7 !important;
+  border-color: #0b5ed7 !important;
+}
+
+/* Keep disabled slots neutral */
+.slot-btn.btn-outline-secondary.disabled,
+.slot-btn.btn-secondary.disabled,
+.slot-btn:disabled {
+  opacity: 0.65;
+}
+
+/* ==========================================================
+   NAVBAR FIX — restore Bootstrap navbar styling
+   ========================================================== */
+
+/* Ensure navbar keeps its intended background */
+.navbar {
+  background-color: inherit;
+}
+
+/* Explicitly restore dark navbar */
+.navbar.navbar-dark {
+  background-color: #212529 !important;
+}
+
+/* Explicitly restore light navbar if used */
+.navbar.navbar-light {
+  background-color: #f8f9fa !important;
+}
+
+/* Prevent card styles from leaking into navbar */
+.navbar .card,
+.navbar .card-header,
+.navbar .card-body {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Navbar links */
+.navbar-dark .navbar-nav .nav-link {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.navbar-dark .navbar-nav .nav-link:hover {
+  color: #fff;
+}
+
+/* =========================================================
+   FORCE NAVBAR DARK (fix white navbar regression)
+   Paste at the VERY BOTTOM of style.css
+   ========================================================= */
+
+/* Catch common Bootstrap combinations that can turn it white */
+nav.navbar,
+.navbar,
+nav.navbar.bg-light,
+.navbar.bg-light,
+.navbar .container,
+.navbar .container-fluid,
+.navbar .navbar-collapse {
+  background-color: #141414 !important;
+}
+
+/* Brand + links */
+.navbar .navbar-brand,
+.navbar .navbar-nav .nav-link,
+.navbar .navbar-text {
+  color: #f8f9fa !important;
+}
+
+.navbar .navbar-nav .nav-link:hover,
+.navbar .navbar-nav .nav-link:focus,
+.navbar .navbar-brand:hover,
+.navbar .navbar-brand:focus {
   color: #ffffff !important;
 }
 
-.phone-reservation-grid .btn-outline-secondary {
+/* Dropdowns */
+.navbar .dropdown-menu {
+  background-color: #1f1f1f !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+.navbar .dropdown-item {
+  color: #f8f9fa !important;
+}
+
+.navbar .dropdown-item:hover,
+.navbar .dropdown-item:focus {
   background-color: rgba(255, 255, 255, 0.08) !important;
-  color: #adb5bd !important;
-  border-color: #495057 !important;
+  color: #ffffff !important;
+}
+
+/* Toggler button for mobile */
+.navbar .navbar-toggler {
+  border-color: rgba(255, 255, 255, 0.35) !important;
+}
+
+/* Bootstrap’s default toggler icon is dark; invert it for dark navbar */
+.navbar .navbar-toggler-icon {
+  filter: invert(1) grayscale(100%) !important;
 }

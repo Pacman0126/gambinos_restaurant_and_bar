@@ -2,554 +2,295 @@
 {% load static %}
 
 {% block content %}
+<div class="container py-4">
 
-<!-- Reservation Modal -->
-<div class="modal fade" id="customerModal" tabindex="-1" aria-labelledby="customerModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content bg-dark text-light">
-      <form id="reservationForm" method="post" action="{% url 'make_reservation' %}">
-        {% csrf_token %}
+  <h1 class="mb-3">Make a Reservation</h1>
 
-        <div class="modal-header border-0">
-          <h5 class="modal-title" id="customerModalLabel">
-            {% comment %} {% if request.user.is_staff %}
-              Phone Reservation – Caller Details & Confirmation
-            {% else %}
-              Confirm Your Reservation
-            {% endif %} {% endcomment %}
-           {% if request.user.is_staff %}
-            <!-- Staff: Customer/Reservation Search with Mode Selection -->
-            <div class="mb-4">
-              <label class="form-label fw-bold">Search Customer or Reservation</label>
+  {# --- Messages --- #}
+  {% if messages %}
+    <div class="mb-3">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} mb-2" role="alert">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
 
-              <!-- Mode Selection Radios -->
-              <div class="btn-group d-flex mb-3" role="group" aria-label="Search mode">
-                <input type="radio" class="btn-check" name="search_mode" id="mode_existing" value="existing" checked>
-                <label class="btn btn-outline-primary flex-fill" for="mode_existing">
-                  Existing Reservations
-                </label>
+  <!-- Booking Modal -->
+  <div class="modal fade" id="customerModal" tabindex="-1" aria-labelledby="customerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content reservation-details-modal">
 
-                <input type="radio" class="btn-check" name="search_mode" id="mode_past" value="past">
-                <label class="btn btn-outline-primary flex-fill" for="mode_past">
-                  Past Customers / Database
-                </label>
+        <div class="modal-header">
+          <h5 class="modal-title" id="customerModalLabel">Reservation Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <form method="post" id="reservationForm">
+          {% csrf_token %}
+
+          <div class="modal-body">
+            <p class="mb-2">
+              <strong>Selected:</strong>
+              <span id="selectedSlotDisplay" class="ms-1">None</span>
+            </p>
+
+            <input type="hidden" name="reservation_date" id="reservation_date">
+            <input type="hidden" name="time_slot" id="time_slot">
+            <input type="hidden" name="timeslot_pk" id="timeslot_pk">
+
+            {% if request.user.is_staff %}
+              <div class="alert alert-info mb-3">
+                Staff booking: use Lookup Customer button, then select a slot.
               </div>
 
-              <!-- Search Input -->
-              <div class="input-group">
+              <!-- Staff: lookup/search section (kept as-is from your template) -->
+              <div class="mb-3">
+                <label class="form-label">Customer Search</label>
+                <div class="input-group">
+                  <input type="text" class="form-control" id="customerSearchInput" placeholder="Search by email, first name, last name...">
+                  <button type="button" class="btn btn-outline-primary" id="customerSearchBtn">Search</button>
+                </div>
+                <div id="customerSearchResults" class="mt-2"></div>
+              </div>
+            {% else %}
+              <div class="alert alert-secondary mb-3">
+                Booking for: <strong>{{ request.user.get_full_name|default:request.user.username }}</strong>
+                (<strong>{{ request.user.email }}</strong>)
+              </div>
+            {% endif %}
+
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label for="first_name" class="form-label">First Name</label>
                 <input
                   type="text"
-                  id="customerLookup"
                   class="form-control"
-                  placeholder="Type name, email, phone, or reservation ID..."
-                  autocomplete="off"
+                  id="first_name"
+                  name="first_name"
+                  value="{% if not request.user.is_staff %}{{ request.user.first_name }}{% endif %}"
+                  {% if not request.user.is_staff %}readonly{% endif %}
                 >
-                <span class="input-group-text">
-                  <i class="bi bi-search"></i>
-                </span>
               </div>
 
-              <!-- Search Feedback -->
-              <div class="form-text text-muted mt-2" id="customerLookupResult">
-                Start typing to search for customers or reservations.
+              <div class="col-md-4">
+                <label for="last_name" class="form-label">Last Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="last_name"
+                  name="last_name"
+                  value="{% if not request.user.is_staff %}{{ request.user.last_name }}{% endif %}"
+                  {% if not request.user.is_staff %}readonly{% endif %}
+                >
               </div>
 
-              <!-- Dropdown for multiple results -->
-              <div id="customerLookupControls" class="mt-3" style="display: none;">
-                <label for="customerLookupSelect" class="form-label">
-                  Select a match
-                </label>
-                <select id="customerLookupSelect" class="form-select" size="7">
-                  <!-- Filled dynamically by JS -->
-                </select>
-                <div class="form-text small text-info mt-2">
-                  • <strong>Existing Reservations</strong>: Select to go directly to edit/cancel<br>
-                  • <strong>Past Customers</strong>: Select to auto-fill form for new booking
+              <div class="col-md-4">
+                <label for="email" class="form-label">Email</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  id="email"
+                  name="email"
+                  value="{% if not request.user.is_staff %}{{ request.user.email }}{% endif %}"
+                  {% if not request.user.is_staff %}readonly{% endif %}
+                >
+              </div>
+
+              <div class="col-md-4">
+                <label for="phone" class="form-label">Phone</label>
+                <input type="text" class="form-control" id="phone" name="phone">
+              </div>
+
+              <div class="col-md-4">
+                <label for="mobile_phone" class="form-label">Mobile</label>
+                <input type="text" class="form-control" id="mobile_phone" name="mobile_phone">
+              </div>
+
+              <div class="col-md-4">
+                <label for="number_of_tables_required_by_patron" class="form-label">Tables Needed</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="number_of_tables_required_by_patron"
+                  name="number_of_tables_required_by_patron"
+                  min="1"
+                  value="1"
+                >
+              </div>
+            </div>
+
+            <!-- Booking Options -->
+            <div class="row g-3 mt-1">
+              <div class="col-md-4">
+                <label for="duration_hours" class="form-label">Number of Hours</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="duration_hours"
+                  name="duration_hours"
+                  min="1"
+                  max="5"
+                  value="1"
+                >
+                <div class="form-text">1–5 hours (max depends on start time).</div>
+              </div>
+
+              <div class="col-md-4">
+                <label for="series_days" class="form-label">Number of Days</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="series_days"
+                  name="series_days"
+                  min="1"
+                  max="30"
+                  value="1"
+                >
+                <div class="form-text">Consecutive days starting from the selected date.</div>
+              </div>
+
+              <div class="col-md-4 d-flex align-items-end">
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="checkbox" id="book_until_close" name="book_until_close">
+                  <label class="form-check-label" for="book_until_close">
+                    Book until closing time
+                  </label>
                 </div>
               </div>
             </div>
-            {% endif %}
 
-          </h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-
-        <div class="modal-body">
-          <!-- ALWAYS present: hidden fields the view expects -->
-          <input type="hidden" name="reservation_date" id="reservation_date">
-          <input type="hidden" name="time_slot" id="time_slot">
-          <input type="hidden" name="selected_reservation_id" id="selected_reservation_id">
-
-          <!-- Summary of what was clicked -->
-          {% comment %} <div class="alert alert-secondary small" id="selectedSlotSummary">
-            No time slot selected yet. Click an availability button in the grid.
-          </div> {% endcomment %}
-          <div class="alert alert-info small" id="selectedSlotSummary">
-            {% if request.user.is_staff %}
-              <strong>Phone Reservation Mode:</strong><br>
-              • Use the search above to find existing reservations or past customers<br>
-              • Or click a time slot in the grid below to start a new booking
-            {% else %}
-              No time slot selected yet. Click an availability button in the grid.
-            {% endif %}
-          </div>
-
-          {% if request.user.is_staff %}
-          <!-- Staff: quick lookup row -->
-           <div class="mb-3">
-            <label for="customerLookup" class="form-label">
-              Lookup existing customer (email or phone)
-            </label>
-            <div class="input-group">
-              <input type="text"
-                    id="customerLookup"
-                    class="form-control"
-                    placeholder="e.g. customer@example.com or 555-1234">
-              <button type="button"
-                      class="btn btn-outline-secondary"
-                      id="btnCustomerLookup">
-                Search
-              </button>
-            </div>
-
-            <div class="mt-2" id="customerLookupControls" style="display:none;">
-              <label for="customerLookupSelect" class="form-label mb-1">
-                Multiple matches — pick one
-              </label>
-              <select id="customerLookupSelect" class="form-select">
-                <!-- Populated dynamically -->
-              </select>
-              <div class="form-text">
-                Selecting an entry will auto-fill the form. You can still override any field.
-              </div>
-            </div>
-
-            <div class="form-text">
-              Search by email, phone, first name + last name, or reservation ID.
-            </div>
-            <div class="form-text" id="customerLookupResult"></div>
-          </div>
-
-          {% endif %}
-
-          <div class="row g-3">
-            <!-- First name -->
-            <div class="col-md-6">
-              <label for="first_name" class="form-label">First Name</label>
-              {% if request.user.is_authenticated and not request.user.is_staff %}
-                <input
-                  type="text"
-                  class="form-control"
-                  id="first_name"
-                  name="first_name"
-                  value="{{ request.user.first_name }}"
-                  required
-                >
-              {% else %}
-                <input
-                  type="text"
-                  class="form-control"
-                  id="first_name"
-                  name="first_name"
-                  required
-                >
-              {% endif %}
-            </div>
-
-            <!-- Last name -->
-            <div class="col-md-6">
-              <label for="last_name" class="form-label">Last Name</label>
-              {% if request.user.is_authenticated and not request.user.is_staff %}
-                <input
-                  type="text"
-                  class="form-control"
-                  id="last_name"
-                  name="last_name"
-                  value="{{ request.user.last_name }}"
-                  required
-                >
-              {% else %}
-                <input
-                  type="text"
-                  class="form-control"
-                  id="last_name"
-                  name="last_name"
-                  required
-                >
-              {% endif %}
-            </div>
-
-            <!-- Email -->
-            <div class="col-md-6">
-              <label for="email" class="form-label">Email address</label>
-              {% if request.user.is_authenticated and not request.user.is_staff %}
-                <input
-                  type="email"
-                  class="form-control"
-                  id="email"
-                  name="email"
-                  value="{{ request.user.email }}"
-                  required
-                >
-              {% else %}
-                <input
-                  type="email"
-                  class="form-control"
-                  id="email"
-                  name="email"
-                  placeholder="customer@example.com"
-                  required
-                >
-              {% endif %}
-              <div class="form-text">
-                Confirmation will be sent to this address.
-              </div>
-            </div>
-
-            <!-- Phone -->
-            <div class="col-md-6">
-              <label for="phone" class="form-label">Phone (optional)</label>
-              <input
-                type="text"
-                class="form-control"
-                id="phone"
-                name="phone"
-                placeholder="+49 151 23456789"
-              >
-            </div>
-
-            <!-- Mobile -->
-            <div class="col-md-6">
-              <label for="mobile" class="form-label">Mobile (optional)</label>
-              <input
-                type="text"
-                class="form-control"
-                id="mobile"
-                name="mobile"
-                placeholder="+49 151 23456789"
-              >
-            </div>
-
-            <!-- Tables needed -->
-            <div class="col-md-6">
-              <label for="tables_needed" class="form-label">Tables needed</label>
-              <input
-                type="number"
-                class="form-control"
-                id="tables_needed"
-                name="number_of_tables_required_by_patron"
-                min="1"
-                value="1"
-                required
-              >
-              <div class="form-text" id="tablesRemainingHint">
-                Select a time slot to see how many tables remain.
-              </div>
+            <div id="slotHint" class="small text-muted mt-3">
+              Select a slot from the grid to continue.
             </div>
           </div>
-        </div>
 
-        <div class="modal-footer border-0 d-flex justify-content-between">
-          {% if request.user.is_staff %}
-            <a href="{% url 'staff_dashboard' %}" class="btn btn-outline-light">
-              Back to Dashboard
-            </a>
-          {% endif %}
-          <button type="submit" class="btn btn-danger">
-            Confirm Reservation
-          </button>
-        </div>
-      </form>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary" id="confirmReservationBtn" disabled>
+              Confirm Reservation
+            </button>
+          </div>
+
+        </form>
+
+      </div>
     </div>
   </div>
-</div>
 
-<!-- Availability table (shared for staff + online) -->
-<h3 class="mb-3">Availability for the Next 30 Days</h3>
-<div class="table-responsive">
-  {% if request.user.is_staff %}
-  <button type="button" class="btn btn-lg btn-primary" data-bs-toggle="modal" data-bs-target="#customerModal">
-    <i class="bi bi-search me-2"></i>Lookup Customer
-  </button>
-  {% endif %}
-  <table class="table table-bordered table-hover table-striped text-center align-middle bg-white">
-    <thead class="table-dark">
-      <tr>
-        <th>Date</th>
-        <th>17:00 - 18:00</th>
-        <th>18:00 - 19:00</th>
-        <th>19:00 - 20:00</th>
-        <th>20:00 - 21:00</th>
-        <th>21:00 - 22:00</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for ts in next_30_days %}
-      <tr>
-        <td class="fw-bold">{{ ts.calendar_date }}</td>
-        {% for slot in ts.slots %}
-        <td>
-          <button
-            type="button"
-            class="btn btn-sm w-100
-              {% if slot.remaining <= 0 %}
-                btn-secondary disabled
-              {% else %}
-                btn-outline-primary
-              {% endif %}"
-            data-bs-toggle="modal"
-            data-bs-target="#customerModal"
-            data-date="{{ ts.calendar_date|date:'Y-m-d' }}"
-            data-slot="{{ slot.key }}"
-            data-left="{{ slot.remaining }}"
-          >
-            {{ slot.demand }}/{{ slot.available }}
-          </button>
-        </td>
+  <!-- Availability table (shared for staff + online) -->
+  <h3 class="mb-3">Availability Grid (next 30 days, available/total)</h3>
+
+  <div class="table-responsive phone-reservation-grid">
+    {% if request.user.is_staff %}
+      <button type="button" class="btn btn-lg btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#customerModal">
+        <i class="bi bi-search me-2"></i>Lookup Customer
+      </button>
+    {% endif %}
+
+    <table class="table table-sm align-middle">
+      <thead>
+        <tr>
+          <th scope="col" class="text-center">Date</th>
+          <th scope="col" class="text-center">17:00–18:00</th>
+          <th scope="col" class="text-center">18:00–19:00</th>
+          <th scope="col" class="text-center">19:00–20:00</th>
+          <th scope="col" class="text-center">20:00–21:00</th>
+          <th scope="col" class="text-center">21:00–22:00</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for ts in next_30_days %}
+          <tr>
+            <td class="date-cell">
+              <div class="fw-semibold">{{ ts.calendar_date|date:"D M j, Y" }}</div>
+              {% comment %} <div class="small">{{ ts.calendar_date|date:"Y" }}</div> {% endcomment %}
+            </td>
+
+            {% for slot in ts.slots %}
+              <td class="text-center">
+                <button
+                  type="button"
+                  class="btn btn-sm w-100 slot-btn {% if slot.remaining <= 0 %}btn-outline-secondary disabled{% else %}btn-outline-success{% endif %}"
+                  data-bs-toggle="modal"
+                  data-bs-target="#customerModal"
+                  data-date="{{ ts.calendar_date|date:'Y-m-d' }}"
+                  data-date-label="{{ ts.calendar_date|date:'D, M j, Y' }}"
+                  data-slot="{{ slot.key }}"
+                  data-slot-label="{{ slot.label|default:slot.key }}"
+                  data-timeslot-pk="{{ ts.pk }}"
+                  data-left="{{ slot.remaining }}"
+                >
+                  {% if slot.remaining <= 0 %}
+                    FULL
+                  {% else %}
+                    {{ slot.remaining }}/{{ slot.available }}
+                  {% endif %}
+                </button>
+              </td>
+            {% endfor %}
+          </tr>
         {% endfor %}
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+      </tbody>
+    </table>
+  </div>
+
 </div>
 
-{% endblock %}
-
-{% block js %}
 <script>
-// CSRF and debounce helpers
-function getCookie(name) {
-  let cookieValue = null;
-  if (document.cookie && document.cookie !== "") {
-    const cookies = document.cookie.split(";");
-    for (let i = 0; i < cookies.length; i++) {
-      const cookie = cookies[i].trim();
-      if (cookie.substring(0, name.length + 1) === (name + "=")) {
-        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-        break;
-      }
-    }
-  }
-  return cookieValue;
-}
-const csrftoken = getCookie("csrftoken");
-// Detect if user is staff (from Django context)
-const requestUserIsStaff = {{ request.user.is_staff|yesno:"true,false" }};
+  (function () {
+    const requestUserIsStaff = {{ request.user.is_staff|yesno:"true,false" }};
 
-function debounce(fn, delay) {
-  let timeout = null;
-  return (...args) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => fn.apply(this, args), delay);
-  };
-}
+    const modalEl = document.getElementById("customerModal");
+    const summaryEl = document.getElementById("selectedSlotDisplay");
+    const slotHint = document.getElementById("slotHint");
 
-// Fill form with customer data
-function fillCustomerForm(result) {
-  document.getElementById("first_name").value = result.first_name || "";
-  document.getElementById("last_name").value  = result.last_name  || "";
-  document.getElementById("email").value     = result.email     || "";
-  document.getElementById("phone").value     = result.phone     || "";
-  document.getElementById("mobile").value    = result.mobile    || "";
-}
+    const dateInput = document.getElementById("reservation_date");
+    const slotInput = document.getElementById("time_slot");
+    const timeslotPkInput = document.getElementById("timeslot_pk");
 
-document.addEventListener("DOMContentLoaded", () => {
-  // Modal and form elements
-  const modalEl       = document.getElementById("customerModal");
-  const dateInput     = document.getElementById("reservation_date");
-  const slotInput     = document.getElementById("time_slot");
-  const tablesInput   = document.getElementById("tables_needed");
-  const summaryEl     = document.getElementById("selectedSlotSummary");
-  const tablesHint    = document.getElementById("tablesRemainingHint");
+    const confirmBtn = document.getElementById("confirmReservationBtn");
 
-  // Grid button handling (unchanged – works great)
-  document.querySelectorAll("button[data-slot][data-date]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      if (btn.classList.contains("disabled")) return;
+    document.querySelectorAll(".slot-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const date = btn.dataset.date || "";
+        const slot = btn.dataset.slot || "";
+        const left = btn.dataset.left || "0";
+        const tsPk = btn.dataset.timeslotPk || "";
 
-      const date = btn.dataset.date;
-      const slot = btn.dataset.slot;
-      const left = btn.dataset.left;
+        const slotLabel = btn.dataset.slotLabel || slot || "";
+        const dateLabel = btn.dataset.dateLabel || date || "";
 
-      dateInput.value = date;
-      slotInput.value = slot;
+        dateInput.value = date;
+        slotInput.value = slot;
+        timeslotPkInput.value = tsPk;
 
-      const prettySlot = slot ? slot.replace("_", ":00-") : "";
-      summaryEl.textContent = `Selected: ${date} – ${prettySlot} (tables left: ${left})`;
-      tablesHint.textContent = `There are ${left} tables left for this slot.`;
+        summaryEl.textContent = `${dateLabel} | ${slotLabel} | Tables left: ${left}`;
+        slotHint.textContent = (parseInt(left, 10) > 0)
+          ? "Fill in details and confirm your reservation."
+          : "This slot is full.";
 
-      const remaining = parseInt(left, 10);
-      if (tablesInput && remaining > 0) {
-        tablesInput.max = remaining;
-        if (parseInt(tablesInput.value, 10) > remaining) tablesInput.value = 1;
-      }
+        confirmBtn.disabled = !(parseInt(left, 10) > 0);
+      });
     });
-  });
 
-  // Form submit validation
-  document.getElementById("reservationForm").addEventListener("submit", e => {
-    if (!dateInput.value || !slotInput.value) {
-      e.preventDefault();
-      alert("Please select a time slot from the availability grid first.");
-    }
-  });
-
-  // Reset fields when modal closes
-  modalEl.addEventListener("hidden.bs.modal", () => {
-    dateInput.value = "";
-    slotInput.value = "";
-    document.getElementById("selected_reservation_id").value = "";
-    tablesHint.textContent = "Select a time slot to see how many tables remain.";
-    
-    if (summaryEl) {
-      if (requestUserIsStaff) {  // We'll define this below
-        summaryEl.innerHTML = `
-          <strong>Phone Reservation Mode:</strong><br>
-          • Use the search above to find existing reservations or past customers<br>
-          `;
-      } else {
-        summaryEl.textContent = "No time slot selected yet. Click an availability button in the grid.";
-      }
-    }
-  });
-
-  // Improve summary when modal opens (especially via "Search" button)
-  modalEl.addEventListener("shown.bs.modal", () => {
-    if (!dateInput.value || !slotInput.value) {
-      if (requestUserIsStaff) {
-        summaryEl.innerHTML = `
-          <strong>Phone Reservation Mode:</strong><br>
-          • Use the search above to find existing reservations or past customers<br>        
-        `;
-      }
-      tablesInput.removeAttribute("max");
-    }
-  });
-
-  // === STAFF SEARCH LOGIC ===
-  const lookupInput     = document.getElementById("customerLookup");
-  const lookupResult    = document.getElementById("customerLookupResult");
-  const lookupControls  = document.getElementById("customerLookupControls");
-  const lookupSelect    = document.getElementById("customerLookupSelect");
-
-  let lastResults = [];
-
-  const getMode = () => document.querySelector('input[name="search_mode"]:checked')?.value || "past";
-
-  const renderResults = (results) => {
-    lastResults = results || [];
-
-    if (!results.length) {
-      lookupControls.style.display = "none";
-      lookupSelect.innerHTML = "";
-      lookupResult.textContent = "No matches found.";
-      return;
-    }
-
-    // Single result: auto-apply
-    if (results.length === 1) {
-      const r = results[0];
-      const mode = getMode();
-      if (mode === "existing" && r.type === "reservation" && r.reservation_id) {
-        window.location.href = `/reservation/${r.reservation_id}/edit/`;
+    // Basic client-side guard: must pick slot and have tables >= 1
+    const form = document.getElementById("reservationForm");
+    form.addEventListener("submit", (e) => {
+      const tables = parseInt(document.getElementById("number_of_tables_required_by_patron").value || "0", 10);
+      if (!dateInput.value || !slotInput.value) {
+        e.preventDefault();
+        slotHint.textContent = "Please select a slot from the grid first.";
         return;
       }
-      fillCustomerForm(r);
-      lookupResult.textContent = "Auto-filled from match.";
-      lookupControls.style.display = "none";
-      return;
-    }
-
-    // Multiple results: show dropdown
-    lookupSelect.innerHTML = "";
-    results.forEach((r, i) => {
-      const opt = document.createElement("option");
-      opt.value = i;
-
-      let text = "";
-      if (r.type === "reservation") {
-        const date = r.reservation_date || "?";
-        const time = r.pretty_slot || r.time_slot || "?";
-        text = `RESERVATION #${r.reservation_id} — ${r.first_name || ""} ${r.last_name || ""} — ${date} ${time}`;
-        if (r.email) text += ` — ${r.email}`;
-      } else {
-        text = `CUSTOMER — ${r.first_name || ""} ${r.last_name || ""}`;
-        if (r.email) text += ` — ${r.email}`;
-        if (r.phone || r.mobile) text += ` — ${r.phone || r.mobile}`;
-      }
-      opt.textContent = text.trim() || "(no details)";
-      lookupSelect.appendChild(opt);
-    });
-
-    lookupControls.style.display = "block";
-    lookupResult.textContent = `Found ${results.length} match(es). Select one below.`;
-  };
-
-  const search = (query) => {
-    if (!query.trim()) {
-      lookupControls.style.display = "none";
-      lookupResult.textContent = "Start typing to search...";
-      return;
-    }
-
-    lookupResult.textContent = "Searching…";
-    const mode = getMode();
-    const url = `/ajax/lookup-customer/?q=${encodeURIComponent(query)}&mode=${mode}`;
-
-    fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } })
-      .then(res => res.ok ? res.json() : Promise.reject())
-      .then(data => renderResults(data.results || []))
-      .catch(() => {
-        lookupResult.textContent = "Search error. Try again.";
-        lookupControls.style.display = "none";
-      });
-  };
-
-  const debouncedSearch = debounce(() => {
-    const q = lookupInput?.value.trim() || "";
-    if (q.length < 2) {
-      lookupControls.style.display = "none";
-      lookupResult.textContent = "Type at least 2 characters...";
-      return;
-    }
-    search(q);
-  }, 300);
-
-  if (lookupInput) lookupInput.addEventListener("input", debouncedSearch);
-
-  // Re-search when mode changes
-  document.querySelectorAll('input[name="search_mode"]').forEach(radio => {
-    radio.addEventListener("change", () => {
-      const q = lookupInput?.value.trim();
-      if (q.length >= 2) search(q);
-    });
-  });
-
-  // Handle selection from dropdown
-  if (lookupSelect) {
-    lookupSelect.addEventListener("change", () => {
-      const idx = lookupSelect.value;
-      if (idx === "" || !lastResults[idx]) return;
-
-      const result = lastResults[idx];
-      const mode = getMode();
-
-      if (mode === "existing" && result.type === "reservation" && result.reservation_id) {
-        window.location.href = `/reservation/${result.reservation_id}/edit/`;
-      } else {
-        fillCustomerForm(result);
-        lookupResult.textContent = "Form filled from selected customer.";
-        lookupControls.style.display = "none";
+      if (!tables || tables < 1) {
+        e.preventDefault();
+        slotHint.textContent = "Please enter at least 1 table.";
+        return;
       }
     });
-  }
-});
+  })();
 </script>
 {% endblock %}
-
-
-
-
-
-
-
