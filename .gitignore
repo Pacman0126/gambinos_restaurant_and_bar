@@ -6,6 +6,7 @@ __pycache__/
 *.pdb
 *.p*
 *$py.class
+*.py[cod]
 
 # Virtual environments
 .venv/
@@ -14,6 +15,7 @@ env/
 ENV/
 
 # Django stuff
+logs/
 *.log
 *.pot
 *.pyc
