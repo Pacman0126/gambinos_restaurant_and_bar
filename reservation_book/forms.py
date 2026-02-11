@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.db import transaction
 from allauth.account.forms import SignupForm
 # from .models import ReservationBook   # no longer needed
 from .models import TimeSlotAvailability, TableReservation, Customer
@@ -28,12 +29,41 @@ class SignUpForm(UserCreationForm):
 
 class CustomerSignupForm(SignupForm):
     """
-    Custom allauth signup form (optional).
-    Keep minimal unless you need extra fields.
+    Website signup requirements:
+    - username required (per your requirement)
+    - email required (for confirmations)
+    - first/last required (for Customer DB + nicer emails)
+    - ensure Customer exists keyed by email (Customer has no user FK)
     """
+    first_name = forms.CharField(
+        max_length=150, required=True, label="First name")
+    last_name = forms.CharField(
+        max_length=150, required=True, label="Last name")
 
+    @transaction.atomic
     def save(self, request):
         user = super().save(request)
+
+        # Persist names to User (useful for admin + emails)
+        user.first_name = self.cleaned_data["first_name"].strip()
+        user.last_name = self.cleaned_data["last_name"].strip()
+        user.save()
+
+        # Email is required: use it as Customer key
+        email = (user.email or "").strip().lower()
+        if not email:
+            # Defensive: should not happen with ACCOUNT_EMAIL_REQUIRED=True
+            raise ValueError(
+                "Email is required for signup (needed for confirmations).")
+
+        Customer.objects.update_or_create(
+            email=email,
+            defaults={
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+            },
+        )
+
         return user
 
 

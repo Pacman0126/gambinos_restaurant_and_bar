@@ -3,95 +3,146 @@
 
 {% block content %}
 <div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-4">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h1 class="h4 text-center mb-4">
-                        {% trans "Create your account" %}
-                    </h1>
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h1 class="h4 text-center mb-4">
+            {% trans "Create your account" %}
+          </h1>
 
-                    {% if form.non_field_errors %}
-                        <div class="alert alert-danger">
-                            {{ form.non_field_errors }}
-                        </div>
-                    {% endif %}
-
-                    <form method="POST" action="{% url 'account_signup' %}">
-                        {% csrf_token %}
-
-                        {# Email #}
-                        {% if form.email %}
-                            <div class="mb-3">
-                                <label class="form-label" for="{{ form.email.id_for_label }}">
-                                    {% trans "Email" %}
-                                </label>
-                                {{ form.email }}
-                                {% if form.email.errors %}
-                                    <div class="text-danger small">
-                                        {{ form.email.errors|striptags }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        {% endif %}
-
-                        {# Password 1 #}
-                        {% if form.password1 %}
-                            <div class="mb-3">
-                                <label class="form-label" for="{{ form.password1.id_for_label }}">
-                                    {% trans "Password" %}
-                                </label>
-                                {{ form.password1 }}
-                                {% if form.password1.errors %}
-                                    <div class="text-danger small">
-                                        {{ form.password1.errors|striptags }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        {% endif %}
-
-                        {# Password 2 #}
-                        {% if form.password2 %}
-                            <div class="mb-3">
-                                <label class="form-label" for "{{ form.password2.id_for_label }}">
-                                    {% trans "Confirm password" %}
-                                </label>
-                                {{ form.password2 }}
-                                {% if form.password2.errors %}
-                                    <div class="text-danger small">
-                                        {{ form.password2.errors|striptags }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        {% endif %}
-
-                        {% if redirect_field_value %}
-                            <input type="hidden"
-                                   name="{{ redirect_field_name }}"
-                                   value="{{ redirect_field_value }}">
-                        {% endif %}
-
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-danger">
-                                {% trans "Sign Up" %}
-                            </button>
-                        </div>
-                    </form>
-
-                    <hr class="my-4">
-
-                    <div class="text-center small">
-                        <p class="mb-0">
-                            {% trans "Already have an account?" %}
-                            <a href="{% url 'account_login' %}">
-                                {% trans "Sign in" %}
-                            </a>
-                        </p>
-                    </div>
-
-                </div>
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+              {{ form.non_field_errors }}
             </div>
+          {% endif %}
+
+          <form method="POST" action="{% url 'account_signup' %}">
+            {% csrf_token %}
+
+            {# Username (required) #}
+            {% if form.username %}
+              <div class="mb-3">
+                <label class="form-label" for="{{ form.username.id_for_label }}">
+                  {% trans "Username" %}
+                </label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                  <div class="text-danger small">
+                    {{ form.username.errors|striptags }}
+                  </div>
+                {% endif %}
+              </div>
+            {% endif %}
+
+            {# First name (required) #}
+            {% if form.first_name %}
+              <div class="mb-3">
+                <label class="form-label" for="{{ form.first_name.id_for_label }}">
+                  {% trans "First name" %}
+                </label>
+                {{ form.first_name }}
+                {% if form.first_name.errors %}
+                  <div class="text-danger small">
+                    {{ form.first_name.errors|striptags }}
+                  </div>
+                {% endif %}
+              </div>
+            {% endif %}
+
+            {# Last name (required) #}
+            {% if form.last_name %}
+              <div class="mb-3">
+                <label class="form-label" for="{{ form.last_name.id_for_label }}">
+                  {% trans "Last name" %}
+                </label>
+                {{ form.last_name }}
+                {% if form.last_name.errors %}
+                  <div class="text-danger small">
+                    {{ form.last_name.errors|striptags }}
+                  </div>
+                {% endif %}
+              </div>
+            {% endif %}
+
+            {# Email (required for confirmations) #}
+            {% if form.email %}
+              <div class="mb-3">
+                <label class="form-label" for="{{ form.email.id_for_label }}">
+                  {% trans "Email" %}
+                </label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                  <div class="text-danger small">
+                    {{ form.email.errors|striptags }}
+                  </div>
+                {% endif %}
+              </div>
+            {% endif %}
+
+            {# Password 1 #}
+            {% if form.password1 %}
+              <div class="mb-3">
+                <label class="form-label" for="{{ form.password1.id_for_label }}">
+                  {% trans "Password" %}
+                </label>
+                {{ form.password1 }}
+                {% if form.password1.errors %}
+                  <div class="text-danger small">
+                    {{ form.password1.errors|striptags }}
+                  </div>
+                {% endif %}
+              </div>
+            {% endif %}
+
+            {# Password 2 #}
+            {% if form.password2 %}
+              <div class="mb-3">
+                <label class="form-label" for="{{ form.password2.id_for_label }}">
+                  {% trans "Confirm password" %}
+                </label>
+                {{ form.password2 }}
+                {% if form.password2.errors %}
+                  <div class="text-danger small">
+                    {{ form.password2.errors|striptags }}
+                  </div>
+                {% endif %}
+              </div>
+            {% endif %}
+
+            {% if redirect_field_value %}
+              <input type="hidden"
+                     name="{{ redirect_field_name }}"
+                     value="{{ redirect_field_value }}">
+            {% endif %}
+
+            {% if form.errors %}
+              <div class="alert alert-danger mt-3">
+                <strong>{% trans "Please fix the errors below." %}</strong>
+              </div>
+            {% endif %}
+
+            <div class="d-grid gap-2 mt-2">
+              <button type="submit" class="btn btn-danger">
+                {% trans "Sign Up" %}
+              </button>
+            </div>
+          </form>
+
+          <hr class="my-4">
+
+          <div class="text-center small">
+            <p class="mb-0">
+              {% trans "Already have an account?" %}
+              <a href="{% url 'account_login' %}">
+                {% trans "Sign in" %}
+              </a>
+            </p>
+          </div>
+
         </div>
+      </div>
     </div>
+  </div>
 </div>
 {% endblock content %}

@@ -56,6 +56,8 @@ if DEBUG:
     local_origins = {
         "http://127.0.0.1:8000",
         "http://localhost:8000",
+        "https://127.0.0.1:8000",
+        "https://localhost:8000",
     }
     CSRF_TRUSTED_ORIGINS = list(set(CSRF_TRUSTED_ORIGINS) | local_origins)
 else:
@@ -65,7 +67,6 @@ else:
             "https://*.herokuapp.com",
             "https://*.codeinstitute-ide.net",
         ]
-
 
 # =====================================================
 # 📜 LOGGING (keep it simple and safe)
@@ -221,8 +222,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # =====================================================
 # ✅ ALLAUTH (your format)
 # =====================================================
-ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_USERNAME_REQUIRED = True
 ACCOUNT_USER_MODEL_USERNAME_FIELD = "username"
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = "http"
 
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
@@ -230,6 +232,7 @@ ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_LOGIN_METHODS = {"email", "username"}
 ACCOUNT_SIGNUP_FIELDS = ["email*", "username*", "password1*", "password2*"]
 
+ACCOUNT_AUTHENTICATION_METHOD = "username_email"
 ACCOUNT_EMAIL_VERIFICATION = "optional"
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 
