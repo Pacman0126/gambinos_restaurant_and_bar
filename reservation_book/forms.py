@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from allauth.account.forms import SignupForm
 # from .models import ReservationBook   # no longer needed
 from .models import TimeSlotAvailability, TableReservation, Customer
 
@@ -23,6 +24,17 @@ class SignUpForm(UserCreationForm):
     class Meta:
         model = User
         fields = ["username", "email", "password1", "password2"]
+
+
+class CustomerSignupForm(SignupForm):
+    """
+    Custom allauth signup form (optional).
+    Keep minimal unless you need extra fields.
+    """
+
+    def save(self, request):
+        user = super().save(request)
+        return user
 
 
 # ----------------------------------------------------------------------
