@@ -1,205 +1,346 @@
-/* =====================
-   Global
-===================== */
+/* =========================================
+   Site-wide base styles
+   ========================================= */
+
 body {
-  background: url("../images/hero/brown-concrete-wall-with-scratches-vector.jpg") no-repeat center center fixed;
-  background-size: cover;
-  
-  font-family: 'Lato', sans-serif;
-}
-
-/* =====================
-   Branding
-===================== */
-.brand {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: #d4af37; /* gold accent */
-}
-
-.red-o {
-    color: #b22222; /* rich red */
-}
-
-.thin {
-    font-weight: 300;
-    color: #f8f9fa;
-}
-
-/* =====================
-   Background Helpers
-===================== */
-.light-bg {
-    background-color: #fff;
-}
-
-.dark-bg {
-    background-color: #1a1a1a;
-}
-
-
-/* =====================
-   Navbar
-===================== */
-.navbar {
-    background-color: #1a1a1a !important;
-}
-.navbar-brand, .nav-link {
-    color: #f8f9fa !important;
-}
-.nav-link.active {
-    font-weight: bold;
-    border-bottom: 2px solid #d4af37; /* gold underline for active */
-}
-
-/* =====================
-   Cards / Containers
-===================== */
-.card {
-  border: none;
-  background-color: rgba(26, 26, 26, 0.85);
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  background-color: #0f0f0f;
   color: #f8f9fa;
 }
 
-/* =====================
-   Hero / Masthead
-===================== */
-.hero-banner, .masthead {
-    margin-top: 10px;
-    overflow: hidden;
-    position: relative;
-    display: inline-block;
-    height: 50vh;
-    width: 100%;
-}
-.hero-banner .overlay,
-.masthead-text {
-    position: absolute;
-    bottom: 20%;
-    left: 5%;
-    color: #fff;
-    text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
-}
-.masthead-image:after {
-    content: none; /* remove skew effect for clean images */
+/* Links */
+a {
+  color: #d4af37;
+  text-decoration: none;
 }
 
-/* =====================
-   Links
-===================== */
-a, .post-link {
-    text-decoration: none;
-    color: #d4af37;
-}
-a:hover, .post-link:hover {
-    color: #f1c40f;
-    text-decoration: underline;
+a:hover {
+  color: #f1d27a;
+  text-decoration: underline;
 }
 
-/* =====================
-   Buttons
-===================== */
-.btn-danger {
-    background-color: #800000;
-    border: none;
-}
-.btn-danger:hover {
-    background-color: #b22222;
+/* Cards */
+.card {
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  background-color: #121212;
+  color: #f8f9fa;
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 
-.btn-outline-light:hover {
-    background-color: #d4af37;
-    color: #000;
+.card-header {
+  background-color: #1e1e1e;
+  color: #f8f9fa;
+  font-weight: 600;
+  border-bottom: 2px solid #d4af37;
 }
 
-.btn-signup,
-.btn-edit {
-    background-color: #b22222;
-    color: #fff;
-}
-.btn-signup:hover {
-    background-color: #fff;
-    color: #800000;
+.card-body {
+  background-color: #121212;
 }
 
-/* =====================
-   Footer
-===================== */
-.footer {
-    background-color: #1a1a1a;
-    color: #f8f9fa;
-}
-.footer p {
-    margin: 0.3rem 0;
-    font-size: 0.9rem;
+/* Buttons */
+.btn-primary {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
 }
 
-/* Reset modal to Bootstrap defaults */
-.modal-content {
-  background-color: #fff !important;
-  color: #212529 !important; /* Bootstrap's default text color */
+.btn-primary:hover {
+  background-color: #0b5ed7;
+  border-color: #0b5ed7;
 }
 
-.modal-header,
-.modal-body,
-.modal-footer {
-  background-color: #fff !important;
-  color: #212529 !important;
-}
+/* =========================================
+   Modal (original section from your file)
+   ========================================= */
 
-/* Fix Bootstrap modal text and form fields */
-.modal-content {
-  background-color: #fff !important;
-  color: #212529 !important; /* Bootstrap default text color */
-}
-
-.modal-content label,
-.modal-content h5,
-.modal-content .form-label,
-.modal-content .form-control,
-.modal-content .form-select,
-.modal-content option {
-  color: #212529 !important;
-}
-
-.modal-content input,
-.modal-content select,
-.modal-content textarea {
-  background-color: #fff !important;
-  color: #212529 !important;
-}
-
-/* =====================
-   Fix Reservation Modal
-===================== */
+/* Modal styling */
 #customerModal .modal-content {
-  background-color: #fff !important;
-  color: #212529 !important;
+  background-color: #121212;
+  color: #f8f9fa;
+  border: 1px solid rgba(212, 175, 55, 0.25);
 }
 
-#customerModal .modal-header,
-#customerModal .modal-body,
+#customerModal .modal-header {
+  border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+}
+
+#customerModal .modal-title {
+  color: #f8f9fa;
+}
+
 #customerModal .modal-footer {
-  background-color: #fff !important;
-  color: #212529 !important;
+  border-top: 1px solid rgba(212, 175, 55, 0.25);
 }
 
-#customerModal label,
-#customerModal h5,
+/* =========================================
+   Phone reservation grid styles
+   ========================================= */
+
+.table-responsive.phone-reservation-grid {
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background-color: #121212;
+}
+
+.phone-reservation-grid table {
+  margin-bottom: 0;
+}
+
+.phone-reservation-grid thead th {
+  background-color: #1e1e1e !important;
+  color: #f8f9fa !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.phone-reservation-grid tbody td {
+  background-color: #121212;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.phone-reservation-grid .date-cell {
+  background-color: #1e1e1e !important;
+  color: #f8f9fa !important;
+  font-weight: 600;
+  text-align: left;
+  white-space: nowrap;
+}
+
+/* Slot buttons used in grid */
+.slot-btn {
+  font-weight: 600;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.25rem;
+  line-height: 1.1;
+}
+
+/* NOTE: These are your existing styles */
+.slot-btn.btn-outline-success {
+  color: #198754;
+  border-color: #198754;
+}
+
+.slot-btn.btn-outline-success:hover {
+  color: #fff;
+  background-color: #198754;
+  border-color: #198754;
+}
+
+.slot-btn.btn-success {
+  background-color: #198754;
+  border-color: #198754;
+  color: #fff;
+}
+
+.slot-btn.btn-outline-secondary.disabled,
+.slot-btn.btn-secondary.disabled {
+  opacity: 0.6;
+}
+
+/* =========================================
+   Misc
+   ========================================= */
+
+.table {
+  color: #f8f9fa;
+}
+
+.table-striped>tbody>tr:nth-of-type(odd)>* {
+  --bs-table-accent-bg: rgba(255, 255, 255, 0.02);
+}
+
+.table-hover>tbody>tr:hover>* {
+  --bs-table-accent-bg: rgba(212, 175, 55, 0.06);
+}
+
+/* ==========================================================
+   OVERRIDES (2026-02) — Modal theme + keep slot buttons BLUE
+   (Added to fix customerModal styling without changing grid logic)
+   ========================================================== */
+
+/* Reservation Details modal should match dark card scheme */
+#customerModal .modal-content {
+  background-color: rgba(26, 26, 26, 0.96);
+  color: #f8f9fa;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  /* subtle gold edge */
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+#customerModal .modal-header {
+  background-color: #1e1e1e;
+  color: #f8f9fa;
+  border-bottom: 2px solid #d4af37;
+  /* gold accent like card header */
+}
+
+#customerModal .modal-title {
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+#customerModal .modal-body {
+  background-color: transparent;
+}
+
+#customerModal .modal-footer {
+  background-color: #1e1e1e;
+  border-top: 1px solid rgba(212, 175, 55, 0.25);
+}
+
+/* Make form controls readable on dark modal */
 #customerModal .form-label {
-  color: #212529 !important;
+  color: #eaeaea;
 }
 
-#customerModal input,
-#customerModal select,
-#customerModal textarea {
-  background-color: #fff !important;
-  color: #212529 !important;
-  border: 1px solid #ced4da !important;
+#customerModal .form-control,
+#customerModal .form-select {
+  background-color: rgba(255, 255, 255, 0.06);
+  color: #f8f9fa;
+  border: 1px solid rgba(255, 255, 255, 0.16);
 }
 
-#customerModal option {
-  color: #212529 !important;
+#customerModal .form-control::placeholder {
+  color: rgba(248, 249, 250, 0.55);
 }
 
+#customerModal .form-control:focus,
+#customerModal .form-select:focus {
+  border-color: rgba(212, 175, 55, 0.65);
+  box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.18);
+}
 
+#customerModal .alert {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* Keep the slot grid BLUE everywhere.
+   Your templates may use .slot-btn with btn-outline-success/btn-success.
+   These overrides force those slot buttons to use Bootstrap "primary" coloring
+   WITHOUT touching other .btn-success buttons elsewhere. */
+.slot-btn.btn-outline-success {
+  color: #0d6efd !important;
+  border-color: #0d6efd !important;
+  background-color: transparent !important;
+}
+
+.slot-btn.btn-outline-success:hover,
+.slot-btn.btn-outline-success:focus {
+  color: #fff !important;
+  background-color: #0d6efd !important;
+  border-color: #0d6efd !important;
+}
+
+.slot-btn.btn-success {
+  background-color: #0d6efd !important;
+  border-color: #0d6efd !important;
+  color: #fff !important;
+}
+
+.slot-btn.btn-success:hover,
+.slot-btn.btn-success:focus {
+  background-color: #0b5ed7 !important;
+  border-color: #0b5ed7 !important;
+}
+
+/* Keep disabled slots neutral */
+.slot-btn.btn-outline-secondary.disabled,
+.slot-btn.btn-secondary.disabled,
+.slot-btn:disabled {
+  opacity: 0.65;
+}
+
+/* ==========================================================
+   NAVBAR FIX — restore Bootstrap navbar styling
+   ========================================================== */
+
+/* Ensure navbar keeps its intended background */
+.navbar {
+  background-color: inherit;
+}
+
+/* Explicitly restore dark navbar */
+.navbar.navbar-dark {
+  background-color: #212529 !important;
+}
+
+/* Explicitly restore light navbar if used */
+.navbar.navbar-light {
+  background-color: #f8f9fa !important;
+}
+
+/* Prevent card styles from leaking into navbar */
+.navbar .card,
+.navbar .card-header,
+.navbar .card-body {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Navbar links */
+.navbar-dark .navbar-nav .nav-link {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.navbar-dark .navbar-nav .nav-link:hover {
+  color: #fff;
+}
+
+/* =========================================================
+   FORCE NAVBAR DARK (fix white navbar regression)
+   Paste at the VERY BOTTOM of style.css
+   ========================================================= */
+
+/* Catch common Bootstrap combinations that can turn it white */
+nav.navbar,
+.navbar,
+nav.navbar.bg-light,
+.navbar.bg-light,
+.navbar .container,
+.navbar .container-fluid,
+.navbar .navbar-collapse {
+  background-color: #141414 !important;
+}
+
+/* Brand + links */
+.navbar .navbar-brand,
+.navbar .navbar-nav .nav-link,
+.navbar .navbar-text {
+  color: #f8f9fa !important;
+}
+
+.navbar .navbar-nav .nav-link:hover,
+.navbar .navbar-nav .nav-link:focus,
+.navbar .navbar-brand:hover,
+.navbar .navbar-brand:focus {
+  color: #ffffff !important;
+}
+
+/* Dropdowns */
+.navbar .dropdown-menu {
+  background-color: #1f1f1f !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+.navbar .dropdown-item {
+  color: #f8f9fa !important;
+}
+
+.navbar .dropdown-item:hover,
+.navbar .dropdown-item:focus {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+}
+
+/* Toggler button for mobile */
+.navbar .navbar-toggler {
+  border-color: rgba(255, 255, 255, 0.35) !important;
+}
+
+/* Bootstrap’s default toggler icon is dark; invert it for dark navbar */
+.navbar .navbar-toggler-icon {
+  filter: invert(1) grayscale(100%) !important;
+}
