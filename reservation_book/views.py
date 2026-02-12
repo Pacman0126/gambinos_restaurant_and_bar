@@ -3,6 +3,7 @@ import logging
 import re
 
 import datetime
+from django.urls import reverse
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth.tokens import default_token_generator
@@ -803,229 +804,382 @@ def home(request):
     return render(request, "reservation_book/index.html")
 
 
+# @login_required
+# def make_reservation(request):
+#     logger.info("make_reservation called, method=%s", request.method)
+#     manage_url = request.build_absolute_uri(reverse("my_reservations"))
+
+#     if request.method == "POST":
+#         try:
+#             # -----------------------------------
+#             # 1. Basic POST data
+#             # -----------------------------------
+#             date = request.POST.get("reservation_date")
+#             slot = request.POST.get("time_slot")
+
+#             is_ajax = request.headers.get(
+#                 "x-requested-with") == "XMLHttpRequest"
+
+#             if not date or not slot:
+#                 msg = "Please select a time slot before submitting."
+#                 logger.warning(
+#                     "Reservation POST missing date or slot (date='%s', slot='%s')",
+#                     date,
+#                     slot,
+#                 )
+#                 if is_ajax:
+#                     return JsonResponse({"success": False, "error": msg})
+#                 messages.error(request, msg)
+#                 return redirect("make_reservation")
+
+#             tables_needed = int(
+#                 request.POST.get("number_of_tables_required_by_patron", 1)
+#             )
+
+#             first_name = request.POST.get("first_name", "").strip()
+#             last_name = request.POST.get("last_name", "").strip()
+#             email = _normalize_email(request.POST.get("email", ""))
+#             phone = request.POST.get("phone", "").strip()
+#             mobile = request.POST.get("mobile", "").strip()
+
+#             if not first_name or not last_name:
+#                 msg = "First name and Last name are required."
+#                 if is_ajax:
+#                     return JsonResponse({"success": False, "error": msg})
+#                 messages.error(request, msg)
+#                 return redirect("make_reservation")
+
+#             if not email:
+#                 msg = "An email address is required so we can send confirmation."
+#                 if is_ajax:
+#                     return JsonResponse({"success": False, "error": msg})
+#                 messages.error(request, msg)
+#                 return redirect("make_reservation")
+
+#             # -----------------------------------
+#             # 2. Availability lookup
+#             # -----------------------------------
+#             ts = TimeSlotAvailability.objects.get(calendar_date=date)
+#             slot_available = getattr(ts, f"number_of_tables_available_{slot}")
+#             slot_demand = getattr(ts, f"total_cust_demand_for_tables_{slot}")
+
+#             slot_available = _to_int(slot_available, 0)
+#             slot_demand = _to_int(slot_demand, 0)
+
+#             if slot_demand + tables_needed > slot_available:
+#                 error_msg = "Not enough tables available."
+#                 if is_ajax:
+#                     return JsonResponse({"success": False, "error": error_msg})
+#                 messages.error(request, error_msg)
+#                 return redirect("make_reservation")
+
+#             # -----------------------------------
+#             # 3. Get or create Customer
+#             # -----------------------------------
+#             customer_data = {
+#                 'first_name': first_name,
+#                 'last_name': last_name,
+#                 'email': email,
+#                 'phone': phone,
+#                 'mobile': mobile,
+#             }
+
+#             customer, created = Customer.objects.get_or_create(
+#                 email=email,
+#                 defaults=customer_data
+#             )
+#             if not created:
+#                 # Update existing customer
+#                 for key, value in customer_data.items():
+#                     setattr(customer, key, value)
+#                 customer.save()
+
+#             # -----------------------------------
+#             # 4. Decide which user this reservation belongs to (for authenticated users)
+#             # -----------------------------------
+#             user_for_reservation = None
+#             if request.user.is_authenticated and not request.user.is_staff:
+#                 user_for_reservation = request.user
+
+#                 # Optionally sync user details to customer
+#                 updated = False
+#                 if first_name and not user_for_reservation.first_name:
+#                     user_for_reservation.first_name = first_name
+#                     updated = True
+#                 if last_name and not user_for_reservation.last_name:
+#                     user_for_reservation.last_name = last_name
+#                     updated = True
+#                 if email.lower() != user_for_reservation.email.lower():
+#                     user_for_reservation.email = email
+#                     updated = True
+#                 if updated:
+#                     user_for_reservation.save()
+
+#             # -----------------------------------
+#             # 5. Create reservation
+#             # -----------------------------------
+#             reservation = TableReservation.objects.create(
+#                 is_phone_reservation=request.user.is_staff,
+#                 time_slot=slot,
+#                 number_of_tables_required_by_patron=tables_needed,
+#                 timeslot_availability=ts,
+#                 reservation_status=True,
+#                 reservation_date=ts.calendar_date,
+#                 customer=customer,  # Link to the Customer object we created/updated
+#                 user=user_for_reservation,
+#             )
+
+#             # Update demand
+#             setattr(
+#                 ts,
+#                 f"total_cust_demand_for_tables_{slot}",
+#                 slot_demand + tables_needed,
+#             )
+#             ts.save()
+
+#             new_demand = getattr(ts, f"total_cust_demand_for_tables_{slot}")
+#             new_demand = _to_int(new_demand, 0)
+#             available_total = getattr(ts, f"number_of_tables_available_{slot}")
+#             available_total = _to_int(available_total, 0)
+#             left = available_total - new_demand
+#             pretty_slot = SLOT_LABELS.get(slot, slot)
+
+#             logger.info(
+#                 "Reservation confirmed for %s %s at %s on %s (phone=%s, user_id=%s)",
+#                 first_name,
+#                 last_name,
+#                 pretty_slot,
+#                 date,
+#                 request.user.is_staff,
+#                 user_for_reservation.id if user_for_reservation else None,
+#             )
+
+#             # -----------------------------------
+#             # 6. Send confirmation email
+#             # -----------------------------------
+#             if email:
+#                 try:
+#                     if request.user.is_staff:
+#                         template_name = "reservation_book/emails/phone_reservation_confirmation.txt"
+#                     else:
+#                         template_name = "reservation_book/emails/reservation_confirmation.txt"
+
+#                     message = render_to_string(
+#                         template_name,
+#                         {
+#                             "reservation": reservation,
+#                             "time_slot_pretty": pretty_slot,
+#                             "tables_needed": tables_needed,
+#                             "left": left,
+#                         },
+#                     )
+
+#                     send_mail(
+#                         subject="Your Gambinos reservation is confirmed",
+#                         message=message,
+#                         from_email=settings.DEFAULT_FROM_EMAIL,
+#                         recipient_list=[email],
+#                         fail_silently=False,
+#                     )
+#                     logger.info(
+#                         "Confirmation email sent to %s for reservation id=%s",
+#                         email,
+#                         reservation.id,
+#                     )
+#                 except Exception as e:
+#                     logger.exception(
+#                         "Error sending reservation confirmation email: %s", e
+#                     )
+
+#             # -----------------------------------
+#             # 7. Response (AJAX or normal)
+#             # -----------------------------------
+#             if is_ajax:
+#                 return JsonResponse(
+#                     {
+#                         "success": True,
+#                         "reservation_id": reservation.id,
+#                         "date": str(date),
+#                         "pretty_slot": pretty_slot,
+#                         "demand": new_demand,
+#                         "available": available_total,
+#                         "left": left,
+#                     }
+#                 )
+
+#             messages.success(request, "Reservation confirmed!")
+#             return redirect("make_reservation")
+
+#         except Exception as e:
+#             logger.exception(
+#                 "Unexpected error in make_reservation POST: %s", e)
+#             if request.headers.get("x-requested-with") == "XMLHttpRequest":
+#                 return JsonResponse({"success": False, "error": str(e)})
+#             messages.error(request, f"Error processing reservation: {e}")
+#             return redirect("make_reservation")
+
+#     # GET branch – same as before
+#     next_30_days = _build_next_30_days()
+
+#     return render(
+#         request,
+#         "reservation_book/make_reservation.html",
+#         {
+#             "next_30_days": next_30_days,
+#             "slot_labels": SLOT_LABELS,
+#         },
+#     )
+
 @login_required
+@transaction.atomic
 def make_reservation(request):
-    logger.info("make_reservation called, method=%s", request.method)
+    """
+    Customer-facing reservation flow.
+    Creates a TableReservation and emails the customer a confirmation
+    including a 'My Reservations' manage link.
+
+    Uses SLOT_LABELS (no SLOT_KEYS).
+    """
+
+    # Ensure we have a Customer profile for this user
+    customer, _ = Customer.objects.get_or_create(
+        user=request.user,
+        defaults={"full_name": request.user.get_full_name()
+                  or request.user.username},
+    )
+
+    # ----- helpers -----
+    def _to_int(val, default=0):
+        try:
+            return int(val)
+        except (TypeError, ValueError):
+            return default
+
+    def _parse_date(date_str):
+        # HTML date input => YYYY-MM-DD
+        try:
+            return datetime.strptime(date_str, "%Y-%m-%d").date()
+        except Exception:
+            return None
+
+    def _slot_sort_key(slot_key: str):
+        # for keys like "17_18" or "17-18" etc -> sort by first number found
+        try:
+            head = slot_key.split("_")[0].split("-")[0].split(":")[0]
+            return int(head)
+        except Exception:
+            return 9999
+
+    # ----- build grid data for GET (and for re-render on invalid POST) -----
+    # Build slot list from SLOT_LABELS
+    slot_defs = [{"key": k, "label": v} for k, v in SLOT_LABELS.items()]
+    slot_defs.sort(key=lambda s: _slot_sort_key(s["key"]))
+
+    # Choose a default date for the grid
+    today = timezone.localdate()
+    selected_date = today
 
     if request.method == "POST":
-        try:
-            # -----------------------------------
-            # 1. Basic POST data
-            # -----------------------------------
-            date = request.POST.get("reservation_date")
-            slot = request.POST.get("time_slot")
+        # Expected POST fields (match your template/js):
+        # reservation_date, slot_key, tables_needed, notes
+        date_str = request.POST.get("reservation_date")
+        slot_key = (request.POST.get("slot_key") or "").strip()
+        tables_needed = _to_int(request.POST.get("tables_needed"), default=1)
+        notes = (request.POST.get("notes") or "").strip()
 
-            is_ajax = request.headers.get(
-                "x-requested-with") == "XMLHttpRequest"
+        selected_date = _parse_date(date_str) or today
 
-            if not date or not slot:
-                msg = "Please select a time slot before submitting."
-                logger.warning(
-                    "Reservation POST missing date or slot (date='%s', slot='%s')",
-                    date,
-                    slot,
-                )
-                if is_ajax:
-                    return JsonResponse({"success": False, "error": msg})
-                messages.error(request, msg)
-                return redirect("make_reservation")
-
-            tables_needed = int(
-                request.POST.get("number_of_tables_required_by_patron", 1)
-            )
-
-            first_name = request.POST.get("first_name", "").strip()
-            last_name = request.POST.get("last_name", "").strip()
-            email = _normalize_email(request.POST.get("email", ""))
-            phone = request.POST.get("phone", "").strip()
-            mobile = request.POST.get("mobile", "").strip()
-
-            if not first_name or not last_name:
-                msg = "First name and Last name are required."
-                if is_ajax:
-                    return JsonResponse({"success": False, "error": msg})
-                messages.error(request, msg)
-                return redirect("make_reservation")
-
-            if not email:
-                msg = "An email address is required so we can send confirmation."
-                if is_ajax:
-                    return JsonResponse({"success": False, "error": msg})
-                messages.error(request, msg)
-                return redirect("make_reservation")
-
-            # -----------------------------------
-            # 2. Availability lookup
-            # -----------------------------------
-            ts = TimeSlotAvailability.objects.get(calendar_date=date)
-            slot_available = getattr(ts, f"number_of_tables_available_{slot}")
-            slot_demand = getattr(ts, f"total_cust_demand_for_tables_{slot}")
-
-            slot_available = _to_int(slot_available, 0)
-            slot_demand = _to_int(slot_demand, 0)
-
-            if slot_demand + tables_needed > slot_available:
-                error_msg = "Not enough tables available."
-                if is_ajax:
-                    return JsonResponse({"success": False, "error": error_msg})
-                messages.error(request, error_msg)
-                return redirect("make_reservation")
-
-            # -----------------------------------
-            # 3. Get or create Customer
-            # -----------------------------------
-            customer_data = {
-                'first_name': first_name,
-                'last_name': last_name,
-                'email': email,
-                'phone': phone,
-                'mobile': mobile,
-            }
-
-            customer, created = Customer.objects.get_or_create(
-                email=email,
-                defaults=customer_data
-            )
-            if not created:
-                # Update existing customer
-                for key, value in customer_data.items():
-                    setattr(customer, key, value)
-                customer.save()
-
-            # -----------------------------------
-            # 4. Decide which user this reservation belongs to (for authenticated users)
-            # -----------------------------------
-            user_for_reservation = None
-            if request.user.is_authenticated and not request.user.is_staff:
-                user_for_reservation = request.user
-
-                # Optionally sync user details to customer
-                updated = False
-                if first_name and not user_for_reservation.first_name:
-                    user_for_reservation.first_name = first_name
-                    updated = True
-                if last_name and not user_for_reservation.last_name:
-                    user_for_reservation.last_name = last_name
-                    updated = True
-                if email.lower() != user_for_reservation.email.lower():
-                    user_for_reservation.email = email
-                    updated = True
-                if updated:
-                    user_for_reservation.save()
-
-            # -----------------------------------
-            # 5. Create reservation
-            # -----------------------------------
-            reservation = TableReservation.objects.create(
-                is_phone_reservation=request.user.is_staff,
-                time_slot=slot,
-                number_of_tables_required_by_patron=tables_needed,
-                timeslot_availability=ts,
-                reservation_status=True,
-                reservation_date=ts.calendar_date,
-                customer=customer,  # Link to the Customer object we created/updated
-            )
-
-            # Update demand
-            setattr(
-                ts,
-                f"total_cust_demand_for_tables_{slot}",
-                slot_demand + tables_needed,
-            )
-            ts.save()
-
-            new_demand = getattr(ts, f"total_cust_demand_for_tables_{slot}")
-            new_demand = _to_int(new_demand, 0)
-            available_total = getattr(ts, f"number_of_tables_available_{slot}")
-            available_total = _to_int(available_total, 0)
-            left = available_total - new_demand
-            pretty_slot = SLOT_LABELS.get(slot, slot)
-
-            logger.info(
-                "Reservation confirmed for %s %s at %s on %s (phone=%s, user_id=%s)",
-                first_name,
-                last_name,
-                pretty_slot,
-                date,
-                request.user.is_staff,
-                user_for_reservation.id if user_for_reservation else None,
-            )
-
-            # -----------------------------------
-            # 6. Send confirmation email
-            # -----------------------------------
-            if email:
-                try:
-                    if request.user.is_staff:
-                        template_name = "reservation_book/emails/phone_reservation_confirmation.txt"
-                    else:
-                        template_name = "reservation_book/emails/reservation_confirmation.txt"
-
-                    message = render_to_string(
-                        template_name,
-                        {
-                            "reservation": reservation,
-                            "time_slot_pretty": pretty_slot,
-                            "tables_needed": tables_needed,
-                            "left": left,
-                        },
-                    )
-
-                    send_mail(
-                        subject="Your Gambinos reservation is confirmed",
-                        message=message,
-                        from_email=settings.DEFAULT_FROM_EMAIL,
-                        recipient_list=[email],
-                        fail_silently=False,
-                    )
-                    logger.info(
-                        "Confirmation email sent to %s for reservation id=%s",
-                        email,
-                        reservation.id,
-                    )
-                except Exception as e:
-                    logger.exception(
-                        "Error sending reservation confirmation email: %s", e
-                    )
-
-            # -----------------------------------
-            # 7. Response (AJAX or normal)
-            # -----------------------------------
-            if is_ajax:
-                return JsonResponse(
-                    {
-                        "success": True,
-                        "reservation_id": reservation.id,
-                        "date": str(date),
-                        "pretty_slot": pretty_slot,
-                        "demand": new_demand,
-                        "available": available_total,
-                        "left": left,
-                    }
-                )
-
-            messages.success(request, "Reservation confirmed!")
+        # Validate slot key against SLOT_LABELS
+        if slot_key not in SLOT_LABELS:
+            messages.error(request, "Please select a valid time slot.")
             return redirect("make_reservation")
 
-        except Exception as e:
-            logger.exception(
-                "Unexpected error in make_reservation POST: %s", e)
-            if request.headers.get("x-requested-with") == "XMLHttpRequest":
-                return JsonResponse({"success": False, "error": str(e)})
-            messages.error(request, f"Error processing reservation: {e}")
+        if tables_needed < 1:
+            messages.error(request, "Number of tables must be at least 1.")
             return redirect("make_reservation")
 
-    # GET branch – same as before
-    next_30_days = _build_next_30_days()
+        # Find availability row for this date (or create if your app does that elsewhere)
+        availability = TimeSlotAvailability.objects.filter(
+            date=selected_date).first()
+        if not availability:
+            messages.error(
+                request,
+                "No availability has been set for that date yet. Please choose another date.",
+            )
+            return redirect("make_reservation")
 
-    return render(
-        request,
-        "reservation_book/make_reservation.html",
-        {
-            "next_30_days": next_30_days,
-            "slot_labels": SLOT_LABELS,
-        },
-    )
+        # Determine the field name on TimeSlotAvailability for this slot
+        # Example: slot_key "17_18" => "number_of_tables_available_17_18"
+        avail_field = f"number_of_tables_available_{slot_key}"
+
+        if not hasattr(availability, avail_field):
+            messages.error(
+                request, "Selected slot is not supported by availability settings.")
+            return redirect("make_reservation")
+
+        available_tables = getattr(availability, avail_field) or 0
+        if available_tables < tables_needed:
+            messages.error(
+                request,
+                f"Not enough tables available for {SLOT_LABELS.get(slot_key, slot_key)} on {selected_date}.",
+            )
+            return redirect("make_reservation")
+
+        # Reserve tables: decrement availability
+        setattr(availability, avail_field, available_tables - tables_needed)
+        availability.save()
+
+        # Create reservation
+        reservation = TableReservation.objects.create(
+            customer=customer,
+            reservation_date=selected_date,
+            time_slot=slot_key,
+            number_of_tables_required_by_patron=tables_needed,
+            notes=notes,
+            status="confirmed",
+        )
+
+        # ----- Email confirmation -----
+        # Your email template uses {{ login_url }} (NOT reservation_url)
+        # We’ll point it at My Reservations (best “manage reservations” link).
+        login_url = request.build_absolute_uri(reverse("my_reservations"))
+
+        context = {
+            "customer_name": customer.full_name or request.user.get_full_name() or request.user.username,
+            "reservation": reservation,
+            "tables_needed": tables_needed,
+            "time_slot_pretty": SLOT_LABELS.get(slot_key, slot_key),
+            "login_url": login_url,
+            # Template also references temp_password. For online signup, it’s not relevant.
+            # If you later add “phone reservation creates account”, you can populate it there.
+            "temp_password": "",
+        }
+
+        subject = "Your table reservation at Gambinos Restaurant & Lounge"
+        message = render_to_string(
+            "reservation_book/emails/reservation_confirmation.txt", context)
+
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=getattr(settings, "DEFAULT_FROM_EMAIL", None),
+            recipient_list=[request.user.email],
+            fail_silently=False,
+        )
+
+        messages.success(
+            request, "Reservation confirmed! A confirmation email has been sent.")
+        return redirect("my_reservations")
+
+    # GET: render page
+    # (Your template uses timeslots JSON from the view; if you already build that elsewhere,
+    # keep your existing structure. Here’s a simple context baseline.)
+    context = {
+        "slot_defs": slot_defs,
+        "selected_date": selected_date,
+        "customer": customer,
+    }
+    return render(request, "reservation_book/make_reservation.html", context)
 
 
 def signup(request):

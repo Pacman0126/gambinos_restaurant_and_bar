@@ -1,33 +1,22 @@
 Subject: Your table reservation at Gambinos Restaurant & Lounge
 
-Dear {{ reservation.customer.first_name }} {{ reservation.customer.last_name }},
+Dear {{ reservations.0.customer.first_name }} {{ reservations.0.customer.last_name }},
 
 Thank you for your reservation at Gambinos Restaurant & Lounge.
-This reservation was made by our staff over the phone.
 
 Here are your reservation details:
-
-- Date: {{ reservation.reservation_date|date:"M. j, Y" }}
-- Time: {{ time_slot_pretty }}
+{% for r in reservations %}
+- Date: {{ r.reservation_date|date:"M. j, Y" }}
+- Time: {{ time_range }}
 - Number of tables: {{ tables_needed }}
-- Reservation ID: {{ reservation.id }}
+- Reservation ID: {{ r.id }}
+{% if not forloop.last %}
 
-{% if is_new_customer %}
-We have created an online account for you using this email address so you can manage your reservations.
-
-Please log in using the details below and change your password immediately:
-
-Login URL: {{ login_url }}
-Username: {{ reservation.customer.email }}
-Temporary Password: {{ temp_password }}
-
-For security, please change your password after logging in.
-
-You will then be able to view, modify, or cancel your reservations anytime.
-{% else %}
-If you have an existing account, you can log in to view or manage this reservation at:
-{{ login_url }}
 {% endif %}
+{% endfor %}
+
+Manage your reservations here:
+{{ manage_url }}
 
 We look forward to welcoming you!
 
