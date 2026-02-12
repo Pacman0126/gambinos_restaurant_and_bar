@@ -4,7 +4,6 @@ __pycache__/
 *.pyo
 *.pyd
 *.pdb
-*.p*
 *$py.class
 *.py[cod]
 
@@ -37,7 +36,3 @@ staticfiles/
 # macOS
 .DS_Store
 
-# Windows
-Thumbs.db
-
-.py
