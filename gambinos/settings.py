@@ -42,7 +42,7 @@ DEBUG = env.bool("DEBUG", default=False)
 ALLOWED_HOSTS = env.list(
     "ALLOWED_HOSTS",
     default=["127.0.0.1", "localhost"],
-).split(",")
+)
 
 # CSRF trusted origins must include scheme (http/https)
 # e.g. "http://127.0.0.1:8000,http://localhost:8000,https://yourdomain.com"
