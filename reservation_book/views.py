@@ -1111,27 +1111,30 @@ def _slot_key_set():
 
 def _choose_online_email_template():
     """
-    Prefer an online/customer template if it exists in templates/.
-    Falls back to your existing reservation_confirmation.txt.
+    Prefer the multi-reservation online template if present.
+    Falls back to the single-reservation customer template.
     """
     candidates = [
-        # If you added these, keep them here:
+        # ✅ Your uploaded multi-reservation template should live here:
+        "reservation_book/emails/online_reservation_confirmation.txt",
+        # ✅ Your existing single-reservation template:
+        "reservation_book/emails/reservation_confirmation_customer.txt",
+        # Legacy fallback:
+        "reservation_book/emails/reservation_confirmation.txt",
+        # (keep older names if you had them)
         "reservation_book/online_reservation_confirmation.txt",
         "reservation_book/reservation_confirmation_customer.txt",
-        # Fallback (your existing one):
         "reservation_book/reservation_confirmation.txt",
     ]
 
     for name in candidates:
         try:
-            # render_to_string will raise TemplateDoesNotExist if not present
             render_to_string(name, {})
             return name
         except Exception:
             continue
 
-    # Absolute last resort:
-    return "reservation_book/reservation_confirmation.txt"
+    return "reservation_book/emails/reservation_confirmation.txt"
 
 
 # @login_required
@@ -1652,24 +1655,63 @@ def make_reservation(request):
         # ----------------------------
         try:
             manage_url = request.build_absolute_uri(reverse("my_reservations"))
+            login_url = request.build_absolute_uri(reverse("account_login"))
 
-            # Use ONE customer template. Keep phone template separate.
-            template_name = "reservation_book/emails/reservation_confirmation_customer.txt"
+            template_name = _choose_online_email_template()
 
-            message = render_to_string(
-                template_name,
-                {
-                    "reservation": reservation,
-                    "customer": customer,
-                    "tables_needed": tables_needed,
-                    "time_range_pretty": time_range_pretty,
-                    "manage_url": manage_url,
-                    "is_phone_reservation": False,
-                },
-            )
+            # If your flow created only ONE reservation, this still works.
+            # If you later add multi-day creation, just append to created_reservations.
+            # keep compatibility with your current flow
+            created_reservations = [reservation]
+
+            # Build rows for the multi-reservation email template
+            reservation_rows = []
+            for r in created_reservations:
+                # duration field is optional in your project; fall back to 1
+                dur = getattr(r, "duration_hours", None) or 1
+                reservation_rows.append({
+                    "date": r.reservation_date,
+                    "time_range": _pretty_time_range(r.time_slot, dur),
+                    "tables": r.number_of_tables_required_by_patron,
+                    "id": r.id,
+                })
+
+            customer_name = ""
+            if customer:
+                customer_name = f"{getattr(customer, 'first_name', '')} {getattr(customer, 'last_name', '')}".strip(
+                )
+            if not customer_name:
+                customer_name = request.user.get_full_name().strip() or request.user.username
+
+            # ✅ Send BOTH keys so whichever template you’re using renders time correctly:
+            # - online_reservation_confirmation.txt uses reservations[*].time_range
+            # - reservation_confirmation_customer.txt often uses time_slot_pretty
+            email_ctx = {
+                "customer_name": customer_name,
+                "customer": customer,
+                "reservation": reservation,
+                "reservations": reservation_rows,
+                "my_reservations_url": manage_url,
+                "manage_url": manage_url,
+                "login_url": login_url,
+
+                # Backward-compatible keys:
+                "tables_needed": reservation.number_of_tables_required_by_patron,
+                "time_slot_pretty": _pretty_time_range(
+                    reservation.time_slot,
+                    getattr(reservation, "duration_hours", None) or 1
+                ),
+                "time_range_pretty": _pretty_time_range(
+                    reservation.time_slot,
+                    getattr(reservation, "duration_hours", None) or 1
+                ),
+            }
+
+            subject = "Your table reservation at Gambinos Restaurant & Lounge"
+            message = render_to_string(template_name, email_ctx)
 
             send_mail(
-                subject="Your table reservation at Gambinos Restaurant & Lounge",
+                subject=subject,
                 message=message,
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[user_email],
@@ -1678,20 +1720,6 @@ def make_reservation(request):
         except Exception as e:
             logger.exception(
                 "Error sending customer reservation confirmation email: %s", e)
-
-        if is_ajax:
-            return JsonResponse({"success": True, "reservation_id": reservation.id})
-
-        messages.success(
-            request, "Reservation confirmed! Check your email for details.")
-        return redirect("my_reservations")
-
-    except Exception as e:
-        logger.exception("Unexpected error in make_reservation POST: %s", e)
-        if is_ajax:
-            return JsonResponse({"success": False, "error": str(e)})
-        messages.error(request, f"Error processing reservation: {e}")
-        return redirect("make_reservation")
 
 
 def signup(request):
