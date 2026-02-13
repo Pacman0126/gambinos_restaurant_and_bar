@@ -1,6 +1,4 @@
-from .models import Customer, ReservationSeries, TableReservation
 from django.shortcuts import redirect, render
-from django.db import transaction
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required
 from datetime import timedelta
@@ -29,10 +27,10 @@ from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.db.models.functions import Coalesce
 from django.db import IntegrityError, transaction
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.utils.text import slugify
-from django.urls import reverse
+
 from django.views.decorators.http import require_GET, require_http_methods
 from django.utils.crypto import get_random_string
 from django.http import HttpResponseForbidden
@@ -41,7 +39,7 @@ from allauth.account.models import EmailAddress
 # from .decorators import staff_or_superuser_required
 from .constants import SLOT_LABELS
 from .models import SLOT_KEYS
-from .models import TableReservation, TimeSlotAvailability, RestaurantConfig, Customer
+from .models import TimeSlotAvailability, RestaurantConfig, Customer, ReservationSeries
 from .forms import (
     SignUpForm,
     PhoneReservationForm,
@@ -1077,170 +1075,363 @@ def _choose_online_email_template():
     return "reservation_book/reservation_confirmation.txt"
 
 
+# @login_required
+# def make_reservation(request):
+#     """
+#     Customer-facing online reservation flow.
+#     Fixes Heroku 500 by NOT using Customer(user=...).
+#     Creates TableReservation rows (and optional ReservationSeries),
+#     then emails the customer a confirmation with a "My Reservations" link.
+#     """
+#     user = request.user
+
+#     if not user.email:
+#         messages.error(
+#             request, "Your account must have an email address to book online.")
+#         # or wherever you manage email in allauth
+#         return redirect("account_email")
+
+#     valid_slot_keys = _slot_key_set()
+
+#     # Basic page context (used by template to render the grid / dropdowns)
+#     # NOTE: Your template may expect different variable names; keep slot_labels at minimum.
+#     context = {
+#         "slot_labels": SLOT_LABELS,
+#     }
+
+#     if request.method == "GET":
+#         return render(request, "reservation_book/make_reservation.html", context)
+
+#     # -------------------------
+#     # POST: create reservation(s)
+#     # -------------------------
+#     reservation_date_str = request.POST.get(
+#         "reservation_date") or request.POST.get("date")
+#     start_slot = request.POST.get(
+#         "start_slot") or request.POST.get("slot") or ""
+
+#     duration_slots_raw = request.POST.get(
+#         "duration_slots") or request.POST.get("duration_hours") or "1"
+#     series_days_raw = request.POST.get("series_days") or "1"
+#     tables_raw = request.POST.get(
+#         "tables") or request.POST.get("num_tables") or "1"
+
+#     phone = (request.POST.get("phone") or "").strip()
+#     first_name = (request.POST.get("first_name")
+#                   or user.first_name or "").strip()
+#     last_name = (request.POST.get("last_name") or user.last_name or "").strip()
+#     notes = (request.POST.get("notes") or "").strip()
+
+#     # Validate date
+#     try:
+#         reservation_date = timezone.datetime.fromisoformat(
+#             reservation_date_str).date()
+#     except Exception:
+#         messages.error(request, "Please choose a valid reservation date.")
+#         return render(request, "reservation_book/make_reservation.html", context)
+
+#     # Validate slot key
+#     if valid_slot_keys and start_slot not in valid_slot_keys:
+#         messages.error(request, "Please choose a valid time slot.")
+#         return render(request, "reservation_book/make_reservation.html", context)
+
+#     # Parse ints safely
+#     try:
+#         duration_slots = max(1, int(duration_slots_raw))
+#     except Exception:
+#         duration_slots = 1
+
+#     try:
+#         series_days = max(1, int(series_days_raw))
+#     except Exception:
+#         series_days = 1
+
+#     try:
+#         num_tables = max(1, int(tables_raw))
+#     except Exception:
+#         num_tables = 1
+
+#     with transaction.atomic():
+#         # IMPORTANT: Customer has no 'user' FK in your models, so use email.
+#         customer, _created = Customer.objects.get_or_create(
+#             email=user.email,
+#             defaults={
+#                 "first_name": first_name,
+#                 "last_name": last_name,
+#                 "phone": phone,
+#                 "mobile": "",
+#                 "notes": "",
+#             },
+#         )
+
+#         # Keep customer details fresh (optional but useful)
+#         changed = False
+#         if first_name and customer.first_name != first_name:
+#             customer.first_name = first_name
+#             changed = True
+#         if last_name and customer.last_name != last_name:
+#             customer.last_name = last_name
+#             changed = True
+#         if phone and customer.phone != phone:
+#             customer.phone = phone
+#             changed = True
+#         if notes and (not customer.notes or notes not in (customer.notes or "")):
+#             # Append notes rather than overwrite
+#             customer.notes = (customer.notes + "\n"
+#                               + notes).strip() if customer.notes else notes
+#             changed = True
+#         if changed:
+#             customer.save()
+
+#         # Create a series if booking spans multiple days OR duration > 1 (optional but helpful)
+#         series = None
+#         if series_days > 1:
+#             series = ReservationSeries.objects.create(
+#                 customer=customer,
+#                 created_by=user,
+#                 title="Online reservation series",
+#                 notes=notes,
+#             )
+
+#         reservations_created = []
+#         for day_offset in range(series_days):
+#             day = reservation_date + timedelta(days=day_offset)
+#             r = TableReservation.objects.create(
+#                 customer=customer,
+#                 reservation_date=day,
+#                 start_slot=start_slot,
+#                 duration_slots=duration_slots,
+#                 tables=num_tables,
+#                 source="online",
+#                 booked_by_staff=False,
+#                 reservation_series=series,
+#                 notes=notes,
+#                 created_by=user,
+#             )
+#             reservations_created.append(r)
+
+#     # Build manage link for email + template context
+#     manage_url = request.build_absolute_uri(reverse("my_reservations"))
+
+#     # Email: use online/customer template if you added it; fallback otherwise
+#     template_name = _choose_online_email_template()
+
+#     primary = reservations_created[0]
+#     email_ctx = {
+#         "customer": customer,
+#         "reservation": primary,
+#         "reservations": reservations_created,  # if your new template wants to list all
+#         "manage_url": manage_url,
+#         "site_name": "Gambinos Restaurant & Lounge",
+#         "is_online": True,
+#     }
+
+#     subject = "Your table reservation at Gambinos Restaurant & Lounge"
+#     body = render_to_string(template_name, email_ctx)
+
+#     send_mail(
+#         subject=subject,
+#         message=body,
+#         from_email=getattr(settings, "DEFAULT_FROM_EMAIL", None),
+#         recipient_list=[user.email],
+#         fail_silently=False,
+#     )
+
+#     messages.success(
+#         request, "Reservation created! Please check your email for confirmation.")
+#     return redirect("my_reservations")
 @login_required
 def make_reservation(request):
     """
-    Customer-facing online reservation flow.
-    Fixes Heroku 500 by NOT using Customer(user=...).
-    Creates TableReservation rows (and optional ReservationSeries),
-    then emails the customer a confirmation with a "My Reservations" link.
+    Customer-facing online reservation view.
+
+    IMPORTANT:
+    - Do NOT query Customer.user (not all customers are users).
+    - Canonical lookup for the logged-in user is by email (and optionally phone).
+    - Send a confirmation email listing ALL selected slots + link to My Reservations.
     """
+
     user = request.user
+    user_email = (getattr(user, "email", "") or "").strip().lower()
 
-    if not user.email:
+    if not user_email:
         messages.error(
-            request, "Your account must have an email address to book online.")
-        # or wherever you manage email in allauth
-        return redirect("account_email")
+            request, "Your account is missing an email address. Please update it and try again.")
+        # change if you have a profile route
+        return redirect("account_profile")
 
-    valid_slot_keys = _slot_key_set()
-
-    # Basic page context (used by template to render the grid / dropdowns)
-    # NOTE: Your template may expect different variable names; keep slot_labels at minimum.
-    context = {
-        "slot_labels": SLOT_LABELS,
-    }
+    # --- Pull availability grid (keep your existing approach if you already have helpers) ---
+    # If your project already has these helpers, keep using them.
+    # Otherwise, you can remove this block and just render the template with whatever you use now.
+    try:
+        from .utils import build_week_grid, get_next_7_days  # adjust if different
+        week_days = get_next_7_days()
+        availability_grid = build_week_grid(week_days)
+    except Exception:
+        week_days = []
+        availability_grid = []
 
     if request.method == "GET":
-        return render(request, "reservation_book/make_reservation.html", context)
+        return render(
+            request,
+            "reservation_book/make_reservation.html",  # adjust template path if different
+            {
+                "availability_grid": availability_grid,
+                "week_days": week_days,
+                "slot_labels": SLOT_LABELS,  # handy for template rendering
+            },
+        )
 
     # -------------------------
     # POST: create reservation(s)
     # -------------------------
-    reservation_date_str = request.POST.get(
-        "reservation_date") or request.POST.get("date")
-    start_slot = request.POST.get(
-        "start_slot") or request.POST.get("slot") or ""
-
-    duration_slots_raw = request.POST.get(
-        "duration_slots") or request.POST.get("duration_hours") or "1"
-    series_days_raw = request.POST.get("series_days") or "1"
-    tables_raw = request.POST.get(
-        "tables") or request.POST.get("num_tables") or "1"
-
-    phone = (request.POST.get("phone") or "").strip()
-    first_name = (request.POST.get("first_name")
-                  or user.first_name or "").strip()
-    last_name = (request.POST.get("last_name") or user.last_name or "").strip()
-    notes = (request.POST.get("notes") or "").strip()
-
-    # Validate date
-    try:
-        reservation_date = timezone.datetime.fromisoformat(
-            reservation_date_str).date()
-    except Exception:
-        messages.error(request, "Please choose a valid reservation date.")
-        return render(request, "reservation_book/make_reservation.html", context)
-
-    # Validate slot key
-    if valid_slot_keys and start_slot not in valid_slot_keys:
-        messages.error(request, "Please choose a valid time slot.")
-        return render(request, "reservation_book/make_reservation.html", context)
-
-    # Parse ints safely
-    try:
-        duration_slots = max(1, int(duration_slots_raw))
-    except Exception:
-        duration_slots = 1
+    # e.g. ["2026-02-13|17_18", "2026-02-14|17_18"]
+    selected_slots = request.POST.getlist("selected_slots")
+    tables_requested = request.POST.get(
+        "tables_requested") or request.POST.get("num_tables") or "1"
 
     try:
-        series_days = max(1, int(series_days_raw))
-    except Exception:
-        series_days = 1
+        tables_requested = int(tables_requested)
+    except ValueError:
+        tables_requested = 1
 
-    try:
-        num_tables = max(1, int(tables_raw))
-    except Exception:
-        num_tables = 1
+    if tables_requested < 1:
+        tables_requested = 1
 
-    with transaction.atomic():
-        # IMPORTANT: Customer has no 'user' FK in your models, so use email.
-        customer, _created = Customer.objects.get_or_create(
-            email=user.email,
-            defaults={
-                "first_name": first_name,
-                "last_name": last_name,
-                "phone": phone,
-                "mobile": "",
-                "notes": "",
-            },
-        )
+    if not selected_slots:
+        messages.error(request, "Please select at least one time slot.")
+        return redirect("make_reservation")
 
-        # Keep customer details fresh (optional but useful)
-        changed = False
-        if first_name and customer.first_name != first_name:
-            customer.first_name = first_name
-            changed = True
-        if last_name and customer.last_name != last_name:
-            customer.last_name = last_name
-            changed = True
-        if phone and customer.phone != phone:
-            customer.phone = phone
-            changed = True
-        if notes and (not customer.notes or notes not in (customer.notes or "")):
-            # Append notes rather than overwrite
-            customer.notes = (customer.notes + "\n"
-                              + notes).strip() if customer.notes else notes
-            changed = True
-        if changed:
-            customer.save()
-
-        # Create a series if booking spans multiple days OR duration > 1 (optional but helpful)
-        series = None
-        if series_days > 1:
-            series = ReservationSeries.objects.create(
-                customer=customer,
-                created_by=user,
-                title="Online reservation series",
-                notes=notes,
-            )
-
-        reservations_created = []
-        for day_offset in range(series_days):
-            day = reservation_date + timedelta(days=day_offset)
-            r = TableReservation.objects.create(
-                customer=customer,
-                reservation_date=day,
-                start_slot=start_slot,
-                duration_slots=duration_slots,
-                tables=num_tables,
-                source="online",
-                booked_by_staff=False,
-                reservation_series=series,
-                notes=notes,
-                created_by=user,
-            )
-            reservations_created.append(r)
-
-    # Build manage link for email + template context
-    manage_url = request.build_absolute_uri(reverse("my_reservations"))
-
-    # Email: use online/customer template if you added it; fallback otherwise
-    template_name = _choose_online_email_template()
-
-    primary = reservations_created[0]
-    email_ctx = {
-        "customer": customer,
-        "reservation": primary,
-        "reservations": reservations_created,  # if your new template wants to list all
-        "manage_url": manage_url,
-        "site_name": "Gambinos Restaurant & Lounge",
-        "is_online": True,
-    }
-
-    subject = "Your table reservation at Gambinos Restaurant & Lounge"
-    body = render_to_string(template_name, email_ctx)
-
-    send_mail(
-        subject=subject,
-        message=body,
-        from_email=getattr(settings, "DEFAULT_FROM_EMAIL", None),
-        recipient_list=[user.email],
-        fail_silently=False,
+    # Canonical customer lookup: by email (NOT user FK)
+    # Keep user->customer link implicit (via email), since not all customers are users.
+    customer, _created = Customer.objects.get_or_create(
+        email=user_email,
+        defaults={
+            "first_name": (getattr(user, "first_name", "") or "").strip(),
+            "last_name": (getattr(user, "last_name", "") or "").strip(),
+        },
     )
 
+    # Optional: keep names fresh if blank
+    dirty = False
+    if not customer.first_name and getattr(user, "first_name", ""):
+        customer.first_name = user.first_name.strip()
+        dirty = True
+    if not customer.last_name and getattr(user, "last_name", ""):
+        customer.last_name = user.last_name.strip()
+        dirty = True
+    if dirty:
+        customer.save(update_fields=["first_name", "last_name"])
+
+    # Create a series for grouping (optional but recommended if you already have it)
+    series = ReservationSeries.objects.create(
+        customer=customer,
+        created_by=user,  # if your model has this; otherwise remove
+        source="online",  # if your model has this; otherwise remove
+        notes="Online reservation",
+    )
+
+    created_reservations = []
+    slot_lines_for_email = []  # list of (date_str, label_str, reservation_id)
+
+    # Selected slot string format expected: "YYYY-MM-DD|SLOT_KEY"
+    for item in selected_slots:
+        try:
+            date_str, slot_key = item.split("|", 1)
+        except ValueError:
+            continue
+
+        # Convert date
+        try:
+            day = datetime.strptime(date_str, "%Y-%m-%d").date()
+        except ValueError:
+            continue
+
+        # Get label from SLOT_LABELS (don’t use SLOT_KEYS)
+        slot_label = SLOT_LABELS.get(slot_key, slot_key)
+
+        # If your TableReservation model stores a key (slot_key) and date, do that.
+        # Adjust field names below to match your model.
+        reservation = TableReservation.objects.create(
+            customer=customer,
+            reservation_series=series,
+            date=day,
+            time_slot=slot_key,          # if your field is named differently, adjust
+            tables_reserved=tables_requested,
+            created_by=user,             # remove if not in your model
+            source="online",             # remove if not in your model
+        )
+        created_reservations.append(reservation)
+        slot_lines_for_email.append(
+            (day.strftime("%b. %d, %Y"), slot_label, reservation.id))
+
+    if not created_reservations:
+        series.delete()
+        messages.error(
+            request, "No valid time slots were submitted. Please try again.")
+        return redirect("make_reservation")
+
+    # -------------------------
+    # Confirmation email (online)
+    # -------------------------
+    my_reservations_url = request.build_absolute_uri(
+        reverse("my_reservations"))
+
+    # Group lines by date for nicer email formatting
+    grouped = defaultdict(list)
+    for d, label, rid in slot_lines_for_email:
+        grouped[d].append((label, rid))
+
+    # Build a plain-text block with ALL dates/slots
+    lines = []
+    for d in grouped:
+        lines.append(f"- Date: {d}")
+        for label, rid in grouped[d]:
+            lines.append(f"  • Time: {label} (Reservation ID: {rid})")
+    reservations_block = "\n".join(lines)
+
+    subject = "Your table reservation at Gambinos Restaurant & Lounge"
+
+    # If you want to use ONE template file, keep it generic and pass context.
+    # Otherwise create a dedicated template e.g. reservation_confirmation_customer.txt.
+    try:
+        body_txt = render_to_string(
+            # create this template (recommended)
+            "emails/reservation_confirmation_customer.txt",
+            {
+                "customer_name": f"{customer.first_name} {customer.last_name}".strip() or customer.email,
+                "tables_requested": tables_requested,
+                "reservations_block": reservations_block,
+                "my_reservations_url": my_reservations_url,
+                "was_made_by_staff": False,
+            },
+        )
+    except Exception:
+        # Fallback if template doesn't exist yet
+        body_txt = (
+            f"Dear {(customer.first_name + ' ' + customer.last_name).strip() or customer.email},\n\n"
+            f"Thank you for your reservation at Gambinos Restaurant & Lounge.\n"
+            f"This reservation was made online.\n\n"
+            f"Here are your reservation details:\n\n"
+            f"{reservations_block}\n\n"
+            f"Number of tables: {tables_requested}\n\n"
+            f"You can view or manage your reservations here:\n"
+            f"{my_reservations_url}\n\n"
+            f"We look forward to welcoming you!\n\n"
+            f"Best regards,\n"
+            f"Gambinos Restaurant & Lounge\n"
+        )
+
+    msg = EmailMultiAlternatives(
+        subject=subject,
+        body=body_txt,
+        from_email=getattr(settings, "DEFAULT_FROM_EMAIL", None),
+        to=[customer.email],
+    )
+    msg.send(fail_silently=False)
+
     messages.success(
-        request, "Reservation created! Please check your email for confirmation.")
+        request, "Reservation created! A confirmation email has been sent.")
     return redirect("my_reservations")
 
 
