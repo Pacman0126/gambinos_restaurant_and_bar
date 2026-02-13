@@ -40,7 +40,7 @@ from allauth.account.models import EmailAddress
 # from .decorators import staff_or_superuser_required
 from .constants import SLOT_LABELS
 from .models import SLOT_KEYS
-from .models import TimeSlotAvailability, RestaurantConfig, Customer, ReservationSeries
+from .models import TimeSlotAvailability, RestaurantConfig, Customer, ReservationSeries, TableReservation
 from .forms import (
     SignUpForm,
     PhoneReservationForm,
