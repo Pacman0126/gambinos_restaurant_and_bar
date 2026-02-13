@@ -1,3 +1,4 @@
+from __future__ import annotations
 from django.shortcuts import redirect, render
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required
