@@ -1659,6 +1659,9 @@ def make_reservation(request):
         # ----------------------------
         # Email confirmation (online)
         # ----------------------------
+        # ----------------------------
+        # Email confirmation (online)
+        # ----------------------------
         try:
             manage_url = request.build_absolute_uri(reverse("my_reservations"))
             login_url = request.build_absolute_uri(reverse("account_login"))
@@ -1668,6 +1671,8 @@ def make_reservation(request):
             # current flow: single row reservation
             created_reservations = [reservation]
 
+            # IMPORTANT: use the requested duration as fallback if the model
+            # does not have duration_hours persisted.
             reservation_rows = []
             for r in created_reservations:
                 dur = getattr(r, "duration_hours", None) or duration or 1
@@ -1694,14 +1699,32 @@ def make_reservation(request):
                 "manage_url": manage_url,
                 "login_url": login_url,
 
-                # Backward-compatible keys
+                # Backward-compatible keys (avoid blank time in older templates)
                 "tables_needed": reservation.number_of_tables_required_by_patron,
-                "time_slot_pretty": _pretty_time_range(reservation.time_slot, getattr(reservation, "duration_hours", None) or duration or 1),
-                "time_range_pretty": _pretty_time_range(reservation.time_slot, getattr(reservation, "duration_hours", None) or duration or 1),
+                "time_slot_pretty": _pretty_time_range(
+                    reservation.time_slot,
+                    getattr(reservation, "duration_hours",
+                            None) or duration or 1
+                ),
+                "time_range_pretty": _pretty_time_range(
+                    reservation.time_slot,
+                    getattr(reservation, "duration_hours",
+                            None) or duration or 1
+                ),
             }
 
             subject = "Your table reservation at Gambinos Restaurant & Lounge"
             message = render_to_string(template_name, email_ctx)
+
+            # Force-visible logs (WARNING shows up even if INFO is filtered)
+            logger.warning(
+                "Reservation email: attempting send to=%s from=%s backend=%s template=%s reservation_id=%s",
+                user_email,
+                getattr(settings, "DEFAULT_FROM_EMAIL", None),
+                getattr(settings, "EMAIL_BACKEND", None),
+                template_name,
+                getattr(reservation, "id", None),
+            )
 
             send_mail(
                 subject=subject,
@@ -1710,23 +1733,20 @@ def make_reservation(request):
                 recipient_list=[user_email],
                 fail_silently=False,
             )
+
+            logger.warning(
+                "Reservation email: sent OK to=%s reservation_id=%s",
+                user_email,
+                getattr(reservation, "id", None),
+            )
+
         except Exception as e:
             logger.exception(
-                "Error sending customer reservation confirmation email: %s", e)
-
-        if is_ajax:
-            return JsonResponse({"success": True, "reservation_id": reservation.id})
-
-        messages.success(
-            request, "Reservation confirmed! Check your email for details.")
-        return redirect("my_reservations")
-
-    except Exception as e:
-        logger.exception("Unexpected error in make_reservation POST: %s", e)
-        if is_ajax:
-            return JsonResponse({"success": False, "error": str(e)})
-        messages.error(request, f"Error processing reservation: {e}")
-        return redirect("make_reservation")
+                "Reservation email: FAILED to=%s reservation_id=%s error=%s",
+                user_email,
+                getattr(reservation, "id", None),
+                e,
+            )
 
 
 def signup(request):
