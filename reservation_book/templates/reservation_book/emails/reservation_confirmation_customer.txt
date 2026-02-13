@@ -1,0 +1,28 @@
+Subject: Your table reservation at Gambinos Restaurant & Lounge
+
+Dear {{ reservation.customer.first_name }} {{ reservation.customer.last_name }},
+
+Thank you for your reservation at Gambinos Restaurant & Lounge.
+This reservation was made online.
+
+Here are your reservation details:
+
+- Date: {{ reservation.reservation_date|date:"M. j, Y" }}
+- Time: {{ time_slot_pretty }}
+- Number of tables: {{ tables_needed }}
+- Reservation ID: {{ reservation.id }}
+
+{% if series_days|default:1|add:0 > 1 %}
+This reservation repeats for {{ series_days }} consecutive days at the same time.
+{% endif %}
+
+Manage your reservations here:
+{{ manage_url }}
+
+If you need to log in again:
+{{ login_url }}
+
+We look forward to welcoming you!
+
+Best regards,
+Gambinos Restaurant & Lounge
