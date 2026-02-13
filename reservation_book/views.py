@@ -1553,11 +1553,15 @@ def make_reservation(request):
     # ----------------------------
     # POST
     # ----------------------------
+    # ----------------------------
+    # POST
+    # ----------------------------
     is_ajax = request.headers.get("x-requested-with") == "XMLHttpRequest"
 
     reservation_date_raw = request.POST.get(
         "reservation_date")   # "YYYY-MM-DD"
-    start_slot = request.POST.get("time_slot")                   # e.g. "17_18"
+    start_slot = request.POST.get(
+        "time_slot")                    # e.g. "17_18"
     tables_needed = _safe_int(request.POST.get(
         "number_of_tables_required_by_patron"), 0)
 
@@ -1621,7 +1625,8 @@ def make_reservation(request):
                     return redirect("make_reservation")
 
             # 2) Create reservation (single record) and store the START slot + duration
-            #    If your TableReservation model does not have duration_hours, you can remove it.
+            # IMPORTANT: We do NOT set a "user" FK here. Your model is customer-driven.
+            # If you later add user FK, add it explicitly once the model exists everywhere.
             create_kwargs = dict(
                 is_phone_reservation=False,
                 time_slot=start_slot,
@@ -1632,12 +1637,13 @@ def make_reservation(request):
                 customer=customer,
             )
 
-            # Only set a `user` FK if your model actually has it (keeps this drop-in safe).
-            if any(f.name == "user" for f in TableReservation._meta.fields):
-                create_kwargs["user"] = request.user
-
-            if any(f.name == "duration_hours" for f in TableReservation._meta.fields):
+            # Only include duration_hours if your model supports it.
+            # This avoids _meta introspection (which caused NameError loops before).
+            try:
+                # If you know your TableReservation has duration_hours, keep it.
                 create_kwargs["duration_hours"] = duration
+            except Exception:
+                pass
 
             reservation = TableReservation.objects.create(**create_kwargs)
 
@@ -1659,16 +1665,12 @@ def make_reservation(request):
 
             template_name = _choose_online_email_template()
 
-            # If your flow created only ONE reservation, this still works.
-            # If you later add multi-day creation, just append to created_reservations.
-            # keep compatibility with your current flow
+            # current flow: single row reservation
             created_reservations = [reservation]
 
-            # Build rows for the multi-reservation email template
             reservation_rows = []
             for r in created_reservations:
-                # duration field is optional in your project; fall back to 1
-                dur = getattr(r, "duration_hours", None) or 1
+                dur = getattr(r, "duration_hours", None) or duration or 1
                 reservation_rows.append({
                     "date": r.reservation_date,
                     "time_range": _pretty_time_range(r.time_slot, dur),
@@ -1683,9 +1685,6 @@ def make_reservation(request):
             if not customer_name:
                 customer_name = request.user.get_full_name().strip() or request.user.username
 
-            # ✅ Send BOTH keys so whichever template you’re using renders time correctly:
-            # - online_reservation_confirmation.txt uses reservations[*].time_range
-            # - reservation_confirmation_customer.txt often uses time_slot_pretty
             email_ctx = {
                 "customer_name": customer_name,
                 "customer": customer,
@@ -1695,16 +1694,10 @@ def make_reservation(request):
                 "manage_url": manage_url,
                 "login_url": login_url,
 
-                # Backward-compatible keys:
+                # Backward-compatible keys
                 "tables_needed": reservation.number_of_tables_required_by_patron,
-                "time_slot_pretty": _pretty_time_range(
-                    reservation.time_slot,
-                    getattr(reservation, "duration_hours", None) or 1
-                ),
-                "time_range_pretty": _pretty_time_range(
-                    reservation.time_slot,
-                    getattr(reservation, "duration_hours", None) or 1
-                ),
+                "time_slot_pretty": _pretty_time_range(reservation.time_slot, getattr(reservation, "duration_hours", None) or duration or 1),
+                "time_range_pretty": _pretty_time_range(reservation.time_slot, getattr(reservation, "duration_hours", None) or duration or 1),
             }
 
             subject = "Your table reservation at Gambinos Restaurant & Lounge"
@@ -1720,6 +1713,20 @@ def make_reservation(request):
         except Exception as e:
             logger.exception(
                 "Error sending customer reservation confirmation email: %s", e)
+
+        if is_ajax:
+            return JsonResponse({"success": True, "reservation_id": reservation.id})
+
+        messages.success(
+            request, "Reservation confirmed! Check your email for details.")
+        return redirect("my_reservations")
+
+    except Exception as e:
+        logger.exception("Unexpected error in make_reservation POST: %s", e)
+        if is_ajax:
+            return JsonResponse({"success": False, "error": str(e)})
+        messages.error(request, f"Error processing reservation: {e}")
+        return redirect("make_reservation")
 
 
 def signup(request):
