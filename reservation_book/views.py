@@ -49,6 +49,23 @@ from .forms import (
 
 
 # SLOT_KEYS = list(SLOT_LABELS.keys())
+def _default_tables_per_slot() -> int:
+    """
+    Central place for your capacity-per-slot default.
+
+    Priority:
+    1) settings.DEFAULT_TABLES_PER_SLOT (if you define it)
+    2) settings.TABLES_PER_SLOT
+    3) fallback = 20
+    """
+    for attr in ("DEFAULT_TABLES_PER_SLOT", "TABLES_PER_SLOT"):
+        val = getattr(settings, attr, None)
+        if isinstance(val, int) and val > 0:
+            return val
+        # allow strings like "20" in env-configured settings
+        if isinstance(val, str) and val.isdigit() and int(val) > 0:
+            return int(val)
+    return 20
 
 
 def _get_slot_capacity_default():
@@ -151,26 +168,55 @@ def _customer_for_logged_in_user(request):
     return Customer.objects.filter(email=email).first()
 
 
-def _timeslot_defaults():
-    """
-    Build defaults dict for TimeSlotAvailability fields using SLOT_LABELS keys ONLY.
-    """
-    defaults = {}
-    per_slot = _default_tables_per_slot()
+# def _timeslot_defaults():
+#     """
+#     Build defaults dict for TimeSlotAvailability fields using SLOT_LABELS keys ONLY.
+#     """
+#     defaults = {}
+#     per_slot = _default_tables_per_slot()
 
-    for key in SLOT_LABELS.keys():
-        defaults[f"number_of_tables_available_{key}"] = per_slot
+#     for key in SLOT_LABELS.keys():
+#         defaults[f"number_of_tables_available_{key}"] = per_slot
+
+#     return defaults
+
+
+# def _timeslot_defaults() -> dict:
+#     default_cap = _default_tables_per_slot()
+#     d = {}
+#     for key in SLOT_KEYS:
+#         d[f"number_of_tables_available_{key}"] = default_cap
+#         d[f"total_cust_demand_for_tables_{key}"] = 0
+#     return d
+def _timeslot_defaults() -> dict:
+    """
+    Defaults used when creating a TimeSlotAvailability row for a date.
+    IMPORTANT: This is what makes your grid start at 20/20 instead of /20.
+    """
+    default_cap = _default_tables_per_slot()
+    defaults = {}
+
+    # These are the dynamic model field patterns you are using in the grid.
+    # We seed them so new rows have correct starting capacity.
+    for key in _slot_order():
+        defaults[f"number_of_tables_available_{key}"] = default_cap
+
+        # If your model uses booked/demand fields, initialize them to 0
+        # (it’s safe even if some fields don’t exist; Django ignores unknown
+        # keys only if you pass them to a model init — but here it's used in
+        # get_or_create(defaults=...), so keys MUST match real fields.
+        #
+        # Keep ONLY the ones that actually exist in your model.
+        #
+        # From your current grid code you read total_cust_demand_for_tables_{key}.
+        # If that field exists, seed it:
+        defaults[f"total_cust_demand_for_tables_{key}"] = 0
+
+        # If you ALSO have booked fields (common pattern), uncomment this ONLY
+        # if those fields exist in TimeSlotAvailability:
+        # defaults[f"number_of_tables_booked_{key}"] = 0
 
     return defaults
-
-
-def _timeslot_defaults() -> dict:
-    default_cap = _default_tables_per_slot()
-    d = {}
-    for key in SLOT_KEYS:
-        d[f"number_of_tables_available_{key}"] = default_cap
-        d[f"total_cust_demand_for_tables_{key}"] = 0
-    return d
 
 
 def _update_ts_demand(ts, slots, tables_needed: int, delta_sign: int):
@@ -231,11 +277,14 @@ def _to_int(value, default=0):
         return default
 
 
-def _safe_int(val, default=0):
+def _safe_int(value, default=0):
     try:
-        return int(val)
+        if value is None:
+            return default
+        return int(value)
     except Exception:
         return default
+
 
 # --- SLOT LABELS --- moved to constants.py
 
@@ -893,76 +942,58 @@ def _safe_int(value, default=0):
         return int(default)
 
 
-def _build_next_30_days(days=30):
+def _build_next_30_days(days: int = 30):
     """
-    Produces a list of day dicts for the calendar grid.
-
-    Each day dict includes:
-      - date_display (and aliases date/label)
-      - date_iso (and alias iso)
-      - slots: mapping slot_key -> dict with remaining/capacity + aliases
-
-    IMPORTANT: slot display is standardized as: remaining/capacity.
+    Builds the availability grid context expected by your template.
+    Uses SLOT_LABELS keys ONLY (no SLOT_KEYS).
     """
     today = timezone.localdate()
-    slot_keys = _slot_order()
-    defaults = _timeslot_defaults()
+    grid_days = []
+    slots_in_order = _slot_order()
+    default_cap = _default_tables_per_slot()
 
-    # Preload existing availability rows in one query
-    end_date = today + timedelta(days=days - 1)
-    qs = TimeSlotAvailability.objects.filter(
-        calendar_date__range=(today, end_date))
-    by_date = {row.calendar_date: row for row in qs}
+    for offset in range(days):
+        date = today + datetime.timedelta(days=offset)
 
-    grid = []
-    for i in range(days):
-        d = today + timedelta(days=i)
-        ts_obj = by_date.get(d)
+        ts, _ = TimeSlotAvailability.objects.get_or_create(
+            calendar_date=date,
+            defaults=_timeslot_defaults(),
+        )
 
-        day_slots = {}
-        for slot_key in slot_keys:
-            field_name = f"number_of_tables_available_{slot_key}"
+        slots = []
+        for key in slots_in_order:
+            available = _safe_int(
+                getattr(ts, f"number_of_tables_available_{key}", None),
+                default_cap,  # <-- critical fix: don’t default to 0
+            )
 
-            # Treat the stored value as CAPACITY (configured availability)
-            capacity = getattr(ts_obj, field_name, None)
-            if capacity is None:
-                capacity = defaults.get(field_name, _default_tables_per_slot())
+            demand = _safe_int(
+                getattr(ts, f"total_cust_demand_for_tables_{key}", None),
+                0
+            )
 
-            # Demand = how many reservations exist for that date/slot
-            booked = TableReservation.objects.filter(
-                date=d,
-                time_slot=slot_key,
-            ).count()
+            slots.append({
+                "key": key,
+                "label": SLOT_LABELS.get(key, key),
+                "available": available,
+                "demand": demand,
+                "remaining": max(available - demand, 0),
+            })
 
-            remaining = max(int(capacity) - int(booked), 0)
+        grid_days.append({
+            # Keep your existing key used by templates
+            "calendar_date": ts.calendar_date,
 
-            # Provide multiple aliases so templates don’t break
-            day_slots[slot_key] = {
-                "capacity": int(capacity),
-                "total": int(capacity),          # alias
-                "booked": int(booked),
-                "demand": int(booked),           # alias
-                "remaining": int(remaining),
-                # alias (this is what most templates mean by “availability”)
-                "available": int(remaining),
-                "display": f"{remaining}/{capacity}",
-            }
+            # Add friendly display keys so date column doesn't render blank
+            "date": ts.calendar_date,
+            "date_label": ts.calendar_date.strftime("%Y-%m-%d"),
+            "weekday_short": ts.calendar_date.strftime("%a"),
 
-        date_display = d.strftime("%a %d %b")
-        day = {
-            "date_obj": d,
-            "date_iso": d.isoformat(),
-            "iso": d.isoformat(),              # alias
-            "date_display": date_display,
-            # alias (fixes blank date column in many templates)
-            "date": date_display,
-            "label": date_display,             # alias
-            "weekday": d.strftime("%a"),
-            "slots": day_slots,
-        }
-        grid.append(day)
+            "slots": slots,
+            "timeslot": ts,
+        })
 
-    return grid
+    return grid_days
 
 
 def home(request):
