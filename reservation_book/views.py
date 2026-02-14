@@ -950,51 +950,81 @@ logger = logging.getLogger(__name__)
 
 
 def _build_next_30_days(days=30):
-    """
-    Returns a list of dicts shaped for the reserve template:
-
-    [
-      {
-        "calendar_date": date,
-        "slots": [
-          {"key": "17_18", "label": "17:00–18:00", "total": 20, "remaining": 20},
-          ...
-        ],
-      },
-      ...
-    ]
-
-    Key fix: If no TimeSlotAvailability exists yet for a day, remaining == total (not 0).
-    """
     today = timezone.localdate()
-    defaults = _timeslot_defaults()  # must exist in your file
+
+    # defaults should represent TOTAL CAPACITY per slot
+    # We'll handle both possible shapes:
+    #   A) {"17_18": 20, ...}
+    #   B) {"number_of_tables_available_17_18": 20, ...}
+    defaults = _timeslot_defaults() or {}
+
+    def _default_total_for_slot(slot_key: str) -> int:
+        # shape A
+        if slot_key in defaults:
+            try:
+                return int(defaults.get(slot_key) or 0)
+            except (TypeError, ValueError):
+                return 0
+
+        # shape B (field name keys)
+        cap_field = f"number_of_tables_available_{slot_key}"
+        try:
+            return int(defaults.get(cap_field) or 0)
+        except (TypeError, ValueError):
+            return 0
 
     out = []
+
     for i in range(days):
         d = today + timezone.timedelta(days=i)
 
-        # If there's no record yet, treat it as "fully available"
-        ts = TimeSlotAvailability.objects.filter(date=d).first()
+        # Correct model field: calendar_date
+        ts = TimeSlotAvailability.objects.filter(calendar_date=d).first()
 
         slots = []
         for key, label in SLOT_LABELS.items():
-            total = int(defaults.get(key, 0))
-            if ts is None:
-                remaining = total
+            cap_field = f"number_of_tables_available_{key}"
+            demand_field = f"total_cust_demand_for_tables_{key}"
+
+            # TOTAL capacity (prefer DB row if present, else defaults)
+            if ts is not None:
+                try:
+                    total = int(getattr(ts, cap_field, 0) or 0)
+                except (TypeError, ValueError):
+                    total = 0
             else:
-                remaining = int(
-                    getattr(ts, f"number_of_tables_available_{key}", 0))
+                total = _default_total_for_slot(key)
+
+            # DEMAND/BOOKED so far
+            if ts is not None:
+                try:
+                    demand = int(getattr(ts, demand_field, 0) or 0)
+                except (TypeError, ValueError):
+                    demand = 0
+            else:
+                demand = 0
+
+            remaining = max(total - demand, 0)
 
             slots.append(
                 {
                     "key": key,
                     "label": label,
                     "total": total,
+                    "demand": demand,
                     "remaining": remaining,
+                    # handy for templates:
+                    "display": f"{remaining}/{total}",
                 }
             )
 
-        out.append({"calendar_date": d, "slots": slots})
+        out.append(
+            {
+                "calendar_date": d,
+                "date": d,  # alias for templates that expect day.date
+                "slots": slots,
+            }
+        )
 
     return out
 
@@ -1004,12 +1034,14 @@ def make_reservation(request):
     """
     Customer-facing reservation page.
 
-    Fixes:
-    - Uses SLOT_LABELS only (no SLOT_KEYS)
-    - GET builds the grid with correct date + remaining/total math
-    - POST actually saves + decrements availability + redirects on success
-    - Logs form errors so "nothing happens" doesn't stay invisible
+    This version matches your *actual* TimeSlotAvailability model:
+    - date field is `calendar_date`
+    - `number_of_tables_available_<slot>` is TOTAL CAPACITY (not remaining)
+    - `total_cust_demand_for_tables_<slot>` is DEMAND/BOOKED
+    - remaining = capacity - demand
+    - POST increments demand (does NOT decrement capacity)
     """
+    # Always build grid for render (GET + POST invalid)
     next_30_days = _build_next_30_days(days=30)
 
     if request.method == "POST":
@@ -1026,28 +1058,47 @@ def make_reservation(request):
                 {"form": form, "next_30_days": next_30_days},
             )
 
-        # Build reservation (don’t commit until availability is checked)
+        # Build reservation (don’t commit until capacity check passes)
         reservation = form.save(commit=False)
 
-        # Attach logged-in user if present
-        if request.user.is_authenticated:
+        # Attach logged-in user ONLY if the reservation model actually has a user FK
+        if request.user.is_authenticated and hasattr(reservation, "user_id"):
             reservation.user = request.user
 
-        # Create/attach Customer record (your project pattern)
+        # Attach/ensure Customer using your project pattern (if helper exists)
         try:
-            customer = get_or_create_customer_for_request(request, form=form)
-            if customer:
-                reservation.customer = customer
+            if "get_or_create_customer_for_request" in globals():
+                customer = get_or_create_customer_for_request(
+                    request, form=form)
+                if customer and hasattr(reservation, "customer_id"):
+                    reservation.customer = customer
         except Exception:
-            logger.exception("make_reservation: failed to attach customer")
-            # Not fatal to saving reservation if your model allows it
+            logger.exception(
+                "make_reservation: failed to attach customer (non-fatal)")
 
-        reservation_date = getattr(reservation, "reservation_date", None) or getattr(
-            reservation, "date", None)
-        time_slot_key = getattr(reservation, "time_slot", None) or getattr(
-            reservation, "slot", None)
-        tables_requested = int(
-            getattr(reservation, "number_of_tables", 1) or 1)
+        # Pull the date/slot/tables from whatever your form/model uses
+        reservation_date = (
+            getattr(reservation, "reservation_date", None)
+            or getattr(reservation, "calendar_date", None)
+            or getattr(reservation, "date", None)
+        )
+
+        time_slot_key = (
+            getattr(reservation, "time_slot", None)
+            or getattr(reservation, "slot", None)
+            or getattr(reservation, "time_slot_key", None)
+        )
+
+        tables_requested_raw = (
+            getattr(reservation, "number_of_tables", None)
+            or getattr(reservation, "tables", None)
+            or getattr(reservation, "party_tables", None)
+            or 1
+        )
+        try:
+            tables_requested = max(int(tables_requested_raw), 1)
+        except (TypeError, ValueError):
+            tables_requested = 1
 
         if not reservation_date or not time_slot_key:
             messages.error(
@@ -1063,7 +1114,6 @@ def make_reservation(request):
                 {"form": form, "next_30_days": next_30_days},
             )
 
-        # Ensure slot key is one of SLOT_LABELS
         if time_slot_key not in SLOT_LABELS:
             messages.error(request, "Invalid time slot selected.")
             logger.warning(
@@ -1074,51 +1124,97 @@ def make_reservation(request):
                 {"form": form, "next_30_days": next_30_days},
             )
 
-        # Get/create availability row for that date
-        defaults = _timeslot_defaults()  # must exist in your file
-        ts, created = TimeSlotAvailability.objects.get_or_create(
-            date=reservation_date,
-            defaults=defaults,
+        # Ensure we have defaults for a new TimeSlotAvailability row (TOTAL CAPACITY values)
+        defaults = _timeslot_defaults() or {}
+
+        # Lock the row so two users can't book the last table at the same time
+        ts = (
+            TimeSlotAvailability.objects.select_for_update()
+            .filter(calendar_date=reservation_date)
+            .first()
         )
 
-        field_name = f"number_of_tables_available_{time_slot_key}"
-        remaining = int(getattr(ts, field_name, 0))
+        if ts is None:
+            ts = TimeSlotAvailability(calendar_date=reservation_date)
+            # Apply defaults safely (supports either dict shape)
+            # Shape A: {"17_18": 20, ...}
+            # Shape B: {"number_of_tables_available_17_18": 20, ...}
+            for key in SLOT_LABELS.keys():
+                cap_field = f"number_of_tables_available_{key}"
+                if hasattr(ts, cap_field):
+                    if key in defaults:
+                        setattr(ts, cap_field, defaults.get(key) or 0)
+                    elif cap_field in defaults:
+                        setattr(ts, cap_field, defaults.get(cap_field) or 0)
+
+                demand_field = f"total_cust_demand_for_tables_{key}"
+                if hasattr(ts, demand_field) and getattr(ts, demand_field, None) is None:
+                    setattr(ts, demand_field, 0)
+
+            ts.save()
+
+        cap_field = f"number_of_tables_available_{time_slot_key}"
+        demand_field = f"total_cust_demand_for_tables_{time_slot_key}"
+
+        try:
+            total_capacity = int(getattr(ts, cap_field, 0) or 0)
+        except (TypeError, ValueError):
+            total_capacity = 0
+
+        try:
+            current_demand = int(getattr(ts, demand_field, 0) or 0)
+        except (TypeError, ValueError):
+            current_demand = 0
+
+        remaining = max(total_capacity - current_demand, 0)
+
         if remaining < tables_requested:
             messages.error(
                 request,
                 f"Sorry — only {remaining} table(s) left for {SLOT_LABELS[time_slot_key]} on {reservation_date}.",
             )
             logger.info(
-                "make_reservation: insufficient capacity date=%s slot=%s remaining=%s requested=%s",
+                "make_reservation: insufficient capacity date=%s slot=%s capacity=%s demand=%s remaining=%s requested=%s",
                 reservation_date,
                 time_slot_key,
+                total_capacity,
+                current_demand,
                 remaining,
                 tables_requested,
             )
+            # rebuild grid so it shows latest values
             return render(
                 request,
                 "reservation_book/make_reservation.html",
                 {"form": form, "next_30_days": _build_next_30_days(days=30)},
             )
 
-        # Apply capacity change + save reservation
-        setattr(ts, field_name, remaining - tables_requested)
+        # ✅ Update demand (booked count)
+        setattr(ts, demand_field, current_demand + tables_requested)
         ts.save()
+
+        # Ensure reservation stores the date/slot in the expected fields (if they exist)
+        if hasattr(reservation, "calendar_date") and not getattr(reservation, "calendar_date", None):
+            reservation.calendar_date = reservation_date
+        if hasattr(reservation, "reservation_date") and not getattr(reservation, "reservation_date", None):
+            reservation.reservation_date = reservation_date
+        if hasattr(reservation, "time_slot") and not getattr(reservation, "time_slot", None):
+            reservation.time_slot = time_slot_key
+
         reservation.save()
 
-        # Optional: if form has M2M, save them
+        # If the ModelForm has M2M, persist those
         try:
             form.save_m2m()
         except Exception:
             pass
 
-        # Send confirmation email (don’t block success if it fails)
+        # Email confirmation (don’t break success if email fails)
         try:
             user_email = None
             if request.user.is_authenticated:
                 user_email = getattr(request.user, "email", None)
 
-            # Prefer customer email if your Customer model has it
             if not user_email and getattr(reservation, "customer", None):
                 user_email = getattr(reservation.customer, "email", None)
 
@@ -1156,16 +1252,14 @@ def make_reservation(request):
                     getattr(reservation, "id", None),
                 )
 
-        except Exception as e:
+        except Exception:
             logger.exception(
-                "Reservation email: FAILED reservation_id=%s error=%s",
+                "Reservation email: FAILED reservation_id=%s",
                 getattr(reservation, "id", None),
-                e,
             )
 
         messages.success(
-            request, "Reservation created! Your availability has been updated.")
-        # or "reservation_success" if you have it
+            request, "Reservation created! Availability has been updated.")
         return redirect("my_reservations")
 
     # GET
