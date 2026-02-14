@@ -41,8 +41,8 @@ from allauth.account.models import EmailAddress
 from .constants import SLOT_LABELS
 from .models import SLOT_KEYS
 from .models import TimeSlotAvailability, RestaurantConfig, Customer, ReservationSeries, TableReservation
+
 from .forms import (
-    SignUpForm,
     PhoneReservationForm,
     EditReservationForm,
 )
@@ -1495,258 +1495,443 @@ def _choose_online_email_template():
 #     messages.success(
 #         request, "Reservation created! A confirmation email has been sent.")
 #     return redirect("my_reservations")
-@login_required
-def make_reservation(request):
+# @login_required
+# def make_reservation(request):
+#     """
+#     Customer-facing reservation flow.
+
+#     Key rule:
+#     - Customer has NO 'user' FK (by design in your project).
+#     - So: link auth user -> Customer by EMAIL.
+
+#     Also:
+#     - Uses SLOT_LABELS keys like '17_18' (no SLOT_KEYS).
+#     - Sends confirmation email including absolute My Reservations link.
+#     """
+#     next_30_days = _build_next_30_days()
+#     slot_labels = SLOT_LABELS
+#     slots_in_order = _slot_order()
+
+#     # The logged-in user MUST have an email to bind Customer records
+#     user_email = _normalize_email(getattr(request.user, "email", ""))
+#     if not user_email:
+#         messages.error(
+#             request,
+#             "Your account does not have an email address. Please add one, then try again."
+#         )
+#         return redirect("account_email")  # allauth email management
+
+#     # Get or create Customer by EMAIL (NOT by user)
+#     customer_defaults = {
+#         "first_name": (getattr(request.user, "first_name", "") or "").strip(),
+#         "last_name": (getattr(request.user, "last_name", "") or "").strip(),
+#     }
+#     customer, _created = Customer.objects.get_or_create(
+#         email=user_email,
+#         defaults={**customer_defaults, "email": user_email},
+#     )
+
+#     # Fill missing names if needed (don’t wipe existing values)
+#     changed = False
+#     for field, val in customer_defaults.items():
+#         if val and getattr(customer, field, "") != val:
+#             setattr(customer, field, val)
+#             changed = True
+#     if changed:
+#         customer.save()
+
+#     if request.method == "GET":
+#         return render(
+#             request,
+#             "reservation_book/make_reservation.html",
+#             {
+#                 "slot_labels": slot_labels,
+#                 "next_30_days": next_30_days,
+#             },
+#         )
+
+#     # ----------------------------
+#     # POST
+#     # ----------------------------
+#     # ----------------------------
+#     # POST
+#     # ----------------------------
+#     is_ajax = request.headers.get("x-requested-with") == "XMLHttpRequest"
+
+#     reservation_date_raw = request.POST.get(
+#         "reservation_date")   # "YYYY-MM-DD"
+#     start_slot = request.POST.get(
+#         "time_slot")                    # e.g. "17_18"
+#     tables_needed = _safe_int(request.POST.get(
+#         "number_of_tables_required_by_patron"), 0)
+
+#     # Optional: support multi-hour bookings if your form includes it
+#     duration = _safe_int(request.POST.get("duration_hours"), 1)
+#     duration = max(1, min(duration, 6))  # guardrail
+
+#     if not reservation_date_raw or not start_slot:
+#         msg = "Please select a date/time from the availability grid."
+#         if is_ajax:
+#             return JsonResponse({"success": False, "error": msg})
+#         messages.error(request, msg)
+#         return redirect("make_reservation")
+
+#     try:
+#         start_date = datetime.date.fromisoformat(reservation_date_raw)
+#     except ValueError:
+#         msg = "Invalid date."
+#         if is_ajax:
+#             return JsonResponse({"success": False, "error": msg})
+#         messages.error(request, msg)
+#         return redirect("make_reservation")
+
+#     if start_slot not in slots_in_order:
+#         msg = "Invalid time slot selection."
+#         if is_ajax:
+#             return JsonResponse({"success": False, "error": msg})
+#         messages.error(request, msg)
+#         return redirect("make_reservation")
+
+#     if tables_needed <= 0:
+#         msg = "Please choose how many tables you need."
+#         if is_ajax:
+#             return JsonResponse({"success": False, "error": msg})
+#         messages.error(request, msg)
+#         return redirect("make_reservation")
+
+#     start_index = slots_in_order.index(start_slot)
+#     affected_slots = slots_in_order[start_index: start_index + duration]
+#     time_range_pretty = _pretty_time_range(start_slot, duration)
+
+#     # One booking = apply demand to ALL affected slots (so 2-hour booking blocks 2 slots)
+#     try:
+#         with transaction.atomic():
+#             ts, _ = TimeSlotAvailability.objects.get_or_create(
+#                 calendar_date=start_date,
+#                 defaults=_timeslot_defaults(),
+#             )
+
+#             # 1) Validate capacity across ALL affected slots first
+#             for slot in affected_slots:
+#                 available = _safe_int(
+#                     getattr(ts, f"number_of_tables_available_{slot}", 0), 0)
+#                 demand = _safe_int(
+#                     getattr(ts, f"total_cust_demand_for_tables_{slot}", 0), 0)
+#                 if demand + tables_needed > available:
+#                     msg = f"Not enough tables available for {SLOT_LABELS.get(slot, slot)}."
+#                     if is_ajax:
+#                         return JsonResponse({"success": False, "error": msg})
+#                     messages.error(request, msg)
+#                     return redirect("make_reservation")
+
+#             # 2) Create reservation (single record) and store the START slot + duration
+#             # IMPORTANT: We do NOT set a "user" FK here. Your model is customer-driven.
+#             # If you later add user FK, add it explicitly once the model exists everywhere.
+#             create_kwargs = dict(
+#                 is_phone_reservation=False,
+#                 time_slot=start_slot,
+#                 number_of_tables_required_by_patron=tables_needed,
+#                 timeslot_availability=ts,
+#                 reservation_status=True,
+#                 reservation_date=ts.calendar_date,
+#                 customer=customer,
+#             )
+
+#             # Only include duration_hours if your model supports it.
+#             # This avoids _meta introspection (which caused NameError loops before).
+#             try:
+#                 # If you know your TableReservation has duration_hours, keep it.
+#                 create_kwargs["duration_hours"] = duration
+#             except Exception:
+#                 pass
+
+#             reservation = TableReservation.objects.create(**create_kwargs)
+
+#             # 3) Apply demand updates across ALL affected slots
+#             for slot in affected_slots:
+#                 demand = _safe_int(
+#                     getattr(ts, f"total_cust_demand_for_tables_{slot}", 0), 0)
+#                 setattr(
+#                     ts, f"total_cust_demand_for_tables_{slot}", demand + tables_needed)
+
+#             ts.save()
+
+#         # ----------------------------
+#         # Email confirmation (online)
+#         # ----------------------------
+#         # ----------------------------
+#         # Email confirmation (online)
+#         # ----------------------------
+#         try:
+#             manage_url = request.build_absolute_uri(reverse("my_reservations"))
+#             login_url = request.build_absolute_uri(reverse("account_login"))
+
+#             template_name = _choose_online_email_template()
+
+#             # current flow: single row reservation
+#             created_reservations = [reservation]
+
+#             # IMPORTANT: use the requested duration as fallback if the model
+#             # does not have duration_hours persisted.
+#             reservation_rows = []
+#             for r in created_reservations:
+#                 dur = getattr(r, "duration_hours", None) or duration or 1
+#                 reservation_rows.append({
+#                     "date": r.reservation_date,
+#                     "time_range": _pretty_time_range(r.time_slot, dur),
+#                     "tables": r.number_of_tables_required_by_patron,
+#                     "id": r.id,
+#                 })
+
+#             customer_name = ""
+#             if customer:
+#                 customer_name = f"{getattr(customer, 'first_name', '')} {getattr(customer, 'last_name', '')}".strip(
+#                 )
+#             if not customer_name:
+#                 customer_name = request.user.get_full_name().strip() or request.user.username
+
+#             email_ctx = {
+#                 "customer_name": customer_name,
+#                 "customer": customer,
+#                 "reservation": reservation,
+#                 "reservations": reservation_rows,
+#                 "my_reservations_url": manage_url,
+#                 "manage_url": manage_url,
+#                 "login_url": login_url,
+
+#                 # Backward-compatible keys (avoid blank time in older templates)
+#                 "tables_needed": reservation.number_of_tables_required_by_patron,
+#                 "time_slot_pretty": _pretty_time_range(
+#                     reservation.time_slot,
+#                     getattr(reservation, "duration_hours",
+#                             None) or duration or 1
+#                 ),
+#                 "time_range_pretty": _pretty_time_range(
+#                     reservation.time_slot,
+#                     getattr(reservation, "duration_hours",
+#                             None) or duration or 1
+#                 ),
+#             }
+
+#             subject = "Your table reservation at Gambinos Restaurant & Lounge"
+#             message = render_to_string(template_name, email_ctx)
+
+#             # Force-visible logs (WARNING shows up even if INFO is filtered)
+#             logger.warning(
+#                 "Reservation email: attempting send to=%s from=%s backend=%s template=%s reservation_id=%s",
+#                 user_email,
+#                 getattr(settings, "DEFAULT_FROM_EMAIL", None),
+#                 getattr(settings, "EMAIL_BACKEND", None),
+#                 template_name,
+#                 getattr(reservation, "id", None),
+#             )
+
+#             send_mail(
+#                 subject=subject,
+#                 message=message,
+#                 from_email=settings.DEFAULT_FROM_EMAIL,
+#                 recipient_list=[user_email],
+#                 fail_silently=False,
+#             )
+
+#             logger.warning(
+#                 "Reservation email: sent OK to=%s reservation_id=%s",
+#                 user_email,
+#                 getattr(reservation, "id", None),
+#             )
+
+#         except Exception as e:
+#             logger.exception(
+#                 "Reservation email: FAILED to=%s reservation_id=%s error=%s",
+#                 user_email,
+#                 getattr(reservation, "id", None),
+#                 e,
+#
+#
+#             )
+def get_or_create_customer_for_request(request, form):
     """
-    Customer-facing reservation flow.
+    Ensures we have a Customer record for stats/forecasting.
 
-    Key rule:
-    - Customer has NO 'user' FK (by design in your project).
-    - So: link auth user -> Customer by EMAIL.
-
-    Also:
-    - Uses SLOT_LABELS keys like '17_18' (no SLOT_KEYS).
-    - Sends confirmation email including absolute My Reservations link.
+    Rules:
+    - If user is authenticated: try to map user -> Customer (via your existing helper if present).
+    - Otherwise (or if no mapping): use form fields (email/phone/name) to find/create a Customer.
     """
-    next_30_days = _build_next_30_days()
-    slot_labels = SLOT_LABELS
-    slots_in_order = _slot_order()
+    # 1) If logged in, try to map to an existing Customer
+    user = getattr(request, "user", None)
+    if user and getattr(user, "is_authenticated", False):
+        # If you already have this helper in the file, use it
+        if "_customer_for_logged_in_user" in globals():
+            customer = _customer_for_logged_in_user(user)
+            if customer:
+                return customer
 
-    # The logged-in user MUST have an email to bind Customer records
-    user_email = _normalize_email(getattr(request.user, "email", ""))
-    if not user_email:
-        messages.error(
-            request,
-            "Your account does not have an email address. Please add one, then try again."
-        )
-        return redirect("account_email")  # allauth email management
+        # Fallback: try to match by email if your User has one
+        user_email = (getattr(user, "email", "") or "").strip()
+        if user_email:
+            customer = Customer.objects.filter(
+                email__iexact=user_email).first()
+            if customer:
+                return customer
 
-    # Get or create Customer by EMAIL (NOT by user)
-    customer_defaults = {
-        "first_name": (getattr(request.user, "first_name", "") or "").strip(),
-        "last_name": (getattr(request.user, "last_name", "") or "").strip(),
-    }
-    customer, _created = Customer.objects.get_or_create(
-        email=user_email,
-        defaults={**customer_defaults, "email": user_email},
-    )
+    # 2) Not logged in (or no mapping) -> use form data
+    cd = getattr(form, "cleaned_data", {}) or {}
 
-    # Fill missing names if needed (don’t wipe existing values)
-    changed = False
-    for field, val in customer_defaults.items():
-        if val and getattr(customer, field, "") != val:
-            setattr(customer, field, val)
-            changed = True
-    if changed:
-        customer.save()
+    first_name = (cd.get("first_name") or cd.get("fname") or "").strip()
+    last_name = (cd.get("last_name") or cd.get("lname") or "").strip()
 
-    if request.method == "GET":
-        return render(
-            request,
-            "reservation_book/make_reservation.html",
-            {
-                "slot_labels": slot_labels,
-                "next_30_days": next_30_days,
+    # Common field names people use in reservation forms
+    email = (cd.get("email") or cd.get("customer_email") or "").strip()
+    phone = (cd.get("phone") or cd.get("mobile")
+             or cd.get("customer_phone") or "").strip()
+
+    # Prefer lookup by email; otherwise by phone; otherwise create a very basic record.
+    if email:
+        customer, _ = Customer.objects.get_or_create(
+            email__iexact=email,
+            defaults={
+                "first_name": first_name,
+                "last_name": last_name,
+                "phone": phone,
             },
         )
+        return customer
 
-    # ----------------------------
-    # POST
-    # ----------------------------
-    # ----------------------------
-    # POST
-    # ----------------------------
-    is_ajax = request.headers.get("x-requested-with") == "XMLHttpRequest"
+    if phone:
+        customer = Customer.objects.filter(phone=phone).first()
+        if customer:
+            return customer
+        return Customer.objects.create(
+            first_name=first_name,
+            last_name=last_name,
+            phone=phone,
+        )
 
-    reservation_date_raw = request.POST.get(
-        "reservation_date")   # "YYYY-MM-DD"
-    start_slot = request.POST.get(
-        "time_slot")                    # e.g. "17_18"
-    tables_needed = _safe_int(request.POST.get(
-        "number_of_tables_required_by_patron"), 0)
+    # Absolute fallback (should be rare)
+    return Customer.objects.create(
+        first_name=first_name or "Guest",
+        last_name=last_name or "",
+        phone="",
+        email="",
+    )
 
-    # Optional: support multi-hour bookings if your form includes it
-    duration = _safe_int(request.POST.get("duration_hours"), 1)
-    duration = max(1, min(duration, 6))  # guardrail
 
-    if not reservation_date_raw or not start_slot:
-        msg = "Please select a date/time from the availability grid."
-        if is_ajax:
-            return JsonResponse({"success": False, "error": msg})
-        messages.error(request, msg)
-        return redirect("make_reservation")
+def make_reservation(request):
+    """
+    Customer-facing reservation create view.
+    Uses PhoneReservationForm (since ReservationForm doesn't exist in your forms.py).
+    """
+    from django.conf import settings
+    from django.contrib import messages
+    from django.core.mail import send_mail
+    from django.http import JsonResponse
+    from django.shortcuts import redirect, render
+    from django.template.loader import render_to_string
+    from django.urls import reverse
 
-    try:
-        start_date = datetime.date.fromisoformat(reservation_date_raw)
-    except ValueError:
-        msg = "Invalid date."
-        if is_ajax:
-            return JsonResponse({"success": False, "error": msg})
-        messages.error(request, msg)
-        return redirect("make_reservation")
+    import logging
+    logger = logging.getLogger(__name__)
 
-    if start_slot not in slots_in_order:
-        msg = "Invalid time slot selection."
-        if is_ajax:
-            return JsonResponse({"success": False, "error": msg})
-        messages.error(request, msg)
-        return redirect("make_reservation")
+    # ✅ use the form you actually import in this project
+    form = PhoneReservationForm(request.POST or None)
 
-    if tables_needed <= 0:
-        msg = "Please choose how many tables you need."
-        if is_ajax:
-            return JsonResponse({"success": False, "error": msg})
-        messages.error(request, msg)
-        return redirect("make_reservation")
-
-    start_index = slots_in_order.index(start_slot)
-    affected_slots = slots_in_order[start_index: start_index + duration]
-    time_range_pretty = _pretty_time_range(start_slot, duration)
-
-    # One booking = apply demand to ALL affected slots (so 2-hour booking blocks 2 slots)
-    try:
-        with transaction.atomic():
-            ts, _ = TimeSlotAvailability.objects.get_or_create(
-                calendar_date=start_date,
-                defaults=_timeslot_defaults(),
-            )
-
-            # 1) Validate capacity across ALL affected slots first
-            for slot in affected_slots:
-                available = _safe_int(
-                    getattr(ts, f"number_of_tables_available_{slot}", 0), 0)
-                demand = _safe_int(
-                    getattr(ts, f"total_cust_demand_for_tables_{slot}", 0), 0)
-                if demand + tables_needed > available:
-                    msg = f"Not enough tables available for {SLOT_LABELS.get(slot, slot)}."
-                    if is_ajax:
-                        return JsonResponse({"success": False, "error": msg})
-                    messages.error(request, msg)
-                    return redirect("make_reservation")
-
-            # 2) Create reservation (single record) and store the START slot + duration
-            # IMPORTANT: We do NOT set a "user" FK here. Your model is customer-driven.
-            # If you later add user FK, add it explicitly once the model exists everywhere.
-            create_kwargs = dict(
-                is_phone_reservation=False,
-                time_slot=start_slot,
-                number_of_tables_required_by_patron=tables_needed,
-                timeslot_availability=ts,
-                reservation_status=True,
-                reservation_date=ts.calendar_date,
-                customer=customer,
-            )
-
-            # Only include duration_hours if your model supports it.
-            # This avoids _meta introspection (which caused NameError loops before).
+    if request.method == "POST":
+        if form.is_valid():
             try:
-                # If you know your TableReservation has duration_hours, keep it.
-                create_kwargs["duration_hours"] = duration
-            except Exception:
-                pass
+                customer = get_or_create_customer_for_request(request, form)
 
-            reservation = TableReservation.objects.create(**create_kwargs)
+                reservation = form.save(commit=False)
 
-            # 3) Apply demand updates across ALL affected slots
-            for slot in affected_slots:
-                demand = _safe_int(
-                    getattr(ts, f"total_cust_demand_for_tables_{slot}", 0), 0)
-                setattr(
-                    ts, f"total_cust_demand_for_tables_{slot}", demand + tables_needed)
+                # Attach customer if your model supports it
+                if hasattr(reservation, "customer"):
+                    reservation.customer = customer
 
-            ts.save()
+                reservation.save()
 
-        # ----------------------------
-        # Email confirmation (online)
-        # ----------------------------
-        # ----------------------------
-        # Email confirmation (online)
-        # ----------------------------
-        try:
-            manage_url = request.build_absolute_uri(reverse("my_reservations"))
-            login_url = request.build_absolute_uri(reverse("account_login"))
+                # If the form has M2M fields
+                if hasattr(form, "save_m2m"):
+                    form.save_m2m()
 
-            template_name = _choose_online_email_template()
+                # ---- Email confirmation (safe, fully closed try/except) ----
+                try:
+                    # Decide email address (customer first, then form field)
+                    user_email = (
+                        (getattr(customer, "email", "") or "").strip()
+                        or (form.cleaned_data.get("email") or "").strip()
+                    )
 
-            # current flow: single row reservation
-            created_reservations = [reservation]
+                    if user_email:
+                        template_name = "reservation_book/online_reservation_confirmation.txt"
+                        subject = "Reservation Confirmation"
 
-            # IMPORTANT: use the requested duration as fallback if the model
-            # does not have duration_hours persisted.
-            reservation_rows = []
-            for r in created_reservations:
-                dur = getattr(r, "duration_hours", None) or duration or 1
-                reservation_rows.append({
-                    "date": r.reservation_date,
-                    "time_range": _pretty_time_range(r.time_slot, dur),
-                    "tables": r.number_of_tables_required_by_patron,
-                    "id": r.id,
-                })
+                        context = {
+                            "reservation": reservation,
+                            "customer": customer,
+                        }
+                        message = render_to_string(template_name, context)
 
-            customer_name = ""
-            if customer:
-                customer_name = f"{getattr(customer, 'first_name', '')} {getattr(customer, 'last_name', '')}".strip(
+                        logger.warning(
+                            "Reservation email: attempting send to=%s from=%s backend=%s template=%s reservation_id=%s",
+                            user_email,
+                            getattr(settings, "DEFAULT_FROM_EMAIL", None),
+                            getattr(settings, "EMAIL_BACKEND", None),
+                            template_name,
+                            getattr(reservation, "id", None),
+                        )
+
+                        send_mail(
+                            subject=subject,
+                            message=message,
+                            from_email=settings.DEFAULT_FROM_EMAIL,
+                            recipient_list=[user_email],
+                            fail_silently=False,
+                        )
+
+                        logger.warning(
+                            "Reservation email: sent OK to=%s reservation_id=%s",
+                            user_email,
+                            getattr(reservation, "id", None),
+                        )
+                    else:
+                        logger.warning(
+                            "Reservation email: SKIPPED (no email) reservation_id=%s customer=%s",
+                            getattr(reservation, "id", None),
+                            getattr(customer, "id", None),
+                        )
+
+                except Exception as e:
+                    logger.exception(
+                        "Reservation email: FAILED reservation_id=%s error=%s",
+                        getattr(reservation, "id", None),
+                        e,
+                    )
+                # ---- end email ----
+
+                messages.success(request, "Reservation created successfully!")
+
+                if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                    return JsonResponse(
+                        {
+                            "success": True,
+                            "reservation_id": reservation.id,
+                            "redirect_url": reverse("my_reservations"),
+                        }
+                    )
+
+                return redirect("my_reservations")
+
+            except Exception as e:
+                logger.exception("Reservation creation FAILED: %s", e)
+                messages.error(
+                    request,
+                    "Something went wrong creating the reservation. Please try again.",
                 )
-            if not customer_name:
-                customer_name = request.user.get_full_name().strip() or request.user.username
+                return redirect("make_reservation")
 
-            email_ctx = {
-                "customer_name": customer_name,
-                "customer": customer,
-                "reservation": reservation,
-                "reservations": reservation_rows,
-                "my_reservations_url": manage_url,
-                "manage_url": manage_url,
-                "login_url": login_url,
+        # form invalid
+        messages.error(request, "Please correct the errors below.")
 
-                # Backward-compatible keys (avoid blank time in older templates)
-                "tables_needed": reservation.number_of_tables_required_by_patron,
-                "time_slot_pretty": _pretty_time_range(
-                    reservation.time_slot,
-                    getattr(reservation, "duration_hours",
-                            None) or duration or 1
-                ),
-                "time_range_pretty": _pretty_time_range(
-                    reservation.time_slot,
-                    getattr(reservation, "duration_hours",
-                            None) or duration or 1
-                ),
-            }
-
-            subject = "Your table reservation at Gambinos Restaurant & Lounge"
-            message = render_to_string(template_name, email_ctx)
-
-            # Force-visible logs (WARNING shows up even if INFO is filtered)
-            logger.warning(
-                "Reservation email: attempting send to=%s from=%s backend=%s template=%s reservation_id=%s",
-                user_email,
-                getattr(settings, "DEFAULT_FROM_EMAIL", None),
-                getattr(settings, "EMAIL_BACKEND", None),
-                template_name,
-                getattr(reservation, "id", None),
-            )
-
-            send_mail(
-                subject=subject,
-                message=message,
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[user_email],
-                fail_silently=False,
-            )
-
-            logger.warning(
-                "Reservation email: sent OK to=%s reservation_id=%s",
-                user_email,
-                getattr(reservation, "id", None),
-            )
-
-        except Exception as e:
-            logger.exception(
-                "Reservation email: FAILED to=%s reservation_id=%s error=%s",
-                user_email,
-                getattr(reservation, "id", None),
-                e,
-            )
+    return render(request, "reservation_book/make_reservation.html", {"form": form})
 
 
 def signup(request):
