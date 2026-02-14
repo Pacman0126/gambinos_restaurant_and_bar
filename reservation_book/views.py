@@ -814,48 +814,47 @@ def _apply_reservation_change(reservation, *, new_date, new_start_slot, new_dura
 #         })
 
 #     return days
+def _safe_int(value, default=0):
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return int(default)
+
+
+def _default_tables_per_slot():
+    # If you already have this elsewhere, delete this and use yours.
+    return 0
+
+
 def _build_next_30_days():
     """
-    Builds the availability grid context expected by your template.
-    Uses SLOT_LABELS keys ONLY (no SLOT_KEYS).
+    Returns a list of 30 dicts:
+      [
+        {"date": <date>, "slots": [{"key":..., "available":...}, ...]},
+        ...
+      ]
+    This MUST always return 30 items so the grid renders.
     """
     today = timezone.localdate()
     days = []
-    slots_in_order = _slot_order()
+
+    default_cap = _default_tables_per_slot()
 
     for offset in range(30):
-        date = today + datetime.timedelta(days=offset)
+        date = today + timedelta(days=offset)
 
         ts, _ = TimeSlotAvailability.objects.get_or_create(
             calendar_date=date,
-            defaults=_timeslot_defaults(),
+            defaults=_timeslot_defaults() if "_timeslot_defaults" in globals() else {},
         )
 
         slots = []
-        for key in slots_in_order:
-            available = _safe_int(
-                getattr(ts, f"number_of_tables_available_{key}", None),
-                0
-            )
-            demand = _safe_int(
-                getattr(ts, f"total_cust_demand_for_tables_{key}", None),
-                0
-            )
+        for key in SLOT_KEYS:
+            field_name = f"number_of_tables_available_{key}"
+            available = _safe_int(getattr(ts, field_name, None), default_cap)
+            slots.append({"key": key, "available": available})
 
-            slots.append({
-                "key": key,
-                "label": SLOT_LABELS.get(key, key),
-                "available": available,
-                "demand": demand,
-                "remaining": max(available - demand, 0),
-            })
-
-        days.append({
-            # IMPORTANT: match what your template renders
-            "calendar_date": ts.calendar_date,
-            "slots": slots,
-            "timeslot": ts,
-        })
+        days.append({"date": date, "slots": slots})
 
     return days
 
@@ -1818,120 +1817,233 @@ def get_or_create_customer_for_request(request, form):
 
 def make_reservation(request):
     """
-    Customer-facing reservation create view.
-    Uses PhoneReservationForm (since ReservationForm doesn't exist in your forms.py).
+    Customer-facing reservation flow.
+
+    IMPORTANT:
+    - Uses PhoneReservationForm because ReservationForm does not exist in this project.
+    - Restores GET branch context needed for the calendar grid: next_30_days + slot_labels.
     """
-    from django.conf import settings
-    from django.contrib import messages
-    from django.core.mail import send_mail
-    from django.http import JsonResponse
-    from django.shortcuts import redirect, render
-    from django.template.loader import render_to_string
-    from django.urls import reverse
 
-    import logging
-    logger = logging.getLogger(__name__)
+    # Calendar/grid context (GET branch + also needed when re-rendering after POST errors)
+    next_30_days = _build_next_30_days()
 
-    # ✅ use the form you actually import in this project
-    form = PhoneReservationForm(request.POST or None)
+    if request.method != "POST":
+        form = PhoneReservationForm()
+        return render(
+            request,
+            "reservation_book/make_reservation.html",
+            {
+                "form": form,
+                "slot_labels": SLOT_LABELS,
+                "next_30_days": next_30_days,
+            },
+        )
 
-    if request.method == "POST":
-        if form.is_valid():
+    # ----------------------------
+    # POST
+    # ----------------------------
+    form = PhoneReservationForm(request.POST)
+    if not form.is_valid():
+        return render(
+            request,
+            "reservation_book/make_reservation.html",
+            {
+                "form": form,
+                "slot_labels": SLOT_LABELS,
+                "next_30_days": next_30_days,
+            },
+        )
+
+    cd = form.cleaned_data
+
+    # The form in your project uses these fields (matches your phone flow)
+    reservation_date = cd.get("reservation_date")
+    start_slot = cd.get("time_slot")
+    duration = _to_int(cd.get("duration_hours") or 1, 1)
+    tables_needed = _to_int(
+        cd.get("number_of_tables_required_by_patron") or 1, 1)
+
+    if not reservation_date:
+        messages.error(request, "Please select a reservation date.")
+        return render(
+            request,
+            "reservation_book/make_reservation.html",
+            {"form": form, "slot_labels": SLOT_LABELS, "next_30_days": next_30_days},
+        )
+
+    if start_slot not in SLOT_KEYS:
+        messages.error(request, "Please select a valid time slot.")
+        return render(
+            request,
+            "reservation_book/make_reservation.html",
+            {"form": form, "slot_labels": SLOT_LABELS, "next_30_days": next_30_days},
+        )
+
+    # Which blocks are affected by duration (e.g., 2 hours => slot + next slot)
+    affected_slots = _affected_slots(start_slot, duration)
+
+    # ----------------------------
+    # Resolve customer + email
+    # ----------------------------
+    customer = None
+    user_email = None
+
+    # If logged in, prefer linked Customer
+    if getattr(request, "user", None) and request.user.is_authenticated:
+        customer = _customer_for_logged_in_user(request.user)
+        user_email = _normalize_email(getattr(request.user, "email", "") or "")
+
+    # Otherwise, use form email
+    if not user_email:
+        user_email = _normalize_email(cd.get("email") or "")
+
+    if not user_email:
+        messages.error(request, "Please provide an email address.")
+        return render(
+            request,
+            "reservation_book/make_reservation.html",
+            {"form": form, "slot_labels": SLOT_LABELS, "next_30_days": next_30_days},
+        )
+
+    # If no customer yet, upsert one (same pattern as your create_phone_reservation)
+    if customer is None:
+        full_name = (cd.get("full_name") or "").strip()
+        first_name = full_name.split(" ")[0] if full_name else ""
+        last_name = " ".join(full_name.split(" ")[1:]) if full_name and len(
+            full_name.split(" ")) > 1 else ""
+
+        customer, _ = Customer.objects.get_or_create(
+            email=user_email,
+            defaults={
+                "full_name": full_name or user_email,
+                "first_name": first_name,
+                "last_name": last_name,
+            },
+        )
+
+    # ----------------------------
+    # Create reservation + update demand (atomic)
+    # ----------------------------
+    try:
+        with transaction.atomic():
+            ts, _ = TimeSlotAvailability.objects.get_or_create(
+                calendar_date=reservation_date,
+                defaults=_timeslot_defaults(),
+            )
+            ts = TimeSlotAvailability.objects.select_for_update().get(pk=ts.pk)
+
+            # Capacity check across affected slots
+            for s in affected_slots:
+                slot_available = _to_int(
+                    getattr(ts, f"number_of_tables_available_{s}", 0), 0)
+                slot_demand = _to_int(
+                    getattr(ts, f"total_cust_demand_for_tables_{s}", 0), 0)
+                if slot_demand + tables_needed > slot_available:
+                    raise ValueError(
+                        f"Not enough tables available for {reservation_date} in slot {SLOT_LABELS.get(s, s)}."
+                    )
+
+            reservation = TableReservation(
+                customer=customer,
+                timeslot_availability=ts,
+                reservation_date=reservation_date,
+                time_slot=start_slot,
+                duration_hours=duration,
+                number_of_tables_required_by_patron=tables_needed,
+                reservation_status=True,
+                is_phone_reservation=False,
+            )
+            # If you track creator and user is logged in:
+            if getattr(request, "user", None) and request.user.is_authenticated:
+                reservation.created_by = request.user
+
+            reservation.save()
+
+            # Update demand per affected slot
+            update_fields = []
+            for s in affected_slots:
+                demand_field = f"total_cust_demand_for_tables_{s}"
+                current = _to_int(getattr(ts, demand_field, 0), 0)
+                setattr(ts, demand_field, current + tables_needed)
+                update_fields.append(demand_field)
+            ts.save(update_fields=update_fields)
+
+    except ValueError as e:
+        messages.error(request, str(e))
+        return render(
+            request,
+            "reservation_book/make_reservation.html",
+            {"form": form, "slot_labels": SLOT_LABELS, "next_30_days": next_30_days},
+        )
+
+    # ----------------------------
+    # Email confirmation
+    # ----------------------------
+    try:
+        # Pretty time range (start–end) if duration > 1
+        def _range_pretty(slots_list):
+            if not slots_list:
+                return ""
+            first_label = SLOT_LABELS.get(slots_list[0], slots_list[0])
+            last_label = SLOT_LABELS.get(slots_list[-1], slots_list[-1])
             try:
-                customer = get_or_create_customer_for_request(request, form)
+                start_t = first_label.split("–")[0].strip()
+                end_t = last_label.split("–")[1].strip()
+                return f"{start_t}–{end_t}"
+            except Exception:
+                return first_label
 
-                reservation = form.save(commit=False)
+        time_slot_pretty = (
+            _range_pretty(affected_slots)
+            if duration > 1
+            else SLOT_LABELS.get(start_slot, start_slot)
+        )
 
-                # Attach customer if your model supports it
-                if hasattr(reservation, "customer"):
-                    reservation.customer = customer
+        context = {
+            "reservation": reservation,
+            "time_slot_pretty": time_slot_pretty,
+            "tables_needed": tables_needed,
+            "duration_hours": duration,
+        }
 
-                reservation.save()
+        template_name = "reservation_book/emails/reservation_confirmation_customer.txt"
+        subject = "Your reservation at Gambinos Restaurant & Lounge is confirmed"
 
-                # If the form has M2M fields
-                if hasattr(form, "save_m2m"):
-                    form.save_m2m()
+        message = render_to_string(template_name, context)
 
-                # ---- Email confirmation (safe, fully closed try/except) ----
-                try:
-                    # Decide email address (customer first, then form field)
-                    user_email = (
-                        (getattr(customer, "email", "") or "").strip()
-                        or (form.cleaned_data.get("email") or "").strip()
-                    )
+        logger.warning(
+            "Reservation email: attempting send to=%s from=%s backend=%s template=%s reservation_id=%s",
+            user_email,
+            getattr(settings, "DEFAULT_FROM_EMAIL", None),
+            getattr(settings, "EMAIL_BACKEND", None),
+            template_name,
+            getattr(reservation, "id", None),
+        )
 
-                    if user_email:
-                        template_name = "reservation_book/online_reservation_confirmation.txt"
-                        subject = "Reservation Confirmation"
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user_email],
+            fail_silently=False,
+        )
 
-                        context = {
-                            "reservation": reservation,
-                            "customer": customer,
-                        }
-                        message = render_to_string(template_name, context)
+        logger.warning(
+            "Reservation email: sent OK to=%s reservation_id=%s",
+            user_email,
+            getattr(reservation, "id", None),
+        )
 
-                        logger.warning(
-                            "Reservation email: attempting send to=%s from=%s backend=%s template=%s reservation_id=%s",
-                            user_email,
-                            getattr(settings, "DEFAULT_FROM_EMAIL", None),
-                            getattr(settings, "EMAIL_BACKEND", None),
-                            template_name,
-                            getattr(reservation, "id", None),
-                        )
+    except Exception as e:
+        logger.exception(
+            "Reservation email: FAILED to=%s reservation_id=%s error=%s",
+            user_email,
+            getattr(reservation, "id", None),
+            e,
+        )
 
-                        send_mail(
-                            subject=subject,
-                            message=message,
-                            from_email=settings.DEFAULT_FROM_EMAIL,
-                            recipient_list=[user_email],
-                            fail_silently=False,
-                        )
-
-                        logger.warning(
-                            "Reservation email: sent OK to=%s reservation_id=%s",
-                            user_email,
-                            getattr(reservation, "id", None),
-                        )
-                    else:
-                        logger.warning(
-                            "Reservation email: SKIPPED (no email) reservation_id=%s customer=%s",
-                            getattr(reservation, "id", None),
-                            getattr(customer, "id", None),
-                        )
-
-                except Exception as e:
-                    logger.exception(
-                        "Reservation email: FAILED reservation_id=%s error=%s",
-                        getattr(reservation, "id", None),
-                        e,
-                    )
-                # ---- end email ----
-
-                messages.success(request, "Reservation created successfully!")
-
-                if request.headers.get("x-requested-with") == "XMLHttpRequest":
-                    return JsonResponse(
-                        {
-                            "success": True,
-                            "reservation_id": reservation.id,
-                            "redirect_url": reverse("my_reservations"),
-                        }
-                    )
-
-                return redirect("my_reservations")
-
-            except Exception as e:
-                logger.exception("Reservation creation FAILED: %s", e)
-                messages.error(
-                    request,
-                    "Something went wrong creating the reservation. Please try again.",
-                )
-                return redirect("make_reservation")
-
-        # form invalid
-        messages.error(request, "Please correct the errors below.")
-
-    return render(request, "reservation_book/make_reservation.html", {"form": form})
+    messages.success(request, "Reservation created successfully.")
+    return redirect("reservation_success")
 
 
 def signup(request):
