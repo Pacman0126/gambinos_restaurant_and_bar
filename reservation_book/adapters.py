@@ -9,8 +9,10 @@ class CustomAccountAdapter(DefaultAccountAdapter):
         if user.is_superuser:
             return reverse('staff_management')
         elif user.is_staff:
-            if user.username == user.email:  # First login if username still = email
+            if user.username == user.email:
                 return reverse('first_login_setup')
             return reverse('staff_dashboard')
         else:
-            return reverse('make_reservation')
+            # Customers after login → show their bookings first
+            # changed from 'make_reservation'
+            return reverse('my_reservations')

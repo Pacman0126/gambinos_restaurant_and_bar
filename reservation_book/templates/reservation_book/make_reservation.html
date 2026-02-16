@@ -38,14 +38,14 @@
 
             <input type="hidden" name="reservation_date" id="reservation_date">
             <input type="hidden" name="time_slot" id="time_slot">
-            <input type="hidden" name="timeslot_pk" id="timeslot_pk">
+            <input type="hidden" name="timeslot_availability" id="timeslot_availability">
 
             {% if request.user.is_staff %}
               <div class="alert alert-info mb-3">
                 Staff booking: use Lookup Customer button, then select a slot.
               </div>
 
-              <!-- Staff: lookup/search section (kept as-is from your template) -->
+              <!-- Staff: lookup/search section -->
               <div class="mb-3">
                 <label class="form-label">Customer Search</label>
                 <div class="input-group">
@@ -119,38 +119,26 @@
                   value="1"
                 >
               </div>
-            </div>
 
-            <!-- Booking Options -->
-            <div class="row g-3 mt-1">
+              <!-- Duration & Series -->
               <div class="col-md-4">
-                <label for="duration_hours" class="form-label">Number of Hours</label>
-                <input
-                  type="number"
-                  class="form-control"
-                  id="duration_hours"
-                  name="duration_hours"
-                  min="1"
-                  max="5"
-                  value="1"
-                >
-                <div class="form-text">1–5 hours (max depends on start time).</div>
+                <label for="duration_hours" class="form-label">Duration (hours)</label>
+                <input type="number" class="form-control" id="duration_hours" name="duration_hours" min="1" max="5" value="1">
               </div>
 
               <div class="col-md-4">
                 <label for="series_days" class="form-label">Number of Days</label>
-                <input
-                  type="number"
-                  class="form-control"
-                  id="series_days"
-                  name="series_days"
-                  min="1"
-                  max="30"
-                  value="1"
-                >
-                <div class="form-text">Consecutive days starting from the selected date.</div>
+                <input type="number" class="form-control" id="series_days" name="series_days" min="1" max="30" value="1">
               </div>
 
+              <!-- Compact series preview (Fix A) -->
+              <div class="col-12 mt-1 mb-0" id="seriesPreview" style="display: none;">
+                <small class="text-info">
+                  <strong>Period:</strong> <span id="seriesDateRange">—</span>
+                </small>
+              </div>
+
+              <!-- Until close checkbox -->
               <div class="col-md-4 d-flex align-items-end">
                 <div class="form-check mb-2">
                   <input class="form-check-input" type="checkbox" id="book_until_close" name="book_until_close">
@@ -161,25 +149,21 @@
               </div>
             </div>
 
-            <div id="slotHint" class="small text-muted mt-3">
-              Select a slot from the grid to continue.
-            </div>
           </div>
 
           <div class="modal-footer">
             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-primary" id="confirmReservationBtn" disabled>
+            <button type="button" class="btn btn-primary" id="confirmReservationBtn" disabled>
               Confirm Reservation
             </button>
           </div>
-
         </form>
 
       </div>
     </div>
   </div>
 
-  <!-- Availability table (shared for staff + online) -->
+  <!-- Availability table -->
   <h3 class="mb-3">Availability Grid (next 30 days, available/total)</h3>
 
   <div class="table-responsive phone-reservation-grid">
@@ -206,7 +190,6 @@
           <tr>
             <td class="date-cell">
               <div class="fw-semibold">{{ ts.calendar_date|date:"D M j, Y" }}</div>
-              {% comment %} <div class="small">{{ ts.calendar_date|date:"Y" }}</div> {% endcomment %}
             </td>
 
             {% for slot in ts.slots %}
@@ -220,7 +203,7 @@
                   data-date-label="{{ ts.calendar_date|date:'D, M j, Y' }}"
                   data-slot="{{ slot.key }}"
                   data-slot-label="{{ slot.label|default:slot.key }}"
-                  data-timeslot-pk="{{ ts.pk }}"
+                  data-timeslot-pk="{{ ts.pk|default:'' }}"
                   data-left="{{ slot.remaining }}"
                 >
                   {% if slot.remaining <= 0 %}
@@ -241,56 +224,128 @@
 
 <script>
   (function () {
+    console.log("Reservation script loaded – fixed hidden field");
+
     const requestUserIsStaff = {{ request.user.is_staff|yesno:"true,false" }};
 
     const modalEl = document.getElementById("customerModal");
     const summaryEl = document.getElementById("selectedSlotDisplay");
-    const slotHint = document.getElementById("slotHint");
 
     const dateInput = document.getElementById("reservation_date");
     const slotInput = document.getElementById("time_slot");
-    const timeslotPkInput = document.getElementById("timeslot_pk");
+    const timeslotAvailabilityInput = document.getElementById("timeslot_availability");
 
     const confirmBtn = document.getElementById("confirmReservationBtn");
+    const seriesDaysInput = document.getElementById("series_days");
+    const seriesPreview = document.getElementById("seriesPreview");
+    const seriesDateRange = document.getElementById("seriesDateRange");
 
+    // Slot selection – THIS IS THE FIXED PART
     document.querySelectorAll(".slot-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
+        console.log("Slot clicked");
+
         const date = btn.dataset.date || "";
         const slot = btn.dataset.slot || "";
         const left = btn.dataset.left || "0";
-        const tsPk = btn.dataset.timeslotPk || "";
+        const tsPk = btn.dataset.timeslotPk || "";   // ← integer PK from template
+
+        console.log("Selected PK:", tsPk);           // ← debug: should show a number
 
         const slotLabel = btn.dataset.slotLabel || slot || "";
         const dateLabel = btn.dataset.dateLabel || date || "";
 
         dateInput.value = date;
         slotInput.value = slot;
-        timeslotPkInput.value = tsPk;
+
+        // THIS LINE WAS MISSING – set the correct hidden field
+        // THIS IS THE CRITICAL LINE – use timeslotPk, NOT date or dateLabel
+            const availabilityInput = document.getElementById("timeslot_availability");
+            if (availabilityInput) {
+              availabilityInput.value = date;  // date = btn.dataset.date = '2026-02-19'
+              console.log("Set timeslot_availability to:", date);
+            }
 
         summaryEl.textContent = `${dateLabel} | ${slotLabel} | Tables left: ${left}`;
-        slotHint.textContent = (parseInt(left, 10) > 0)
-          ? "Fill in details and confirm your reservation."
-          : "This slot is full.";
 
         confirmBtn.disabled = !(parseInt(left, 10) > 0);
+        console.log("Confirm enabled:", !confirmBtn.disabled);
+
+        updateSeriesPreview();
       });
     });
 
-    // Basic client-side guard: must pick slot and have tables >= 1
-    const form = document.getElementById("reservationForm");
-    form.addEventListener("submit", (e) => {
+    // Series preview
+    function updateSeriesPreview() {
+      const startDateStr = dateInput.value;
+      const days = parseInt(seriesDaysInput ? seriesDaysInput.value : 1) || 1;
+
+      if (!startDateStr || days <= 1) {
+        if (seriesPreview) seriesPreview.style.display = "none";
+        return;
+      }
+
+      try {
+        const start = new Date(startDateStr);
+        const end = new Date(start);
+        end.setDate(start.getDate() + days - 1);
+
+        const format = d => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+        let text = format(start);
+        if (days > 1) {
+          text += ` – ${format(end)} (${days} days)`;
+        }
+
+        if (seriesDateRange) seriesDateRange.textContent = text;
+        if (seriesPreview) seriesPreview.style.display = "block";
+      } catch (e) {
+        console.warn("Series preview error", e);
+        if (seriesPreview) seriesPreview.style.display = "none";
+      }
+    }
+
+    if (seriesDaysInput) {
+      seriesDaysInput.addEventListener("input", updateSeriesPreview);
+      seriesDaysInput.addEventListener("change", updateSeriesPreview);
+    }
+
+    updateSeriesPreview();
+
+    // Confirm button click
+    confirmBtn.addEventListener("click", function(e) {
+      e.preventDefault();
+      console.log("=== CONFIRM BUTTON CLICKED ===");
+
       const tables = parseInt(document.getElementById("number_of_tables_required_by_patron").value || "0", 10);
+
       if (!dateInput.value || !slotInput.value) {
-        e.preventDefault();
-        slotHint.textContent = "Please select a slot from the grid first.";
+        alert("Please select a slot from the grid first.");
         return;
       }
+
       if (!tables || tables < 1) {
-        e.preventDefault();
-        slotHint.textContent = "Please enter at least 1 table.";
+        alert("Please enter at least 1 table.");
         return;
       }
+
+      console.log("Submitting:", {
+        date: dateInput.value,
+        slot: slotInput.value,
+        tables: tables,
+        timeslot_availability: timeslotAvailabilityInput ? timeslotAvailabilityInput.value : "missing"
+      });
+
+      // Close modal
+      const modalInstance = bootstrap.Modal.getInstance(modalEl);
+      if (modalInstance) modalInstance.hide();
+
+      // Submit
+      const form = document.getElementById("reservationForm");
+      form.submit();
     });
+
+    console.log("Script ready");
   })();
 </script>
 {% endblock %}

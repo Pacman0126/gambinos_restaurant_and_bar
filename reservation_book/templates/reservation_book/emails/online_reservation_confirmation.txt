@@ -8,14 +8,16 @@ This reservation was made online.
 Here are your reservation details:
 
 {% for r in reservations %}
-- Date: {{ r.date|date:"M. j, Y" }}
-- Time: {{ r.time_range }}
-- Number of tables: {{ r.tables }}
+- Date:          {{ r.reservation_date|default:r.timeslot_availability.calendar_date|date:"M. j, Y" }}
+- Time:          {{ r.time_range_pretty|default:"(time not set)" }}
+- Duration:      {{ r.duration_hours }} hour{% if r.duration_hours != 1 %}s{% endif %}
+- Tables:        {{ r.number_of_tables_required_by_patron|default:"1" }}
 - Reservation ID: {{ r.id }}
-
+{% empty %}
+  (No detailed reservation information available yet.)
 {% endfor %}
 
-You can log in to view or manage your reservations here:
+You can view or manage this booking here:
 {{ my_reservations_url }}
 
 We look forward to welcoming you!

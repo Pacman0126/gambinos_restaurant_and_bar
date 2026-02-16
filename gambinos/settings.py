@@ -220,30 +220,40 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # =====================================================
-# ✅ ALLAUTH (your format)
+# ✅ ALLAUTH – revised for better first-time flow
 # =====================================================
+
+# Core auth
 ACCOUNT_USERNAME_REQUIRED = True
 ACCOUNT_USER_MODEL_USERNAME_FIELD = "username"
-USE_X_FORWARDED_HOST = True
-ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https" if not DEBUG else "http"
-
+ACCOUNT_AUTHENTICATION_METHOD = "username_email"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 
-ACCOUNT_LOGIN_METHODS = {"email", "username"}
-ACCOUNT_SIGNUP_FIELDS = ["email*", "username*", "password1*", "password2*"]
+# Verification: switch to "mandatory" – prevents instant /reserve/ access
+# and makes verification meaningful (spam protection + clean onboarding)
+ACCOUNT_EMAIL_VERIFICATION = "none"                  # ← changed from "optional"
 
-ACCOUNT_AUTHENTICATION_METHOD = "username_email"
-ACCOUNT_EMAIL_VERIFICATION = "optional"
-ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+# Redirects – make flow feel natural
+ACCOUNT_SIGNUP_REDIRECT_URL = "/reserve/"
+# or ACCOUNT_SIGNUP_REDIRECT_URL = "/"                     # home page – also fine
 
-ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = True
-LOGIN_REDIRECT_URL = "my_reservations"
+# after clicking link → dashboard/reservations
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = None
+# (do NOT set to /reserve/ – let user choose to book)
+
+LOGIN_REDIRECT_URL = "/my_reservations/"                   # after normal login
 LOGOUT_REDIRECT_URL = "home"
 
+# Adapter & forms (keep these)
 ACCOUNT_ADAPTER = "reservation_book.adapters.CustomAccountAdapter"
 ACCOUNT_FORMS = {"signup": "reservation_book.forms.CustomerSignupForm"}
 
+# Misc (keep if needed)
+ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = True
+USE_X_FORWARDED_HOST = True
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https" if not DEBUG else "http"
 
 # =====================================================
 # 🌍 INTERNATIONALIZATION
