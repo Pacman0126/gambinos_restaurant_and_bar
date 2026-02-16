@@ -172,65 +172,37 @@ class PhoneReservationForm(forms.ModelForm):
 
 
 class EditReservationForm(forms.ModelForm):
-    reservation_date = forms.DateField(
-        widget=forms.DateInput(
-            attrs={"type": "date", "class": "form-control"}),
-        label="Reservation Date",
-    )
-
-    time_slot = forms.ChoiceField(
-        choices=TIME_SLOT_CHOICES,
-        widget=forms.Select(attrs={"class": "form-select"}),
-        label="Time Slot",
-    )
-
     class Meta:
         model = TableReservation
         fields = [
-            'reservation_date',
-            'time_slot',
+            'duration_hours',
             'number_of_tables_required_by_patron',
         ]
         widgets = {
-            "number_of_tables_required_by_patron": forms.NumberInput(
-                attrs={"class": "form-control", "min": 1}
-            ),
+            'duration_hours': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': '1',
+                'max': '5',
+                'step': '1',
+            }),
+            'number_of_tables_required_by_patron': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': '1',
+                'step': '1',
+            }),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.instance and self.instance.customer:
-            # Pre-fill customer details in form (read-only or editable as needed)
-            self.fields['customer_first_name'] = forms.CharField(
-                initial=self.instance.customer.first_name,
-                label="First Name",
-                # disabled=True  # or remove disabled to allow edit
-            )
-            self.fields['customer_last_name'] = forms.CharField(
-                initial=self.instance.customer.last_name,
-                label="Last Name",
-                # disabled=True
-            )
-            self.fields['customer_email'] = forms.EmailField(
-                initial=self.instance.customer.email,
-                label="Email",
-                # disabled=True
-            )
-            self.fields['customer_phone'] = forms.CharField(
-                initial=self.instance.customer.phone or '',
-                label="Phone",
-                required=False,
-                # disabled=True
-            )
-            self.fields['customer_mobile'] = forms.CharField(
-                initial=self.instance.customer.mobile or '',
-                label="Mobile",
-                required=False,
-                # disabled=True
-            )
 
-        # ✅ Default tables to 1 if something ever comes through blank/None
-        if not self.initial.get("number_of_tables_required_by_patron"):
-            current = getattr(
-                self.instance, "number_of_tables_required_by_patron", None)
-            self.initial["number_of_tables_required_by_patron"] = current or 1
+        # Optional: make fields required or add help text if needed
+        self.fields['duration_hours'].required = True
+        self.fields['number_of_tables_required_by_patron'].required = True
+
+        # Pre-fill from instance if needed (already handled by instance=reservation)
+        if self.instance and self.instance.pk:
+            self.initial['duration_hours'] = self.instance.duration_hours or 1
+            self.initial['number_of_tables_required_by_patron'] = self.instance.number_of_tables_required_by_patron or 1
+
+        # Optional: disable or hide if you want read-only customer info in form (but better in left card)
+        # self.fields['duration_hours'].disabled = True  # example

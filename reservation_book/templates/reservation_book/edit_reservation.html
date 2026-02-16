@@ -2,6 +2,15 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
+{% comment %} {% if form %} {% endcomment %}
+  {% comment %} <div class="alert alert-info">
+    Form loaded with fields: {{ form.fields.keys|join:", " }}
+  </div>
+{% else %}
+  <div class="alert alert-danger">
+    Form NOT loaded in context!
+  </div>
+{% endif %} {% endcomment %}
 <div class="container mt-4">
   <h2 class="mb-4">Update Reservation</h2>
 
@@ -15,64 +24,94 @@
         <div class="card-body">
           <p><strong>Reservation ID:</strong> {{ reservation.id }}</p>
 
-          {% if reservation.user %}
+          {% if reservation.customer %}
             <p>
-              <strong>Booked by:</strong>
-              {{ reservation.user.get_full_name|default:reservation.user.username }}
+              <strong>Customer:</strong>
+              {{ reservation.customer.first_name }} {{ reservation.customer.last_name }}
+              <small class="text-muted d-block">({{ reservation.customer.email }})</small>
             </p>
-          {% elif reservation.name %}
-            <p><strong>Guest name:</strong> {{ reservation.name }}</p>
           {% endif %}
 
-          <p><strong>Date:</strong> {{ reservation.reservation_date }}</p>
+          <p><strong>Date:</strong> {{ reservation.reservation_date|date:"D, M j, Y" }}</p>
+
           <p>
             <strong>Time:</strong>
-                {{ current_slot_label }}
+            {{ reservation.time_range_pretty|default:"Not set" }}
+            <small class="text-muted d-block">
+              ({{ reservation.duration_hours }} hour{% if reservation.duration_hours != 1 %}s{% endif %})
+            </small>
           </p>
+
           <p>
-            <strong>Tables:</strong>
-            {{ reservation.number_of_tables_required_by_patron }}
+            <strong>Tables:</strong> {{ reservation.number_of_tables_required_by_patron }}
           </p>
+
           <p>
             <strong>Status:</strong>
-            {% if reservation.reservation_status %}
-              Confirmed
+            {% if reservation.status == 'active' or reservation.reservation_status %}
+              <span class="badge bg-success">Active</span>
             {% else %}
-              Cancelled
+              <span class="badge bg-secondary">Cancelled/Inactive</span>
             {% endif %}
           </p>
+
           <p>
-            <strong>Created on:</strong>
-            {{ reservation.created_at|date:"M d, Y H:i:s" }}
+            <strong>Created on:</strong> {{ reservation.created_at|date:"M d, Y H:i" }}
           </p>
           <p>
-            <strong>Last updated:</strong>
-            {{ reservation.updated_at|date:"M d, Y H:i:s" }}
+            <strong>Last updated:</strong> {{ reservation.updated_at|date:"M d, Y H:i" }}
           </p>
         </div>
       </div>
     </div>
 
-    <!-- Right: edit form (crispy) -->
+    <!-- Right: edit form -->
+    <!-- Right: edit form -->
     <div class="col-md-7 mb-4">
       <div class="card">
         <div class="card-header">
           Edit Reservation
         </div>
         <div class="card-body">
-            <form method="post">
-            {% csrf_token %}
-            {{ form|crispy }}
 
-            <div class="mt-3">
-                <button type="submit" class="btn btn-primary">
-                Save changes
-                </button>
-                <a href="{% url 'my_reservations' %}" class="btn btn-secondary ms-2">
-                Cancel
-                </a>
+          <form method="post">
+            {% csrf_token %}
+
+            <!-- Duration -->
+            <div class="mb-3">
+              <label for="id_duration_hours" class="form-label">Duration (hours)</label>
+              <input type="number" 
+                    name="duration_hours" 
+                    id="id_duration_hours"
+                    class="form-control" 
+                    min="1" 
+                    max="5" 
+                    value="{{ form.duration_hours.value|default:reservation.duration_hours }}" 
+                    required>
             </div>
-            </form>
+
+            <!-- Tables -->
+            <div class="mb-3">
+              <label for="id_number_of_tables_required_by_patron" class="form-label">Number of Tables</label>
+              <input type="number" 
+                    name="number_of_tables_required_by_patron" 
+                    id="id_number_of_tables_required_by_patron"
+                    class="form-control" 
+                    min="1" 
+                    value="{{ form.number_of_tables_required_by_patron.value|default:reservation.number_of_tables_required_by_patron }}" 
+                    required>
+            </div>
+
+            <div class="mt-4 text-end">
+              <a href="{% url 'my_reservations' %}" class="btn btn-outline-secondary">
+                Cancel
+              </a>
+              <button type="submit" class="btn btn-primary ms-2">
+                Save Changes
+              </button>
+            </div>
+          </form>
+
         </div>
       </div>
     </div>

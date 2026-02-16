@@ -26,6 +26,21 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+     <!-- Force native number input spinners (up/down arrows) -->
+    <style>
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: inner-spin-button !important;
+            opacity: 1 !important;
+            margin: 0 2px !important;
+            width: 16px !important;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield !important;   /* Firefox */
+            appearance: auto !important;
+        }
+    </style>   
 
 </head>
 
@@ -55,79 +70,78 @@
                 <div class="collapse navbar-collapse" id="navbarText">
 
                     <!-- LEFT SIDE NAV -->
+                    <!-- LEFT SIDE NAV -->
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
                         <!-- Home -->
                         <li class="nav-item">
                             <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
-                            href="{% url 'home' %}">
+                               href="{% url 'home' %}">
                                 Home
                             </a>
                         </li>
 
-                        {# Only show BOOK RESERVATION for non-staff users #}
-                        {% if not request.user.is_staff %}
-                        <li class="nav-item">
-                            <a class="nav-link {% if request.resolver_match.url_name == 'make_reservation' %}active{% endif %}"
-                            href="{% url 'make_reservation' %}">
-                                <i class="fa-solid fa-calendar-plus"></i>
-                                Book Reservation
-                            </a>
-                        </li>
+                        <!-- CUSTOMER LINKS (logged in, non-staff) -->
+                        {% if user.is_authenticated and not user.is_staff %}
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.resolver_match.url_name == 'my_reservations' %}active{% endif %}"
+                                   href="{% url 'my_reservations' %}">
+                                    <i class="fa-solid fa-list-check me-1"></i>
+                                    My Reservations
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.resolver_match.url_name == 'make_reservation' %}active{% endif %}"
+                                   href="{% url 'make_reservation' %}">
+                                    <i class="fa-solid fa-calendar-plus me-1"></i>
+                                    Book Reservation
+                                </a>
+                            </li>
                         {% endif %}
 
-                        {% if request.user.is_staff %}
-                        <!-- STAFF Dropdown -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle {% if 'staff' in request.path %}active{% endif %}"
-                            href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Staff
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li>
-                                    <a class="dropdown-item"
-                                    href="{% url 'staff_dashboard' %}">
-                                        <i class="fa-solid fa-house me-2"></i>
-                                        Staff Dashboard
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item"
-                                    href="{% url 'user_reservations_overview' %}">
-                                        <i class="fa-solid fa-users me-2"></i>
-                                        Customer Stats
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item"
-                                    href="{% url 'staff_reservations' %}">
-                                        <i class="fa-solid fa-list-ul me-2"></i>
-                                        All Reservations
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item"
-                                    href="{% url 'create_phone_reservation' %}">
-                                        <i class="fa-solid fa-phone me-2"></i>
-                                        Phone Reservation
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
+                        <!-- STAFF LINKS (keep your existing dropdown) -->
+                        {% if user.is_staff %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle {% if 'staff' in request.path %}active{% endif %}"
+                                   href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Staff
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'staff_dashboard' %}">
+                                            <i class="fa-solid fa-house me-2"></i>Staff Dashboard
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'user_reservations_overview' %}">
+                                            <i class="fa-solid fa-users me-2"></i>Customer Stats
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'staff_reservations' %}">
+                                            <i class="fa-solid fa-list-ul me-2"></i>All Reservations
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'create_phone_reservation' %}">
+                                            <i class="fa-solid fa-phone me-2"></i>Phone Reservation
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
 
-                        <!-- Separate Manage Staff Button for Superuser ONLY -->
-                        {% if request.user.is_superuser %}
-                        <li class="nav-item">
-                            <a class="nav-link btn btn-success text-white ms-3 px-4"
-                            href="{% url 'staff_management' %}">
-                                <i class="fa-solid fa-user-shield me-2"></i>
-                                Manage Staff
-                            </a>
-                        </li>
-                        {% endif %}
+                            {% if request.user.is_superuser %}
+                            <li class="nav-item">
+                                <a class="nav-link btn btn-success text-white ms-3 px-4"
+                                   href="{% url 'staff_management' %}">
+                                    <i class="fa-solid fa-user-shield me-2"></i>Manage Staff
+                                </a>
+                            </li>
+                            {% endif %}
                         {% endif %}
 
-                    </ul>
+                    </ul>                    
 
                     <!-- RIGHT SIDE AUTH -->
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">

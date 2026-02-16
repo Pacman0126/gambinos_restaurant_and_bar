@@ -156,12 +156,6 @@ class TableReservationQuerySet(models.QuerySet):
         return self.none()
 
 
-# This single Manager is the only one you should have.
-# It automatically returns a TableReservationQuerySet so `.active()` works.
-TableReservationManager = models.Manager.from_queryset(
-    TableReservationQuerySet)
-
-
 class TableReservationManager(models.Manager.from_queryset(TableReservationQuerySet)):
     """
     Manager is now *backed by* TableReservationQuerySet.
@@ -170,9 +164,14 @@ class TableReservationManager(models.Manager.from_queryset(TableReservationQuery
     pass
 
 
+# This single Manager is the only one you should have.
+# It automatically returns a TableReservationQuerySet so `.active()` works.
+TableReservationManager = models.Manager.from_queryset(
+    TableReservationQuerySet)
 # -------------------------------------------------------------------
 # TableReservation model (your status system + legacy boolean kept)
 # -------------------------------------------------------------------
+
 
 class TableReservation(models.Model):
     # Attach the working manager (THIS enables `.active()` everywhere)
