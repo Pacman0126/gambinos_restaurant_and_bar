@@ -1134,22 +1134,11 @@ def staff_or_superuser_required(view_func):
 def staff_reservations(request):
     """
     Staff-facing list of reservations.
-
-    IMPORTANT:
-    - TableReservation has NO `user` FK in your project.
-    - Staff can view all ACTIVE reservations.
-    - Display must reflect multi-hour blocks using duration_hours.
-
-    Fixes:
-    - Do NOT assign to model @property (e.g. time_range_pretty) -> can raise:
-        "property ... has no setter"
-    - Instead, attach a separate display-only attribute:
-        reservation.time_range_display
+    - Shows all ACTIVE reservations
+    - Uses reservation.time_range_pretty for readable time spans (e.g. 17:00–20:00)
+    - No need for extra display functions — property is already perfect
     """
-
-    # -----------------------------------------
     # Pull ACTIVE reservations only
-    # -----------------------------------------
     qs = (
         TableReservation.objects
         .active()
@@ -1157,65 +1146,21 @@ def staff_reservations(request):
         .order_by("reservation_date", "time_slot", "id")
     )
 
-    # -----------------------------------------
-    # Helper: compute "HH:MM–HH:MM" for duration
-    # -----------------------------------------
-    # def _pretty_time_range(start_slot_key: str, duration_hours: int) -> str:
-    #     """
-    #     Convert (start_slot_key + duration_hours) -> "HH:MM–HH:MM".
+    # Attach display-only attribute (optional, but makes template clean)
+    reservations = list(qs)
 
-    #     Uses SLOT_KEYS ordering to walk forward across slots.
-    #     Falls back safely to the base slot label if anything is missing.
-    #     """
-    #     start_label = SLOT_LABELS.get(start_slot_key, start_slot_key)
+    # Optional: add any extra staff-specific annotations
+    for r in reservations:
+        r.time_range_display = r.time_range_pretty  # already exists on model
 
-    #     try:
-    #         dur = int(duration_hours or 1)
-    #     except Exception:
-    #         dur = 1
-    #     if dur <= 1:
-    #         return start_label
-
-    #     slot_keys = list(SLOT_KEYS) if SLOT_KEYS else list(SLOT_LABELS.keys())
-
-    #     if start_slot_key not in slot_keys:
-    #         return start_label
-
-    #     start_index = slot_keys.index(start_slot_key)
-    #     end_index = min(start_index + dur - 1, len(slot_keys) - 1)
-    #     end_slot_key = slot_keys[end_index]
-    #     end_label = SLOT_LABELS.get(end_slot_key, end_slot_key)
-
-    #     try:
-    #         start_time = start_label.split("–")[0].strip()
-    #         end_time = end_label.split("–")[1].strip()
-    #         return f"{start_time}–{end_time}"
-    #     except Exception:
-    #         return start_label
-
-    # # -----------------------------------------
-    # # Attach display-only attributes for template
-    # # -----------------------------------------
-    # reservations = list(qs)
-
-    # for r in reservations:
-    #     r.time_range_display = _pretty_time_range(
-    #         r.time_slot,
-    #         getattr(r, "duration_hours", 1),
-    #     )
-
-    #     # Optional: staff template may want a friendly status label
-    #     # (model now provides r.status_display)
-    #     # r.status_display is safe to use directly.
-
-    # return render(
-    #     request,
-    #     "reservation_book/staff_reservations.html",
-    #     {
-    #         "reservations": reservations,
-    #         "slot_labels": SLOT_LABELS,
-    #     },
-    # )
+    return render(
+        request,
+        "reservation_book/staff_reservations.html",
+        {
+            "reservations": reservations,
+            "slot_labels": SLOT_LABELS,
+        },
+    )
 
 
 def _pretty_time_range(start_slot: str, duration: int) -> str:

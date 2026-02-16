@@ -54,7 +54,7 @@
           <th style="width: 90px;">Tables</th>
           <th>Customer</th>
           <th style="width: 120px;">Status</th>
-          <th style="width: 180px;">Actions</th>
+          <th style="width: 200px;">Actions</th>
         </tr>
       </thead>
 
@@ -66,8 +66,8 @@
             <td>{{ r.reservation_date|date:"M d, Y" }}</td>
 
             <td>
-              {{ r.time_range_display }}
-              {% if r.duration_hours|default:1|add:0 > 1 %}
+              {{ r.time_range_pretty }}
+              {% if r.duration_hours|default:1 > 1 %}
                 <div class="small text-muted">{{ r.duration_hours }} hour block</div>
               {% endif %}
             </td>
@@ -75,9 +75,9 @@
             <td>{{ r.number_of_tables_required_by_patron }}</td>
 
             <td>
-              <div class="fw-semibold">{{ r.customer_display }}</div>
-              {% if r.customer_email %}<div class="small text-muted">{{ r.customer_email }}</div>{% endif %}
-              {% if r.customer_phone %}<div class="small text-muted">{{ r.customer_phone }}</div>{% endif %}
+              <div class="fw-semibold">{{ r.customer.first_name|default:"" }} {{ r.customer.last_name|default:"" }}</div>
+              {% if r.customer.email %}<div class="small text-muted">{{ r.customer.email }}</div>{% endif %}
+              {% if r.customer.phone %}<div class="small text-muted">{{ r.customer.phone }}</div>{% endif %}
               {% if r.is_phone_reservation %}
                 <span class="badge bg-info text-dark mt-1">Phone-in</span>
               {% else %}
@@ -86,16 +86,10 @@
             </td>
 
             <td>
-              {% if r.status_display == "Active" %}
+              {% if r.status == 'active' or r.reservation_status %}
                 <span class="badge bg-success">Active</span>
-              {% elif r.status_display == "Cancelled" %}
-                <span class="badge bg-secondary">Cancelled</span>
-              {% elif r.status_display == "Completed" %}
-                <span class="badge bg-secondary">Completed</span>
-              {% elif r.status_display == "No-show" %}
-                <span class="badge bg-warning text-dark">No-show</span>
               {% else %}
-                <span class="badge bg-light text-dark">{{ r.status_display }}</span>
+                <span class="badge bg-secondary">Cancelled</span>
               {% endif %}
             </td>
 
@@ -104,10 +98,11 @@
                 Edit
               </a>
 
-              {% if r.is_active_display %}
+              {% if r.status == 'active' or r.reservation_status %}
                 <form method="post" action="{% url 'cancel_reservation' r.id %}" class="d-inline">
                   {% csrf_token %}
-                  <button type="submit" class="btn btn-sm btn-outline-danger">
+                  <button type="submit" class="btn btn-sm btn-outline-danger"
+                          onclick="return confirm('Cancel this reservation?');">
                     Cancel
                   </button>
                 </form>
