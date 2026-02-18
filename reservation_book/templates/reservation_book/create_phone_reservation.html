@@ -181,7 +181,7 @@
               {% for day_data in next_30_days %}
                 <tr>
                   <td class="date-cell">
-                    <div class="fw-semibold">{{ day_data.date|date:"D M j, Y" }}</div>
+                    <div class="fw-semibold">{{ day_data.calendar_date|date:"D M j, Y" }}</div>
                   </td>
 
                   {# day_data.slots is a LIST in the same order as SLOT_KEYS #}
@@ -191,9 +191,9 @@
                         <button
                           type="button"
                           class="btn btn-sm btn-outline-success w-100 slot-btn"
-                          data-date="{{ day_data.date|date:'Y-m-d' }}"
+                          data-date="{{ day_data.calendar_date|date:'Y-m-d' }}"
                           data-slot="{{ slot.key }}"
-                          data-timeslot-pk="{{ day_data.timeslot.calendar_date|date:'Y-m-d' }}"
+                          data-timeslot-pk="{{ day_data.calendar_date|date:'Y-m-d' }}"
                           data-slot-label="{{ slot.label }}"
                         >
                           {{ slot.remaining }} / {{ slot.available }}

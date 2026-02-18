@@ -6,7 +6,7 @@
 
   <h1 class="mb-3">Make a Reservation</h1>
 
-  {# --- Messages --- #}
+  {# Messages #}
   {% if messages %}
     <div class="mb-3">
       {% for message in messages %}
@@ -40,139 +40,114 @@
             <input type="hidden" name="time_slot" id="time_slot">
             <input type="hidden" name="timeslot_availability" id="timeslot_availability">
 
-            {% if request.user.is_staff %}
-              <div class="alert alert-info mb-3">
-                Staff booking: use Lookup Customer button, then select a slot.
-              </div>
-
-              <!-- Staff: lookup/search section -->
-              <div class="mb-3">
-                <label class="form-label">Customer Search</label>
-                <div class="input-group">
-                  <input type="text" class="form-control" id="customerSearchInput" placeholder="Search by email, first name, last name...">
-                  <button type="button" class="btn btn-outline-primary" id="customerSearchBtn">Search</button>
-                </div>
-                <div id="customerSearchResults" class="mt-2"></div>
-              </div>
-            {% else %}
-              <div class="alert alert-secondary mb-3">
-                Booking for: <strong>{{ request.user.get_full_name|default:request.user.username }}</strong>
-                (<strong>{{ request.user.email }}</strong>)
-              </div>
-            {% endif %}
-
             <div class="row g-3">
-              <div class="col-md-4">
-                <label for="first_name" class="form-label">First Name</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="first_name"
-                  name="first_name"
-                  value="{% if not request.user.is_staff %}{{ request.user.first_name }}{% endif %}"
-                  {% if not request.user.is_staff %}readonly{% endif %}
-                >
+              <!-- Customer info -->
+              <div class="col-md-6">
+                <div class="card shadow-sm">
+                  <div class="card-header">
+                    <strong>Customer</strong>
+                  </div>
+                  <div class="card-body">
+                    <div class="row g-2">
+                      <div class="col-md-6">
+                        <label class="form-label">{{ form.first_name.label }}</label>
+                        {{ form.first_name }}
+                        {{ form.first_name.errors }}
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">{{ form.last_name.label }}</label>
+                        {{ form.last_name }}
+                        {{ form.last_name.errors }}
+                      </div>
+
+                      <div class="col-12">
+                        <label class="form-label">{{ form.email.label }}</label>
+                        {{ form.email }}
+                        {{ form.email.errors }}
+                      </div>
+
+                      <div class="col-md-6">
+                        <label class="form-label">{{ form.phone.label }}</label>
+                        {{ form.phone }}
+                        {{ form.phone.errors }}
+                      </div>
+
+                      <div class="col-md-6">
+                        <label class="form-label">{{ form.mobile.label }}</label>
+                        {{ form.mobile }}
+                        {{ form.mobile.errors }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div class="col-md-4">
-                <label for="last_name" class="form-label">Last Name</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="last_name"
-                  name="last_name"
-                  value="{% if not request.user.is_staff %}{{ request.user.last_name }}{% endif %}"
-                  {% if not request.user.is_staff %}readonly{% endif %}
-                >
-              </div>
+              <!-- Reservation details -->
+              <div class="col-md-6">
+                <div class="card shadow-sm">
+                  <div class="card-header">
+                    <strong>Reservation</strong>
+                  </div>
+                  <div class="card-body">
+                    <div class="mb-3">
+                      <label for="id_number_of_tables_required_by_patron" class="form-label">
+                        Tables Needed
+                      </label>
+                      {{ form.number_of_tables_required_by_patron }}
+                      {{ form.number_of_tables_required_by_patron.errors }}
+                    </div>
 
-              <div class="col-md-4">
-                <label for="email" class="form-label">Email</label>
-                <input
-                  type="email"
-                  class="form-control"
-                  id="email"
-                  name="email"
-                  value="{% if not request.user.is_staff %}{{ request.user.email }}{% endif %}"
-                  {% if not request.user.is_staff %}readonly{% endif %}
-                >
-              </div>
+                    <div class="mb-3">
+                      <label for="id_duration_hours" class="form-label">
+                        Duration (hours)
+                      </label>
+                      <input type="number" name="duration_hours" id="id_duration_hours"
+                             class="form-control" min="1" max="5" step="1" value="1" required>
+                      {{ form.duration_hours.errors }}
+                    </div>
 
-              <div class="col-md-4">
-                <label for="phone" class="form-label">Phone</label>
-                <input type="text" class="form-control" id="phone" name="phone">
-              </div>
-
-              <div class="col-md-4">
-                <label for="mobile_phone" class="form-label">Mobile</label>
-                <input type="text" class="form-control" id="mobile_phone" name="mobile_phone">
-              </div>
-
-              <div class="col-md-4">
-                <label for="number_of_tables_required_by_patron" class="form-label">Tables Needed</label>
-                <input
-                  type="number"
-                  class="form-control"
-                  id="number_of_tables_required_by_patron"
-                  name="number_of_tables_required_by_patron"
-                  min="1"
-                  value="1"
-                >
-              </div>
-
-              <!-- Duration & Series -->
-              <div class="col-md-4">
-                <label for="duration_hours" class="form-label">Duration (hours)</label>
-                <input type="number" class="form-control" id="duration_hours" name="duration_hours" min="1" max="5" value="1">
-              </div>
-
-              <div class="col-md-4">
-                <label for="series_days" class="form-label">Number of Days</label>
-                <input type="number" class="form-control" id="series_days" name="series_days" min="1" max="30" value="1">
-              </div>
-
-              <!-- Compact series preview (Fix A) -->
-              <div class="col-12 mt-1 mb-0" id="seriesPreview" style="display: none;">
-                <small class="text-info">
-                  <strong>Period:</strong> <span id="seriesDateRange">—</span>
-                </small>
-              </div>
-
-              <!-- Until close checkbox -->
-              <div class="col-md-4 d-flex align-items-end">
-                <div class="form-check mb-2">
-                  <input class="form-check-input" type="checkbox" id="book_until_close" name="book_until_close">
-                  <label class="form-check-label" for="book_until_close">
-                    Book until closing time
-                  </label>
+                    <!-- Hours available display -->
+                    <div class="mb-3">
+                      <label class="form-label text-muted">Hours available</label>
+                      <p class="form-control-plaintext fw-bold" id="available_hours">Select a slot</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
+            <div class="row g-3 mt-3">
+              <div class="col-md-4">
+                <label for="id_series_days" class="form-label">Number of Days</label>
+                {{ form.series_days }}
+                {{ form.series_days.errors }}
+              </div>
+              <div class="col-md-8" id="seriesPreview" style="display: none;">
+                <div class="alert alert-info">
+                  Series dates: <span id="seriesDateRange"></span>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div class="modal-footer">
-            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary" id="confirmReservationBtn" disabled>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" id="confirmReservationBtn" class="btn btn-primary" disabled>
               Confirm Reservation
             </button>
           </div>
         </form>
-
       </div>
     </div>
   </div>
 
-  <!-- Availability table -->
-  <h3 class="mb-3">Availability Grid (next 30 days, available/total)</h3>
+  <!-- Availability Grid -->
+  <h3 class="mt-4 mb-3">Availability Grid</h3>
+  <div class="small text-muted mt-2">
+    Cells show <strong>remaining / total</strong> tables. “FULL” means no remaining tables.
+  </div>
 
   <div class="table-responsive phone-reservation-grid">
-    {% if request.user.is_staff %}
-      <button type="button" class="btn btn-lg btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#customerModal">
-        <i class="bi bi-search me-2"></i>Lookup Customer
-      </button>
-    {% endif %}
-
     <table class="table table-sm align-middle">
       <thead>
         <tr>
@@ -184,14 +159,12 @@
           <th scope="col" class="text-center">21:00–22:00</th>
         </tr>
       </thead>
-
       <tbody>
         {% for ts in next_30_days %}
           <tr>
-            <td class="date-cell">
-              <div class="fw-semibold">{{ ts.calendar_date|date:"D M j, Y" }}</div>
+            <td class="date-cell fw-semibold">
+              {{ ts.calendar_date|date:"D M j, Y" }}
             </td>
-
             {% for slot in ts.slots %}
               <td class="text-center">
                 <button
@@ -200,11 +173,11 @@
                   data-bs-toggle="modal"
                   data-bs-target="#customerModal"
                   data-date="{{ ts.calendar_date|date:'Y-m-d' }}"
-                  data-date-label="{{ ts.calendar_date|date:'D, M j, Y' }}"
                   data-slot="{{ slot.key }}"
                   data-slot-label="{{ slot.label|default:slot.key }}"
-                  data-timeslot-pk="{{ ts.pk|default:'' }}"
+                  data-timeslot-pk="{{ ts.calendar_date|date:'Y-m-d' }}"
                   data-left="{{ slot.remaining }}"
+                  data-start-hour="{{ slot.key|slice:":2" }}"
                 >
                   {% if slot.remaining <= 0 %}
                     FULL
@@ -221,131 +194,130 @@
   </div>
 
 </div>
+{% endblock %}
 
+{% block js %}
 <script>
-  (function () {
-    console.log("Reservation script loaded – fixed hidden field");
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('[DEBUG] DOM loaded');
 
-    const requestUserIsStaff = {{ request.user.is_staff|yesno:"true,false" }};
+  const selectedSlotDisplay   = document.getElementById('selectedSlotDisplay');
+  const availableHoursEl      = document.getElementById('available_hours');
+  const durationInput         = document.getElementById('id_duration_hours');
+  const confirmBtn            = document.getElementById('confirmReservationBtn');
 
-    const modalEl = document.getElementById("customerModal");
-    const summaryEl = document.getElementById("selectedSlotDisplay");
+  const dateInput             = document.getElementById('reservation_date');
+  const slotInput             = document.getElementById('time_slot');
+  const tsInput               = document.getElementById('timeslot_availability');
 
-    const dateInput = document.getElementById("reservation_date");
-    const slotInput = document.getElementById("time_slot");
-    const timeslotAvailabilityInput = document.getElementById("timeslot_availability");
+  const seriesDaysInput       = document.getElementById('series_days');
+  const seriesPreview         = document.getElementById('seriesPreview');
+  const seriesDateRange       = document.getElementById('seriesDateRange');
 
-    const confirmBtn = document.getElementById("confirmReservationBtn");
-    const seriesDaysInput = document.getElementById("series_days");
-    const seriesPreview = document.getElementById("seriesPreview");
-    const seriesDateRange = document.getElementById("seriesDateRange");
+  document.querySelectorAll('.slot-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      console.log('[CLICK] Slot clicked');
 
-    // Slot selection – THIS IS THE FIXED PART
-    document.querySelectorAll(".slot-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        console.log("Slot clicked");
+      const date         = btn.dataset.date || '';
+      const slot         = btn.dataset.slot || '';
+      const tsPk         = btn.dataset.timeslotPk || '';
+      const left         = btn.dataset.left || '0';
+      const startHourStr = btn.dataset.startHour || '0';
+      const startHour    = parseInt(startHourStr, 10);
 
-        const date = btn.dataset.date || "";
-        const slot = btn.dataset.slot || "";
-        const left = btn.dataset.left || "0";
-        const tsPk = btn.dataset.timeslotPk || "";   // ← integer PK from template
+      console.log('[DATA]', { date, slot, tsPk, left, startHour });
 
-        console.log("Selected PK:", tsPk);           // ← debug: should show a number
+      if (dateInput) dateInput.value = date;
+      if (slotInput) slotInput.value = slot;
+      if (tsInput) tsInput.value = tsPk;
 
-        const slotLabel = btn.dataset.slotLabel || slot || "";
-        const dateLabel = btn.dataset.dateLabel || date || "";
+      const slotLabel = btn.dataset.slotLabel || slot;
+      const dateLabel = btn.dataset.dateLabel || date;
+      if (selectedSlotDisplay) selectedSlotDisplay.textContent = `${dateLabel} • ${slotLabel}`;
 
-        dateInput.value = date;
-        slotInput.value = slot;
+      if (confirmBtn) confirmBtn.disabled = parseInt(left, 10) <= 0;
 
-        // THIS LINE WAS MISSING – set the correct hidden field
-        // THIS IS THE CRITICAL LINE – use timeslotPk, NOT date or dateLabel
-            const availabilityInput = document.getElementById("timeslot_availability");
-            if (availabilityInput) {
-              availabilityInput.value = date;  // date = btn.dataset.date = '2026-02-19'
-              console.log("Set timeslot_availability to:", date);
-            }
+      const closingHour = 22;
+      const maxHours = closingHour - startHour;
 
-        summaryEl.textContent = `${dateLabel} | ${slotLabel} | Tables left: ${left}`;
-
-        confirmBtn.disabled = !(parseInt(left, 10) > 0);
-        console.log("Confirm enabled:", !confirmBtn.disabled);
-
-        updateSeriesPreview();
-      });
-    });
-
-    // Series preview
-    function updateSeriesPreview() {
-      const startDateStr = dateInput.value;
-      const days = parseInt(seriesDaysInput ? seriesDaysInput.value : 1) || 1;
-
-      if (!startDateStr || days <= 1) {
-        if (seriesPreview) seriesPreview.style.display = "none";
-        return;
-      }
-
-      try {
-        const start = new Date(startDateStr);
-        const end = new Date(start);
-        end.setDate(start.getDate() + days - 1);
-
-        const format = d => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-
-        let text = format(start);
-        if (days > 1) {
-          text += ` – ${format(end)} (${days} days)`;
+      if (availableHoursEl) {
+        if (maxHours <= 0) {
+          availableHoursEl.textContent = 'No hours remaining';
+          availableHoursEl.className = 'text-danger';
+        } else if (maxHours === 1) {
+          availableHoursEl.textContent = '1 hour until closing';
+          availableHoursEl.className = 'text-warning';
+        } else {
+          availableHoursEl.textContent = `${maxHours} hrs`;
+          availableHoursEl.className = 'text-success';
         }
-
-        if (seriesDateRange) seriesDateRange.textContent = text;
-        if (seriesPreview) seriesPreview.style.display = "block";
-      } catch (e) {
-        console.warn("Series preview error", e);
-        if (seriesPreview) seriesPreview.style.display = "none";
-      }
-    }
-
-    if (seriesDaysInput) {
-      seriesDaysInput.addEventListener("input", updateSeriesPreview);
-      seriesDaysInput.addEventListener("change", updateSeriesPreview);
-    }
-
-    updateSeriesPreview();
-
-    // Confirm button click
-    confirmBtn.addEventListener("click", function(e) {
-      e.preventDefault();
-      console.log("=== CONFIRM BUTTON CLICKED ===");
-
-      const tables = parseInt(document.getElementById("number_of_tables_required_by_patron").value || "0", 10);
-
-      if (!dateInput.value || !slotInput.value) {
-        alert("Please select a slot from the grid first.");
-        return;
       }
 
-      if (!tables || tables < 1) {
-        alert("Please enter at least 1 table.");
-        return;
+      // Restrict number input (spinner)
+      if (durationInput) {
+        durationInput.max = maxHours;
+        if (parseInt(durationInput.value, 10) > maxHours) {
+          durationInput.value = maxHours;
+        }
       }
 
-      console.log("Submitting:", {
-        date: dateInput.value,
-        slot: slotInput.value,
-        tables: tables,
-        timeslot_availability: timeslotAvailabilityInput ? timeslotAvailabilityInput.value : "missing"
-      });
-
-      // Close modal
-      const modalInstance = bootstrap.Modal.getInstance(modalEl);
-      if (modalInstance) modalInstance.hide();
-
-      // Submit
-      const form = document.getElementById("reservationForm");
-      form.submit();
+      updateSeriesPreview();
     });
+  });
 
-    console.log("Script ready");
-  })();
+  function updateSeriesPreview() {
+    const startDateStr = dateInput?.value;
+    const days = parseInt(seriesDaysInput?.value || 1, 10);
+
+    if (!startDateStr || days <= 1) {
+      if (seriesPreview) seriesPreview.style.display = 'none';
+      return;
+    }
+
+    try {
+      const start = new Date(startDateStr);
+      const end = new Date(start);
+      end.setDate(start.getDate() + days - 1);
+
+      const format = d => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+      let text = format(start);
+      if (days > 1) text += ` – ${format(end)} (${days} days)`;
+
+      if (seriesDateRange) seriesDateRange.textContent = text;
+      if (seriesPreview) seriesPreview.style.display = 'block';
+    } catch (e) {
+      console.warn('Series preview error', e);
+      if (seriesPreview) seriesPreview.style.display = 'none';
+    }
+  }
+
+  if (seriesDaysInput) {
+    seriesDaysInput.addEventListener('input', updateSeriesPreview);
+    seriesDaysInput.addEventListener('change', updateSeriesPreview);
+  }
+
+  updateSeriesPreview();
+
+  confirmBtn.addEventListener('click', e => {
+    e.preventDefault();
+
+    const tables = parseInt(document.getElementById('number_of_tables_required_by_patron')?.value || '0', 10);
+
+    if (!dateInput.value || !slotInput.value) {
+      alert('Please select a slot from the grid first.');
+      return;
+    }
+
+    if (!tables || tables < 1) {
+      alert('Please enter at least 1 table.');
+      return;
+    }
+
+    document.getElementById('reservationForm').submit();
+  });
+
+  console.log('[DEBUG] Script ready');
+});
 </script>
 {% endblock %}

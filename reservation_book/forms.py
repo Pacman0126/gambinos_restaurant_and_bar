@@ -17,6 +17,88 @@ from .models import TimeSlotAvailability, TableReservation, Customer
 #     number_of_tables_required_by_patron = forms.IntegerField(
 #         min_value=1, label="Number of tables"
 #     )
+class ReservationForm(forms.ModelForm):
+    """Online reservation form for customers."""
+    first_name = forms.CharField(
+        max_length=100, required=True, label="First Name"
+    )
+    last_name = forms.CharField(
+        max_length=100, required=True, label="Last Name"
+    )
+    email = forms.EmailField(required=True, label="Email Address")
+    phone = forms.CharField(max_length=20, required=False, label="Phone")
+    mobile = forms.CharField(max_length=20, required=False, label="Mobile")
+
+    number_of_tables_required_by_patron = forms.IntegerField(
+        min_value=1,
+        initial=1,
+        label="Tables",
+        widget=forms.NumberInput(attrs={"class": "form-control", "min": 1}),
+    )
+
+    # Booking extensions
+    until_close = forms.BooleanField(
+        required=False,
+        label="Book from selected start until kitchen close",
+        help_text="If checked, duration will be auto-set to the last available slot of the day.",
+    )
+    series_days = forms.IntegerField(
+        required=False,
+        min_value=1,
+        max_value=14,
+        initial=1,
+        label="Consecutive days (series)",
+        help_text="For conferences: book the same time block for N consecutive days (including the start date).",
+    )
+
+    class Meta:
+        model = TableReservation
+        fields = [
+            "reservation_date",
+            "time_slot",
+            "duration_hours",
+            "number_of_tables_required_by_patron",
+            "timeslot_availability",
+        ]
+        widgets = {
+            "reservation_date": forms.HiddenInput(),
+            "time_slot": forms.HiddenInput(),
+            "timeslot_availability": forms.HiddenInput(),
+            "duration_hours": forms.NumberInput(attrs={"class": "form-control", "min": 1, "max": 5, "step": 1}),
+        }
+
+    def clean_email(self):
+        email = (self.cleaned_data.get("email") or "").strip().lower()
+        if not email:
+            raise forms.ValidationError("Email is required.")
+        return email
+
+    def clean_series_days(self):
+        val = self.cleaned_data.get("series_days")
+        return 1 if not val else int(val)
+
+    def save(self, commit=True):
+        """Return an unsaved reservation with an *unsaved* Customer attached.
+        The view will:
+          - upsert Customer by email
+          - create/reuse the auth User
+          - enforce capacity + update demand
+          - save one or more reservations
+        """
+        reservation = super().save(commit=False)
+
+        customer = Customer(
+            first_name=(self.cleaned_data.get("first_name") or "").strip(),
+            last_name=(self.cleaned_data.get("last_name") or "").strip(),
+            email=(self.cleaned_data.get("email") or "").strip().lower(),
+            phone=(self.cleaned_data.get("phone") or "").strip(),
+            mobile=(self.cleaned_data.get("mobile") or "").strip(),
+        )
+        reservation.customer = customer
+
+        if commit:
+            reservation.save()
+        return reservation
 
 
 class SignUpForm(UserCreationForm):

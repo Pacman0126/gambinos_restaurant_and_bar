@@ -2,15 +2,6 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-{% comment %} {% if form %} {% endcomment %}
-  {% comment %} <div class="alert alert-info">
-    Form loaded with fields: {{ form.fields.keys|join:", " }}
-  </div>
-{% else %}
-  <div class="alert alert-danger">
-    Form NOT loaded in context!
-  </div>
-{% endif %} {% endcomment %}
 <div class="container mt-4">
   <h2 class="mb-4">Update Reservation</h2>
 
@@ -49,23 +40,24 @@
           <p>
             <strong>Status:</strong>
             {% if reservation.status == 'active' or reservation.reservation_status %}
-              <span class="badge bg-success">Active</span>
+              Confirmed
             {% else %}
-              <span class="badge bg-secondary">Cancelled/Inactive</span>
+              Cancelled
             {% endif %}
           </p>
 
           <p>
-            <strong>Created on:</strong> {{ reservation.created_at|date:"M d, Y H:i" }}
+            <strong>Created on:</strong>
+            {{ reservation.created_at|date:"M d, Y H:i" }}
           </p>
           <p>
-            <strong>Last updated:</strong> {{ reservation.updated_at|date:"M d, Y H:i" }}
+            <strong>Last updated:</strong>
+            {{ reservation.updated_at|date:"M d, Y H:i" }}
           </p>
         </div>
       </div>
     </div>
 
-    <!-- Right: edit form -->
     <!-- Right: edit form -->
     <div class="col-md-7 mb-4">
       <div class="card">
@@ -73,34 +65,42 @@
           Edit Reservation
         </div>
         <div class="card-body">
-
           <form method="post">
             {% csrf_token %}
 
-            <!-- Duration -->
+            <!-- Duration (editable) -->
             <div class="mb-3">
               <label for="id_duration_hours" class="form-label">Duration (hours)</label>
-              <input type="number" 
-                    name="duration_hours" 
-                    id="id_duration_hours"
-                    class="form-control" 
-                    min="1" 
-                    max="5" 
-                    value="{{ form.duration_hours.value|default:reservation.duration_hours }}" 
-                    required>
+              <input type="number" name="duration_hours" id="id_duration_hours" 
+                     class="form-control" min="1" max="5" 
+                     value="{{ form.duration_hours.value|default:reservation.duration_hours }}" required>
+              {{ form.duration_hours.errors }}
             </div>
 
-            <!-- Tables -->
+            <!-- Tables (editable) -->
             <div class="mb-3">
               <label for="id_number_of_tables_required_by_patron" class="form-label">Number of Tables</label>
-              <input type="number" 
-                    name="number_of_tables_required_by_patron" 
-                    id="id_number_of_tables_required_by_patron"
-                    class="form-control" 
-                    min="1" 
-                    value="{{ form.number_of_tables_required_by_patron.value|default:reservation.number_of_tables_required_by_patron }}" 
-                    required>
+              <input type="number" name="number_of_tables_required_by_patron" id="id_number_of_tables_required_by_patron" 
+                     class="form-control" min="1" 
+                     value="{{ form.number_of_tables_required_by_patron.value|default:reservation.number_of_tables_required_by_patron }}" required>
+              {{ form.number_of_tables_required_by_patron.errors }}
             </div>
+
+            {% comment %} <!-- Number of Days (new field - harmonized with create pages) -->
+            <div class="mb-3">
+              <label for="id_series_days" class="form-label">Number of Days</label>
+              <input type="number" name="series_days" id="id_series_days" 
+                     class="form-control" min="1" max="30" 
+                     value="{{ series_days }}" required>
+              <small class="form-text text-muted">Increase to add consecutive days; decrease to remove (with availability check).</small>
+            </div> {% endcomment %}
+
+            <!-- Optional notes (if you have it) -->
+            {% if form.notes %}
+              <div class="mb-3">
+                {{ form.notes|crispy }}
+              </div>
+            {% endif %}
 
             <div class="mt-4 text-end">
               <a href="{% url 'my_reservations' %}" class="btn btn-outline-secondary">
@@ -111,7 +111,6 @@
               </button>
             </div>
           </form>
-
         </div>
       </div>
     </div>
