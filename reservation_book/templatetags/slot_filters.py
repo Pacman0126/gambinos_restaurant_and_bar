@@ -1,10 +1,13 @@
 from django import template
 # adjust import path if needed
-from reservation_book.views import SLOT_LABELS
+from reservation_book.constants import SLOT_LABELS
 
 register = template.Library()
 
 
 @register.filter
-def slot_label(value):
-    return SLOT_LABELS.get(value, value)
+def get_item(d, k):
+    try:
+        return d.get(k)
+    except Exception:
+        return None

@@ -17,10 +17,11 @@ from .constants import SLOT_LABELS
 # from django.contrib.postgres.fields import JSONField
 
 DURATION_CHOICES = [
-    (1, '1 hour'),
-    (2, '2 hours'),
-    (3, '3 hours'),
-    (4, '4 hours'),  # ← Now supports 4 hours
+    (1, "1 time slot"),
+    (2, "2 time slots"),
+    (3, "3 time slots"),
+    (4, "4 time slots"),
+    (5, "5 time slots"),
 ]
 
 # Canonical ordering for walking duration_hours forward
@@ -248,14 +249,9 @@ class TableReservation(models.Model):
     # Your choices constant should already exist in your file; keep yours.
     # If you already have DURATION_CHOICES above, this line will work as-is.
     duration_hours = models.PositiveSmallIntegerField(
-        choices=getattr(settings, "DURATION_CHOICES", None) or (
-            (1, "1 hour"),
-            (2, "2 hours"),
-            (3, "3 hours"),
-            (4, "4 hours"),
-        ),
+        choices=getattr(settings, "DURATION_CHOICES", None),
         default=1,
-        help_text="How many consecutive hours this booking requires (max 4).",
+        help_text="How many consecutive time slots this booking requires (max 5).",
     )
 
     series = models.ForeignKey(

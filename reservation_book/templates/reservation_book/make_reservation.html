@@ -92,7 +92,11 @@
                       {{ form.number_of_tables_required_by_patron }}
                       {{ form.number_of_tables_required_by_patron.errors }}
                     </div>
-
+              <!-- DEBUG -->
+{% comment %}               <div class="small text-muted">
+                Form class: {{ form.__class__.__name__ }}
+                | duration widget: {{ form.duration_hours.field.widget.__class__.__name__ }}
+              </div> {% endcomment %}
                     <div class="mb-3">
                       <label class="form-label">{{ form.duration_hours.label }}</label>
                       {{ form.duration_hours }}
@@ -219,7 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Business rule: "time slot" = dining window.
   // Last usable dining window starts at 21:00, so 17:00 -> 4 windows; 21:00 -> 0 windows.
-  const LAST_DINING_START_HOUR = 21;
+ const KITCHEN_CUTOFF_HOUR = 22;
 
   function clampDurationOptions(maxHours) {
     if (!durationSelect) return;
@@ -256,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const slotLabel = btn.dataset.slotLabel || slot;
       if (selectedSlotDisplay) selectedSlotDisplay.textContent = `${date} • ${slotLabel}`;
 
-      const maxHours = Math.max(0, LAST_DINING_START_HOUR - startHour);
+      const maxHours = Math.max(0, KITCHEN_CUTOFF_HOUR - startHour);
 
       const hasTables = parseInt(left, 10) > 0;
       const hasWindow = maxHours > 0;
@@ -267,10 +271,10 @@ document.addEventListener('DOMContentLoaded', () => {
           availableHoursEl.textContent = 'No dining window remaining';
           availableHoursEl.className = 'text-danger';
         } else if (maxHours === 1) {
-          availableHoursEl.textContent = '1 hour available';
+          availableHoursEl.textContent = '1 time slot available';
           availableHoursEl.className = 'text-warning';
         } else {
-          availableHoursEl.textContent = `${maxHours} hrs available`;
+          availableHoursEl.textContent = `${maxHours} time slot${maxHours > 1 ? "s" : ""} available`;
           availableHoursEl.className = 'text-success';
         }
       }

@@ -17,14 +17,27 @@ from .models import TimeSlotAvailability, TableReservation, Customer
 #     number_of_tables_required_by_patron = forms.IntegerField(
 #         min_value=1, label="Number of tables"
 #     )
+DURATION_SLOT_CHOICES = [
+    (1, "1 time slot"),
+    (2, "2 time slots"),
+    (3, "3 time slots"),
+    (4, "4 time slots"),
+    (5, "5 time slots"),
+]
+
+
 class ReservationForm(forms.ModelForm):
-    """Online reservation form for customers."""
+    """
+    Customer-facing form for /reserve/.
+    Customer info is collected here but NOT written directly by the form.
+    The view upserts Customer and runs capacity checks.
+    """
+
+    # Customer fields (not part of TableReservation model)
     first_name = forms.CharField(
-        max_length=100, required=True, label="First Name"
-    )
+        max_length=100, required=True, label="First Name")
     last_name = forms.CharField(
-        max_length=100, required=True, label="Last Name"
-    )
+        max_length=100, required=True, label="Last Name")
     email = forms.EmailField(required=True, label="Email Address")
     phone = forms.CharField(max_length=20, required=False, label="Phone")
     mobile = forms.CharField(max_length=20, required=False, label="Mobile")
@@ -36,19 +49,22 @@ class ReservationForm(forms.ModelForm):
         widget=forms.NumberInput(attrs={"class": "form-control", "min": 1}),
     )
 
-    # Booking extensions
-    until_close = forms.BooleanField(
-        required=False,
-        label="Book from selected start until kitchen close",
-        help_text="If checked, duration will be auto-set to the last available slot of the day.",
-    )
+    # Booking extensions (non-model)
     series_days = forms.IntegerField(
         required=False,
         min_value=1,
         max_value=14,
         initial=1,
         label="Consecutive days (series)",
-        help_text="For conferences: book the same time block for N consecutive days (including the start date).",
+    )
+
+    # ✅ Override model field UI: “time slots”
+    duration_hours = forms.TypedChoiceField(
+        choices=DURATION_SLOT_CHOICES,
+        coerce=int,
+        initial=1,
+        label="Duration (time slots)",
+        widget=forms.Select(attrs={"class": "form-select bg-white text-dark"}),
     )
 
     class Meta:
@@ -64,7 +80,7 @@ class ReservationForm(forms.ModelForm):
             "reservation_date": forms.HiddenInput(),
             "time_slot": forms.HiddenInput(),
             "timeslot_availability": forms.HiddenInput(),
-            "duration_hours": forms.NumberInput(attrs={"class": "form-select bg-white text-dark", "min": 1, "max": 4, "step": 1}),
+            # duration_hours overridden above
         }
 
     def clean_email(self):
@@ -76,29 +92,6 @@ class ReservationForm(forms.ModelForm):
     def clean_series_days(self):
         val = self.cleaned_data.get("series_days")
         return 1 if not val else int(val)
-
-    def save(self, commit=True):
-        """Return an unsaved reservation with an *unsaved* Customer attached.
-        The view will:
-          - upsert Customer by email
-          - create/reuse the auth User
-          - enforce capacity + update demand
-          - save one or more reservations
-        """
-        reservation = super().save(commit=False)
-
-        customer = Customer(
-            first_name=(self.cleaned_data.get("first_name") or "").strip(),
-            last_name=(self.cleaned_data.get("last_name") or "").strip(),
-            email=(self.cleaned_data.get("email") or "").strip().lower(),
-            phone=(self.cleaned_data.get("phone") or "").strip(),
-            mobile=(self.cleaned_data.get("mobile") or "").strip(),
-        )
-        reservation.customer = customer
-
-        if commit:
-            reservation.save()
-        return reservation
 
 
 class SignUpForm(UserCreationForm):
@@ -154,12 +147,12 @@ class CustomerSignupForm(SignupForm):
 # ----------------------------------------------------------------------
 
 # Choices mirror your SLOT_LABELS keys/labels from views.py
-TIME_SLOT_CHOICES = [
-    ("17_18", "17:00-18:00"),
-    ("18_19", "18:00-19:00"),
-    ("19_20", "19:00-20:00"),
-    ("20_21", "20:00-21:00"),
-    ("21_22", "21:00-22:00"),
+DURATION_SLOT_CHOICES = [
+    (1, "1 time slot"),
+    (2, "2 time slots"),
+    (3, "3 time slots"),
+    (4, "4 time slots"),
+    (5, "5 time slots"),
 ]
 
 
@@ -187,7 +180,7 @@ class PhoneReservationForm(forms.ModelForm):
         widget=forms.NumberInput(attrs={"class": "form-control", "min": 1}),
     )
 
-    # Booking extensions
+    # Booking extensions (non-model)
     until_close = forms.BooleanField(
         required=False,
         label="Book from selected start until kitchen close",
@@ -200,6 +193,15 @@ class PhoneReservationForm(forms.ModelForm):
         initial=1,
         label="Consecutive days (series)",
         help_text="For conferences: book the same time block for N consecutive days (including the start date).",
+    )
+
+    # ✅ OVERRIDE model field UI: show “time slots” instead of “hours”
+    duration_hours = forms.TypedChoiceField(
+        choices=DURATION_SLOT_CHOICES,
+        coerce=int,
+        initial=1,
+        label="Duration (time slots)",
+        widget=forms.Select(attrs={"class": "form-select bg-white text-dark"}),
     )
 
     class Meta:
@@ -215,7 +217,7 @@ class PhoneReservationForm(forms.ModelForm):
             "reservation_date": forms.HiddenInput(),
             "time_slot": forms.HiddenInput(),
             "timeslot_availability": forms.HiddenInput(),
-            "duration_hours": forms.Select(attrs={"class": "form-select"}),
+            # duration_hours is overridden above, so DON'T define it here
         }
 
     def clean_email(self):
@@ -233,7 +235,6 @@ class PhoneReservationForm(forms.ModelForm):
 
         The view will:
           - upsert Customer by email
-          - create/reuse the auth User
           - enforce capacity + update demand
           - save one or more reservations
         """

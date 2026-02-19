@@ -355,3 +355,15 @@ DEFAULT_FROM_EMAIL = _clean_env_str(
     default="Gambinos Restaurant & Lounge <no-reply@gambinosrestaurantandlounge.com>",
 )
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
+
+
+# =====================================================
+# Override your model constant if required.
+# =====================================================
+DURATION_CHOICES = [
+    (1, "1 time slot"),
+    (2, "2 time slots"),
+    (3, "3 time slots"),
+    (4, "4 time slots"),
+    (5, "5 time slots"),
+]
