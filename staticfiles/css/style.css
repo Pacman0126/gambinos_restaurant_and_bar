@@ -73,6 +73,26 @@ a:hover {
   border-top: 1px solid rgba(212, 175, 55, 0.25);
 }
 
+#customerModal select.form-select {
+  color: #212529 !important;
+  background-color: #fff !important;
+}
+
+#customerModal select.form-select option {
+  color: #212529 !important;
+}
+
+#customerModal #durationHoursWrap select {
+  color: #212529 !important;
+  background-color: #fff !important;
+  border: 1px solid #ced4da !important;
+}
+
+#customerModal #durationHoursWrap select option {
+  color: #212529 !important;
+}
+
+
 /* =========================================
    Phone reservation grid styles
    ========================================= */

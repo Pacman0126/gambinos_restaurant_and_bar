@@ -73,6 +73,8 @@ a:hover {
   border-top: 1px solid rgba(212, 175, 55, 0.25);
 }
 
+
+
 /* =========================================
    Phone reservation grid styles
    ========================================= */
@@ -343,4 +345,42 @@ nav.navbar.bg-light,
 /* Bootstrap’s default toggler icon is dark; invert it for dark navbar */
 .navbar .navbar-toggler-icon {
   filter: invert(1) grayscale(100%) !important;
+}
+
+/* =========================================================
+   Make modal <select> dropdown readable (Windows/Chromium)
+   ========================================================= */
+
+#customerModal select,
+#customerModal select.form-select {
+  background-color: #ffffff !important;
+  color: #212529 !important;
+}
+
+#customerModal select option {
+  background-color: #ffffff !important;
+  color: #212529 !important;
+}
+
+/* Keep modal footer visible and prevent clipping */
+#customerModal .modal-content {
+  overflow: visible;
+}
+
+#customerModal .modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: .5rem;
+}
+
+#customerModal input[type="email"],
+#customerModal #id_email {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+#customerModal #id_email {
+  width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
 }

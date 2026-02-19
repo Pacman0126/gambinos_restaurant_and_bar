@@ -64,7 +64,7 @@ class ReservationForm(forms.ModelForm):
             "reservation_date": forms.HiddenInput(),
             "time_slot": forms.HiddenInput(),
             "timeslot_availability": forms.HiddenInput(),
-            "duration_hours": forms.NumberInput(attrs={"class": "form-control", "min": 1, "max": 5, "step": 1}),
+            "duration_hours": forms.NumberInput(attrs={"class": "form-select bg-white text-dark", "min": 1, "max": 4, "step": 1}),
         }
 
     def clean_email(self):
