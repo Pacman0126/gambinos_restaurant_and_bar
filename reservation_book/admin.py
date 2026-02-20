@@ -15,11 +15,6 @@ class TimeSlotAvailabilityAdmin(admin.ModelAdmin):
         "remaining_19_20",
         "remaining_20_21",
         "remaining_21_22",
-        "number_of_tables_available_17_18",
-        "number_of_tables_available_18_19",
-        "number_of_tables_available_19_20",
-        "number_of_tables_available_20_21",
-        "number_of_tables_available_21_22",
     )
     list_filter = ("calendar_date",)
     actions = ["update_next_30_days_capacity"]
