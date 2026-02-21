@@ -86,29 +86,60 @@
             </td>
 
             <td>
-              {% if r.status == 'active' or r.reservation_status %}
-                <span class="badge bg-success">Active</span>
-              {% else %}
-                <span class="badge bg-secondary">Cancelled</span>
-              {% endif %}
-            </td>
+              {% if r.status == 'no_show' %}
+                  <span class="badge bg-danger">No Show</span>
 
-            <td>
+                {% elif r.reservation_date < today %}
+                  {% if r.status == 'active' or r.reservation_status %}
+                    <span class="badge bg-primary">Completed</span>
+                  {% elif r.status == 'completed' %}
+                    <span class="badge bg-primary">Completed</span>
+                  {% else %}
+                    <span class="badge bg-secondary">Inactive</span>
+                  {% endif %}
+
+                {% elif r.status == 'active' or r.reservation_status %}
+                  <span class="badge bg-success">Active</span>
+
+                {% elif r.status == 'completed' %}
+                  <span class="badge bg-primary">Completed</span>
+
+                {% else %}
+                  <span class="badge bg-secondary">Inactive</span>
+                {% endif %}
+            </td>
               <a class="btn btn-sm btn-outline-warning" href="{% url 'update_reservation' r.id %}">
                 Edit
               </a>
 
-              {% if r.status == 'active' or r.reservation_status %}
-                <form method="post" action="{% url 'cancel_reservation' r.id %}" class="d-inline">
-                  {% csrf_token %}
-                  <button type="submit" class="btn btn-sm btn-outline-danger"
-                          onclick="return confirm('Cancel this reservation?');">
-                    Cancel
-                  </button>
-                </form>
+              {% if r.reservation_date >= today %}
+                {% if r.status == 'active' or r.reservation_status %}
+                  <form method="post" action="{% url 'cancel_reservation' r.id %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-danger"
+                            onclick="return confirm('Cancel this reservation?');">
+                      Cancel
+                    </button>
+                  </form>
+                {% else %}
+                  <span class="small text-muted">—</span>
+                {% endif %}
               {% else %}
-                <span class="small text-muted">—</span>
+                {# Past reservation #}
+                {% if r.status == 'active' or r.reservation_status %}
+                  <form method="post" action="{% url 'mark_no_show' r.id %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-danger"
+                            onclick="return confirm('Mark as No Show?');">
+                      No Show
+                    </button>
+                  </form>
+                {% else %}
+                  <span class="small text-muted">—</span>
+                {% endif %}
               {% endif %}
+            <td>
+
             </td>
           </tr>
         {% empty %}

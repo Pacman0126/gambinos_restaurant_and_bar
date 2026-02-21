@@ -86,24 +86,6 @@ class TableReservationQuerySet(models.QuerySet):
     - Also supports legacy `reservation_status` boolean (backward compatibility).
     """
 
-    # def active(self):
-    #     """
-    #     Active reservations only.
-
-    #     Logic:
-    #     - If `status` exists, filter status=active
-    #     - If legacy `reservation_status` exists, also require reservation_status=True
-    #     """
-    #     qs = self
-    #     model = self.model
-
-    #     if hasattr(model, "status") and hasattr(model, "STATUS_ACTIVE"):
-    #         qs = qs.filter(status=model.STATUS_ACTIVE)
-
-    #     if hasattr(model, "reservation_status"):
-    #         qs = qs.filter(reservation_status=True)
-
-    #     return qs
     def active(self):
         """
         Allows chaining: TableReservation.objects.filter(...).active()
@@ -129,17 +111,6 @@ class TableReservationQuerySet(models.QuerySet):
             return self.filter(reservation_status=False)
 
         return self
-
-    # def cancelled(self):
-    #     qs = self
-    #     model = self.model
-
-    #     if hasattr(model, "status") and hasattr(model, "STATUS_CANCELLED"):
-    #         qs = qs.filter(status=model.STATUS_CANCELLED)
-    #     elif hasattr(model, "reservation_status"):
-    #         qs = qs.filter(reservation_status=False)
-
-    #     return qs
 
     def historical(self):
         """
@@ -393,6 +364,47 @@ class TableReservation(models.Model):
         return f"Reservation #{self.id} - {when}"
 
 
+class CancellationEvent(models.Model):
+    """
+    Analytics record for cancellations AFTER we hard-delete the reservation.
+    Keep fields nullable to avoid migration prompts if you already had earlier rows.
+    """
+    cancelled_at = models.DateTimeField(default=timezone.now)
+
+    # Snapshot fields
+    reservation_id = models.IntegerField(null=True, blank=True)
+    reservation_date = models.DateField(null=True, blank=True)
+    time_slot = models.CharField(max_length=20, blank=True, default="")
+    tables = models.PositiveIntegerField(default=0)
+    duration_slots = models.PositiveIntegerField(default=1)
+
+    customer_email = models.EmailField(blank=True, default="")
+    cancelled_by_staff = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"CancellationEvent(res_id={self.reservation_id}, date={self.reservation_date}, slot={self.time_slot})"
+
+
+class NoShowEvent(models.Model):
+    """
+    Analytics record for no-shows.
+    Reservation is not deleted for no-show, but we still log events for banning/metrics.
+    """
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    reservation_id = models.IntegerField(null=True, blank=True)
+    reservation_date = models.DateField(null=True, blank=True)
+    time_slot = models.CharField(max_length=20, blank=True, default="")
+    tables = models.PositiveIntegerField(default=0)
+    duration_slots = models.PositiveIntegerField(default=1)
+
+    customer_email = models.EmailField(blank=True, default="")
+    marked_by_staff = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"NoShowEvent(res_id={self.reservation_id}, date={self.reservation_date}, slot={self.time_slot})"
+
+
 class RestaurantConfig(models.Model):
     default_tables_per_slot = models.PositiveIntegerField(default=10)
 
@@ -485,3 +497,31 @@ class ReservationSeries(models.Model):
     def __str__(self):
         label = self.title.strip() or "Series"
         return f"{label} (#{self.pk})"
+
+
+class ReservationStats(models.Model):
+    """
+    Single-row stats table for lightweight counters.
+
+    Mentor requirement:
+    - cancelled reservations must be DELETED from TableReservation
+    - but staff dashboard still needs a cancellation count
+    """
+    id = models.PositiveSmallIntegerField(
+        primary_key=True, default=1, editable=False)
+
+    cancelled_count = models.PositiveIntegerField(default=0)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    @classmethod
+    def get_solo(cls):
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj
+
+    def bump_cancelled(self, n: int = 1):
+        # avoids race conditions when used inside transaction.atomic()
+        self.cancelled_count = (self.cancelled_count or 0) + int(n)
+        self.save(update_fields=["cancelled_count", "updated_at"])
+
+    def __str__(self) -> str:
+        return f"ReservationStats(cancelled_count={self.cancelled_count})"

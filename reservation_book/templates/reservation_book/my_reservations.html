@@ -34,29 +34,49 @@
                             <td><strong>#{{ res.id }}</strong></td>
                             <td>{{ res.reservation_date|date:"D, M j, Y" }}</td>
                             <td>{{ res.time_range_pretty }} ({{ res.duration_hours }}h)</td>
-                            <td>{{ res.duration_hours }} hour{% if res.duration_hours != 1 %}s{% endif %}</td>
+                            <td>{{ res.duration_hours }} time slot{% if res.duration_hours != 1 %}s{% endif %}</td>
                             <td>{{ res.number_of_tables_required_by_patron }}</td>
                             <td>
-                                {% if res.status == 'active' or res.reservation_status %}
+                                {# NO SHOW #}
+                                {% if res.status == 'no_show' %}
+                                    <span class="badge bg-danger">No Show</span>
+
+                                {# COMPLETED = past + still "active" in either system #}
+                                {% elif res.reservation_date < today %}
+                                    {% if res.status == 'active' or res.reservation_status %}
+                                    <span class="badge bg-primary">Completed</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">Inactive</span>
+                                    {% endif %}
+
+                                {# UPCOMING ACTIVE #}
+                                {% elif res.status == 'active' or res.reservation_status %}
                                     <span class="badge bg-success">Active</span>
+
+                                {# EVERYTHING ELSE #}
                                 {% else %}
                                     <span class="badge bg-secondary">Inactive</span>
                                 {% endif %}
                             </td>
                             <td class="text-end">
-                                {% if res.status == 'active' or res.reservation_status %}
-                                    <a href="{% url 'update_reservation' res.id %}" 
-                                       class="btn btn-sm btn-outline-light me-2">
+                                {% if res.reservation_date >= today %}
+                                    {% if res.status == 'active' or res.reservation_status %}
+                                    <a href="{% url 'update_reservation' res.id %}"
+                                        class="btn btn-sm btn-outline-light me-2">
                                         Edit
                                     </a>
-                                    <form method="post" action="{% url 'cancel_reservation' res.id %}" 
-                                          class="d-inline">
+
+                                    <form method="post" action="{% url 'cancel_reservation' res.id %}"
+                                            class="d-inline">
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-sm btn-outline-danger"
                                                 onclick="return confirm('Cancel this reservation?');">
-                                            Cancel
+                                        Cancel
                                         </button>
                                     </form>
+                                    {% else %}
+                                    <span class="text-muted">No actions</span>
+                                    {% endif %}
                                 {% else %}
                                     <span class="text-muted">No actions</span>
                                 {% endif %}
