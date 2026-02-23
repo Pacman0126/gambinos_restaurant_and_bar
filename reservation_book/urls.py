@@ -36,6 +36,12 @@ urlpatterns = [
     path("staff/reservations/<int:reservation_id>/no-show/",
          views.mark_no_show,
          name="mark_no_show"),
+
+
+    path("staff/reservations/<int:reservation_id>/complete/",
+         views.mark_reservation_completed,
+         name="mark_reservation_completed"),
+
     path(
         "staff/customers/",
         views.user_reservations_overview,

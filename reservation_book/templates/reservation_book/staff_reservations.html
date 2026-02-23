@@ -2,59 +2,31 @@
 {% load static %}
 
 {% block content %}
-<div class="container my-4">
+<div class="container py-4">
 
-  <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
-    <div>
-      <h2 class="mb-1">Reservations</h2>
-      <div class="small text-muted">
-        {% if show_all %}
-          Showing: <strong>All</strong> (including cancelled)
-        {% else %}
-          Showing: <strong>Active only</strong>
-        {% endif %}
-      </div>
-    </div>
-
-    <div class="d-flex gap-2 align-items-center">
-      <form method="get" class="d-flex gap-2 align-items-center">
-        <input
-          type="text"
-          class="form-control form-control-sm"
-          name="q"
-          value="{{ q }}"
-          placeholder="Search name/email/id"
-          style="min-width: 220px;"
-        />
-        {% if show_all %}
-          <input type="hidden" name="all" value="1" />
-        {% endif %}
-        <button class="btn btn-sm btn-outline-primary" type="submit">Search</button>
-      </form>
-
-      {% if show_all %}
-        <a class="btn btn-sm btn-outline-secondary" href="{% url 'staff_reservations' %}">
-          Active only
-        </a>
-      {% else %}
-        <a class="btn btn-sm btn-outline-secondary" href="{% url 'staff_reservations' %}?all=1">
-          Show all
-        </a>
-      {% endif %}
-    </div>
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <h2 class="mb-0">Staff Reservations</h2>
   </div>
 
+  {% comment %} {% if messages %}
+    <div class="mb-3">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} mb-2">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %} {% endcomment %}
+
   <div class="table-responsive">
-    <table class="table table-dark table-hover align-middle">
+    <table class="table table-striped align-middle">
       <thead>
         <tr>
-          <th style="width: 70px;">#</th>
-          <th style="width: 170px;">Date</th>
+          <th style="width: 70px;">ID</th>
+          <th style="width: 140px;">Date</th>
           <th style="width: 170px;">Time Slot</th>
           <th style="width: 90px;">Tables</th>
           <th>Customer</th>
-          <th style="width: 120px;">Status</th>
-          <th style="width: 200px;">Actions</th>
+          <th style="width: 140px;">Status</th>
+          <th style="width: 260px;">Actions</th>
         </tr>
       </thead>
 
@@ -75,9 +47,12 @@
             <td>{{ r.number_of_tables_required_by_patron }}</td>
 
             <td>
-              <div class="fw-semibold">{{ r.customer.first_name|default:"" }} {{ r.customer.last_name|default:"" }}</div>
+              <div class="fw-semibold">
+                {{ r.customer.first_name|default:"" }} {{ r.customer.last_name|default:"" }}
+              </div>
               {% if r.customer.email %}<div class="small text-muted">{{ r.customer.email }}</div>{% endif %}
               {% if r.customer.phone %}<div class="small text-muted">{{ r.customer.phone }}</div>{% endif %}
+
               {% if r.is_phone_reservation %}
                 <span class="badge bg-info text-dark mt-1">Phone-in</span>
               {% else %}
@@ -85,35 +60,52 @@
               {% endif %}
             </td>
 
+            {# -------------------- #}
+            {# STATUS COLUMN = badge only #}
+            {# -------------------- #}
             <td>
               {% if r.status == 'no_show' %}
-                  <span class="badge bg-danger">No Show</span>
+                <span class="badge bg-danger">No Show</span>
 
-                {% elif r.reservation_date < today %}
-                  {% if r.status == 'active' or r.reservation_status %}
-                    <span class="badge bg-primary">Completed</span>
-                  {% elif r.status == 'completed' %}
-                    <span class="badge bg-primary">Completed</span>
-                  {% else %}
-                    <span class="badge bg-secondary">Inactive</span>
-                  {% endif %}
+              {% elif r.status == 'cancelled' %}
+                <span class="badge bg-secondary">Cancelled</span>
 
-                {% elif r.status == 'active' or r.reservation_status %}
+              {% elif r.status == 'completed' %}
+                <span class="badge bg-primary">Completed</span>
+
+              {% elif r.status == 'active' %}
+                {% if r.reservation_date < today %}
+                  <span class="badge bg-warning text-dark">Past (awaiting sweep)</span>
+                {% else %}
                   <span class="badge bg-success">Active</span>
+                {% endif %}
 
-                {% elif r.status == 'completed' %}
-                  <span class="badge bg-primary">Completed</span>
-
+              {% else %}
+                {# Fallback for legacy-only rows #}
+                {% if r.reservation_status %}
+                  {% if r.reservation_date < today %}
+                    <span class="badge bg-warning text-dark">Past (legacy)</span>
+                  {% else %}
+                    <span class="badge bg-success">Active (legacy)</span>
+                  {% endif %}
                 {% else %}
                   <span class="badge bg-secondary">Inactive</span>
                 {% endif %}
+              {% endif %}
             </td>
-              <a class="btn btn-sm btn-outline-warning" href="{% url 'update_reservation' r.id %}">
+
+            {# -------------------- #}
+            {# ACTIONS COLUMN #}
+            {# -------------------- #}
+            <td class="text-nowrap">
+              <a class="btn btn-sm btn-outline-warning"
+                 href="{% url 'update_reservation' r.id %}?next={% url 'staff_reservations' %}">
                 Edit
               </a>
 
+              {# Cancel only for today/future AND only if active (status or legacy) #}
               {% if r.reservation_date >= today %}
-                {% if r.status == 'active' or r.reservation_status %}
+                {% if r.status == 'active' %}
                   <form method="post" action="{% url 'cancel_reservation' r.id %}" class="d-inline">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-sm btn-outline-danger"
@@ -122,24 +114,38 @@
                     </button>
                   </form>
                 {% else %}
-                  <span class="small text-muted">—</span>
-                {% endif %}
-              {% else %}
-                {# Past reservation #}
-                {% if r.status == 'active' or r.reservation_status %}
-                  <form method="post" action="{% url 'mark_no_show' r.id %}" class="d-inline">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-sm btn-outline-danger"
-                            onclick="return confirm('Mark as No Show?');">
-                      No Show
-                    </button>
-                  </form>
-                {% else %}
-                  <span class="small text-muted">—</span>
+                  {% if r.reservation_status %}
+                    <form method="post" action="{% url 'cancel_reservation' r.id %}" class="d-inline">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-sm btn-outline-danger"
+                              onclick="return confirm('Cancel this reservation?');">
+                        Cancel
+                      </button>
+                    </form>
+                  {% endif %}
                 {% endif %}
               {% endif %}
-            <td>
 
+              {# Complete should only be clickable ON THE DAY, and only if active #}
+              {% if r.reservation_date == today %}
+                {% if r.status == 'active' or r.reservation_status %}
+                  <form method="post" action="{% url 'mark_reservation_completed' r.id %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-success"
+                            onclick="return confirm('Mark this reservation as completed?');">
+                      Complete
+                    </button>
+                  </form>
+                {% endif %}
+              {% else %}
+                {# You asked: dim or hide. Here is DIMMED for non-today active. #}
+                {% if r.status == 'active' or r.reservation_status %}
+                  <button type="button" class="btn btn-sm btn-outline-success d-inline" disabled
+                          title="Complete can only be set on the reservation date">
+                    Complete
+                  </button>
+                {% endif %}
+              {% endif %}
             </td>
           </tr>
         {% empty %}

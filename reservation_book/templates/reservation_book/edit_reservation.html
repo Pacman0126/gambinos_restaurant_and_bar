@@ -101,9 +101,9 @@
                 {{ form.notes|crispy }}
               </div>
             {% endif %}
-
+            <input type="hidden" name="next" value="{{ next }}">
             <div class="mt-4 text-end">
-              <a href="{% url 'my_reservations' %}" class="btn btn-outline-secondary">
+              <a href="{{ next }}" class="btn btn-outline-secondary">
                 Cancel
               </a>
               <button type="submit" class="btn btn-primary ms-2">

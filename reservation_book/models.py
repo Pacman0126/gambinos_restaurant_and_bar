@@ -53,6 +53,10 @@ class Customer(models.Model):
         help_text="Check if this customer is not welcome (no new bookings allowed)"
     )
 
+    # Counters used for staff/admin decisions
+    cancellations_count = models.PositiveIntegerField(default=0)
+    no_show_count = models.PositiveIntegerField(default=0)
+
     # Enhanced notes field with examples
     notes = models.TextField(
         blank=True,
@@ -366,40 +370,48 @@ class TableReservation(models.Model):
 
 class CancellationEvent(models.Model):
     """
-    Analytics record for cancellations AFTER we hard-delete the reservation.
-    Keep fields nullable to avoid migration prompts if you already had earlier rows.
+    Immutable analytics row created when a reservation is cancelled (and then hard-deleted).
+    Keep nullable where needed to avoid migration prompts if you already have existing rows.
     """
-    cancelled_at = models.DateTimeField(default=timezone.now)
+    created_at = models.DateTimeField(null=True, blank=True, db_index=True)
 
-    # Snapshot fields
-    reservation_id = models.IntegerField(null=True, blank=True)
-    reservation_date = models.DateField(null=True, blank=True)
-    time_slot = models.CharField(max_length=20, blank=True, default="")
+    reservation_id = models.IntegerField(null=True, blank=True, db_index=True)
+    reservation_date = models.DateField(null=True, blank=True, db_index=True)
+    time_slot = models.CharField(
+        max_length=20, blank=True, default="", db_index=True)
+
     tables = models.PositiveIntegerField(default=0)
     duration_slots = models.PositiveIntegerField(default=1)
 
-    customer_email = models.EmailField(blank=True, default="")
+    customer_email = models.EmailField(blank=True, default="", db_index=True)
     cancelled_by_staff = models.BooleanField(default=False)
 
+    class Meta:
+        ordering = ["-created_at"]
+
     def __str__(self):
-        return f"CancellationEvent(res_id={self.reservation_id}, date={self.reservation_date}, slot={self.time_slot})"
+        return (
+            f"CancellationEvent(res_id={self.reservation_id}, "
+            f"date={self.reservation_date}, slot={self.time_slot})"
+        )
 
 
 class NoShowEvent(models.Model):
-    """
-    Analytics record for no-shows.
-    Reservation is not deleted for no-show, but we still log events for banning/metrics.
-    """
     created_at = models.DateTimeField(auto_now_add=True)
 
-    reservation_id = models.IntegerField(null=True, blank=True)
-    reservation_date = models.DateField(null=True, blank=True)
-    time_slot = models.CharField(max_length=20, blank=True, default="")
+    reservation_id = models.IntegerField(null=True, blank=True, db_index=True)
+    reservation_date = models.DateField(null=True, blank=True, db_index=True)
+    time_slot = models.CharField(
+        max_length=20, blank=True, default="", db_index=True)
+
     tables = models.PositiveIntegerField(default=0)
     duration_slots = models.PositiveIntegerField(default=1)
 
-    customer_email = models.EmailField(blank=True, default="")
-    marked_by_staff = models.BooleanField(default=True)
+    customer_email = models.EmailField(blank=True, default="", db_index=True)
+    marked_by_staff = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["-created_at"]
 
     def __str__(self):
         return f"NoShowEvent(res_id={self.reservation_id}, date={self.reservation_date}, slot={self.time_slot})"

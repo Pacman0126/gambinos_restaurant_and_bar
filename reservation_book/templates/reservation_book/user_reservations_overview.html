@@ -7,7 +7,7 @@
         Customer Reservation Overview
     </h1>
     <p class="text-muted mb-4">
-        Summary of all email-authenticated customers and their reservation activity.
+        Summary of customers and their reservation activity.
     </p>
 
     <div class="table-responsive my-reservations">
@@ -26,17 +26,19 @@
                 </tr>
             </thead>
             <tbody>
-                {% for user in users %}
+                {% for customer in customers %}
                     <tr>
-                        <td>{{ user.get_full_name|default:user.username }}</td>
-                        <td>{{ user.email }}</td>
-                        <td>{{ user.total_reservations|default:0 }}</td>
-                        <td>{{ user.active_reservations|default:0 }}</td>
-                        <td>{{ user.active_tables_booked}}</td>
-                        <td>{{ user.cancelled_reservations|default:0 }}</td>
-                        <td>{{ user.total_tables_booked|default:0 }}</td>
                         <td>
-                            <a href="{% url 'user_reservation_history' user.id %}"
+                          {{ customer.first_name|default:"" }} {{ customer.last_name|default:"" }}
+                        </td>
+                        <td>{{ customer.email }}</td>
+                        <td>{{ customer.total_reservations|default:0 }}</td>
+                        <td>{{ customer.active_reservations|default:0 }}</td>
+                        <td>{{ customer.active_tables_booked|default:0 }}</td>
+                        <td>{{ customer.cancelled_reservations|default:0 }}</td>
+                        <td>{{ customer.total_tables_booked|default:0 }}</td>
+                        <td>
+                            <a href="{% url 'user_reservation_history' customer.id %}"
                                class="btn btn-sm btn-outline-primary">
                                 <i class="fa-regular fa-calendar-days me-1"></i>
                                 View history
@@ -45,8 +47,8 @@
                     </tr>
                 {% empty %}
                     <tr>
-                        <td colspan="7" class="text-center">
-                            No users with reservations found.
+                        <td colspan="8" class="text-center">
+                            No customers with reservations found.
                         </td>
                     </tr>
                 {% endfor %}
@@ -74,7 +76,7 @@
                 pageLength: 10,
                 order: [[2, 'desc']],  // sort by total reservations desc by default
                 columnDefs: [
-                    { orderable: false, targets: 6 }  // "Details" column not sortable
+                    { orderable: false, targets: 7 }  // "Details" column not sortable
                 ]
             });
         });

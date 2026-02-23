@@ -15,6 +15,7 @@ import re
 import datetime
 from django.urls import reverse
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth.tokens import default_token_generator
 from django.conf import settings
@@ -28,7 +29,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 
 
 from django.core.mail import send_mail, EmailMultiAlternatives
-from django.db.models import Q, Count, Sum
+from django.db.models import Q, Count, Sum, F
 from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.db.models.functions import Coalesce
@@ -56,6 +57,8 @@ from .forms import (
 
 
 # SLOT_KEYS = list(SLOT_LABELS.keys())
+
+
 def _default_tables_per_slot() -> int:
     """
     Central place for your capacity-per-slot default.
@@ -108,6 +111,27 @@ def _customer_for_logged_in_user(user):
         return None
 
     return Customer.objects.filter(email__iexact=email).first()
+
+
+def staff_or_superuser_required(view_func):
+    """
+    Custom decorator: allow access if user is staff OR superuser.
+    Also requires authenticated and active.
+    """
+    def wrapper(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(settings.LOGIN_URL)
+        if not request.user.is_active:
+            messages.error(
+                request, "Account inactive.")
+            return redirect("home")
+
+        if request.user.is_superuser or request.user.is_staff:
+            return view_func(request, *args, **kwargs)
+        messages.error(
+            request, "Staff access required.")
+        return redirect("my_reservations")
+    return wrapper
 
 
 def _timeslot_defaults(default_tables_per_slot: int = 20) -> dict:
@@ -286,7 +310,7 @@ def _cancel_and_release(reservation: TableReservation) -> None:
     # ----------------------------
     # Prefer SLOT_KEYS if it exists; otherwise fall back to SLOT_LABELS.keys()
     try:
-        slot_keys = list(SLOT_KEYS)  # uses your global ordering if present
+        slot_keys = list(SLOT_LABELS)  # uses your global ordering if present
     except Exception:
         labels = globals().get("SLOT_LABELS", {}) or {}
         try:
@@ -519,6 +543,114 @@ def _auto_complete_past_reservations():
         ).update(reservation_status=False)
 
 
+@login_required
+@staff_or_superuser_required
+def mark_reservation_completed(request, reservation_id):
+    if request.method != "POST":
+        return redirect("staff_reservations")
+
+    r = get_object_or_404(TableReservation, id=reservation_id)
+
+    today = timezone.localdate()
+    if r.reservation_date != today:
+        messages.error(
+            request, "Complete can only be set on the reservation date.")
+        return redirect("staff_reservations")
+
+    status_active = getattr(TableReservation, "STATUS_ACTIVE", "active")
+    status_completed = getattr(
+        TableReservation, "STATUS_COMPLETED", "completed")
+
+    if getattr(r, "status", None) != status_active:
+        messages.info(request, "Reservation is not active.")
+        return redirect("staff_reservations")
+
+    r.status = status_completed
+    if hasattr(r, "reservation_status") and r.reservation_status is False:
+        r.reservation_status = True
+
+    r.save(update_fields=["status"] + (["reservation_status"]
+           if hasattr(r, "reservation_status") else []))
+    messages.success(request, "Reservation marked as completed.")
+    return redirect("staff_reservations")
+
+
+NO_SHOW_BAN_THRESHOLD = 3  # adjust
+
+
+def _auto_mark_no_shows(today=None):
+    """
+    Past reservations that are still ACTIVE become NO_SHOW automatically.
+    - Cancelled reservations are hard-deleted, so they never appear here.
+    - Completed reservations are excluded.
+    """
+    today = today or timezone.localdate()
+
+    if not hasattr(TableReservation, "STATUS_ACTIVE"):
+        return
+
+    status_active = TableReservation.STATUS_ACTIVE
+    status_completed = getattr(
+        TableReservation, "STATUS_COMPLETED", "completed")
+    status_no_show = getattr(TableReservation, "STATUS_NO_SHOW", "no_show")
+
+    qs = TableReservation.objects.select_related("customer").filter(
+        reservation_date__lt=today,
+        status=status_active,
+    )
+
+    # If legacy boolean exists, only consider “active” ones
+    if hasattr(TableReservation, "reservation_status"):
+        qs = qs.filter(reservation_status=True)
+
+    for r in qs.iterator():
+        with transaction.atomic():
+            r2 = (
+                TableReservation.objects
+                .select_for_update()
+                .select_related("customer")
+                .get(pk=r.pk)
+            )
+
+            # re-check under lock
+            if r2.reservation_date >= today:
+                continue
+            if r2.status != status_active:
+                continue
+            if hasattr(TableReservation, "reservation_status") and r2.reservation_status is not True:
+                continue
+
+            customer = getattr(r2, "customer", None)
+
+            # mark NO_SHOW
+            r2.status = status_no_show
+            r2.save(update_fields=["status"])
+
+            # analytics row
+            NoShowEvent.objects.create(
+                reservation_id=r2.id,
+                reservation_date=r2.reservation_date,
+                time_slot=r2.time_slot,
+                tables=int(
+                    getattr(r2, "number_of_tables_required_by_patron", 0) or 0),
+                duration_slots=int(getattr(r2, "duration_hours", 1) or 1),
+                customer_email=getattr(
+                    getattr(r2, "customer", None), "email", "") or "",
+            )
+
+            # increment customer + optional bar
+            if customer:
+                c = Customer.objects.select_for_update().get(pk=customer.pk)
+                c.no_show_count = int(c.no_show_count or 0) + 1
+
+                update_fields = ["no_show_count"]
+                if (not c.barred) and c.no_show_count >= NO_SHOW_BAN_THRESHOLD:
+                    c.barred = True
+                    update_fields.append("barred")
+
+                c.save(update_fields=update_fields)
+
+
 def _apply_ban_if_needed(customer_email: str, threshold: int = 3, window_days: int = 90) -> bool:
     """
     Auto-ban customer if they have >= threshold no-shows in the last window_days.
@@ -545,7 +677,7 @@ def _apply_ban_if_needed(customer_email: str, threshold: int = 3, window_days: i
 
 @login_required
 def my_reservations(request):
-    _auto_complete_past_reservations()
+
     user = request.user
     logger.warning(f"User email: {user.email}")
 
@@ -555,19 +687,12 @@ def my_reservations(request):
     )
 
     today = timezone.localdate()
+    _auto_mark_no_shows(today=today)
 
     # --- Auto-complete past ACTIVE reservations (keeps UI sane) ---
     # Only if your project has a status system. If you only rely on reservation_status,
     # we'll still *display* completed based on date in the template later, but here we
     # do the canonical status transition when possible.
-    if hasattr(TableReservation, "STATUS_ACTIVE") and hasattr(TableReservation, "STATUS_COMPLETED"):
-        try:
-            TableReservation.objects.filter(
-                status=TableReservation.STATUS_ACTIVE,
-                reservation_date__lt=today,
-            ).update(status=TableReservation.STATUS_COMPLETED)
-        except Exception:
-            logger.exception("[my_reservations] auto-complete update failed")
 
     if not customer:
         messages.info(
@@ -676,6 +801,11 @@ def cancel_reservation(request, reservation_id):
                 customer_email=customer_email,
             )
 
+            if reservation.customer_id:
+                Customer.objects.filter(pk=reservation.customer_id).update(
+                    cancellations_count=F("cancellations_count") + 1
+                )
+
             # HARD DELETE (mentor requirement)
             reservation.delete()
 
@@ -741,27 +871,6 @@ def cancel_reservation(request, reservation_id):
     return redirect("my_reservations")
 
 
-def staff_or_superuser_required(view_func):
-    """
-    Custom decorator: allow access if user is staff OR superuser.
-    Also requires authenticated and active.
-    """
-    def wrapper(request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect(settings.LOGIN_URL)
-        if not request.user.is_active:
-            messages.error(
-                request, "Account inactive.")
-            return redirect("home")
-
-        if request.user.is_superuser or request.user.is_staff:
-            return view_func(request, *args, **kwargs)
-        messages.error(
-            request, "Staff access required.")
-        return redirect("my_reservations")
-    return wrapper
-
-
 @staff_or_superuser_required
 def mark_no_show(request, reservation_id):
     """
@@ -791,18 +900,17 @@ def mark_no_show(request, reservation_id):
     cust_email = getattr(
         getattr(reservation, "customer", None), "email", "") or ""
 
-    # Set status + legacy boolean
+    # Set status (no_show is NOT a cancellation)
     updates = []
-    if hasattr(reservation, "status"):
-        reservation.status = TableReservation.STATUS_NO_SHOW
-        updates.append("status")
+    reservation.status = TableReservation.STATUS_NO_SHOW
+    updates.append("status")
 
+    # Keep legacy flag TRUE so old filters don't hide the record
     if hasattr(reservation, "reservation_status"):
-        reservation.reservation_status = False
+        reservation.reservation_status = True
         updates.append("reservation_status")
 
-    if updates:
-        reservation.save(update_fields=updates)
+    reservation.save(update_fields=updates)
 
     NoShowEvent.objects.create(
         reservation_id=reservation.id,
@@ -839,6 +947,15 @@ def update_reservation(request, reservation_id):
     - Date and time slot are NOT editable (avoids availability conflicts).
     - Demand is correctly updated for multi-hour bookings.
     """
+    def _safe_next_url(request, default_name="my_reservations"):
+        nxt = request.POST.get("next") or request.GET.get("next")
+        if nxt and url_has_allowed_host_and_scheme(nxt, allowed_hosts={request.get_host()}):
+            return nxt
+        return reverse(default_name)
+
+    # Decide default "return to" based on role
+    default_return = "staff_reservations" if request.user.is_staff else "my_reservations"
+
     reservation = get_object_or_404(TableReservation, id=reservation_id)
     is_ajax = request.headers.get("x-requested-with") == "XMLHttpRequest"
 
@@ -848,7 +965,7 @@ def update_reservation(request, reservation_id):
         if is_ajax:
             return JsonResponse({"success": False, "error": msg}, status=403)
         messages.error(request, msg)
-        return redirect("my_reservations")
+        return redirect(_safe_next_url(request, default_name=default_return))
 
     # ---------- Edit ----------
     if request.method == "POST":
@@ -865,6 +982,7 @@ def update_reservation(request, reservation_id):
                     "form": form,
                     "reservation": reservation,
                     "slot_labels": SLOT_LABELS,
+                    "next": _safe_next_url(request, default_name=default_return),
                 },
             )
 
@@ -873,9 +991,11 @@ def update_reservation(request, reservation_id):
 
         # NEW values from form
         new_duration = form.cleaned_data.get(
-            'duration_hours', reservation.duration_hours)
+            "duration_hours", reservation.duration_hours)
         new_tables = form.cleaned_data.get(
-            'number_of_tables_required_by_patron', reservation.number_of_tables_required_by_patron)
+            "number_of_tables_required_by_patron",
+            reservation.number_of_tables_required_by_patron,
+        )
 
         # Always keep existing date and slot (they are not editable in this form)
         new_date = reservation.reservation_date
@@ -901,6 +1021,7 @@ def update_reservation(request, reservation_id):
                     "form": form,
                     "reservation": reservation,
                     "slot_labels": SLOT_LABELS,
+                    "next": _safe_next_url(request, default_name=default_return),
                 },
             )
 
@@ -913,7 +1034,7 @@ def update_reservation(request, reservation_id):
             return JsonResponse({"success": True})
 
         messages.success(request, "Your reservation has been updated.")
-        return redirect("my_reservations")
+        return redirect(_safe_next_url(request, default_name=default_return))
 
     # GET
     form = EditReservationForm(instance=reservation)
@@ -932,6 +1053,7 @@ def update_reservation(request, reservation_id):
             "reservation": reservation,
             "current_slot_label": current_slot_label,
             "slot_labels": SLOT_LABELS,
+            "next": _safe_next_url(request, default_name=default_return),
         },
     )
 
@@ -1119,249 +1241,6 @@ logger = logging.getLogger(__name__)
 
 
 logger = logging.getLogger(__name__)
-
-
-# def make_reservation(request):
-#     """
-#     Customer-facing /reserve/ view.
-#     - Full multi-day series support (creates 1 reservation per day)
-#     - Full multi-hour support (deducts from consecutive slots)
-#     - Grid updates correctly
-#     """
-#     next_30_days = _build_next_30_days(days=30)
-
-#     if request.method == "POST":
-#         logger.warning("[MR] POST keys=%s", list(request.POST.keys()))
-
-#         # Pull raw POST values needed BEFORE form validation
-#         reservation_date_str = request.POST.get("reservation_date")
-#         time_slot_key = request.POST.get("time_slot")
-
-#         if not reservation_date_str or not time_slot_key:
-#             messages.error(request, "Missing date or time slot.")
-
-#             # ✅ backfill identity fields for logged-in non-staff so required fields render filled
-#             if request.user.is_authenticated and not request.user.is_staff:
-#                 mutable = request.POST.copy()
-#                 mutable["first_name"] = mutable.get(
-#                     "first_name") or request.user.first_name or ""
-#                 mutable["last_name"] = mutable.get(
-#                     "last_name") or request.user.last_name or ""
-#                 mutable["email"] = mutable.get(
-#                     "email") or request.user.email or ""
-#                 form = PhoneReservationForm(mutable)
-#             else:
-#                 form = PhoneReservationForm(request.POST)
-
-#             return render(
-#                 request,
-#                 "reservation_book/make_reservation.html",
-#                 {"form": form, "next_30_days": next_30_days},
-#             )
-
-#         try:
-#             reservation_date = timezone.datetime.fromisoformat(
-#                 reservation_date_str).date()
-#         except Exception:
-#             messages.error(request, "Invalid date.")
-
-#             if request.user.is_authenticated and not request.user.is_staff:
-#                 mutable = request.POST.copy()
-#                 mutable["first_name"] = mutable.get(
-#                     "first_name") or request.user.first_name or ""
-#                 mutable["last_name"] = mutable.get(
-#                     "last_name") or request.user.last_name or ""
-#                 mutable["email"] = mutable.get(
-#                     "email") or request.user.email or ""
-#                 form = PhoneReservationForm(mutable)
-#             else:
-#                 form = PhoneReservationForm(request.POST)
-
-#             return render(
-#                 request,
-#                 "reservation_book/make_reservation.html",
-#                 {"form": form, "next_30_days": next_30_days},
-#             )
-
-#         if time_slot_key not in SLOT_LABELS:
-#             messages.error(request, "Invalid time slot.")
-
-#             if request.user.is_authenticated and not request.user.is_staff:
-#                 mutable = request.POST.copy()
-#                 mutable["first_name"] = mutable.get(
-#                     "first_name") or request.user.first_name or ""
-#                 mutable["last_name"] = mutable.get(
-#                     "last_name") or request.user.last_name or ""
-#                 mutable["email"] = mutable.get(
-#                     "email") or request.user.email or ""
-#                 form = PhoneReservationForm(mutable)
-#             else:
-#                 form = PhoneReservationForm(request.POST)
-
-#             return render(
-#                 request,
-#                 "reservation_book/make_reservation.html",
-#                 {"form": form, "next_30_days": next_30_days},
-#             )
-
-#         # ✅ Validate form
-#         form = PhoneReservationForm(request.POST)
-#         if not form.is_valid():
-#             logger.warning("[MR] form errors=%s", form.errors)
-#             messages.error(request, "Please correct the errors below.")
-
-#             # ✅ backfill missing identity fields for logged-in non-staff
-#             if request.user.is_authenticated and not request.user.is_staff:
-#                 mutable = request.POST.copy()
-#                 mutable["first_name"] = mutable.get(
-#                     "first_name") or request.user.first_name or ""
-#                 mutable["last_name"] = mutable.get(
-#                     "last_name") or request.user.last_name or ""
-#                 mutable["email"] = mutable.get(
-#                     "email") or request.user.email or ""
-#                 form = PhoneReservationForm(mutable)
-
-#             return render(
-#                 request,
-#                 "reservation_book/make_reservation.html",
-#                 {"form": form, "next_30_days": next_30_days},
-#             )
-
-#         cleaned = form.cleaned_data
-
-#         # ✅ Always read booking parameters from VALIDATED form data
-#         tables_requested = int(cleaned.get(
-#             "number_of_tables_required_by_patron") or 1)
-#         duration_hours = int(cleaned.get("duration_hours") or 1)
-#         series_days = int(cleaned.get("series_days") or 1)
-
-#         # Customer upsert
-#         email = (cleaned.get("email") or "").strip().lower()
-
-#         with transaction.atomic():
-#             customer, _ = Customer.objects.get_or_create(
-#                 email=email,
-#                 defaults={
-#                     "first_name": cleaned.get("first_name", ""),
-#                     "last_name": cleaned.get("last_name", ""),
-#                     "phone": cleaned.get("phone", ""),
-#                     "mobile": cleaned.get("mobile", ""),
-#                 },
-#             )
-
-#             # Update existing customer fields if changed
-#             changed_fields = []
-#             for f, v in [
-#                 ("first_name", cleaned.get("first_name")),
-#                 ("last_name", cleaned.get("last_name")),
-#                 ("phone", cleaned.get("phone")),
-#                 ("mobile", cleaned.get("mobile")),
-#             ]:
-#                 if v and getattr(customer, f) != v:
-#                     setattr(customer, f, v)
-#                     changed_fields.append(f)
-#             if changed_fields:
-#                 customer.save(update_fields=changed_fields)
-
-#             # Series grouping (if multi-day)
-#             series = None
-#             if series_days > 1:
-#                 series = ReservationSeries.objects.create(
-#                     customer=customer,
-#                     created_by=request.user if request.user.is_authenticated else None,
-#                     title=f"Series - {time_slot_key} for {series_days} days",
-#                     notes=f"Duration: {duration_hours}h, Tables: {tables_requested}",
-#                 )
-
-#             reservations_created = []
-#             slot_keys = list(SLOT_LABELS.keys())
-#             start_index = slot_keys.index(time_slot_key)
-#             end_index = min(start_index + duration_hours, len(slot_keys))
-
-#             for day_offset in range(series_days):
-#                 day_date = reservation_date + timedelta(days=day_offset)
-
-#                 # Lock the TSA row for this day for consistent demand calculations
-#                 ts_day, _ = TimeSlotAvailability.objects.get_or_create(
-#                     calendar_date=day_date,
-#                     defaults=_timeslot_defaults(),
-#                 )
-#                 ts_day = TimeSlotAvailability.objects.select_for_update().get(pk=ts_day.pk)
-
-#                 # Check remaining on the START slot (your existing rule)
-#                 cap_field = f"number_of_tables_available_{time_slot_key}"
-#                 demand_field = f"total_cust_demand_for_tables_{time_slot_key}"
-
-#                 capacity = int(getattr(ts_day, cap_field, 20) or 20)
-#                 demand = int(getattr(ts_day, demand_field, 0) or 0)
-#                 remaining = max(capacity - demand, 0)
-
-#                 if remaining < tables_requested:
-#                     # rollback created reservations + series within atomic block
-#                     for r in reservations_created:
-#                         r.delete()
-#                     if series:
-#                         series.delete()
-#                     messages.error(
-#                         request,
-#                         f"Not enough tables on {day_date.strftime('%b %d, %Y')}. Only {remaining} left.",
-#                     )
-#                     return render(
-#                         request,
-#                         "reservation_book/make_reservation.html",
-#                         {"form": form, "next_30_days": next_30_days},
-#                     )
-
-#                 # Deduct demand across duration slots
-#                 for k in slot_keys[start_index:end_index]:
-#                     dfield = f"total_cust_demand_for_tables_{k}"
-#                     existing = int(getattr(ts_day, dfield, 0) or 0)
-#                     setattr(ts_day, dfield, existing + tables_requested)
-
-#                 ts_day.save()
-
-#                 reservation = TableReservation.objects.create(
-#                     customer=customer,
-#                     reservation_date=day_date,
-#                     time_slot=time_slot_key,
-#                     duration_hours=duration_hours,
-#                     number_of_tables_required_by_patron=tables_requested,
-#                     timeslot_availability=ts_day,
-#                     status="ACTIVE",
-#                     series=series,
-#                 )
-#                 reservations_created.append(reservation)
-
-#         # Email confirmation (keep your existing email logic below exactly as you had it)
-#         try:
-#             to_email = customer.email
-#             if to_email:
-#                 # ... your existing render_to_string/send_mail block ...
-#                 pass
-#         except Exception:
-#             logger.exception("Email failed")
-
-#         messages.success(
-#             request,
-#             f"Reservation{' series' if series_days > 1 else ''} created successfully!",
-#         )
-#         return redirect("my_reservations")
-
-#     # GET
-#     initial = {}
-#     if request.user.is_authenticated and not request.user.is_staff:
-#         initial = {
-#             "first_name": request.user.first_name or "",
-#             "last_name": request.user.last_name or "",
-#             "email": request.user.email or "",
-#         }
-#     form = PhoneReservationForm(initial=initial)
-
-#     return render(
-#         request,
-#         "reservation_book/make_reservation.html",
-#         {"form": form, "next_30_days": next_30_days},
-#     )
 
 
 def signup(request):
@@ -1662,44 +1541,35 @@ def make_reservation(request):
 def staff_reservations(request):
     """
     Staff-facing list of reservations.
-    - Shows upcoming ACTIVE + past COMPLETED + NO_SHOW (if present)
-    - Past ACTIVE reservations are auto-marked COMPLETED for sane UX
+    - Shows ACTIVE + COMPLETED + NO_SHOW
+    - Past ACTIVE reservations remain ACTIVE until staff marks outcome
+      (Completed or No Show).
     """
-    _auto_complete_past_reservations()
     today = timezone.localdate()
-
-    # --- Auto-complete past ACTIVE reservations (keeps UI sane) ---
-    if hasattr(TableReservation, "STATUS_ACTIVE") and hasattr(TableReservation, "STATUS_COMPLETED"):
-        try:
-            TableReservation.objects.filter(
-                status=TableReservation.STATUS_ACTIVE,
-                reservation_date__lt=today,
-            ).update(status=TableReservation.STATUS_COMPLETED)
-        except Exception:
-            logger.exception(
-                "[staff_reservations] auto-complete update failed")
+    _auto_mark_no_shows(today=today)
 
     qs = TableReservation.objects.select_related(
         "customer", "timeslot_availability")
 
-    # ✅ Robust filtering across both systems (status enum + legacy boolean)
+    # Status system
     if hasattr(TableReservation, "STATUS_ACTIVE"):
         allowed = [TableReservation.STATUS_ACTIVE]
         if hasattr(TableReservation, "STATUS_COMPLETED"):
             allowed.append(TableReservation.STATUS_COMPLETED)
         if hasattr(TableReservation, "STATUS_NO_SHOW"):
             allowed.append(TableReservation.STATUS_NO_SHOW)
-
         qs = qs.filter(status__in=allowed)
 
+    # Legacy boolean system: only show "active" legacy reservations
     if hasattr(TableReservation, "reservation_status"):
-        # legacy boolean "active/cancelled" system
         qs = qs.filter(reservation_status=True)
 
     reservations = list(qs.order_by("-reservation_date", "time_slot", "id"))
 
+    # UI-only helper flags (no DB writes)
     for r in reservations:
         r.time_range_display = r.time_range_pretty
+        r.is_past = (r.reservation_date < today)
 
     return render(
         request,
@@ -1707,7 +1577,7 @@ def staff_reservations(request):
         {
             "reservations": reservations,
             "slot_labels": SLOT_LABELS,
-            "today": today,  # used by template for Completed display/actions
+            "today": today,
         },
     )
 
@@ -1885,6 +1755,7 @@ def first_login_setup(request):
 def staff_dashboard(request):
     _auto_complete_past_reservations()
     today = timezone.localdate()
+    _auto_mark_no_shows(today=today)
 
     total_reservations = TableReservation.objects.count()
     upcoming_reservations_count = TableReservation.objects.filter(
