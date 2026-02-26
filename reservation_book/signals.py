@@ -1,8 +1,11 @@
 import logging
 from django.dispatch import receiver
+from django.contrib.auth.signals import user_logged_in
+from django.utils import timezone
+from django.core.cache import cache
 from allauth.account.signals import user_signed_up
 from .models import TableReservation, Customer
-
+from reservation_book.services.sweeps import run_no_show_sweep
 
 logger = logging.getLogger(__name__)
 
@@ -55,3 +58,33 @@ def attach_existing_reservations(request, user, **kwargs):
         "user_signed_up: canonical_customer_id=%s (created=%s) attached=%s reservations to user_id=%s",
         customer.id, created, updated, user.id
     )
+
+
+CACHE_KEY = "no_show_sweep_last_run_date"  # stores YYYY-MM-DD as string
+
+
+@receiver(user_logged_in)
+def run_no_show_sweep_on_staff_login(sender, request, user, **kwargs):
+    # Only when app is being used by staff/superuser
+    if not (getattr(user, "is_staff", False) or getattr(user, "is_superuser", False)):
+        return
+
+    today = timezone.localdate()
+    today_str = today.isoformat()
+
+    # Run at most once per day (across all workers)
+    last = cache.get(CACHE_KEY)
+    if last == today_str:
+        return
+
+    try:
+        result = run_no_show_sweep(today=today, ban_threshold=3)
+        cache.set(CACHE_KEY, today_str, timeout=60
+                  * 60 * 24 * 2)  # 2 days safety
+        logger.info(
+            "No-show sweep ran on staff login: scanned=%s marked=%s barred=%s",
+            result.scanned, result.marked_no_show, result.barred_customers
+        )
+    except Exception:
+        # Never block login because of sweep issues
+        logger.exception("No-show sweep failed during staff login")

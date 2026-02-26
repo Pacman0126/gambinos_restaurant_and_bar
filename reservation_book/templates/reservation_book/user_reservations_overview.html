@@ -2,83 +2,122 @@
 
 {% block content %}
 <div class="container py-4 dark-section">
-    <h1 class="mb-3">
-        <i class="fa-solid fa-users me-2"></i>
-        Customer Reservation Overview
-    </h1>
-    <p class="text-muted mb-4">
-        Summary of customers and their reservation activity.
-    </p>
+  <h1 class="mb-3">
+    <i class="fa-solid fa-users me-2"></i>
+    Customer Reservation Overview
+  </h1>
+  <p class="text-muted mb-4">
+    Summary of customers and their reservation activity.
+  </p>
 
-    <div class="table-responsive my-reservations">
-        <table id="user-reservations-table"
-               class="table table-striped table-bordered align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th>Customer</th>
-                    <th>Email</th>
-                    <th>Total Reservations</th>
-                    <th>Active Reservations</th>
-                    <th>Active Tables Booked</th>
-                    <th>Cancelled</th>
-                    <th>Total Tables Booked</th>
-                    <th>Details</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for customer in customers %}
-                    <tr>
-                        <td>
-                          {{ customer.first_name|default:"" }} {{ customer.last_name|default:"" }}
-                        </td>
-                        <td>{{ customer.email }}</td>
-                        <td>{{ customer.total_reservations|default:0 }}</td>
-                        <td>{{ customer.active_reservations|default:0 }}</td>
-                        <td>{{ customer.active_tables_booked|default:0 }}</td>
-                        <td>{{ customer.cancelled_reservations|default:0 }}</td>
-                        <td>{{ customer.total_tables_booked|default:0 }}</td>
-                        <td>
-                            <a href="{% url 'user_reservation_history' customer.id %}"
-                               class="btn btn-sm btn-outline-primary">
-                                <i class="fa-regular fa-calendar-days me-1"></i>
-                                View history
-                            </a>
-                        </td>
-                    </tr>
-                {% empty %}
-                    <tr>
-                        <td colspan="8" class="text-center">
-                            No customers with reservations found.
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+  <div class="table-responsive my-reservations">
+    <table id="user-reservations-table"
+           class="table table-striped table-bordered align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Customer</th>
+          <th>Email</th>
+          <th>Total Reservations</th>
+          <th>Active Reservations</th>
+          <th>Active Tables Booked</th>
+          <th>Cancelled</th>
+          <th>No Shows</th>
+          <th>Total Tables Booked</th>
+          <th>Details</th>
+          <th>Barred</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for customer in customers %}
+          <tr>
+            <td>
+              {{ customer.first_name|default:"" }} {{ customer.last_name|default:"" }}
+            </td>
+            <td>{{ customer.email|default:"" }}</td>
+
+            <td>{{ customer.total_reservations|default:0 }}</td>
+            <td>{{ customer.active_reservations|default:0 }}</td>
+            <td>{{ customer.active_tables_booked|default:0 }}</td>
+
+            {# Use annotated safe fields from the view #}
+            <td>{{ customer.cancelled_reservations|default:0 }}</td>
+            <td>{{ customer.no_show_reservations|default:0 }}</td>
+
+            <td>{{ customer.total_tables_booked|default:0 }}</td>
+
+            <td>
+              <a href="{% url 'user_reservation_history' customer.id %}"
+                 class="btn btn-sm btn-outline-primary">
+                <i class="fa-regular fa-calendar-days me-1"></i>
+                View history
+              </a>
+            </td>
+
+            <td>
+              {% if customer.barred %}
+                <span class="badge bg-danger">Barred</span>
+              {% else %}
+                <span class="badge bg-success">OK</span>
+              {% endif %}
+            </td>
+
+            <td class="text-nowrap">
+              {% if customer.barred %}
+                <form method="post" action="{% url 'unbar_customer' customer.id %}" class="d-inline">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm btn-outline-success"
+                          onclick="return confirm('Unbar this customer?');">
+                    Unbar
+                  </button>
+                </form>
+              {% else %}
+                <form method="post" action="{% url 'bar_customer' customer.id %}" class="d-inline">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm btn-outline-danger"
+                          onclick="return confirm('Bar this customer?');">
+                    Bar
+                  </button>
+                </form>
+              {% endif %}
+            </td>
+          </tr>
+
+        {% empty %}
+          <tr>
+            <td colspan="11" class="text-center">
+              No customers found.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
-    {{ block.super }}
+  {{ block.super }}
 
-    <!-- jQuery + DataTables (only on this page) -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-            integrity="sha256-3gJwYp4gkL8JpAo7P+4l5I9E0lN3k2R3l4lXVZ6Z5ks="
-            crossorigin="anonymous"></script>
+  <!-- jQuery + DataTables (only on this page) -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+          integrity="sha256-3gJwYp4gkL8JpAo7P+4l5I9E0lN3k2R3l4lXVZ6Z5ks="
+          crossorigin="anonymous"></script>
 
-    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
-    <link rel="stylesheet"
-          href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css"/>
+  <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+  <link rel="stylesheet"
+        href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css"/>
 
-    <script>
-        $(document).ready(function () {
-            $('#user-reservations-table').DataTable({
-                pageLength: 10,
-                order: [[2, 'desc']],  // sort by total reservations desc by default
-                columnDefs: [
-                    { orderable: false, targets: 7 }  // "Details" column not sortable
-                ]
-            });
-        });
-    </script>
+  <script>
+    $(document).ready(function () {
+      $('#user-reservations-table').DataTable({
+        pageLength: 10,
+        order: [[2, 'desc']],  // sort by total reservations desc by default
+        columnDefs: [
+          { orderable: false, targets: [8, 10] } // Details + Actions not sortable
+        ]
+      });
+    });
+  </script>
 {% endblock %}

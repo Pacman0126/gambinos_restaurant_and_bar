@@ -1,127 +1,142 @@
 {# templates/reservation_book/user_reservation_history.html #}
 {% extends "base.html" %}
+{% load slot_filters %}
 
 {% block content %}
 <div class="container py-4 my-reservations">
+  <h1 class="mb-2">
+    Reservation History for {{ history_customer.get_full_name|default:history_customer.email }}
+  </h1>
+  <p class="text-muted mb-4">
+    Email: {{ history_customer.email }}
+  </p>
 
-  <div class="d-flex flex-wrap justify-content-between align-items-start mb-3">
-    <div>
-      <h1 class="mb-1">
-        Reservation History
-      </h1>
-
-      <div class="text-muted">
-        <div class="fw-semibold">
-          {{ history_customer.first_name|default:"" }} {{ history_customer.last_name|default:"" }}
-        </div>
-        <div>
-          Email: {{ history_customer.email|default:"-" }}
-        </div>
-      </div>
-    </div>
-
-    <div class="text-end">
-      <a href="{% url 'user_reservations_overview' %}" class="btn btn-secondary">
-        Back to overview
-      </a>
-    </div>
-  </div>
-
-  {# Optional: quick summary counters if you want them later.
-     This does NOT require new context; it just displays existing customer counters.
-  #}
-  <div class="row g-2 mb-3">
-    <div class="col-sm-6 col-md-3">
-      <div class="card shadow-sm">
-        <div class="card-body py-2">
-          <div class="small text-muted">Cancellations</div>
-          <div class="fs-5 fw-bold">{{ history_customer.cancellations_count|default:0 }}</div>
-        </div>
-      </div>
-    </div>
-    <div class="col-sm-6 col-md-3">
-      <div class="card shadow-sm">
-        <div class="card-body py-2">
-          <div class="small text-muted">No-shows</div>
-          <div class="fs-5 fw-bold">{{ history_customer.no_show_count|default:0 }}</div>
-        </div>
-      </div>
-    </div>
-    <div class="col-sm-6 col-md-3">
-      <div class="card shadow-sm">
-        <div class="card-body py-2">
-          <div class="small text-muted">Barred</div>
-          <div class="fs-5 fw-bold">
-            {% if history_customer.barred %}
-              Yes
-            {% else %}
-              No
-            {% endif %}
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- ===================== RESERVATIONS (ACTIVE/COMPLETED/NO_SHOW) ===================== -->
+  <h3>Reservations</h3>
 
   <div class="table-responsive">
     <table class="table table-striped table-bordered align-middle">
       <thead>
         <tr>
-          <th style="width: 110px;">Booking ID</th>
-          <th style="width: 160px;">Date</th>
-          <th style="width: 180px;">Time Slot</th>
-          <th style="width: 90px;">Tables</th>
-          <th style="width: 130px;">Status</th>
+          <th>Booking ID</th>
+          <th>Date</th>
+          <th>Time Slot</th>
+          <th>Tables</th>
+          <th>Status</th>
         </tr>
       </thead>
-
       <tbody>
         {% for r in reservations %}
           <tr>
             <td>{{ r.id }}</td>
-
-            {# Use denormalized reservation_date if present; fall back to timeslot_availability #}
-            <td>
-              {% if r.reservation_date %}
-                {{ r.reservation_date|date:"M d, Y" }}
-              {% else %}
-                {{ r.timeslot_availability.calendar_date|date:"M d, Y" }}
-              {% endif %}
-            </td>
-
+            <td>{{ r.reservation_date }}</td>
             <td>{{ r.time_range_pretty }}</td>
-
             <td>{{ r.number_of_tables_required_by_patron }}</td>
-
             <td>
-              {% if r.status == 'active' %}
-                <span class="badge bg-success">Active</span>
-
+              {% if r.status == 'no_show' %}
+                <span class="badge bg-danger">No Show</span>
               {% elif r.status == 'completed' %}
                 <span class="badge bg-primary">Completed</span>
-
-              {% elif r.status == 'no_show' %}
-                <span class="badge bg-danger">No Show</span>
-
-              {% elif r.status == 'cancelled' %}
-                <span class="badge bg-secondary">Cancelled</span>
-
+              {% elif r.status == 'active' %}
+                <span class="badge bg-success">Active</span>
               {% else %}
-                <span class="badge bg-light text-dark">{{ r.status_display }}</span>
+                <span class="badge bg-secondary">{{ r.status }}</span>
               {% endif %}
             </td>
           </tr>
         {% empty %}
           <tr>
             <td colspan="5" class="text-center">
-              No reservations found for this customer.
+              No reservations found.
             </td>
           </tr>
         {% endfor %}
       </tbody>
-
     </table>
   </div>
 
+  <!-- ===================== CANCELLED (EVENTS) ===================== -->
+  <h3 class="mt-5">Cancelled Reservations</h3>
+
+  <div class="table-responsive">
+    <table class="table table-striped table-bordered align-middle">
+      <thead>
+        <tr>
+          <th>Booking ID</th>
+          <th>Date</th>
+          <th>Time Slot</th>
+          <th>Tables</th>
+          <th>Cancelled By</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in cancelled_events %}
+          <tr>
+            <td>{{ e.reservation_id }}</td>
+            <td>{{ e.reservation_date }}</td>
+            <td>{{ e.time_slot|slot_label }}</td>
+            <td>{{ e.tables }}</td>
+            <td>
+              {% if e.cancelled_by_staff %}
+                <span class="badge bg-dark">Staff</span>
+              {% else %}
+                <span class="badge bg-secondary">Customer</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="5" class="text-center">
+              No cancellations recorded.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===================== NO-SHOWS (EVENTS) ===================== -->
+  <h3 class="mt-5">No-Shows</h3>
+
+  <div class="table-responsive">
+    <table class="table table-striped table-bordered align-middle">
+      <thead>
+        <tr>
+          <th>Booking ID</th>
+          <th>Date</th>
+          <th>Time Slot</th>
+          <th>Tables</th>
+          <th>Marked By</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in no_show_events %}
+          <tr>
+            <td>{{ e.reservation_id }}</td>
+            <td>{{ e.reservation_date }}</td>
+            <td>{{ e.time_slot|slot_label }}</td>
+            <td>{{ e.tables }}</td>
+            <td>
+              {% if e.marked_by_staff %}
+                <span class="badge bg-dark">Staff</span>
+              {% else %}
+                <span class="badge bg-warning text-dark">System</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="5" class="text-center">
+              No no-shows recorded.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <a href="{% url 'user_reservations_overview' %}" class="btn btn-secondary mt-4">
+    Back to overview
+  </a>
 </div>
 {% endblock %}

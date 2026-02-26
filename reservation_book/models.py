@@ -312,7 +312,7 @@ class TableReservation(models.Model):
         True only when the reservation is currently active.
         Used by staff views, customer views, and availability math.
         """
-        return self.status == self.STATUS_ACTIVE and self.reservation_status is True
+        return self.status == self.STATUS_ACTIVE
 
     @property
     def status_display(self) -> str:
@@ -387,6 +387,12 @@ class CancellationEvent(models.Model):
     cancelled_by_staff = models.BooleanField(default=False)
 
     class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["reservation_id"],
+                name="uniq_cancellationevent_reservation_id",
+            )
+        ]
         ordering = ["-created_at"]
 
     def __str__(self):
@@ -411,6 +417,12 @@ class NoShowEvent(models.Model):
     marked_by_staff = models.BooleanField(default=False)
 
     class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["reservation_id"],
+                name="uniq_noshowevent_reservation_id",
+            )
+        ]
         ordering = ["-created_at"]
 
     def __str__(self):

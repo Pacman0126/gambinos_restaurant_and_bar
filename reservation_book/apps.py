@@ -7,4 +7,4 @@ class ReservationBookConfig(AppConfig):
 
     def ready(self):
         # Import signals so the receiver is registered
-        from . import signals  # noqa
+        import reservation_book.signals  # noqa

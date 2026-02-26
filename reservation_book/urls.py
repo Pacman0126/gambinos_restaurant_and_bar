@@ -40,7 +40,12 @@ urlpatterns = [
 
     path("staff/reservations/<int:reservation_id>/complete/",
          views.mark_reservation_completed,
-         name="mark_reservation_completed"),
+         name="mark_reservation_completed"
+         ),
+
+    path("staff/reservations/<int:reservation_id>/completed/",
+         views.mark_completed,
+         name="mark_completed",),
 
     path(
         "staff/customers/",
@@ -52,6 +57,13 @@ urlpatterns = [
         views.user_reservation_history,
         name="user_reservation_history",
     ),
+
+    path("staff/customers/<int:customer_id>/bar/",
+         views.bar_customer,
+         name="bar_customer"),
+    path("staff/customers/<int:customer_id>/unbar/",
+         views.unbar_customer,
+         name="unbar_customer"),
 
     # path(
     #     "staff/customers/<int:customer_id>/resend-setup-link/",

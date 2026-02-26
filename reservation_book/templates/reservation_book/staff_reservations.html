@@ -8,14 +8,6 @@
     <h2 class="mb-0">Staff Reservations</h2>
   </div>
 
-  {% comment %} {% if messages %}
-    <div class="mb-3">
-      {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} mb-2">{{ message }}</div>
-      {% endfor %}
-    </div>
-  {% endif %} {% endcomment %}
-
   <div class="table-responsive">
     <table class="table table-striped align-middle">
       <thead>
@@ -26,7 +18,7 @@
           <th style="width: 90px;">Tables</th>
           <th>Customer</th>
           <th style="width: 140px;">Status</th>
-          <th style="width: 260px;">Actions</th>
+          <th style="width: 320px;">Actions</th>
         </tr>
       </thead>
 
@@ -52,6 +44,9 @@
               </div>
               {% if r.customer.email %}<div class="small text-muted">{{ r.customer.email }}</div>{% endif %}
               {% if r.customer.phone %}<div class="small text-muted">{{ r.customer.phone }}</div>{% endif %}
+              {% if r.customer and r.customer.barred %}
+                <span class="badge bg-danger ms-1">Barred</span>
+              {% endif %}
 
               {% if r.is_phone_reservation %}
                 <span class="badge bg-info text-dark mt-1">Phone-in</span>
@@ -95,58 +90,67 @@
             </td>
 
             {# -------------------- #}
-            {# ACTIONS COLUMN #}
+            {# ACTIONS COLUMN (H2-1) #}
             {# -------------------- #}
             <td class="text-nowrap">
-              <a class="btn btn-sm btn-outline-warning"
-                 href="{% url 'update_reservation' r.id %}?next={% url 'staff_reservations' %}">
-                Edit
-              </a>
 
-              {# Cancel only for today/future AND only if active (status or legacy) #}
-              {% if r.reservation_date >= today %}
-                {% if r.status == 'active' %}
-                  <form method="post" action="{% url 'cancel_reservation' r.id %}" class="d-inline">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-sm btn-outline-danger"
-                            onclick="return confirm('Cancel this reservation?');">
-                      Cancel
-                    </button>
-                  </form>
-                {% else %}
-                  {% if r.reservation_status %}
-                    <form method="post" action="{% url 'cancel_reservation' r.id %}" class="d-inline">
-                      {% csrf_token %}
-                      <button type="submit" class="btn btn-sm btn-outline-danger"
-                              onclick="return confirm('Cancel this reservation?');">
-                        Cancel
-                      </button>
-                    </form>
-                  {% endif %}
-                {% endif %}
+              {# ---------- EDIT ---------- #}
+              {% if r.reservation_date and r.reservation_date >= today and r.status == 'active' %}
+                <a class="btn btn-sm btn-outline-warning"
+                  href="{% url 'update_reservation' r.id %}?next={% url 'staff_reservations' %}">
+                  Edit
+                </a>
+              {% else %}
+                <button type="button" class="btn btn-sm btn-outline-warning" disabled
+                        title="Edit is only available for active reservations on today/future dates">
+                  Edit
+                </button>
               {% endif %}
 
-              {# Complete should only be clickable ON THE DAY, and only if active #}
-              {% if r.reservation_date == today %}
-                {% if r.status == 'active' or r.reservation_status %}
-                  <form method="post" action="{% url 'mark_reservation_completed' r.id %}" class="d-inline">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-sm btn-outline-success"
-                            onclick="return confirm('Mark this reservation as completed?');">
-                      Complete
-                    </button>
-                  </form>
-                {% endif %}
+              {# ---------- CANCEL ---------- #}
+              {% if r.reservation_date and r.reservation_date >= today and r.status == 'active' %}
+                <form method="post" action="{% url 'cancel_reservation' r.id %}" class="d-inline">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm btn-outline-danger"
+                          onclick="return confirm('Cancel this reservation?');">
+                    Cancel
+                  </button>
+                </form>
               {% else %}
-                {# You asked: dim or hide. Here is DIMMED for non-today active. #}
-                {% if r.status == 'active' or r.reservation_status %}
-                  <button type="button" class="btn btn-sm btn-outline-success d-inline" disabled
-                          title="Complete can only be set on the reservation date">
+                <button type="button" class="btn btn-sm btn-outline-danger" disabled
+                        title="Cancel is only available for active reservations on today/future dates">
+                  Cancel
+                </button>
+              {% endif %}
+
+              {# ---------- COMPLETE (today only) ---------- #}
+              {% if r.status == 'active' and r.reservation_date and r.reservation_date == today %}
+                <form method="post" action="{% url 'mark_reservation_completed' r.id %}" class="d-inline">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm btn-outline-success"
+                          onclick="return confirm('Mark this reservation as completed?');">
                     Complete
                   </button>
-                {% endif %}
+                </form>
+              {% elif r.status == 'active' and r.reservation_date and r.reservation_date > today %}
+                <button type="button" class="btn btn-sm btn-outline-success" disabled
+                        title="Complete can only be set on the reservation date">
+                  Complete
+                </button>
               {% endif %}
-            </td>
+
+              {# ---------- NO SHOW (past only) ---------- #}
+              {% if r.status == 'active' and r.reservation_date and r.reservation_date < today %}
+                <form method="post" action="{% url 'mark_no_show' r.id %}" class="d-inline">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm btn-outline-dark"
+                          onclick="return confirm('Mark this reservation as a NO SHOW?');">
+                    No Show
+                  </button>
+                </form>
+              {% endif %}
+
+            </td>            
           </tr>
         {% empty %}
           <tr>
