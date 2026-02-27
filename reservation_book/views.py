@@ -1406,12 +1406,9 @@ def signup(request):
         form = SignUpForm()
     return render(request, "registration/signup.html", {"form": form})
 
-
-# make sure these imports exist in your file already
-# from .forms import PhoneReservationForm
-# from .models import Customer, TableReservation, TimeSlotAvailability
-# plus: SLOT_LABELS, _build_next_30_days, _timeslot_defaults
-
+# def _next_days(days=30):
+#     today = timezone.localdate()
+#     return [today + timedelta(days=i) for i in range(days)]
 
 @login_required
 def make_reservation(request):

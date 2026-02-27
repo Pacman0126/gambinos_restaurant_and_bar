@@ -23,7 +23,6 @@
           <th>Cancelled</th>
           <th>No Shows</th>
           <th>Total Tables Booked</th>
-          <th>Details</th>
           <th>Barred</th>
           <th>Actions</th>
         </tr>
@@ -41,19 +40,10 @@
             <td>{{ customer.active_reservations|default:0 }}</td>
             <td>{{ customer.active_tables_booked|default:0 }}</td>
 
-            {# Use annotated safe fields from the view #}
             <td>{{ customer.cancelled_reservations|default:0 }}</td>
             <td>{{ customer.no_show_reservations|default:0 }}</td>
 
             <td>{{ customer.total_tables_booked|default:0 }}</td>
-
-            <td>
-              <a href="{% url 'user_reservation_history' customer.id %}"
-                 class="btn btn-sm btn-outline-primary">
-                <i class="fa-regular fa-calendar-days me-1"></i>
-                View history
-              </a>
-            </td>
 
             <td>
               {% if customer.barred %}
@@ -64,6 +54,12 @@
             </td>
 
             <td class="text-nowrap">
+              <a href="{% url 'user_reservation_history' customer.id %}"
+                 class="btn btn-sm btn-outline-primary me-1">
+                <i class="fa-regular fa-calendar-days me-1"></i>
+                View history
+              </a>
+
               {% if customer.barred %}
                 <form method="post" action="{% url 'unbar_customer' customer.id %}" class="d-inline">
                   {% csrf_token %}
@@ -86,7 +82,7 @@
 
         {% empty %}
           <tr>
-            <td colspan="11" class="text-center">
+            <td colspan="10" class="text-center">
               No customers found.
             </td>
           </tr>
@@ -100,7 +96,6 @@
 {% block extra_js %}
   {{ block.super }}
 
-  <!-- jQuery + DataTables (only on this page) -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"
           integrity="sha256-3gJwYp4gkL8JpAo7P+4l5I9E0lN3k2R3l4lXVZ6Z5ks="
           crossorigin="anonymous"></script>
@@ -113,9 +108,9 @@
     $(document).ready(function () {
       $('#user-reservations-table').DataTable({
         pageLength: 10,
-        order: [[2, 'desc']],  // sort by total reservations desc by default
+        order: [[2, 'desc']],
         columnDefs: [
-          { orderable: false, targets: [8, 10] } // Details + Actions not sortable
+          { orderable: false, targets: [9] } // Actions
         ]
       });
     });
