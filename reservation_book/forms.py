@@ -204,6 +204,13 @@ class PhoneReservationForm(forms.ModelForm):
         widget=forms.Select(attrs={"class": "form-select bg-white text-dark"}),
     )
 
+    timeslot_availability = forms.ModelChoiceField(
+        queryset=TimeSlotAvailability.objects.all(),
+        to_field_name="calendar_date",
+        required=False,
+        widget=forms.HiddenInput(),
+    )
+
     class Meta:
         model = TableReservation
         fields = [

@@ -6,280 +6,364 @@
 
   <h2 class="mb-3">Create Phone Reservation</h2>
 
-  {% comment %} {% if messages %}
-    <div class="mb-3">
-      {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} mb-2" role="alert">
-          {{ message }}
+  <div class="modal fade {% if form.errors %}show{% endif %}"
+       id="customerModal"
+       tabindex="-1"
+       aria-labelledby="customerModalLabel"
+       aria-hidden="{% if form.errors %}false{% else %}true{% endif %}"
+       {% if form.errors %}style="display:block;"{% endif %}>
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content reservation-details-modal">
+
+        <div class="modal-header">
+          <h5 class="modal-title" id="customerModalLabel">Reservation Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
-      {% endfor %}
-    </div>
-  {% endif %} {% endcomment %}
 
-  <form method="post" id="phoneReservationForm">
-    {% csrf_token %}
+        <form method="post" id="phoneReservationForm">
+          {% csrf_token %}
 
-    {# Hidden fields that MUST be populated by clicking the grid #}
-    {{ form.reservation_date }}
-    {{ form.time_slot }}
-    {{ form.timeslot_availability }}
+          {{ form.reservation_date }}
+          {{ form.time_slot }}
+          {{ form.timeslot_availability }}
 
-    <div class="row g-3">
-      <div class="col-md-6">
-        <div class="card shadow-sm">
-          <div class="card-header">
-            <strong>Customer</strong>
-          </div>
-          <div class="card-body">
-            <div class="row g-2">
-              <div class="col-md-6">
-                <label class="form-label">{{ form.first_name.label }}</label>
-                {{ form.first_name }}
-                {% if form.first_name.errors %}
-                  <div class="text-danger small">{{ form.first_name.errors|striptags }}</div>
-                {% endif %}
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">{{ form.last_name.label }}</label>
-                {{ form.last_name }}
-                {% if form.last_name.errors %}
-                  <div class="text-danger small">{{ form.last_name.errors|striptags }}</div>
-                {% endif %}
-              </div>
+          <div class="modal-body">
 
-              <div class="col-12">
-                <label class="form-label">{{ form.email.label }}</label>
-                {{ form.email }}
-                {% if form.email.errors %}
-                  <div class="text-danger small">{{ form.email.errors|striptags }}</div>
-                {% endif %}
-              </div>
+            <p class="mb-3">
+              <strong>Selected:</strong>
+              <span id="selectedSlotDisplay" class="ms-1">None</span>
+            </p>
 
-              <div class="col-md-6">
-                <label class="form-label">{{ form.phone.label }}</label>
-                {{ form.phone }}
-                {% if form.phone.errors %}
-                  <div class="text-danger small">{{ form.phone.errors|striptags }}</div>
-                {% endif %}
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">{{ form.mobile.label }}</label>
-                {{ form.mobile }}
-                {% if form.mobile.errors %}
-                  <div class="text-danger small">{{ form.mobile.errors|striptags }}</div>
-                {% endif %}
-              </div>
-
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-6">
-        <div class="card shadow-sm">
-          <div class="card-header">
-            <strong>Booking Options</strong>
-          </div>
-          <div class="card-body">
-
-            <div class="row g-2 align-items-end">
-              <div class="col-md-6">
-                {% if form.duration_hours %}
-                  <label class="form-label">{{ form.duration_hours.label }}</label>
-                  {{ form.duration_hours }}
-                  {% if form.duration_hours.errors %}
-                    <div class="text-danger small">{{ form.duration_hours.errors|striptags }}</div>
-                  {% endif %}
-                {% else %}
-                  <div class="small text-muted">
-                    Duration is not available on this form yet (duration_hours field missing).
-                  </div>
-                {% endif %}
-              </div>
-
-              <div class="col-md-6">
-                {% if form.until_close %}
-                  <div class="form-check mt-4">
-                    {{ form.until_close }}
-                    <label class="form-check-label" for="{{ form.until_close.id_for_label }}">
-                      {{ form.until_close.label }}
-                    </label>
-                  </div>
-                  {% if form.until_close.errors %}
-                    <div class="text-danger small">{{ form.until_close.errors|striptags }}</div>
-                  {% endif %}
-                {% else %}
-                  <div class="small text-muted mt-4">
-                    “Book until kitchen close” not available (until_close field missing).
-                  </div>
-                {% endif %}
-              </div>
-
-              <div class="col-12">
-                {% if form.series_days %}
-                  <label class="form-label">{{ form.series_days.label }}</label>
-                  {{ form.series_days }}
-                  <div class="form-text">
-                    Conference series: books the same time block for N consecutive days.
-                  </div>
-                  {% if form.series_days.errors %}
-                    <div class="text-danger small">{{ form.series_days.errors|striptags }}</div>
-                  {% endif %}
-                {% else %}
-                  <div class="small text-muted">
-                    Multi-day series not available (series_days field missing).
-                  </div>
-                {% endif %}
-              </div>
-
-              <div class="col-12 mt-2">
-                <label class="form-label">{{ form.number_of_tables_required_by_patron.label|default:"Tables needed" }}</label>
-                {{ form.number_of_tables_required_by_patron }}
-                {% if form.number_of_tables_required_by_patron.errors %}
-                  <div class="text-danger small">{{ form.number_of_tables_required_by_patron.errors|striptags }}</div>
-                {% endif %}
-              </div>
-            </div>
-
-            <hr class="my-3">
-
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-              <div>
-                <strong class="selected-slot-label">Selected slot:</strong>
-                <span id="selected-slot-display" class="ms-1 text-primary selected-slot-value">None</span>
-              </div>
-              <button type="submit" class="btn btn-primary">
-                Confirm Phone Reservation
-              </button>
-            </div>
-
-            {% if form.non_field_errors %}
-              <div class="text-danger small mt-2">{{ form.non_field_errors|striptags }}</div>
-            {% endif %}
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card shadow-sm mt-4">
-      <div class="card-header">
-        <strong>Availability Grid (next 30 days, available/total)</strong>
-      </div>
-      <div class="card-body">
-
-        <div class="table-responsive phone-reservation-grid">
-          <table class="table table-sm align-middle">
-            <thead>
-              <tr>
-                <th style="min-width: 160px;">Date</th>
-                {% for slot_key, slot_label in slot_labels.items %}
-                  <th class="text-center" style="min-width: 130px;">{{ slot_label }}</th>
-                {% endfor %}
-              </tr>
-            </thead>
-            <tbody>
-              {% for day_data in next_30_days %}
-                <tr>
-                  <td class="date-cell">
-                    <div class="fw-semibold">{{ day_data.calendar_date|date:"D M j, Y" }}</div>
-                  </td>
-
-                  {# day_data.slots is a LIST in the same order as SLOT_KEYS #}
-                  {% for slot in day_data.slots %}
-                    <td class="text-center p-1">
-                      {% if slot.remaining > 0 %}
-                        <button
-                          type="button"
-                          class="btn btn-sm btn-outline-success w-100 slot-btn"
-                          data-date="{{ day_data.calendar_date|date:'Y-m-d' }}"
-                          data-slot="{{ slot.key }}"
-                          data-timeslot-pk="{{ day_data.calendar_date|date:'Y-m-d' }}"
-                          data-slot-label="{{ slot.label }}"
-                        >
-                          {{ slot.remaining }} / {{ slot.available }}
-                        </button>
-                      {% else %}
-                        <button
-                          type="button"
-                          class="btn btn-sm btn-outline-secondary w-100"
-                          disabled
-                        >
-                          FULL
-                        </button>
-                      {% endif %}
-                    </td>
+            {% if form.errors %}
+            <div class="alert alert-danger">
+              <strong>Please fix the following:</strong>
+              <ul class="mb-0">
+                {% for field in form %}
+                  {% for error in field.errors %}
+                    <li>{{ field.label }}: {{ error }}</li>
                   {% endfor %}
-                </tr>
-              {% empty %}
-                <tr>
-                  <td colspan="6" class="text-center text-muted py-4">
-                    No availability data found.
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+            {% endif %}
 
-        <div class="small text-muted mt-2">
-          Cells show <strong>remaining / total</strong> tables. “FULL” means no remaining tables.
-        </div>
+            <div class="row g-3">
+
+              <div class="col-md-6">
+                <div class="card shadow-sm">
+                  <div class="card-header"><strong>Customer</strong></div>
+                  <div class="card-body">
+                    <div class="row g-2">
+
+                      <div class="col-md-6">
+                        <label class="form-label">{{ form.first_name.label }}</label>
+                        {{ form.first_name }}
+                        {{ form.first_name.errors }}
+                      </div>
+
+                      <div class="col-md-6">
+                        <label class="form-label">{{ form.last_name.label }}</label>
+                        {{ form.last_name }}
+                        {{ form.last_name.errors }}
+                      </div>
+
+                      <div class="col-12">
+                        <label class="form-label">{{ form.email.label }}</label>
+                        {{ form.email }}
+                        {{ form.email.errors }}
+                      </div>
+
+                      <div class="col-md-6">
+                        <label class="form-label">{{ form.phone.label }}</label>
+                        {{ form.phone }}
+                        {{ form.phone.errors }}
+                      </div>
+
+                      <div class="col-md-6">
+                        <label class="form-label">{{ form.mobile.label }}</label>
+                        {{ form.mobile }}
+                        {{ form.mobile.errors }}
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="card shadow-sm">
+                  <div class="card-header"><strong>Reservation</strong></div>
+                  <div class="card-body">
+
+                    <div class="mb-3">
+                      <label class="form-label">{{ form.number_of_tables_required_by_patron.label|default:"Tables" }}</label>
+                      {{ form.number_of_tables_required_by_patron }}
+                      {{ form.number_of_tables_required_by_patron.errors }}
+                    </div>
+
+                    <div class="mb-3">
+                      <label class="form-label">{{ form.duration_hours.label }}</label>
+                      {{ form.duration_hours }}
+                      {{ form.duration_hours.errors }}
+                    </div>
+
+                    <div class="mb-3">
+                      <label class="form-label text-muted">Hours available</label>
+                      <p class="form-control-plaintext fw-bold" id="available_hours">Select a slot</p>
+                    </div>
+
+                    <div class="mb-3">
+                      <label class="form-label">{{ form.series_days.label }}</label>
+                      {{ form.series_days }}
+                      {{ form.series_days.errors }}
+                    </div>
+
+                    {{ form.non_field_errors }}
+
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+              Cancel
+            </button>
+            <button type="button" class="btn btn-primary" id="confirmReservationBtn" disabled>
+              Confirm
+            </button>
+          </div>
+
+        </form>
 
       </div>
     </div>
+  </div>
 
-  </form>
+  {% if form.errors %}
+    <div class="modal-backdrop fade show"></div>
+  {% endif %}
+
+  <div class="card shadow-sm mt-4">
+    <div class="card-header">
+      <strong>Availability Grid (next 30 days, remaining/total)</strong>
+    </div>
+
+    <div class="card-body">
+
+      <div class="table-responsive phone-reservation-grid">
+        <table class="table table-sm align-middle">
+
+          <thead>
+            <tr>
+              <th style="min-width:160px;">Date</th>
+              {% for slot_key, slot_label in slot_labels.items %}
+                <th class="text-center" style="min-width:130px;">{{ slot_label }}</th>
+              {% endfor %}
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for day_data in next_30_days %}
+            <tr>
+
+              <td class="date-cell">
+                <div class="fw-semibold">{{ day_data.calendar_date|date:"D M j, Y" }}</div>
+              </td>
+
+              {% for slot in day_data.slots %}
+              <td class="text-center p-1">
+
+                {% if slot.available == 0 %}
+                  <button class="btn btn-sm btn-outline-warning w-100" disabled>
+                    NO CAPACITY
+                  </button>
+
+                {% elif slot.remaining > 0 %}
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-success w-100 slot-btn"
+                    data-bs-toggle="modal"
+                    data-bs-target="#customerModal"
+                    data-date="{{ day_data.calendar_date|date:'Y-m-d' }}"
+                    data-slot="{{ slot.key }}"
+                    data-slot-label="{{ slot.label|default:slot.key }}"
+                    data-timeslot-pk="{{ day_data.calendar_date|date:'Y-m-d' }}"
+                    data-left="{{ slot.remaining }}"
+                    data-available="{{ slot.available }}"
+                  >
+                    {{ slot.remaining }} / {{ slot.available }}
+                  </button>
+
+                {% else %}
+                  <button class="btn btn-sm btn-outline-secondary w-100" disabled>
+                    FULL
+                  </button>
+                {% endif %}
+
+              </td>
+              {% endfor %}
+
+            </tr>
+            {% endfor %}
+          </tbody>
+
+        </table>
+      </div>
+
+      <div class="small text-muted mt-2">
+        Cells show <strong>remaining / total</strong> tables.
+      </div>
+
+    </div>
+  </div>
+
 </div>
+{% endblock %}
 
+{% block js %}
 <script>
-(function () {
-  const selectedSlotDisplay = document.getElementById("selectedSlotDisplay");
-  const form = document.getElementById("phoneReservationForm");
+document.addEventListener('DOMContentLoaded', () => {
 
-  const inputDate = document.getElementById("id_reservation_date");
-  const inputSlot = document.getElementById("id_time_slot");
-  const inputTS  = document.getElementById("id_timeslot_availability");
+  const selectedSlotDisplay = document.getElementById('selectedSlotDisplay');
+  const availableHoursEl    = document.getElementById('available_hours');
+  const confirmBtn          = document.getElementById('confirmReservationBtn');
 
-  const buttons = document.querySelectorAll(".slot-btn");
+  const dateInput = document.getElementById('id_reservation_date');
+  const slotInput = document.getElementById('id_time_slot');
+  const tsInput   = document.getElementById('id_timeslot_availability');
+
+  const durationSelect = document.getElementById('id_duration_hours');
+  const tablesEl       = document.getElementById('id_number_of_tables_required_by_patron');
+
+  const modalEl = document.getElementById('customerModal');
+
+  // --- Helper: bootstrap modal instance (or null) ---
+  function getModalInstance() {
+    if (!modalEl) return null;
+    if (!(window.bootstrap && bootstrap.Modal)) return null;
+    return bootstrap.Modal.getOrCreateInstance(modalEl);
+  }
+
+  // --- CRITICAL: when server renders modal "open" via show + display:block,
+  // Bootstrap isn't in control. We must:
+  //  1) remove server-forced backdrop
+  //  2) let Bootstrap show it properly
+  // otherwise Cancel (data-bs-dismiss) won't work.
+  function normalizeServerOpenedModal() {
+    if (!modalEl) return;
+
+    const serverForcedOpen =
+      modalEl.classList.contains('show') ||
+      (modalEl.getAttribute('style') || '').includes('display:block');
+
+    if (!serverForcedOpen) return;
+
+    // Remove any server-injected backdrop so Bootstrap can manage it
+    document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+
+    // Remove server-forced inline style so bootstrap can toggle display
+    if (modalEl.hasAttribute('style')) modalEl.removeAttribute('style');
+
+    // Ensure bootstrap takes control and shows the modal cleanly
+    const inst = getModalInstance();
+    if (inst) inst.show();
+  }
 
   function clearActive() {
-    buttons.forEach(btn => {
-      btn.classList.remove("btn-success");
-      btn.classList.add("btn-outline-success");
+    document.querySelectorAll('.slot-btn').forEach(b => {
+      b.classList.remove('btn-success');
+      b.classList.add('btn-outline-success');
     });
   }
 
-  buttons.forEach(btn => {
-    btn.addEventListener("click", () => {
-      const date = btn.dataset.date;
-      const slot = btn.dataset.slot;
-      const tsPk = btn.dataset.timeslotPk;
-      const label = btn.dataset.slotLabel;
+  // Grid click populates hidden fields + updates UI
+  document.querySelectorAll('.slot-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
 
-      if (!date || !slot || !tsPk) return;
+      const date  = btn.dataset.date || '';
+      const slot  = btn.dataset.slot || '';
+      const tsPk  = btn.dataset.timeslotPk || date;
+      const label = btn.dataset.slotLabel || slot;
+
+      if (!date || !slot) return;
 
       clearActive();
-      btn.classList.remove("btn-outline-success");
-      btn.classList.add("btn-success");
+      btn.classList.remove('btn-outline-success');
+      btn.classList.add('btn-success');
 
-      if (inputDate) inputDate.value = date;
-      if (inputSlot) inputSlot.value = slot;
-      if (inputTS)   inputTS.value   = tsPk;
+      if (dateInput) dateInput.value = date;
+      if (slotInput) slotInput.value = slot;
+      if (tsInput)   tsInput.value   = tsPk;
 
-      selectedSlotDisplay.textContent = `${date} • ${label}`;
+      if (selectedSlotDisplay) {
+        selectedSlotDisplay.textContent = `${date} • ${label}`;
+      }
+
+      const left = parseInt(btn.dataset.left || '0', 10);
+
+      if (availableHoursEl) {
+        if (Number.isFinite(left) && left > 0) {
+          availableHoursEl.textContent = `${left} tables available`;
+          availableHoursEl.className = 'text-success';
+        } else {
+          availableHoursEl.textContent = 'No availability';
+          availableHoursEl.className = 'text-danger';
+        }
+      }
+
+      if (confirmBtn) {
+        confirmBtn.disabled = !(Number.isFinite(left) && left > 0);
+      }
     });
   });
 
-  form.addEventListener("submit", (e) => {
-    const dateVal = inputDate ? inputDate.value : "";
-    const slotVal = inputSlot ? inputSlot.value : "";
-    const tsVal   = inputTS ? inputTS.value : "";
-
-    if (!dateVal || !slotVal || !tsVal) {
+  // Confirm button submits (same UX as customer modal)
+  if (confirmBtn) {
+    confirmBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      alert("Please click a date/time cell in the availability grid before confirming.");
-    }
+
+      const dateVal = dateInput?.value || '';
+      const slotVal = slotInput?.value || '';
+      const tsVal   = tsInput?.value || '';
+
+      if (!dateVal || !slotVal || !tsVal) {
+        alert('Please click a date/time cell in the availability grid before confirming.');
+        return;
+      }
+
+      const tables = parseInt(tablesEl?.value || '0', 10);
+      if (!tables || tables < 1) {
+        alert('Please enter at least 1 table.');
+        return;
+      }
+
+      if (durationSelect) {
+        const opt = durationSelect.options[durationSelect.selectedIndex];
+        if (opt && opt.disabled) {
+          alert('Please choose a valid duration for this time slot.');
+          return;
+        }
+      }
+
+      const form = document.getElementById('phoneReservationForm');
+      if (form) form.submit();
+    });
+  }
+
+  // Ensure cancel (data-bs-dismiss) works after error reloads
+  normalizeServerOpenedModal();
+
+  // Extra safety: if Bootstrap loads late, normalize again on window.load
+  window.addEventListener('load', () => {
+    normalizeServerOpenedModal();
   });
-})();
+
+});
 </script>
 {% endblock %}
