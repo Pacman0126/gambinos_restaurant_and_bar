@@ -157,12 +157,23 @@ def staff_or_superuser_required(view_func):
 #         d[f"total_cust_demand_for_tables_{key}"] = 0
 #     return d
 
+# def _timeslot_defaults(default_capacity=20):
+#     """
+#     Returns per-slot default capacity for a day when no TimeSlotAvailability row exists yet.
+#     IMPORTANT: _build_next_30_days() uses this to display the next 30 days.
+#     """
+#     return {k: default_capacity for k in SLOT_LABELS.keys()}
 def _timeslot_defaults(default_capacity=20):
     """
-    Returns per-slot default capacity for a day when no TimeSlotAvailability row exists yet.
-    IMPORTANT: _build_next_30_days() uses this to display the next 30 days.
+    Defaults for a NEW TimeSlotAvailability row.
+
+    Produces actual model field names, not bare slot keys.
     """
-    return {k: default_capacity for k in SLOT_LABELS.keys()}
+    data = {}
+    for key in SLOT_LABELS.keys():
+        data[f"number_of_tables_available_{key}"] = default_capacity
+        data[f"total_cust_demand_for_tables_{key}"] = 0
+    return data
 
 
 def _update_ts_demand(ts, slots, tables_needed: int, delta_sign: int):
@@ -1062,16 +1073,16 @@ def mark_no_show(request, reservation_id):
 @login_required
 def update_reservation(request, reservation_id):
     """
-    Customer edit reservation.
+    Customer/staff edit reservation.
 
     IMPORTANT:
     TableReservation has NO `user` FK. Permissions are enforced via:
       request.user.email -> Customer.email -> reservation.customer
 
     Notes:
-    - Duration and tables are now editable.
-    - Date and time slot are NOT editable (avoids availability conflicts).
-    - Demand is correctly updated for multi-hour bookings.
+    - Duration and tables are editable.
+    - Date and time slot are NOT editable in this form.
+    - Demand is updated correctly for multi-hour bookings.
     """
     def _safe_next_url(request, default_name="my_reservations"):
         nxt = request.POST.get("next") or request.GET.get("next")
@@ -1079,34 +1090,32 @@ def update_reservation(request, reservation_id):
             return nxt
         return reverse(default_name)
 
-    # Decide default "return to" based on role
     default_return = "staff_reservations" if request.user.is_staff else "my_reservations"
 
     reservation = get_object_or_404(TableReservation, id=reservation_id)
     today = timezone.localdate()
+    is_ajax = request.headers.get("x-requested-with") == "XMLHttpRequest"
 
     if reservation.status in (
         TableReservation.STATUS_COMPLETED,
         TableReservation.STATUS_NO_SHOW,
     ):
-        messages.error(request, "This reservation can no longer be edited.")
-        return redirect(_safe_next_url(
-            request,
-            default_name=(
-                "staff_reservations" if request.user.is_staff else "my_reservations"),
-        ))
+        msg = "This reservation can no longer be edited."
+        if is_ajax:
+            return JsonResponse({"success": False, "error": msg}, status=400)
+        messages.error(request, msg)
+        return redirect(_safe_next_url(request, default_name=default_return))
 
-    if reservation.status == TableReservation.STATUS_ACTIVE and reservation.reservation_date < today:
-        messages.error(request, "Past reservations cannot be edited.")
-        return redirect(_safe_next_url(
-            request,
-            default_name=(
-                "staff_reservations" if request.user.is_staff else "my_reservations"),
-        ))
+    if (
+        reservation.status == TableReservation.STATUS_ACTIVE
+        and reservation.reservation_date < today
+    ):
+        msg = "Past reservations cannot be edited."
+        if is_ajax:
+            return JsonResponse({"success": False, "error": msg}, status=400)
+        messages.error(request, msg)
+        return redirect(_safe_next_url(request, default_name=default_return))
 
-    is_ajax = request.headers.get("x-requested-with") == "XMLHttpRequest"
-
-    # ---------- Permissions ----------
     if not _reservation_edit_allowed(request, reservation):
         msg = "You are not allowed to edit this reservation."
         if is_ajax:
@@ -1114,13 +1123,15 @@ def update_reservation(request, reservation_id):
         messages.error(request, msg)
         return redirect(_safe_next_url(request, default_name=default_return))
 
-    # ---------- Edit ----------
     if request.method == "POST":
         form = EditReservationForm(request.POST, instance=reservation)
 
         if not form.is_valid():
             if is_ajax:
-                return JsonResponse({"success": False, "error": "Please correct the errors."}, status=400)
+                return JsonResponse(
+                    {"success": False, "error": "Please correct the errors."},
+                    status=400,
+                )
             messages.error(request, "Please correct the errors below.")
             return render(
                 request,
@@ -1128,23 +1139,28 @@ def update_reservation(request, reservation_id):
                 {
                     "form": form,
                     "reservation": reservation,
+                    "current_slot_label": SLOT_LABELS.get(
+                        reservation.time_slot,
+                        reservation.time_slot,
+                    ),
                     "slot_labels": SLOT_LABELS,
                     "next": _safe_next_url(request, default_name=default_return),
                 },
             )
 
-        # Save the form (duration_hours + tables)
-        reservation = form.save(commit=False)
-
-        # NEW values from form
+        # IMPORTANT:
+        # Do NOT call form.save(commit=False) here.
+        # That mutates the instance before old demand is released.
         new_duration = form.cleaned_data.get(
-            "duration_hours", reservation.duration_hours)
+            "duration_hours",
+            reservation.duration_hours,
+        )
         new_tables = form.cleaned_data.get(
             "number_of_tables_required_by_patron",
             reservation.number_of_tables_required_by_patron,
         )
 
-        # Always keep existing date and slot (they are not editable in this form)
+        # Date and slot stay unchanged in this edit flow
         new_date = reservation.reservation_date
         new_slot = reservation.time_slot
 
@@ -1167,15 +1183,14 @@ def update_reservation(request, reservation_id):
                 {
                     "form": form,
                     "reservation": reservation,
+                    "current_slot_label": SLOT_LABELS.get(
+                        reservation.time_slot,
+                        reservation.time_slot,
+                    ),
                     "slot_labels": SLOT_LABELS,
                     "next": _safe_next_url(request, default_name=default_return),
                 },
             )
-
-        # Final save
-        reservation.save()
-
-        # Optional: send update email (you can keep your existing code here)
 
         if is_ajax:
             return JsonResponse({"success": True})
@@ -1183,12 +1198,10 @@ def update_reservation(request, reservation_id):
         messages.success(request, "Your reservation has been updated.")
         return redirect(_safe_next_url(request, default_name=default_return))
 
-    # GET
     form = EditReservationForm(instance=reservation)
     current_slot_label = SLOT_LABELS.get(
         reservation.time_slot, reservation.time_slot)
 
-    # Debug (remove after testing)
     print("Form fields:", list(form.fields.keys()))
     print("Rendering edit page for reservation", reservation.id)
 
@@ -1214,11 +1227,13 @@ def _apply_reservation_change(
     new_duration,
     new_tables_needed,
 ):
+    # Reload the ORIGINAL persisted reservation row under lock.
+    original = TableReservation.objects.select_for_update().get(pk=reservation.pk)
+
     old_ts = TimeSlotAvailability.objects.select_for_update().get(
-        pk=reservation.timeslot_availability_id
+        pk=original.timeslot_availability_id
     )
 
-    # resolve / create new day record
     new_ts, _ = TimeSlotAvailability.objects.get_or_create(
         calendar_date=new_date,
         defaults=_timeslot_defaults(),
@@ -1226,44 +1241,104 @@ def _apply_reservation_change(
     new_ts = TimeSlotAvailability.objects.select_for_update().get(pk=new_ts.pk)
 
     old_slots = _affected_slots(
-        reservation.time_slot, reservation.duration_hours or 1, until_close=False
+        original.time_slot,
+        original.duration_hours or 1,
+        until_close=False,
     )
-    old_tables = _to_int(reservation.number_of_tables_required_by_patron, 0)
+    old_tables = _to_int(original.number_of_tables_required_by_patron, 0)
 
     new_slots = _affected_slots(
-        new_start_slot, new_duration or 1, until_close=False
+        new_start_slot,
+        new_duration or 1,
+        until_close=False,
     )
     new_tables = _to_int(new_tables_needed, 0)
 
-    # ✅ Determine "active" from STATUS, not legacy boolean
-    status_active = getattr(TableReservation, "STATUS_ACTIVE", "active")
-    is_active = (getattr(reservation, "status", None) == status_active)
+    logger.warning(
+        "[EDIT DEBUG] reservation=%s old_date=%s old_slot=%s old_duration=%s old_tables=%s | new_date=%s new_slot=%s new_duration=%s new_tables=%s",
+        original.pk,
+        original.reservation_date,
+        original.time_slot,
+        original.duration_hours,
+        old_tables,
+        new_date,
+        new_start_slot,
+        new_duration,
+        new_tables,
+    )
 
-    # 1) release old demand (only if active)
+    status_active = getattr(TableReservation, "STATUS_ACTIVE", "active")
+    is_active = (getattr(original, "status", None) == status_active)
+
     if is_active:
+        logger.warning(
+            "[EDIT DEBUG] BEFORE RELEASE day=%s slots=%s demands=%s",
+            old_ts.calendar_date,
+            old_slots,
+            {
+                s: getattr(old_ts, f"total_cust_demand_for_tables_{s}", None)
+                for s in old_slots
+            },
+        )
+
         _update_ts_demand(old_ts, old_slots, old_tables, delta_sign=-1)
 
-    # 2) capacity check on new TS
+        old_ts.refresh_from_db()
+
+        logger.warning(
+            "[EDIT DEBUG] AFTER RELEASE day=%s slots=%s demands=%s",
+            old_ts.calendar_date,
+            old_slots,
+            {
+                s: getattr(old_ts, f"total_cust_demand_for_tables_{s}", None)
+                for s in old_slots
+            },
+        )
+
+        # CRITICAL:
+        # If old_ts and new_ts are the same DB row, new_ts is now stale.
+        # Refresh it before capacity checks and before re-applying demand.
+        if old_ts.pk == new_ts.pk:
+            new_ts.refresh_from_db()
+
     ok, bad_slot, avail, demand = _capacity_ok(new_ts, new_slots, new_tables)
     if not ok:
-        # put old demand back (since we released it above)
         if is_active:
             _update_ts_demand(old_ts, old_slots, old_tables, delta_sign=+1)
         raise ValueError(
             f"Not enough tables for {new_date} slot {SLOT_LABELS.get(bad_slot, bad_slot)}."
         )
 
-    # 3) save new reservation values
-    reservation.reservation_date = new_date
-    reservation.timeslot_availability = new_ts
-    reservation.time_slot = new_start_slot
-    reservation.duration_hours = new_duration
-    reservation.number_of_tables_required_by_patron = new_tables
-    reservation.save()
+    original.reservation_date = new_date
+    original.timeslot_availability = new_ts
+    original.time_slot = new_start_slot
+    original.duration_hours = new_duration
+    original.number_of_tables_required_by_patron = new_tables
+    original.save()
 
-    # 4) consume new demand (only if active)
     if is_active:
         _update_ts_demand(new_ts, new_slots, new_tables, delta_sign=+1)
+
+        new_ts.refresh_from_db()
+
+        logger.warning(
+            "[EDIT DEBUG] AFTER APPLY day=%s slots=%s demands=%s",
+            new_ts.calendar_date,
+            new_slots,
+            {
+                s: getattr(new_ts, f"total_cust_demand_for_tables_{s}", None)
+                for s in new_slots
+            },
+        )
+
+    # Keep caller instance in sync
+    reservation.reservation_date = original.reservation_date
+    reservation.timeslot_availability = original.timeslot_availability
+    reservation.time_slot = original.time_slot
+    reservation.duration_hours = original.duration_hours
+    reservation.number_of_tables_required_by_patron = (
+        original.number_of_tables_required_by_patron
+    )
 
 
 def _safe_int(value, default=0):
@@ -1315,27 +1390,79 @@ logger = logging.getLogger(__name__)
 #         })
 
 #     return out
+
+
+# def _build_next_30_days(days=30):
+#     today = timezone.localdate()
+#     defaults = _timeslot_defaults()  # your existing helper
+#     out = []
+
+#     for i in range(days):
+#         # ✅ timezone.timedelta is NOT a thing
+#         d = today + datetime.timedelta(days=i)
+
+#         ts = TimeSlotAvailability.objects.filter(calendar_date=d).first()
+
+#         slots = []
+#         for key, label in SLOT_LABELS.items():
+#             capacity = int(defaults.get(key, 0))
+
+#             if ts is None:
+#                 demand = 0
+#             else:
+#                 capacity = int(
+#                     getattr(
+#                         ts, f"number_of_tables_available_{key}", capacity) or capacity
+#                 )
+#                 demand = int(
+#                     getattr(ts, f"total_cust_demand_for_tables_{key}", 0) or 0
+#                 )
+
+#             remaining = max(capacity - demand, 0)
+
+#             slots.append(
+#                 {
+#                     "key": key,
+#                     "label": label,
+#                     "available": capacity,   # total capacity
+#                     "remaining": remaining,  # what the template expects
+#                 }
+#             )
+
+#         out.append(
+#             {
+#                 "calendar_date": d,
+#                 "slots": slots,
+#                 "pk": ts.pk if ts else None,
+#             }
+#         )
+
+#     return out
 def _build_next_30_days(days=30):
     today = timezone.localdate()
-    defaults = _timeslot_defaults()  # your existing helper
+    defaults = _timeslot_defaults()
     out = []
 
     for i in range(days):
-        # ✅ timezone.timedelta is NOT a thing
         d = today + datetime.timedelta(days=i)
-
         ts = TimeSlotAvailability.objects.filter(calendar_date=d).first()
 
         slots = []
         for key, label in SLOT_LABELS.items():
-            capacity = int(defaults.get(key, 0))
+            default_capacity = int(
+                defaults.get(f"number_of_tables_available_{key}", 20)
+            )
 
             if ts is None:
+                capacity = default_capacity
                 demand = 0
             else:
                 capacity = int(
                     getattr(
-                        ts, f"number_of_tables_available_{key}", capacity) or capacity
+                        ts,
+                        f"number_of_tables_available_{key}",
+                        default_capacity,
+                    ) or default_capacity
                 )
                 demand = int(
                     getattr(ts, f"total_cust_demand_for_tables_{key}", 0) or 0
@@ -1347,8 +1474,8 @@ def _build_next_30_days(days=30):
                 {
                     "key": key,
                     "label": label,
-                    "available": capacity,   # total capacity
-                    "remaining": remaining,  # what the template expects
+                    "available": capacity,
+                    "remaining": remaining,
                 }
             )
 
@@ -1581,8 +1708,8 @@ def make_reservation(request):
         max_choice_allowed = max(
             choice_values) if choice_values else max_slots_left_today
 
-        if until_close:
-            requested_duration_slots = max_slots_left_today
+        # if until_close:
+        #     requested_duration_slots = max_slots_left_today
 
         duration_slots = max(
             1, min(requested_duration_slots, max_slots_left_today, max_choice_allowed))
