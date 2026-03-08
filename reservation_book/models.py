@@ -44,8 +44,6 @@ class Customer(models.Model):
     mobile = models.CharField(max_length=20, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    # number_of_tables_required_by_patron = models.PositiveIntegerField(
-    #     default=1)
 
     # New: Flag for barred/banned customers
     barred = models.BooleanField(
@@ -151,7 +149,7 @@ TableReservationManager = models.Manager.from_queryset(
 
 class TableReservation(models.Model):
     # Attach the working manager (THIS enables `.active()` everywhere)
-    objects = TableReservationManager()
+    objects = models.Manager()
 
     id = models.BigAutoField(primary_key=True)
 
@@ -454,6 +452,8 @@ class RestaurantConfig(models.Model):
 
 
 class TimeSlotAvailability(models.Model):
+
+    objects = models.Manager()
     # Back to the original schema your DB actually has:
     calendar_date = models.DateField(primary_key=True)
 

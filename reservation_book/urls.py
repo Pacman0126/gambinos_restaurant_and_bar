@@ -1,5 +1,3 @@
-# reservation_book/urls.py
-
 from django.urls import path
 from . import views
 
@@ -65,11 +63,6 @@ urlpatterns = [
          views.unbar_customer,
          name="unbar_customer"),
 
-    # path(
-    #     "staff/customers/<int:customer_id>/resend-setup-link/",
-    #     views.resend_password_setup_link,
-    #     name="resend_password_setup_link",
-    # ),
     path(
         "staff/resend-password-setup/",
         views.resend_password_setup_link,

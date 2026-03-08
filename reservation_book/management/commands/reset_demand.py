@@ -6,6 +6,10 @@ from django.db import transaction
 from reservation_book.models import TableReservation, TimeSlotAvailability
 from reservation_book.views import SLOT_LABELS, _affected_slots
 
+# This command is for advanced use only. It allows resetting the demand counters
+# in TimeSlotAvailability for specific dates, with an optional rebuild from active
+# future reservations. Use with caution and always backup your data before running.
+
 
 class Command(BaseCommand):
     help = (

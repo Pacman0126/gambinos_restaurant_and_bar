@@ -1,22 +1,17 @@
 from __future__ import annotations
-from .forms import PhoneReservationForm
-from .models import Customer, TableReservation, TimeSlotAvailability
-from django.contrib.auth import get_user_model
-from django.db.models import Count, Sum, Q, F, IntegerField, Value
-from datetime import date
+import datetime
+from datetime import timedelta, datetime
 import json
 import uuid
-from django.shortcuts import render, redirect
-from django.db import transaction
-from django.shortcuts import redirect, render
-from django.core.mail import send_mail
-from django.contrib.auth.decorators import login_required
-from datetime import timedelta
-from datetime import timedelta, datetime
 import logging
 import re
 
-import datetime
+from django.contrib.auth import get_user_model
+from django.db.models import Count, Sum, Q, F, IntegerField, Value
+from django.shortcuts import render, redirect
+from django.db import transaction
+from django.core.mail import send_mail
+from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.http import url_has_allowed_host_and_scheme
@@ -24,47 +19,25 @@ from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth.tokens import default_token_generator
 from django.conf import settings
 from django.contrib import messages
-# from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth import login, get_user_model, authenticate
+from django.contrib.auth import login, authenticate
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import SetPasswordForm
-# from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required, user_passes_test
-
-
-from django.core.mail import send_mail, EmailMultiAlternatives
-from django.db.models import Q, Count, Sum, F, ImageField, Value
 from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.db.models.expressions import ExpressionWrapper
 from django.db.models.functions import Coalesce
-from django.db import IntegrityError, transaction
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from django.utils.text import slugify
-
 from django.views.decorators.http import require_GET, require_http_methods
 from django.views.decorators.http import require_POST
-from django.utils import timezone
-
 from django.utils.crypto import get_random_string
 from django.http import HttpResponseForbidden
 from allauth.account.models import EmailAddress
-
-# from .decorators import staff_or_superuser_required
 from .constants import SLOT_LABELS
-# from .models import SLOT_KEYS
-from .models import TimeSlotAvailability, RestaurantConfig, Customer, ReservationSeries, TableReservation
+from .models import TimeSlotAvailability, Customer, TableReservation
 from .models import CancellationEvent, ReservationStats, NoShowEvent
-
-from .forms import (
-    PhoneReservationForm,
-    EditReservationForm,
-    ReservationForm,
-)
-
-
-# SLOT_KEYS = list(SLOT_LABELS.keys())
+from .forms import PhoneReservationForm
+from .forms import EditReservationForm, SignUpForm
 
 
 def _default_tables_per_slot() -> int:
@@ -86,7 +59,7 @@ def _default_tables_per_slot() -> int:
     return 20
 
 
-def _get_slot_capacity_default():
+def _get_slot_capacity_default():  # legacy helper
     """
     Your project already has a notion of default tables per slot (often 20).
     Keep this as a single place to change it.
@@ -142,27 +115,6 @@ def staff_or_superuser_required(view_func):
     return wrapper
 
 
-# def _timeslot_defaults(default_tables_per_slot: int = 20) -> dict:
-#     """
-#     Defaults for a NEW TimeSlotAvailability row.
-
-#     Your model fields:
-#       - calendar_date (PK)
-#       - number_of_tables_available_<slot>
-#       - total_cust_demand_for_tables_<slot>
-#     """
-#     d = {}
-#     for key in SLOT_LABELS.keys():
-#         d[f"number_of_tables_available_{key}"] = default_tables_per_slot
-#         d[f"total_cust_demand_for_tables_{key}"] = 0
-#     return d
-
-# def _timeslot_defaults(default_capacity=20):
-#     """
-#     Returns per-slot default capacity for a day when no TimeSlotAvailability row exists yet.
-#     IMPORTANT: _build_next_30_days() uses this to display the next 30 days.
-#     """
-#     return {k: default_capacity for k in SLOT_LABELS.keys()}
 def _timeslot_defaults(default_capacity=20):
     """
     Defaults for a NEW TimeSlotAvailability row.
@@ -234,18 +186,6 @@ def _to_int(value, default=0):
         return default
 
 
-def _safe_int(value, default=0):
-    try:
-        if value is None:
-            return default
-        return int(value)
-    except Exception:
-        return default
-
-
-# --- SLOT LABELS --- moved to constants.py
-
-
 def _slot_order():
     """
     Returns slot keys in display order, based purely on SLOT_LABELS.
@@ -271,7 +211,7 @@ def _pretty_range_from_start_and_duration(start_slot: str, duration_hours: int) 
     first_label = SLOT_LABELS.get(
         slots[start_idx], slots[start_idx])  # "17:00–18:00"
     last_label = SLOT_LABELS.get(
-        slots[end_idx], slots[end_idx])      # "20:00–21:00" for 4h
+        slots[end_idx], slots[end_idx])      # "20:00–21:00" for 2h
 
     try:
         start_t = first_label.split("–")[0].strip()
@@ -452,36 +392,6 @@ def _reservation_contact_email(reservation: TableReservation) -> str | None:
     return email or None
 
 
-def _reservation_owner_email(reservation) -> str:
-    """
-    TableReservation has no `user` FK in this project.
-    Ownership is by email: request.user.email <-> reservation.customer.email
-    """
-    c = getattr(reservation, "customer", None)
-    return ((getattr(c, "email", "") or "").strip().lower())
-
-
-def _request_user_email(request) -> str:
-    return ((getattr(request.user, "email", "") or "").strip().lower())
-
-
-def _attach_time_range_pretty(reservations):
-    """
-    Adds r.time_range_pretty = '17:00–21:00' for templates.
-    Uses your existing helper _pretty_range_from_start_and_duration.
-    """
-    for r in reservations:
-        try:
-            r.time_range_pretty = _pretty_range_from_start_and_duration(
-                r.time_slot,
-                getattr(r, "duration_hours", 1) or 1,
-            )
-        except Exception:
-            # Safe fallback
-            r.time_range_pretty = SLOT_LABELS.get(r.time_slot, r.time_slot)
-    return reservations
-
-
 @login_required
 def _reservation_edit_allowed(request, reservation: TableReservation) -> bool:
     """
@@ -545,28 +455,6 @@ def _reservation_contact_name(
         return (getattr(fallback_user, "username", "") or "").strip()
 
     return ""
-
-
-def _auto_complete_past_reservations():
-    """
-    Past reservations should not remain 'active'.
-    This is idempotent and safe to call on list pages.
-    """
-    today = timezone.localdate()
-
-    qs = TableReservation.objects.filter(reservation_date__lt=today)
-
-    # Only flip ones that are still effectively active
-    if hasattr(TableReservation, "status"):
-        qs = qs.filter(status=TableReservation.STATUS_ACTIVE)
-        qs.update(status=TableReservation.STATUS_COMPLETED)
-
-    # If your legacy boolean is used, flip it off for past ones (optional, but keeps UI sane)
-    if hasattr(TableReservation, "reservation_status"):
-        TableReservation.objects.filter(
-            reservation_date__lt=today,
-            reservation_status=True,
-        ).update(reservation_status=False)
 
 
 @login_required
@@ -639,7 +527,7 @@ def mark_completed(request, reservation_id):
     return mark_reservation_completed(request, reservation_id)
 
 
-NO_SHOW_BAN_THRESHOLD = 3  # adjust
+NO_SHOW_BAN_THRESHOLD = 3  # adjust as needed for your business rules
 
 
 def _auto_mark_no_shows(today=None):
@@ -1350,101 +1238,14 @@ def _safe_int(value, default=0):
 
 logger = logging.getLogger(__name__)
 
-# IMPORTANT: SLOT_LABELS comes from .constants
-# SLOT_LABELS = {"17_18": "17:00–18:00", ...}
 
-
-# def _build_next_30_days(days=30):
-#     today = timezone.localdate()
-#     defaults = _timeslot_defaults()          # your existing helper
-#     out = []
-
-#     for i in range(days):
-#         d = today + timezone.timedelta(days=i)
-#         ts = TimeSlotAvailability.objects.filter(calendar_date=d).first()
-
-#         slots = []
-#         for key, label in SLOT_LABELS.items():
-#             capacity = int(defaults.get(key, 0))
-#             if ts is None:
-#                 demand = 0
-#             else:
-#                 capacity = int(
-#                     getattr(ts, f"number_of_tables_available_{key}", capacity) or capacity)
-#                 demand = int(
-#                     getattr(ts, f"total_cust_demand_for_tables_{key}", 0) or 0)
-
-#             remaining = max(capacity - demand, 0)
-
-#             slots.append({
-#                 "key": key,
-#                 "label": label,
-#                 "available": capacity,      # total capacity (stays 20)
-#                 "remaining": remaining,     # what the template expects
-#             })
-
-#         out.append({
-#             "calendar_date": d,
-#             "slots": slots,
-#             "pk": ts.pk if ts else None,
-#         })
-
-#     return out
-
-
-# def _build_next_30_days(days=30):
-#     today = timezone.localdate()
-#     defaults = _timeslot_defaults()  # your existing helper
-#     out = []
-
-#     for i in range(days):
-#         # ✅ timezone.timedelta is NOT a thing
-#         d = today + datetime.timedelta(days=i)
-
-#         ts = TimeSlotAvailability.objects.filter(calendar_date=d).first()
-
-#         slots = []
-#         for key, label in SLOT_LABELS.items():
-#             capacity = int(defaults.get(key, 0))
-
-#             if ts is None:
-#                 demand = 0
-#             else:
-#                 capacity = int(
-#                     getattr(
-#                         ts, f"number_of_tables_available_{key}", capacity) or capacity
-#                 )
-#                 demand = int(
-#                     getattr(ts, f"total_cust_demand_for_tables_{key}", 0) or 0
-#                 )
-
-#             remaining = max(capacity - demand, 0)
-
-#             slots.append(
-#                 {
-#                     "key": key,
-#                     "label": label,
-#                     "available": capacity,   # total capacity
-#                     "remaining": remaining,  # what the template expects
-#                 }
-#             )
-
-#         out.append(
-#             {
-#                 "calendar_date": d,
-#                 "slots": slots,
-#                 "pk": ts.pk if ts else None,
-#             }
-#         )
-
-#     return out
 def _build_next_30_days(days=30):
     today = timezone.localdate()
     defaults = _timeslot_defaults()
     out = []
 
     for i in range(days):
-        d = today + datetime.timedelta(days=i)
+        d = today + timedelta(days=i)
         ts = TimeSlotAvailability.objects.filter(calendar_date=d).first()
 
         slots = []
@@ -1560,21 +1361,11 @@ def get_or_create_customer_for_request(request, form):
     )
 
 
-# assumes these already exist in your file
-# from .forms import PhoneReservationForm
-# from .models import Customer, TimeSlotAvailability
-# from .constants import SLOT_LABELS
-# logger = logging.getLogger(__name__)
-
-logger = logging.getLogger(__name__)
-
 # Assumes these exist in your project:
 # from .constants import SLOT_LABELS
 # from .forms import PhoneReservationForm
 # from .models import TimeSlotAvailability, TableReservation, Customer
 # from .views_helpers import _timeslot_defaults   (or wherever it lives)
-
-
 logger = logging.getLogger(__name__)
 
 
@@ -1588,10 +1379,6 @@ def signup(request):
     else:
         form = SignUpForm()
     return render(request, "registration/signup.html", {"form": form})
-
-# def _next_days(days=30):
-#     today = timezone.localdate()
-#     return [today + timedelta(days=i) for i in range(days)]
 
 
 @login_required
@@ -1686,14 +1473,6 @@ def make_reservation(request):
         if series_days > 14:
             series_days = 14  # matches your form max
 
-        # # checkbox name compatibility: template might be book_until_close, form might be until_close
-        # until_close = bool(
-        #     cleaned.get("book_until_close")
-        #     or cleaned.get("until_close")
-        #     or request.POST.get("book_until_close")
-        #     or request.POST.get("until_close")
-        # )
-
         # Slot math
         slot_keys = list(SLOT_LABELS.keys())
         start_index = slot_keys.index(time_slot_key)
@@ -1707,9 +1486,6 @@ def make_reservation(request):
             duration_field.choices or []) if str(v).isdigit()]
         max_choice_allowed = max(
             choice_values) if choice_values else max_slots_left_today
-
-        # if until_close:
-        #     requested_duration_slots = max_slots_left_today
 
         duration_slots = max(
             1, min(requested_duration_slots, max_slots_left_today, max_choice_allowed))
@@ -1926,32 +1702,6 @@ def staff_reservations(request):
     )
 
 
-def _pretty_time_range(start_slot: str, duration: int) -> str:
-    """
-    If duration > 1, show something like '17:00–19:00' based on SLOT_LABELS.
-    """
-    slots = _slot_order()
-    if start_slot not in slots:
-        return SLOT_LABELS.get(start_slot, start_slot)
-
-    start_index = slots.index(start_slot)
-    affected = slots[start_index: start_index + max(1, duration)]
-
-    if not affected:
-        return SLOT_LABELS.get(start_slot, start_slot)
-
-    first_label = SLOT_LABELS.get(affected[0], affected[0])
-    last_label = SLOT_LABELS.get(affected[-1], affected[-1])
-
-    # Expect labels like "17:00–18:00"
-    try:
-        start_t = first_label.split("–")[0].strip()
-        end_t = last_label.split("–")[1].strip()
-        return f"{start_t}–{end_t}"
-    except Exception:
-        return first_label
-
-
 @superuser_required
 def staff_management(request):
     staff_users = User.objects.filter(
@@ -2010,20 +1760,20 @@ def add_staff(request):
         login_url = request.build_absolute_uri(reverse('account_login'))
         subject = "Gambino's Restaurant - Staff Account Access"
         message = f"""
-Hello {first_name},
+            Hello {first_name},
 
-Your staff account for Gambino's Restaurant & Bar has been created (or re-activated).
+            Your staff account for Gambino's Restaurant & Bar has been created (or re-activated).
 
-Please log in using the details below and change your password immediately:
+            Please log in using the details below and change your password immediately:
 
-Login URL: {login_url}
-Username: {email}
-Temporary Password: {temp_password}
+            Login URL: {login_url}
+            Username: {email}
+            Temporary Password: {temp_password}
 
-For security, please change your password after logging in.
+            For security, please change your password after logging in.
 
-Thank you,
-Management
+            Thank you,
+            Management
         """
 
         try:
@@ -2102,10 +1852,7 @@ def staff_dashboard(request):
     _auto_mark_no_shows(today=today)
 
     total_reservations = TableReservation.objects.count()
-    # upcoming_reservations_count = TableReservation.objects.filter(
-    #     reservation_date__gte=today,
-    #     reservation_status=True,
-    # ).count()
+
     upcoming_reservations_count = TableReservation.objects.filter(
         reservation_date__gte=today,
         status=TableReservation.STATUS_ACTIVE,
@@ -2244,930 +1991,6 @@ def user_reservation_history(request, customer_id):
             "no_show_events": no_show_events,
         },
     )
-
-
-# @staff_or_superuser_required
-# def create_phone_reservation(request):
-#     """Staff UI for creating reservations for phone-in customers (Option B + time blocks).
-
-#     Rules enforced:
-#     - Reuse existing Customer by email
-#     - Reuse or create auth User
-#     - NEVER email passwords
-#     - If Customer is NEW (first time in DB) => ALWAYS send set-password onboarding link
-#     - Else if User has unusable password => send set-password onboarding link
-#     - Else => send login link
-#     - Ensure allauth EmailAddress exists and is primary+verified
-#     - Supports:
-#         * single-day time blocks (duration_hours OR 'until close')
-#         * conference series: same block for N consecutive days
-#     """
-#     User = get_user_model()
-
-#     next_30_days = _build_next_30_days(days=30)
-#     if request.method == "POST":
-#         form = PhoneReservationForm(request.POST)
-#         if not form.is_valid():
-#             messages.error(request, "Please correct the errors below.")
-#             print("PHONE FORM ERRORS:", form.errors)
-#             return render(
-#                 request,
-#                 "reservation_book/create_phone_reservation.html",
-#                 {"form": form, "slot_labels": SLOT_LABELS,
-#                     "next_30_days": next_30_days},
-#             )
-
-#         # contains an UNSAVED Customer instance
-#         proto = form.save(commit=False)
-#         proto.is_phone_reservation = True
-#         proto.created_by = request.user
-
-#         # ----------------------------
-#         # Normalize + upsert Customer
-#         # ----------------------------
-#         raw_customer = proto.customer
-
-#         email = _normalize_email(getattr(raw_customer, "email", ""))
-
-#         if not email:
-#             messages.error(request, "Customer email is required.")
-#             return render(
-#                 request,
-#                 "reservation_book/create_phone_reservation.html",
-#                 {"form": form, "slot_labels": SLOT_LABELS,
-#                     "next_30_days": next_30_days},
-#             )
-
-#         customer_defaults = {
-#             "first_name": (getattr(raw_customer, "first_name", "") or "").strip(),
-#             "last_name": (getattr(raw_customer, "last_name", "") or "").strip(),
-#             "phone": getattr(raw_customer, "phone", "") or "",
-#             "mobile": getattr(raw_customer, "mobile", "") or "",
-#         }
-
-#         customer, created_customer = Customer.objects.get_or_create(
-#             email=email,
-#             defaults={**customer_defaults, "email": email},
-#         )
-
-#         # --- E1: barred enforcement (staff phone booking) ---
-#         if getattr(customer, "barred", False):
-#             messages.error(
-#                 request, "This customer is barred. New bookings are not allowed.")
-#             return redirect("staff_dashboard")
-#         # ---------------------------------------------------
-
-#         # Only update fields if we have non-empty values (avoid wiping good data)
-#         cust_changed = False
-#         for field, val in customer_defaults.items():
-#             if val and getattr(customer, field, "") != val:
-#                 setattr(customer, field, val)
-#                 cust_changed = True
-#         if cust_changed:
-#             customer.save()
-
-#         # ----------------------------
-#         # Booking parameters (READ FROM cleaned_data, not proto)
-#         # ----------------------------
-#         start_date = form.cleaned_data.get("reservation_date")
-#         start_slot = form.cleaned_data.get("time_slot")
-#         tables_needed = int(form.cleaned_data.get(
-#             "number_of_tables_required_by_patron") or 0)
-
-#         if not start_date or not start_slot:
-#             messages.error(
-#                 request,
-#                 "Please click a date/time cell in the availability grid before confirming.",
-#             )
-#             return render(
-#                 request,
-#                 "reservation_book/create_phone_reservation.html",
-#                 {"form": form, "slot_labels": SLOT_LABELS,
-#                     "next_30_days": next_30_days},
-#             )
-
-#         slots = _slot_order()
-#         if start_slot not in slots:
-#             messages.error(request, "Invalid time slot selection.")
-#             return render(
-#                 request,
-#                 "reservation_book/create_phone_reservation.html",
-#                 {"form": form, "slot_labels": SLOT_LABELS,
-#                     "next_30_days": next_30_days},
-#             )
-
-#         start_index = slots.index(start_slot)
-
-#         # Duration: either explicit duration_hours, or 'book_until_close'
-#         max_choice = max(int(c[0]) for c in TableReservation._meta.get_field(
-#             "duration_hours").choices)
-
-#         until_close = bool(form.cleaned_data.get(
-#             "book_until_close"))  # ✅ correct name
-#         if until_close:
-#             duration = len(slots) - start_index
-#             duration = max(1, min(duration, max_choice))
-#         else:
-#             duration = int(form.cleaned_data.get("duration_hours") or 1)
-#             duration = max(1, min(duration, max_choice))
-
-#         series_days = int(form.cleaned_data.get("series_days") or 1)
-#         series_days = max(1, min(series_days, 14))
-
-#         affected_slots = slots[start_index: start_index + duration]
-
-#         # ----------------------------
-#         # Timeslot + availability + User handling (atomic)
-#         # ----------------------------
-#         created_reservations = []
-#         user = None
-
-#         try:
-#             with transaction.atomic():
-#                 # Find or create user (once per booking)
-#                 user = (
-#                     User.objects.filter(email__iexact=email).first()
-#                     or User.objects.filter(username__iexact=email).first()
-#                 )
-
-#                 if user is None:
-#                     user = User.objects.create_user(
-#                         username=email,
-#                         email=email,
-#                         password=None,
-#                         first_name=customer.first_name,
-#                         last_name=customer.last_name,
-#                     )
-#                     user.set_unusable_password()
-#                     user.save(update_fields=["password"])
-#                 else:
-#                     # Safe sync of missing profile bits
-#                     user_changed = False
-#                     if not user.first_name and customer.first_name:
-#                         user.first_name = customer.first_name
-#                         user_changed = True
-#                     if not user.last_name and customer.last_name:
-#                         user.last_name = customer.last_name
-#                         user_changed = True
-#                     if not user.email:
-#                         user.email = email
-#                         user_changed = True
-#                     if user_changed:
-#                         user.save()
-
-#                 # Ensure allauth EmailAddress exists and is usable for auth flows
-#                 ea, _ = EmailAddress.objects.get_or_create(
-#                     user=user,
-#                     email=email,
-#                     defaults={"primary": True, "verified": True},
-#                 )
-#                 needs_ea_update = False
-#                 if not ea.primary:
-#                     ea.primary = True
-#                     needs_ea_update = True
-#                 if not ea.verified:
-#                     ea.verified = True
-#                     needs_ea_update = True
-#                 if needs_ea_update:
-#                     ea.save(update_fields=["primary", "verified"])
-
-#                 # Book N consecutive days
-#                 for day_offset in range(series_days):
-#                     day = start_date + datetime.timedelta(days=day_offset)
-
-#                     ts, _ = TimeSlotAvailability.objects.get_or_create(
-#                         calendar_date=day,
-#                         defaults=_timeslot_defaults(),
-#                     )
-#                     # Lock row for consistent demand updates
-#                     ts = TimeSlotAvailability.objects.select_for_update().get(pk=ts.pk)
-
-#                     # Capacity check across all affected slots
-#                     for s in affected_slots:
-#                         slot_available = _to_int(
-#                             getattr(ts, f"number_of_tables_available_{s}", 0), 0)
-#                         slot_demand = _to_int(
-#                             getattr(ts, f"total_cust_demand_for_tables_{s}", 0), 0)
-#                         if slot_demand + tables_needed > slot_available:
-#                             raise ValueError(
-#                                 f"Not enough tables available for {day} in slot {SLOT_LABELS.get(s, s)}."
-#                             )
-
-#                     # Create ONE reservation row per day (start slot + duration_hours)
-#                     r = TableReservation(
-#                         customer=customer,
-#                         timeslot_availability=ts,
-#                         reservation_date=day,
-#                         time_slot=start_slot,
-#                         duration_hours=duration,
-#                         number_of_tables_required_by_patron=tables_needed,
-#                         reservation_status=True,
-#                         is_phone_reservation=True,
-#                         created_by=request.user,
-#                     )
-#                     r.save()
-#                     created_reservations.append(r)
-
-#                     # Update demand for each affected slot
-#                     update_fields = []
-#                     for s in affected_slots:
-#                         demand_field = f"total_cust_demand_for_tables_{s}"
-#                         current = _to_int(getattr(ts, demand_field, 0), 0)
-#                         setattr(ts, demand_field, current + tables_needed)
-#                         update_fields.append(demand_field)
-#                     ts.save(update_fields=update_fields)
-
-#         except ValueError as e:
-#             messages.error(request, str(e))
-#             return render(
-#                 request,
-#                 "reservation_book/create_phone_reservation.html",
-#                 {"form": form, "slot_labels": SLOT_LABELS,
-#                     "next_30_days": next_30_days},
-#             )
-
-#         # ----------------------------
-#         # Email decision (Option B)
-#         # ----------------------------
-#         login_url = request.build_absolute_uri(reverse("account_login"))
-
-#         # New CUSTOMER in DB => onboarding link
-#         # Existing customer but unusable password => onboarding link
-#         needs_password_setup = bool(created_customer) or (
-#             not user.has_usable_password())
-
-#         password_setup_url = None
-#         if needs_password_setup:
-#             password_setup_url = _build_set_password_link(request, user)
-
-#         # Pretty time range (start–end)
-#         def _range_pretty(slots_list):
-#             if not slots_list:
-#                 return ""
-#             first_label = SLOT_LABELS.get(slots_list[0], slots_list[0])
-#             last_label = SLOT_LABELS.get(slots_list[-1], slots_list[-1])
-#             try:
-#                 start_t = first_label.split("–")[0].strip()
-#                 end_t = last_label.split("–")[1].strip()
-#                 return f"{start_t}–{end_t}"
-#             except Exception:
-#                 return first_label
-
-#         time_range_pretty = _range_pretty(
-#             affected_slots) if duration > 1 else SLOT_LABELS.get(start_slot, start_slot)
-
-#         context = {
-#             "reservation": created_reservations[0] if created_reservations else proto,
-#             "reservations": created_reservations,
-#             "time_slot_pretty": time_range_pretty,
-#             "tables_needed": tables_needed,
-#             "login_url": login_url,
-#             "needs_password_setup": needs_password_setup,
-#             "password_setup_url": password_setup_url,
-#             "series_days": series_days,
-#             "duration_hours": duration,
-#             "until_close": until_close,
-#         }
-
-#         message = render_to_string(
-#             "reservation_book/emails/phone_reservation_confirmation.txt",
-#             context,
-#         )
-
-#         send_mail(
-#             subject="Your reservation at Gambinos Restaurant & Lounge is confirmed",
-#             message=message,
-#             from_email=settings.DEFAULT_FROM_EMAIL,
-#             recipient_list=[email],
-#             fail_silently=False,
-#         )
-
-#         messages.success(request, "Phone reservation created.")
-#         return redirect("staff_dashboard")
-
-#     # GET
-#     form = PhoneReservationForm()
-#     return render(
-#         request,
-#         "reservation_book/create_phone_reservation.html",
-#         {"form": form, "slot_labels": SLOT_LABELS, "next_30_days": next_30_days},
-#     )
-
-# @staff_or_superuser_required
-# def create_phone_reservation(request):
-#     """Staff UI for creating reservations for phone-in customers (Option B + time blocks).
-
-#     Rules enforced:
-#     - Reuse existing Customer by email
-#     - Reuse or create auth User
-#     - NEVER email passwords
-#     - If Customer is NEW (first time in DB) => ALWAYS send set-password onboarding link
-#     - Else if User has unusable password => send set-password onboarding link
-#     - Else => send login link
-#     - Ensure allauth EmailAddress exists and is primary+verified
-#     - Supports:
-#         * single-day time blocks (duration_hours OR 'until close')
-#         * conference series: same block for N consecutive days
-#     """
-#     User = get_user_model()
-
-#     # Always build from *today* (rolling 30 days)
-#     next_30_days = _build_next_30_days(days=30)
-
-#     if request.method == "POST":
-#         form = PhoneReservationForm(request.POST)
-
-#         if not form.is_valid():
-#             messages.error(request, "Please correct the errors below.")
-#             print("PHONE FORM ERRORS:", form.errors)
-#             return render(
-#                 request,
-#                 "reservation_book/create_phone_reservation.html",
-#                 {
-#                     "form": form,
-#                     "slot_labels": SLOT_LABELS,
-#                     "next_30_days": next_30_days,
-#                 },
-#             )
-
-#         # contains an UNSAVED Customer instance
-#         proto = form.save(commit=False)
-#         proto.is_phone_reservation = True
-#         proto.created_by = request.user
-
-#         # ----------------------------
-#         # Normalize + upsert Customer
-#         # ----------------------------
-#         raw_customer = proto.customer
-#         email = _normalize_email(getattr(raw_customer, "email", ""))
-
-#         if not email:
-#             messages.error(request, "Customer email is required.")
-#             return render(
-#                 request,
-#                 "reservation_book/create_phone_reservation.html",
-#                 {
-#                     "form": form,
-#                     "slot_labels": SLOT_LABELS,
-#                     "next_30_days": next_30_days,
-#                 },
-#             )
-
-#         customer_defaults = {
-#             "first_name": (getattr(raw_customer, "first_name", "") or "").strip(),
-#             "last_name": (getattr(raw_customer, "last_name", "") or "").strip(),
-#             "phone": getattr(raw_customer, "phone", "") or "",
-#             "mobile": getattr(raw_customer, "mobile", "") or "",
-#         }
-
-#         customer, created_customer = Customer.objects.get_or_create(
-#             email=email,
-#             defaults={**customer_defaults, "email": email},
-#         )
-
-#         # Barred enforcement (staff phone booking)
-#         if getattr(customer, "barred", False):
-#             messages.error(
-#                 request, "This customer is barred. New bookings are not allowed.")
-#             return redirect("staff_dashboard")
-
-#         # Only update fields if we have non-empty values (avoid wiping good data)
-#         cust_changed = False
-#         for field, val in customer_defaults.items():
-#             if val and getattr(customer, field, "") != val:
-#                 setattr(customer, field, val)
-#                 cust_changed = True
-#         if cust_changed:
-#             customer.save()
-
-#         # ----------------------------
-#         # Booking parameters (READ FROM cleaned_data)
-#         # ----------------------------
-#         start_date = form.cleaned_data.get("reservation_date")
-#         start_slot = form.cleaned_data.get("time_slot")
-#         tables_needed = int(form.cleaned_data.get(
-#             "number_of_tables_required_by_patron") or 0)
-
-#         if not start_date or not start_slot:
-#             messages.error(
-#                 request,
-#                 "Please click a date/time cell in the availability grid before confirming.",
-#             )
-#             return render(
-#                 request,
-#                 "reservation_book/create_phone_reservation.html",
-#                 {
-#                     "form": form,
-#                     "slot_labels": SLOT_LABELS,
-#                     "next_30_days": next_30_days,
-#                 },
-#             )
-
-#         slots = _slot_order()
-#         if start_slot not in slots:
-#             messages.error(request, "Invalid time slot selection.")
-#             return render(
-#                 request,
-#                 "reservation_book/create_phone_reservation.html",
-#                 {
-#                     "form": form,
-#                     "slot_labels": SLOT_LABELS,
-#                     "next_30_days": next_30_days,
-#                 },
-#             )
-
-#         start_index = slots.index(start_slot)
-
-#         # Duration: either explicit duration_hours, or 'book_until_close'
-#         max_choice = max(int(c[0]) for c in TableReservation._meta.get_field(
-#             "duration_hours").choices)
-
-#         until_close = bool(form.cleaned_data.get("book_until_close"))
-#         if until_close:
-#             duration = len(slots) - start_index
-#             duration = max(1, min(duration, max_choice))
-#         else:
-#             duration = int(form.cleaned_data.get("duration_hours") or 1)
-#             duration = max(1, min(duration, max_choice))
-
-#         series_days = int(form.cleaned_data.get("series_days") or 1)
-#         series_days = max(1, min(series_days, 14))
-
-#         affected_slots = slots[start_index: start_index + duration]
-
-#         created_reservations = []
-#         user = None
-
-#         try:
-#             with transaction.atomic():
-#                 # Find or create user (once per booking)
-#                 user = (
-#                     User.objects.filter(email__iexact=email).first()
-#                     or User.objects.filter(username__iexact=email).first()
-#                 )
-
-#                 if user is None:
-#                     user = User.objects.create_user(
-#                         username=email,
-#                         email=email,
-#                         password=None,
-#                         first_name=customer.first_name,
-#                         last_name=customer.last_name,
-#                     )
-#                     user.set_unusable_password()
-#                     user.save(update_fields=["password"])
-#                 else:
-#                     # Safe sync of missing profile bits
-#                     user_changed = False
-#                     if not user.first_name and customer.first_name:
-#                         user.first_name = customer.first_name
-#                         user_changed = True
-#                     if not user.last_name and customer.last_name:
-#                         user.last_name = customer.last_name
-#                         user_changed = True
-#                     if not user.email:
-#                         user.email = email
-#                         user_changed = True
-#                     if user_changed:
-#                         user.save()
-
-#                 # Ensure allauth EmailAddress exists and is usable for auth flows
-#                 ea, _ = EmailAddress.objects.get_or_create(
-#                     user=user,
-#                     email=email,
-#                     defaults={"primary": True, "verified": True},
-#                 )
-#                 needs_ea_update = False
-#                 if not ea.primary:
-#                     ea.primary = True
-#                     needs_ea_update = True
-#                 if not ea.verified:
-#                     ea.verified = True
-#                     needs_ea_update = True
-#                 if needs_ea_update:
-#                     ea.save(update_fields=["primary", "verified"])
-
-#                 # Book N consecutive days
-#                 for day_offset in range(series_days):
-#                     day = start_date + datetime.timedelta(days=day_offset)
-
-#                     ts, _ = TimeSlotAvailability.objects.get_or_create(
-#                         calendar_date=day,
-#                         defaults=_timeslot_defaults(),
-#                     )
-
-#                     # Lock row for consistent demand updates
-#                     ts = TimeSlotAvailability.objects.select_for_update().get(pk=ts.pk)
-
-#                     # Capacity check across affected slots
-#                     for s in affected_slots:
-#                         slot_available = _to_int(
-#                             getattr(ts, f"number_of_tables_available_{s}", 0), 0)
-#                         slot_demand = _to_int(
-#                             getattr(ts, f"total_cust_demand_for_tables_{s}", 0), 0)
-#                         if slot_demand + tables_needed > slot_available:
-#                             raise ValueError(
-#                                 f"Not enough tables available for {day} in slot {SLOT_LABELS.get(s, s)}."
-#                             )
-
-#                     # Create ONE reservation row per day
-#                     r = TableReservation(
-#                         customer=customer,
-#                         timeslot_availability=ts,
-#                         reservation_date=day,
-#                         time_slot=start_slot,
-#                         duration_hours=duration,
-#                         number_of_tables_required_by_patron=tables_needed,
-#                         reservation_status=True,
-#                         is_phone_reservation=True,
-#                         created_by=request.user,
-#                     )
-
-#                     # If your model has status constants, keep it consistent
-#                     if hasattr(TableReservation, "STATUS_ACTIVE"):
-#                         r.status = TableReservation.STATUS_ACTIVE
-
-#                     r.save()
-#                     created_reservations.append(r)
-
-#                     # Update demand for each affected slot
-#                     update_fields = []
-#                     for s in affected_slots:
-#                         demand_field = f"total_cust_demand_for_tables_{s}"
-#                         current = _to_int(getattr(ts, demand_field, 0), 0)
-#                         setattr(ts, demand_field, current + tables_needed)
-#                         update_fields.append(demand_field)
-#                     ts.save(update_fields=update_fields)
-
-#         except ValueError as e:
-#             messages.error(request, str(e))
-#             return render(
-#                 request,
-#                 "reservation_book/create_phone_reservation.html",
-#                 {
-#                     "form": form,
-#                     "slot_labels": SLOT_LABELS,
-#                     "next_30_days": next_30_days,
-#                 },
-#             )
-#         except Exception:
-#             logger.exception("[PHONE] reservation create failed")
-#             messages.error(
-#                 request, "Something went wrong creating the phone reservation.")
-#             return render(
-#                 request,
-#                 "reservation_book/create_phone_reservation.html",
-#                 {
-#                     "form": form,
-#                     "slot_labels": SLOT_LABELS,
-#                     "next_30_days": next_30_days,
-#                 },
-#             )
-
-#         messages.success(
-#             request,
-#             f"Phone reservation{' series' if series_days > 1 else ''} created successfully!",
-#         )
-#         # Staff-facing flow should not go to /my_reservations/
-#         return redirect("staff_reservations")
-
-#     # GET: render the STAFF template
-#     form = PhoneReservationForm()
-#     return render(
-#         request,
-#         "reservation_book/create_phone_reservation.html",
-#         {
-#             "form": form,
-#             "slot_labels": SLOT_LABELS,
-#             "next_30_days": next_30_days,
-#         },
-#     )
-
-
-# @staff_or_superuser_required
-# def create_phone_reservation(request):
-#     """Staff UI for creating reservations for phone-in customers (Option B + time blocks).
-
-#     Rules enforced:
-#     - Reuse existing Customer by email
-#     - Reuse or create auth User
-#     - NEVER email passwords
-#     - If Customer is NEW (first time in DB) => ALWAYS send set-password onboarding link
-#     - Else if User has unusable password => send set-password onboarding link
-#     - Else => send login link
-#     - Ensure allauth EmailAddress exists and is primary+verified
-#     - Supports:
-#         * single-day time blocks (duration_hours OR 'until close')
-#         * conference series: same block for N consecutive days
-#     """
-#     User = get_user_model()
-
-#     # Always build from *today* (rolling 30 days)
-#     next_30_days = _build_next_30_days(days=30)
-
-#     logger.warning("[PHONE GRID] day0=%s sample_slots=%s",
-#                    next_30_days[0]["calendar_date"] if next_30_days else None,
-#                    next_30_days[0]["slots"][:2] if next_30_days else None)
-
-#     if request.method == "POST":
-#         # ------------------------------------------------------------
-#         # ✅ PRE-CREATE TSA ROW so ModelChoiceField(to_field_name=...)
-#         # can resolve the date-string value during form validation.
-#         # ------------------------------------------------------------
-#         post = request.POST.copy()
-#         ts_val = (post.get("timeslot_availability")
-#                   or "").strip()  # expects "YYYY-MM-DD"
-
-#         if ts_val:
-#             try:
-#                 selected_day = datetime.date.fromisoformat(ts_val)
-#             except ValueError:
-#                 selected_day = None
-
-#             if selected_day:
-#                 TimeSlotAvailability.objects.get_or_create(
-#                     calendar_date=selected_day,
-#                     defaults=_timeslot_defaults(),
-#                 )
-#                 # keep hidden reservation_date consistent (your view uses cleaned_data too)
-#                 post["reservation_date"] = ts_val
-
-#         form = PhoneReservationForm(post)
-
-#         if not form.is_valid():
-#             messages.error(request, "Please correct the errors below.")
-#             print("PHONE FORM ERRORS:", form.errors)
-#             return render(
-#                 request,
-#                 "reservation_book/create_phone_reservation.html",
-#                 {
-#                     "form": form,
-#                     "slot_labels": SLOT_LABELS,
-#                     "next_30_days": next_30_days,
-#                 },
-#             )
-
-#         # contains an UNSAVED Customer instance
-#         proto = form.save(commit=False)
-#         proto.is_phone_reservation = True
-#         proto.created_by = request.user
-
-#         # ----------------------------
-#         # Normalize + upsert Customer
-#         # ----------------------------
-#         raw_customer = proto.customer
-#         email = _normalize_email(getattr(raw_customer, "email", ""))
-
-#         if not email:
-#             messages.error(request, "Customer email is required.")
-#             return render(
-#                 request,
-#                 "reservation_book/create_phone_reservation.html",
-#                 {
-#                     "form": form,
-#                     "slot_labels": SLOT_LABELS,
-#                     "next_30_days": next_30_days,
-#                 },
-#             )
-
-#         customer_defaults = {
-#             "first_name": (getattr(raw_customer, "first_name", "") or "").strip(),
-#             "last_name": (getattr(raw_customer, "last_name", "") or "").strip(),
-#             "phone": getattr(raw_customer, "phone", "") or "",
-#             "mobile": getattr(raw_customer, "mobile", "") or "",
-#         }
-
-#         customer, created_customer = Customer.objects.get_or_create(
-#             email=email,
-#             defaults={**customer_defaults, "email": email},
-#         )
-
-#         # Barred enforcement (staff phone booking)
-#         if getattr(customer, "barred", False):
-#             messages.error(
-#                 request, "This customer is barred. New bookings are not allowed."
-#             )
-#             return redirect("staff_dashboard")
-
-#         # Only update fields if we have non-empty values (avoid wiping good data)
-#         cust_changed = False
-#         for field, val in customer_defaults.items():
-#             if val and getattr(customer, field, "") != val:
-#                 setattr(customer, field, val)
-#                 cust_changed = True
-#         if cust_changed:
-#             customer.save()
-
-#         # ----------------------------
-#         # Booking parameters (READ FROM cleaned_data)
-#         # ----------------------------
-#         start_date = form.cleaned_data.get("reservation_date")
-#         start_slot = form.cleaned_data.get("time_slot")
-#         tables_needed = int(
-#             form.cleaned_data.get("number_of_tables_required_by_patron") or 0
-#         )
-
-#         if not start_date or not start_slot:
-#             messages.error(
-#                 request,
-#                 "Please click a date/time cell in the availability grid before confirming.",
-#             )
-#             return render(
-#                 request,
-#                 "reservation_book/create_phone_reservation.html",
-#                 {
-#                     "form": form,
-#                     "slot_labels": SLOT_LABELS,
-#                     "next_30_days": next_30_days,
-#                 },
-#             )
-
-#         slots = _slot_order()
-#         if start_slot not in slots:
-#             messages.error(request, "Invalid time slot selection.")
-#             return render(
-#                 request,
-#                 "reservation_book/create_phone_reservation.html",
-#                 {
-#                     "form": form,
-#                     "slot_labels": SLOT_LABELS,
-#                     "next_30_days": next_30_days,
-#                 },
-#             )
-
-#         start_index = slots.index(start_slot)
-
-#         # Duration: either explicit duration_hours, or 'until close'
-#         max_choice = max(
-#             int(c[0])
-#             for c in TableReservation._meta.get_field("duration_hours").choices
-#         )
-
-#         # ✅ FIX: your form field is named "until_close" (not book_until_close)
-#         until_close = bool(form.cleaned_data.get("until_close"))
-#         if until_close:
-#             duration = len(slots) - start_index
-#             duration = max(1, min(duration, max_choice))
-#         else:
-#             duration = int(form.cleaned_data.get("duration_hours") or 1)
-#             duration = max(1, min(duration, max_choice))
-
-#         series_days = int(form.cleaned_data.get("series_days") or 1)
-#         series_days = max(1, min(series_days, 14))
-
-#         affected_slots = slots[start_index: start_index + duration]
-
-#         created_reservations = []
-#         user = None
-
-#         try:
-#             with transaction.atomic():
-#                 # Find or create user (once per booking)
-#                 user = (
-#                     User.objects.filter(email__iexact=email).first()
-#                     or User.objects.filter(username__iexact=email).first()
-#                 )
-
-#                 if user is None:
-#                     user = User.objects.create_user(
-#                         username=email,
-#                         email=email,
-#                         password=None,
-#                         first_name=customer.first_name,
-#                         last_name=customer.last_name,
-#                     )
-#                     user.set_unusable_password()
-#                     user.save(update_fields=["password"])
-#                 else:
-#                     # Safe sync of missing profile bits
-#                     user_changed = False
-#                     if not user.first_name and customer.first_name:
-#                         user.first_name = customer.first_name
-#                         user_changed = True
-#                     if not user.last_name and customer.last_name:
-#                         user.last_name = customer.last_name
-#                         user_changed = True
-#                     if not user.email:
-#                         user.email = email
-#                         user_changed = True
-#                     if user_changed:
-#                         user.save()
-
-#                 # Ensure allauth EmailAddress exists and is usable for auth flows
-#                 ea, _ = EmailAddress.objects.get_or_create(
-#                     user=user,
-#                     email=email,
-#                     defaults={"primary": True, "verified": True},
-#                 )
-#                 needs_ea_update = False
-#                 if not ea.primary:
-#                     ea.primary = True
-#                     needs_ea_update = True
-#                 if not ea.verified:
-#                     ea.verified = True
-#                     needs_ea_update = True
-#                 if needs_ea_update:
-#                     ea.save(update_fields=["primary", "verified"])
-
-#                 # Book N consecutive days
-#                 for day_offset in range(series_days):
-#                     day = start_date + datetime.timedelta(days=day_offset)
-
-#                     ts, _ = TimeSlotAvailability.objects.get_or_create(
-#                         calendar_date=day,
-#                         defaults=_timeslot_defaults(),
-#                     )
-
-#                     # Lock row for consistent demand updates
-#                     ts = TimeSlotAvailability.objects.select_for_update().get(pk=ts.pk)
-
-#                     # Capacity check across affected slots
-#                     for s in affected_slots:
-#                         slot_available = _to_int(
-#                             getattr(
-#                                 ts, f"number_of_tables_available_{s}", 0), 0
-#                         )
-#                         slot_demand = _to_int(
-#                             getattr(
-#                                 ts, f"total_cust_demand_for_tables_{s}", 0), 0
-#                         )
-#                         if slot_demand + tables_needed > slot_available:
-#                             raise ValueError(
-#                                 f"Not enough tables available for {day} in slot {SLOT_LABELS.get(s, s)}."
-#                             )
-
-#                     # Create ONE reservation row per day
-#                     r = TableReservation(
-#                         customer=customer,
-#                         timeslot_availability=ts,
-#                         reservation_date=day,
-#                         time_slot=start_slot,
-#                         duration_hours=duration,
-#                         number_of_tables_required_by_patron=tables_needed,
-#                         reservation_status=True,
-#                         is_phone_reservation=True,
-#                         created_by=request.user,
-#                     )
-
-#                     # If your model has status constants, keep it consistent
-#                     if hasattr(TableReservation, "STATUS_ACTIVE"):
-#                         r.status = TableReservation.STATUS_ACTIVE
-
-#                     r.save()
-#                     created_reservations.append(r)
-
-#                     # Update demand for each affected slot
-#                     update_fields = []
-#                     for s in affected_slots:
-#                         demand_field = f"total_cust_demand_for_tables_{s}"
-#                         current = _to_int(getattr(ts, demand_field, 0), 0)
-#                         setattr(ts, demand_field, current + tables_needed)
-#                         update_fields.append(demand_field)
-#                     ts.save(update_fields=update_fields)
-
-#         except ValueError as e:
-#             messages.error(request, str(e))
-#             return render(
-#                 request,
-#                 "reservation_book/create_phone_reservation.html",
-#                 {
-#                     "form": form,
-#                     "slot_labels": SLOT_LABELS,
-#                     "next_30_days": next_30_days,
-#                 },
-#             )
-#         except Exception:
-#             logger.exception("[PHONE] reservation create failed")
-#             messages.error(
-#                 request, "Something went wrong creating the phone reservation.")
-#             return render(
-#                 request,
-#                 "reservation_book/create_phone_reservation.html",
-#                 {
-#                     "form": form,
-#                     "slot_labels": SLOT_LABELS,
-#                     "next_30_days": next_30_days,
-#                 },
-#             )
-
-#         messages.success(
-#             request,
-#             f"Phone reservation{' series' if series_days > 1 else ''} created successfully!",
-#         )
-#         # Staff-facing flow should not go to /my_reservations/
-#         return redirect("staff_reservations")
-
-#     # GET: render the STAFF template
-#     form = PhoneReservationForm()
-#     return render(
-#         request,
-#         "reservation_book/create_phone_reservation.html",
-#         {
-#             "form": form,
-#             "slot_labels": SLOT_LABELS,
-#             "next_30_days": next_30_days,
-#         },
-#     )
 
 
 @staff_or_superuser_required
@@ -3452,6 +2275,7 @@ def create_phone_reservation(request):
                     "next_30_days": next_30_days,
                 },
             )
+
         except Exception:
             logger.exception("[PHONE] reservation create failed")
             messages.error(

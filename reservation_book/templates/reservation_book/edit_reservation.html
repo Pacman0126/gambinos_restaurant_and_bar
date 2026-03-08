@@ -86,15 +86,6 @@
               {{ form.number_of_tables_required_by_patron.errors }}
             </div>
 
-            {% comment %} <!-- Number of Days (new field - harmonized with create pages) -->
-            <div class="mb-3">
-              <label for="id_series_days" class="form-label">Number of Days</label>
-              <input type="number" name="series_days" id="id_series_days" 
-                     class="form-control" min="1" max="30" 
-                     value="{{ series_days }}" required>
-              <small class="form-text text-muted">Increase to add consecutive days; decrease to remove (with availability check).</small>
-            </div> {% endcomment %}
-
             <!-- Optional notes (if you have it) -->
             {% if form.notes %}
               <div class="mb-3">

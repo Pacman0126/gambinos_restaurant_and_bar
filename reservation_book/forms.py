@@ -3,20 +3,9 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.db import transaction
 from allauth.account.forms import SignupForm
-# from .models import ReservationBook   # no longer needed
+
 from .models import TimeSlotAvailability, TableReservation, Customer
 
-
-# class ReservationForm(forms.Form):
-#     reservation_date = forms.ModelChoiceField(
-#         queryset=TimeSlotAvailability.objects.all(),
-#         to_field_name="calendar_date",
-#         label="Choose a date"
-#     )
-#     time_slot = forms.ChoiceField(label="Choose a time slot")
-#     number_of_tables_required_by_patron = forms.IntegerField(
-#         min_value=1, label="Number of tables"
-#     )
 DURATION_SLOT_CHOICES = [
     (1, "1 time slot"),
     (2, "2 time slots"),
@@ -141,10 +130,10 @@ class CustomerSignupForm(SignupForm):
 
         return user
 
-
 # ----------------------------------------------------------------------
 # Staff-only phone reservation form
 # ----------------------------------------------------------------------
+
 
 # Choices mirror your SLOT_LABELS keys/labels from views.py
 DURATION_SLOT_CHOICES = [

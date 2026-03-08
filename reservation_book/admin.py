@@ -3,7 +3,6 @@ from datetime import timedelta
 from django import forms
 from django.contrib import admin
 from django.core.exceptions import ValidationError
-from django.db.models import Q
 from django.utils import timezone
 from django.utils.html import format_html
 

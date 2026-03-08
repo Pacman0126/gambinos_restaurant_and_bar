@@ -3,6 +3,11 @@ from django.utils import timezone
 
 from reservation_book.services.sweeps import run_no_show_sweep
 
+# This command is intended to be run daily (e.g. via cron) to automatically
+#  mark past active reservations as NO_SHOW and update customer counters/ban
+# flags accordingly. It can also be run manually with an optional date
+# override for testing or backfilling purposes.
+
 
 class Command(BaseCommand):
     help = "Mark past active reservations as NO_SHOW and update customer counters/ban flag."
