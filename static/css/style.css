@@ -1,89 +1,336 @@
 /* =========================================
-   Site-wide base styles
+   Gambinos Restaurant & Lounge
+   Consolidated submission stylesheet
    ========================================= */
+
+:root {
+  --app-text: #f8f9fa;
+  --app-muted: rgba(248, 249, 250, 0.72);
+  --app-accent: #d4af37;
+  --app-accent-hover: #f1d27a;
+  --app-border: rgba(255, 255, 255, 0.10);
+  --app-border-gold: rgba(212, 175, 55, 0.30);
+  --app-surface: rgba(18, 18, 18, 0.84);
+  --app-surface-2: rgba(34, 34, 34, 0.94);
+  --app-surface-3: rgba(52, 52, 52, 0.96);
+  --app-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+}
+
+/* =========================================
+   Base page
+   ========================================= */
+
+html,
+body {
+  min-height: 100%;
+}
 
 body {
   font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
-  background-color: #0f0f0f;
-  color: #f8f9fa;
+  color: var(--app-text);
 }
 
-/* Links */
+body.app-body {
+  background-image: url("/static/images/hero/brown-concrete-wall-with-scratches-vector.jpg");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-attachment: fixed;
+  background-size: cover;
+  color: var(--app-text);
+  position: relative;
+}
+
+body.app-body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.18);
+  pointer-events: none;
+  z-index: 0;
+}
+
+body.app-body>* {
+  position: relative;
+  z-index: 1;
+}
+
+/* =========================================
+   Links
+   ========================================= */
+
 a {
-  color: #d4af37;
+  color: var(--app-accent-hover);
   text-decoration: none;
 }
 
-a:hover {
-  color: #f1d27a;
+a:hover,
+a:focus {
+  color: #ffffff;
   text-decoration: underline;
 }
 
-/* Cards */
-.card {
-  border: 1px solid rgba(212, 175, 55, 0.2);
-  background-color: #121212;
-  color: #f8f9fa;
+/* =========================================
+   Main shell
+   ========================================= */
+
+.app-content-shell {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* =========================================
+   Navbar
+   ========================================= */
+
+.app-navbar,
+.navbar,
+.navbar .container,
+.navbar .container-fluid,
+.navbar .navbar-collapse,
+nav.navbar,
+nav.navbar.bg-light,
+.navbar.bg-light {
+  background-color: rgba(20, 20, 20, 0.96) !important;
+}
+
+.app-navbar {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.navbar .navbar-brand,
+.navbar .navbar-nav .nav-link,
+.navbar .navbar-text,
+.app-navbar .dropdown-toggle {
+  color: var(--app-text) !important;
+}
+
+.navbar .navbar-nav .nav-link:hover,
+.navbar .navbar-nav .nav-link:focus,
+.navbar .navbar-brand:hover,
+.navbar .navbar-brand:focus {
+  color: #ffffff !important;
+}
+
+.app-navbar .nav-link.active {
+  color: var(--app-accent) !important;
+  font-weight: 700;
+}
+
+.app-user-greeting {
+  color: rgba(248, 249, 250, 0.82) !important;
+}
+
+.navbar .dropdown-menu {
+  background-color: rgba(24, 24, 24, 0.98) !important;
+  border: 1px solid var(--app-border) !important;
+  box-shadow: var(--app-shadow);
+}
+
+.navbar .dropdown-item {
+  color: var(--app-text) !important;
+}
+
+.navbar .dropdown-item:hover,
+.navbar .dropdown-item:focus {
+  background-color: rgba(212, 175, 55, 0.12) !important;
+  color: #ffffff !important;
+}
+
+.navbar .navbar-toggler {
+  border-color: rgba(255, 255, 255, 0.35) !important;
+}
+
+.navbar .navbar-toggler-icon {
+  filter: invert(1) grayscale(100%) !important;
+}
+
+/* Prevent card styles from leaking into navbar */
+.navbar .card,
+.navbar .card-header,
+.navbar .card-body {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* =========================================
+   General readable surfaces
+   ========================================= */
+
+.card,
+.modal-content,
+.table-responsive,
+.list-group,
+.accordion-item,
+.alert,
+.dropdown-menu,
+.content-panel,
+.surface-card {
+  background-color: var(--app-surface) !important;
+  color: var(--app-text) !important;
+  border: 1px solid var(--app-border) !important;
   border-radius: 0.75rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  box-shadow: var(--app-shadow);
+}
+
+.content-panel {
+  padding: 1.5rem;
+}
+
+.card {
+  border-color: var(--app-border-gold) !important;
+}
+
+.card-header,
+.card-footer,
+.modal-header,
+.modal-footer,
+.accordion-button:not(.collapsed) {
+  background-color: rgba(30, 30, 30, 0.96) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border-gold) !important;
 }
 
 .card-header {
-  background-color: #1e1e1e;
-  color: #f8f9fa;
   font-weight: 600;
-  border-bottom: 2px solid #d4af37;
+  border-bottom: 2px solid var(--app-accent);
 }
 
 .card-body {
-  background-color: #121212;
+  background-color: transparent !important;
 }
 
-/* Buttons */
+/* =========================================
+   Alerts
+   ========================================= */
+
+.alert {
+  border-radius: 0.5rem;
+}
+
+/* =========================================
+   Buttons
+   ========================================= */
+
+.btn {
+  border-radius: 0.5rem;
+  font-weight: 600;
+}
+
 .btn-primary {
   background-color: #0d6efd;
   border-color: #0d6efd;
 }
 
-.btn-primary:hover {
+.btn-primary:hover,
+.btn-primary:focus {
   background-color: #0b5ed7;
   border-color: #0b5ed7;
 }
 
+.btn-success,
+.btn-primary,
+.btn-danger,
+.btn-warning {
+  color: #fff !important;
+}
+
+/* Outline buttons need a dark fill on image-backed pages */
+.btn-outline-primary,
+.btn-outline-success,
+.btn-outline-danger,
+.btn-outline-secondary,
+.btn-outline-warning,
+.btn-outline-info,
+.btn-outline-dark {
+  background-color: rgba(20, 20, 20, 0.88) !important;
+}
+
+/* CTA button on homepage */
+.btn-menu-cta {
+  display: inline-block;
+  background-color: var(--app-accent) !important;
+  color: #212529 !important;
+  border: 1px solid var(--app-accent) !important;
+  font-weight: 700;
+  padding: 0.65rem 1.25rem;
+  border-radius: 0.5rem;
+  text-decoration: none !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+}
+
+.btn-menu-cta:hover,
+.btn-menu-cta:focus {
+  background-color: var(--app-accent-hover) !important;
+  border-color: var(--app-accent-hover) !important;
+  color: #000000 !important;
+  text-decoration: none !important;
+}
+
 /* =========================================
-   Modal (original section from your file)
+   Tables
    ========================================= */
 
-/* Modal styling */
-#customerModal .modal-content {
-  background-color: #121212;
-  color: #f8f9fa;
-  border: 1px solid rgba(212, 175, 55, 0.25);
+.table-responsive {
+  overflow: hidden;
 }
 
-#customerModal .modal-header {
-  border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+.table {
+  color: var(--app-text) !important;
+  margin-bottom: 0 !important;
 }
 
-#customerModal .modal-title {
-  color: #f8f9fa;
+.table> :not(caption)>*>* {
+  background-color: var(--app-surface-2) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
 }
 
-#customerModal .modal-footer {
-  border-top: 1px solid rgba(212, 175, 55, 0.25);
+.table thead th {
+  background-color: var(--app-surface-3) !important;
+  color: #ffffff !important;
+  border-color: var(--app-border) !important;
 }
 
+.table tbody td {
+  background-color: var(--app-surface-2) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
+}
 
+.table-striped>tbody>tr:nth-of-type(odd)>* {
+  background-color: rgba(42, 42, 42, 0.92) !important;
+}
+
+.table-hover>tbody>tr:hover>* {
+  background-color: rgba(212, 175, 55, 0.10) !important;
+  color: #ffffff !important;
+}
+
+.table a,
+.table span,
+.table strong,
+.table small {
+  color: var(--app-text) !important;
+}
+
+.table .text-muted,
+.table small.text-muted,
+.table .small.text-muted {
+  color: var(--app-muted) !important;
+}
 
 /* =========================================
-   Phone reservation grid styles
+   Phone reservation grid
    ========================================= */
 
 .table-responsive.phone-reservation-grid {
-  border: 1px solid rgba(212, 175, 55, 0.25);
+  border: 1px solid var(--app-border-gold) !important;
   border-radius: 0.75rem;
   overflow: hidden;
-  background-color: #121212;
+  background-color: var(--app-surface) !important;
 }
 
 .phone-reservation-grid table {
@@ -92,24 +339,25 @@ a:hover {
 
 .phone-reservation-grid thead th {
   background-color: #1e1e1e !important;
-  color: #f8f9fa !important;
+  color: var(--app-text) !important;
   border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 .phone-reservation-grid tbody td {
-  background-color: #121212;
-  border-color: rgba(255, 255, 255, 0.08);
+  background-color: rgba(34, 34, 34, 0.92) !important;
+  color: var(--app-text) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 .phone-reservation-grid .date-cell {
   background-color: #1e1e1e !important;
-  color: #f8f9fa !important;
-  font-weight: 600;
+  color: var(--app-text) !important;
+  font-weight: 700;
   text-align: left;
   white-space: nowrap;
 }
 
-/* Slot buttons used in grid */
+/* Slot buttons stay blue */
 .slot-btn {
   font-weight: 600;
   border-radius: 0.5rem;
@@ -117,115 +365,10 @@ a:hover {
   line-height: 1.1;
 }
 
-/* NOTE: These are your existing styles */
-.slot-btn.btn-outline-success {
-  color: #198754;
-  border-color: #198754;
-}
-
-.slot-btn.btn-outline-success:hover {
-  color: #fff;
-  background-color: #198754;
-  border-color: #198754;
-}
-
-.slot-btn.btn-success {
-  background-color: #198754;
-  border-color: #198754;
-  color: #fff;
-}
-
-.slot-btn.btn-outline-secondary.disabled,
-.slot-btn.btn-secondary.disabled {
-  opacity: 0.6;
-}
-
-/* =========================================
-   Misc
-   ========================================= */
-
-.table {
-  color: #f8f9fa;
-}
-
-.table-striped>tbody>tr:nth-of-type(odd)>* {
-  --bs-table-accent-bg: rgba(255, 255, 255, 0.02);
-}
-
-.table-hover>tbody>tr:hover>* {
-  --bs-table-accent-bg: rgba(212, 175, 55, 0.06);
-}
-
-/* ==========================================================
-   OVERRIDES (2026-02) — Modal theme + keep slot buttons BLUE
-   (Added to fix customerModal styling without changing grid logic)
-   ========================================================== */
-
-/* Reservation Details modal should match dark card scheme */
-#customerModal .modal-content {
-  background-color: rgba(26, 26, 26, 0.96);
-  color: #f8f9fa;
-  border: 1px solid rgba(212, 175, 55, 0.35);
-  /* subtle gold edge */
-  border-radius: 0.75rem;
-  overflow: hidden;
-}
-
-#customerModal .modal-header {
-  background-color: #1e1e1e;
-  color: #f8f9fa;
-  border-bottom: 2px solid #d4af37;
-  /* gold accent like card header */
-}
-
-#customerModal .modal-title {
-  font-weight: 700;
-  letter-spacing: 0.2px;
-}
-
-#customerModal .modal-body {
-  background-color: transparent;
-}
-
-#customerModal .modal-footer {
-  background-color: #1e1e1e;
-  border-top: 1px solid rgba(212, 175, 55, 0.25);
-}
-
-/* Make form controls readable on dark modal */
-#customerModal .form-label {
-  color: #eaeaea;
-}
-
-#customerModal .form-control,
-#customerModal .form-select {
-  background-color: rgba(255, 255, 255, 0.06);
-  color: #f8f9fa;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-}
-
-#customerModal .form-control::placeholder {
-  color: rgba(248, 249, 250, 0.55);
-}
-
-#customerModal .form-control:focus,
-#customerModal .form-select:focus {
-  border-color: rgba(212, 175, 55, 0.65);
-  box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.18);
-}
-
-#customerModal .alert {
-  border: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-/* Keep the slot grid BLUE everywhere.
-   Your templates may use .slot-btn with btn-outline-success/btn-success.
-   These overrides force those slot buttons to use Bootstrap "primary" coloring
-   WITHOUT touching other .btn-success buttons elsewhere. */
 .slot-btn.btn-outline-success {
   color: #0d6efd !important;
   border-color: #0d6efd !important;
-  background-color: transparent !important;
+  background-color: rgba(20, 20, 20, 0.88) !important;
 }
 
 .slot-btn.btn-outline-success:hover,
@@ -247,140 +390,243 @@ a:hover {
   border-color: #0b5ed7 !important;
 }
 
-/* Keep disabled slots neutral */
 .slot-btn.btn-outline-secondary.disabled,
 .slot-btn.btn-secondary.disabled,
 .slot-btn:disabled {
   opacity: 0.65;
 }
 
-/* ==========================================================
-   NAVBAR FIX — restore Bootstrap navbar styling
-   ========================================================== */
+/* =========================================
+   Forms
+   ========================================= */
 
-/* Ensure navbar keeps its intended background */
-.navbar {
-  background-color: inherit;
+/* Do NOT globally style every form as a boxed panel.
+   That breaks inline action forms inside tables. */
+
+label,
+.form-label,
+.helptext,
+small,
+.form-text {
+  color: var(--app-text) !important;
 }
 
-/* Explicitly restore dark navbar */
-.navbar.navbar-dark {
-  background-color: #212529 !important;
-}
-
-/* Explicitly restore light navbar if used */
-.navbar.navbar-light {
-  background-color: #f8f9fa !important;
-}
-
-/* Prevent card styles from leaking into navbar */
-.navbar .card,
-.navbar .card-header,
-.navbar .card-body {
-  background-color: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-
-/* Navbar links */
-.navbar-dark .navbar-nav .nav-link {
-  color: rgba(255, 255, 255, 0.85);
-}
-
-.navbar-dark .navbar-nav .nav-link:hover {
-  color: #fff;
-}
-
-/* =========================================================
-   FORCE NAVBAR DARK (fix white navbar regression)
-   Paste at the VERY BOTTOM of style.css
-   ========================================================= */
-
-/* Catch common Bootstrap combinations that can turn it white */
-nav.navbar,
-.navbar,
-nav.navbar.bg-light,
-.navbar.bg-light,
-.navbar .container,
-.navbar .container-fluid,
-.navbar .navbar-collapse {
-  background-color: #141414 !important;
-}
-
-/* Brand + links */
-.navbar .navbar-brand,
-.navbar .navbar-nav .nav-link,
-.navbar .navbar-text {
-  color: #f8f9fa !important;
-}
-
-.navbar .navbar-nav .nav-link:hover,
-.navbar .navbar-nav .nav-link:focus,
-.navbar .navbar-brand:hover,
-.navbar .navbar-brand:focus {
-  color: #ffffff !important;
-}
-
-/* Dropdowns */
-.navbar .dropdown-menu {
-  background-color: #1f1f1f !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-}
-
-.navbar .dropdown-item {
-  color: #f8f9fa !important;
-}
-
-.navbar .dropdown-item:hover,
-.navbar .dropdown-item:focus {
+.form-control,
+.form-select,
+textarea,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+input[type="time"] {
   background-color: rgba(255, 255, 255, 0.08) !important;
   color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
 }
 
-/* Toggler button for mobile */
-.navbar .navbar-toggler {
-  border-color: rgba(255, 255, 255, 0.35) !important;
+.form-control::placeholder,
+textarea::placeholder {
+  color: rgba(255, 255, 255, 0.62) !important;
 }
 
-/* Bootstrap’s default toggler icon is dark; invert it for dark navbar */
-.navbar .navbar-toggler-icon {
-  filter: invert(1) grayscale(100%) !important;
+.form-control:focus,
+.form-select:focus,
+textarea:focus,
+input:focus {
+  background-color: rgba(255, 255, 255, 0.10) !important;
+  color: #ffffff !important;
+  border-color: rgba(212, 175, 55, 0.55) !important;
+  box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.14) !important;
 }
 
-/* =========================================================
-   Make modal <select> dropdown readable (Windows/Chromium)
-   ========================================================= */
+/* =========================================
+   Customer modal
+   ========================================= */
 
-#customerModal select,
-#customerModal select.form-select {
-  background-color: #ffffff !important;
-  color: #212529 !important;
-}
-
-#customerModal select option {
-  background-color: #ffffff !important;
-  color: #212529 !important;
-}
-
-/* Keep modal footer visible and prevent clipping */
 #customerModal .modal-content {
+  background-color: rgba(26, 26, 26, 0.96) !important;
+  color: var(--app-text) !important;
+  border: 1px solid rgba(212, 175, 55, 0.35) !important;
+  border-radius: 0.75rem;
   overflow: visible;
 }
 
+#customerModal .modal-header {
+  background-color: #1e1e1e !important;
+  color: var(--app-text) !important;
+  border-bottom: 2px solid var(--app-accent) !important;
+}
+
+#customerModal .modal-title {
+  color: var(--app-text) !important;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+#customerModal .modal-body {
+  background-color: transparent;
+}
+
 #customerModal .modal-footer {
+  background-color: #1e1e1e !important;
+  border-top: 1px solid rgba(212, 175, 55, 0.25) !important;
   display: flex;
   justify-content: flex-end;
-  gap: .5rem;
+  gap: 0.5rem;
+}
+
+#customerModal .form-label {
+  color: #eaeaea !important;
+}
+
+#customerModal .form-control,
+#customerModal .form-select {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  color: var(--app-text) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+}
+
+#customerModal .form-control::placeholder {
+  color: rgba(248, 249, 250, 0.55) !important;
+}
+
+#customerModal .form-control:focus,
+#customerModal .form-select:focus {
+  border-color: rgba(212, 175, 55, 0.65) !important;
+  box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.18) !important;
+}
+
+#customerModal .alert {
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+#customerModal select,
+#customerModal select.form-select,
+#customerModal select option {
+  background-color: #ffffff !important;
+  color: #212529 !important;
 }
 
 #customerModal input[type="email"],
 #customerModal #id_email {
   width: 100% !important;
   min-width: 0 !important;
+  box-sizing: border-box !important;
 }
 
-#customerModal #id_email {
-  width: 100% !important;
-  min-width: 0 !important;
-  box-sizing: border-box !important;
+/* =========================================
+   Hero / image overlays
+   ========================================= */
+
+.hero-overlay,
+.image-overlay,
+.text-on-image {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-overlay::before,
+.image-overlay::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: -1;
+  border-radius: inherit;
+}
+
+.hero-banner .overlay,
+section .overlay {
+  background-color: rgba(0, 0, 0, 0.22) !important;
+}
+
+/* =========================================
+   Responsive
+   ========================================= */
+
+@media (max-width: 768px) {
+  .app-content-shell {
+    padding: 0 !important;
+  }
+
+  .content-panel {
+    padding: 1rem;
+  }
+}
+
+/* Mobile navbar toggler: force visible white icon on dark navbar */
+/* Force a visible mobile hamburger icon */
+.navbar-toggler,
+.app-navbar .navbar-toggler {
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  padding: 0.45rem 0.55rem !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  min-width: 52px;
+  min-height: 38px;
+}
+
+.navbar-toggler:focus,
+.app-navbar .navbar-toggler:focus {
+  box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.12) !important;
+}
+
+.navbar-toggler-icon {
+  display: none !important;
+  background-image: none !important;
+}
+
+.custom-toggler-icon {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 22px;
+  height: 18px;
+}
+
+.custom-toggler-icon span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background-color: #f8f9fa !important;
+  border-radius: 2px;
+}
+
+/* =========================================
+   Final navbar toggler fix
+   Use a real icon, not Bootstrap SVG bars
+   ========================================= */
+
+.custom-nav-toggler {
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  min-width: 52px !important;
+  min-height: 40px !important;
+  padding: 0.45rem 0.65rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: none !important;
+}
+
+.custom-nav-toggler:focus,
+.custom-nav-toggler:hover {
+  border-color: rgba(255, 255, 255, 0.55) !important;
+  background-color: rgba(255, 255, 255, 0.10) !important;
+  box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.10) !important;
+}
+
+.custom-nav-toggler .fa-bars {
+  color: #ffffff !important;
+  font-size: 1.15rem !important;
+  line-height: 1 !important;
+}
+
+.custom-nav-toggler .navbar-toggler-icon,
+.custom-nav-toggler .custom-toggler-icon {
+  display: none !important;
 }

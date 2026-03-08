@@ -2,98 +2,445 @@
 {% load static %}
 
 {% block content %}
-<div class="container py-5 text-white">
+<style>
+  .my-res-page {
+    color: #f8f9fa;
+  }
 
-    <h2 class="mb-4 text-center">My Reservations</h2>
+  .my-res-panel {
+    background: rgba(18, 18, 18, 0.84);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 0.85rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+    overflow: hidden;
+  }
 
-    {% comment %} {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} mb-3">
-                {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %} {% endcomment %}
+  .my-res-header {
+    background: rgba(24, 24, 24, 0.92);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+    padding: 1rem 1.25rem;
+    text-align: center;
+  }
+
+  .my-res-header h2 {
+    margin: 0;
+    color: #f8f9fa;
+    font-weight: 700;
+  }
+
+  .my-res-table-wrap {
+    padding: 1rem;
+  }
+
+  .my-res-table {
+    width: 100%;
+    margin-bottom: 0;
+    color: #f8f9fa;
+    --bs-table-bg: transparent;
+    --bs-table-color: #f8f9fa;
+    --bs-table-border-color: rgba(255, 255, 255, 0.10);
+    --bs-table-striped-bg: rgba(42, 42, 42, 0.92);
+    --bs-table-striped-color: #f8f9fa;
+    --bs-table-hover-bg: rgba(212, 175, 55, 0.10);
+    --bs-table-hover-color: #ffffff;
+  }
+
+  .my-res-table thead th {
+    background-color: rgba(52, 52, 52, 0.96) !important;
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.10) !important;
+    font-weight: 700;
+    vertical-align: middle;
+    text-align: center;
+    line-height: 1.15;
+    font-size: 0.92rem;
+    padding: 0.75rem 0.55rem;
+    white-space: nowrap;
+  }
+
+  .my-res-table tbody td {
+    background-color: rgba(34, 34, 34, 0.92) !important;
+    color: #f8f9fa !important;
+    border-color: rgba(255, 255, 255, 0.10) !important;
+    vertical-align: middle;
+    padding: 0.75rem 0.6rem;
+    line-height: 1.2;
+    font-size: 0.95rem;
+  }
+
+  .my-res-table.table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: rgba(42, 42, 42, 0.92) !important;
+    color: #f8f9fa !important;
+  }
+
+  .my-res-table.table-hover > tbody > tr:hover > * {
+    background-color: rgba(212, 175, 55, 0.10) !important;
+    color: #ffffff !important;
+  }
+
+  .my-res-table .id-col,
+  .my-res-table .tables-col,
+  .my-res-table .status-col {
+    text-align: center;
+    white-space: nowrap;
+    width: 1%;
+  }
+
+  .my-res-table .date-col,
+  .my-res-table .time-col,
+  .my-res-table .duration-col {
+    white-space: nowrap;
+  }
+
+  .my-res-table .actions-col {
+    text-align: end;
+    white-space: nowrap;
+    width: 1%;
+  }
+
+  .my-res-table .table-actions {
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.45rem;
+  }
+
+  .my-res-table .btn {
+    font-weight: 600;
+    border-radius: 0.45rem;
+  }
+
+  .my-res-table .btn-outline-light {
+    background-color: rgba(20, 20, 20, 0.92) !important;
+    color: #f8f9fa !important;
+    border-color: rgba(255, 255, 255, 0.45) !important;
+  }
+
+  .my-res-table .btn-outline-light:hover,
+  .my-res-table .btn-outline-light:focus {
+    background-color: rgba(255, 255, 255, 0.10) !important;
+    color: #ffffff !important;
+    border-color: #ffffff !important;
+  }
+
+  .my-res-table .btn-outline-danger {
+    background-color: rgba(20, 20, 20, 0.92) !important;
+    color: #dc3545 !important;
+    border-color: #dc3545 !important;
+  }
+
+  .my-res-table .btn-outline-danger:hover,
+  .my-res-table .btn-outline-danger:focus {
+    background-color: #dc3545 !important;
+    color: #ffffff !important;
+    border-color: #dc3545 !important;
+  }
+
+  .my-res-table .no-actions {
+    color: rgba(248, 249, 250, 0.65) !important;
+    font-size: 0.92rem;
+  }
+
+  /* Mobile cards */
+  .my-res-cards {
+    padding: 1rem;
+  }
+
+  .my-res-card {
+    background: rgba(28, 28, 28, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 0.8rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
+    padding: 1rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .my-res-card:last-child {
+    margin-bottom: 0;
+  }
+
+  .my-res-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .my-res-card-id {
+    font-weight: 700;
+    color: #ffffff;
+  }
+
+  .my-res-card-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .my-res-item {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 0.6rem;
+    padding: 0.65rem 0.75rem;
+  }
+
+  .my-res-label {
+    display: block;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: rgba(248, 249, 250, 0.62);
+    margin-bottom: 0.2rem;
+    font-weight: 700;
+  }
+
+  .my-res-value {
+    display: block;
+    color: #f8f9fa;
+    font-size: 0.96rem;
+    line-height: 1.25;
+    font-weight: 500;
+  }
+
+  .my-res-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.55rem;
+  }
+
+  .my-res-actions .btn {
+    width: 100%;
+    font-weight: 600;
+    border-radius: 0.5rem;
+  }
+
+  .my-res-actions .btn-outline-light {
+    background-color: rgba(20, 20, 20, 0.92) !important;
+    color: #f8f9fa !important;
+    border-color: rgba(255, 255, 255, 0.45) !important;
+  }
+
+  .my-res-actions .btn-outline-light:hover,
+  .my-res-actions .btn-outline-light:focus {
+    background-color: rgba(255, 255, 255, 0.10) !important;
+    color: #ffffff !important;
+    border-color: #ffffff !important;
+  }
+
+  .my-res-actions .btn-outline-danger {
+    background-color: rgba(20, 20, 20, 0.92) !important;
+    color: #dc3545 !important;
+    border-color: #dc3545 !important;
+  }
+
+  .my-res-actions .btn-outline-danger:hover,
+  .my-res-actions .btn-outline-danger:focus {
+    background-color: #dc3545 !important;
+    color: #ffffff !important;
+    border-color: #dc3545 !important;
+  }
+
+  .my-res-empty {
+    padding: 2.5rem 1rem;
+    text-align: center;
+  }
+
+  .my-res-empty h4 {
+    color: rgba(248, 249, 250, 0.72) !important;
+    margin-bottom: 1.25rem;
+  }
+
+  .my-res-empty .btn-primary {
+    font-weight: 700;
+    border-radius: 0.55rem;
+    padding: 0.75rem 1.25rem;
+  }
+
+  @media (max-width: 767.98px) {
+    .my-res-header {
+      padding: 0.9rem 1rem;
+    }
+
+    .my-res-header h2 {
+      font-size: 1.4rem;
+    }
+
+    .my-res-cards {
+      padding: 0.85rem;
+    }
+
+    .my-res-card {
+      padding: 0.9rem;
+    }
+  }
+</style>
+
+<div class="container-fluid px-3 px-md-4 py-4 my-res-page">
+  <div class="my-res-panel">
+    <div class="my-res-header">
+      <h2>My Reservations</h2>
+    </div>
 
     {% if reservations %}
+
+      <!-- Tablet / laptop / desktop table -->
+      <div class="d-none d-md-block my-res-table-wrap">
         <div class="table-responsive">
-            <table class="table table-dark table-striped table-hover align-middle">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Date</th>
-                        <th>Time Slot</th>
-                        <th>Duration</th>
-                        <th>Tables</th>
-                        <th>Status</th>
-                        <th class="text-end">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for res in reservations %}
-                        <tr>
-                            <td><strong>#{{ res.id }}</strong></td>
-                            <td>{{ res.reservation_date|date:"D, M j, Y" }}</td>
-                            <td>{{ res.time_range_pretty }} ({{ res.duration_hours }}h)</td>
-                            <td>{{ res.duration_hours }} time slot{% if res.duration_hours != 1 %}s{% endif %}</td>
-                            <td>{{ res.number_of_tables_required_by_patron }}</td>
-                            <td>
-                                {# NO SHOW #}
-                                {% if res.status == 'no_show' %}
-                                    <span class="badge bg-danger">No Show</span>
+          <table class="table table-striped table-hover align-middle my-res-table">
+            <thead>
+              <tr>
+                <th class="id-col">ID</th>
+                <th class="date-col">Date</th>
+                <th class="time-col">Time Slot</th>
+                <th class="duration-col">Duration</th>
+                <th class="tables-col">Tables</th>
+                <th class="status-col">Status</th>
+                <th class="actions-col">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for res in reservations %}
+                <tr>
+                  <td class="id-col"><strong>#{{ res.id }}</strong></td>
+                  <td class="date-col">{{ res.reservation_date|date:"D, M j, Y" }}</td>
+                  <td class="time-col">{{ res.time_range_pretty }} ({{ res.duration_hours }}h)</td>
+                  <td class="duration-col">
+                    {{ res.duration_hours }} time slot{% if res.duration_hours != 1 %}s{% endif %}
+                  </td>
+                  <td class="tables-col">{{ res.number_of_tables_required_by_patron }}</td>
+                  <td class="status-col">
+                    {% if res.status == 'no_show' %}
+                      <span class="badge bg-danger">No Show</span>
+                    {% elif res.reservation_date < today %}
+                      {% if res.status == 'active' or res.reservation_status %}
+                        <span class="badge bg-primary">Completed</span>
+                      {% else %}
+                        <span class="badge bg-secondary">Inactive</span>
+                      {% endif %}
+                    {% elif res.status == 'active' or res.reservation_status %}
+                      <span class="badge bg-success">Active</span>
+                    {% else %}
+                      <span class="badge bg-secondary">Inactive</span>
+                    {% endif %}
+                  </td>
+                  <td class="actions-col">
+                    {% if res.reservation_date >= today %}
+                      {% if res.status == 'active' or res.reservation_status %}
+                        <div class="table-actions">
+                          <a href="{% url 'update_reservation' res.id %}?next={% url 'my_reservations' %}"
+                             class="btn btn-sm btn-outline-light">
+                            Edit
+                          </a>
 
-                                {# COMPLETED = past + still "active" in either system #}
-                                {% elif res.reservation_date < today %}
-                                    {% if res.status == 'active' or res.reservation_status %}
-                                    <span class="badge bg-primary">Completed</span>
-                                    {% else %}
-                                    <span class="badge bg-secondary">Inactive</span>
-                                    {% endif %}
-
-                                {# UPCOMING ACTIVE #}
-                                {% elif res.status == 'active' or res.reservation_status %}
-                                    <span class="badge bg-success">Active</span>
-
-                                {# EVERYTHING ELSE #}
-                                {% else %}
-                                    <span class="badge bg-secondary">Inactive</span>
-                                {% endif %}
-                            </td>
-                            <td class="text-end">
-                                {% if res.reservation_date >= today %}
-                                    {% if res.status == 'active' or res.reservation_status %}
-                                    <a href="{% url 'update_reservation' res.id %}?next={% url 'staff_reservations' %}"
-                                        class="btn btn-sm btn-outline-light me-2">
-                                        Edit
-                                    </a>
-
-                                    <form method="post" action="{% url 'cancel_reservation' res.id %}"
-                                            class="d-inline">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn btn-sm btn-outline-danger"
-                                                onclick="return confirm('Cancel this reservation?');">
-                                        Cancel
-                                        </button>
-                                    </form>
-                                    {% else %}
-                                    <span class="text-muted">No actions</span>
-                                    {% endif %}
-                                {% else %}
-                                    <span class="text-muted">No actions</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                          <form method="post"
+                                action="{% url 'cancel_reservation' res.id %}"
+                                class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit"
+                                    class="btn btn-sm btn-outline-danger"
+                                    onclick="return confirm('Cancel this reservation?');">
+                              Cancel
+                            </button>
+                          </form>
+                        </div>
+                      {% else %}
+                        <span class="no-actions">No actions</span>
+                      {% endif %}
+                    {% else %}
+                      <span class="no-actions">No actions</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
+      </div>
+
+      <!-- Smartphone cards -->
+      <div class="d-md-none my-res-cards">
+        {% for res in reservations %}
+          <div class="my-res-card">
+            <div class="my-res-card-top">
+              <div class="my-res-card-id">Reservation #{{ res.id }}</div>
+              <div>
+                {% if res.status == 'no_show' %}
+                  <span class="badge bg-danger">No Show</span>
+                {% elif res.reservation_date < today %}
+                  {% if res.status == 'active' or res.reservation_status %}
+                    <span class="badge bg-primary">Completed</span>
+                  {% else %}
+                    <span class="badge bg-secondary">Inactive</span>
+                  {% endif %}
+                {% elif res.status == 'active' or res.reservation_status %}
+                  <span class="badge bg-success">Active</span>
+                {% else %}
+                  <span class="badge bg-secondary">Inactive</span>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="my-res-card-grid">
+              <div class="my-res-item">
+                <span class="my-res-label">Date</span>
+                <span class="my-res-value">{{ res.reservation_date|date:"D, M j, Y" }}</span>
+              </div>
+
+              <div class="my-res-item">
+                <span class="my-res-label">Time Slot</span>
+                <span class="my-res-value">{{ res.time_range_pretty }} ({{ res.duration_hours }}h)</span>
+              </div>
+
+              <div class="my-res-item">
+                <span class="my-res-label">Duration</span>
+                <span class="my-res-value">
+                  {{ res.duration_hours }} time slot{% if res.duration_hours != 1 %}s{% endif %}
+                </span>
+              </div>
+
+              <div class="my-res-item">
+                <span class="my-res-label">Tables</span>
+                <span class="my-res-value">{{ res.number_of_tables_required_by_patron }}</span>
+              </div>
+            </div>
+
+            <div class="my-res-actions">
+              {% if res.reservation_date >= today %}
+                {% if res.status == 'active' or res.reservation_status %}
+                  <a href="{% url 'update_reservation' res.id %}?next={% url 'my_reservations' %}"
+                     class="btn btn-outline-light">
+                    Edit
+                  </a>
+
+                  <form method="post" action="{% url 'cancel_reservation' res.id %}">
+                    {% csrf_token %}
+                    <button type="submit"
+                            class="btn btn-outline-danger"
+                            onclick="return confirm('Cancel this reservation?');">
+                      Cancel
+                    </button>
+                  </form>
+                {% else %}
+                  <span class="text-muted">No actions available</span>
+                {% endif %}
+              {% else %}
+                <span class="text-muted">No actions available</span>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
     {% else %}
-        <div class="text-center py-5">
-            <h4 class="text-muted mb-4">You don’t have any active reservations yet.</h4>
-            <a href="{% url 'make_reservation' %}" class="btn btn-primary btn-lg">
-                Book Now
-            </a>
-        </div>
+      <div class="my-res-empty">
+        <h4>You don’t have any active reservations yet.</h4>
+        <a href="{% url 'make_reservation' %}" class="btn btn-primary btn-lg">
+          Book Now
+        </a>
+      </div>
     {% endif %}
-
+  </div>
 </div>
 {% endblock %}

@@ -2,165 +2,333 @@
 {% load static %}
 
 {% block content %}
-<div class="container py-4">
+<style>
+  .staff-res-page {
+    color: #f8f9fa;
+  }
 
-  <div class="d-flex align-items-center justify-content-between mb-3">
-    <h2 class="mb-0">Staff Reservations</h2>
-  </div>
+  .staff-res-panel {
+    background: rgba(18, 18, 18, 0.84);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 0.85rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+    overflow: hidden;
+  }
 
-  <div class="table-responsive">
-    <table class="table table-striped align-middle">
-      <thead>
-        <tr>
-          <th style="width: 70px;">ID</th>
-          <th style="width: 140px;">Date</th>
-          <th style="width: 170px;">Time Slot</th>
-          <th style="width: 90px;">Tables</th>
-          <th>Customer</th>
-          <th style="width: 140px;">Status</th>
-          <th style="width: 320px;">Actions</th>
-        </tr>
-      </thead>
+  .staff-res-header {
+    background: rgba(24, 24, 24, 0.92);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+    padding: 1rem 1.25rem;
+  }
 
-      <tbody>
-        {% for r in reservations %}
+  .staff-res-header h2 {
+    margin: 0;
+    color: #f8f9fa;
+    font-weight: 700;
+  }
+
+  .staff-res-table-wrap {
+    padding: 0;
+  }
+
+  .staff-res-table {
+    margin-bottom: 0;
+    color: #f8f9fa;
+    --bs-table-bg: transparent;
+    --bs-table-color: #f8f9fa;
+    --bs-table-border-color: rgba(255, 255, 255, 0.10);
+    --bs-table-striped-bg: rgba(42, 42, 42, 0.92);
+    --bs-table-striped-color: #f8f9fa;
+    --bs-table-hover-bg: rgba(212, 175, 55, 0.10);
+    --bs-table-hover-color: #ffffff;
+  }
+
+  .staff-res-table thead th {
+    background-color: rgba(52, 52, 52, 0.96) !important;
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.10) !important;
+    font-weight: 700;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+
+  .staff-res-table tbody td {
+    background-color: rgba(34, 34, 34, 0.92) !important;
+    color: #f8f9fa !important;
+    border-color: rgba(255, 255, 255, 0.10) !important;
+    vertical-align: middle;
+  }
+
+  .staff-res-table.table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: rgba(42, 42, 42, 0.92) !important;
+    color: #f8f9fa !important;
+  }
+
+  .staff-res-table.table-hover > tbody > tr:hover > * {
+    background-color: rgba(212, 175, 55, 0.10) !important;
+    color: #ffffff !important;
+  }
+
+  .staff-res-table .text-muted,
+  .staff-res-table .small.text-muted,
+  .staff-res-table small.text-muted {
+    color: rgba(248, 249, 250, 0.72) !important;
+  }
+
+  .staff-res-table .fw-semibold {
+    color: #ffffff !important;
+  }
+
+  .staff-res-actions {
+    white-space: nowrap;
+  }
+
+  .staff-res-actions .btn,
+  .staff-res-actions form {
+    display: inline-block;
+    margin-bottom: 0.25rem;
+  }
+
+  .staff-res-actions .btn {
+    min-width: 88px;
+    font-weight: 600;
+    border-radius: 0.45rem;
+  }
+
+  .staff-res-actions .btn-outline-warning {
+    background-color: rgba(20, 20, 20, 0.92) !important;
+    color: #ffc107 !important;
+    border-color: #ffc107 !important;
+  }
+
+  .staff-res-actions .btn-outline-warning:hover,
+  .staff-res-actions .btn-outline-warning:focus {
+    background-color: #ffc107 !important;
+    color: #212529 !important;
+    border-color: #ffc107 !important;
+  }
+
+  .staff-res-actions .btn-outline-danger {
+    background-color: rgba(20, 20, 20, 0.92) !important;
+    color: #dc3545 !important;
+    border-color: #dc3545 !important;
+  }
+
+  .staff-res-actions .btn-outline-danger:hover,
+  .staff-res-actions .btn-outline-danger:focus {
+    background-color: #dc3545 !important;
+    color: #ffffff !important;
+    border-color: #dc3545 !important;
+  }
+
+  .staff-res-actions .btn-outline-success {
+    background-color: rgba(20, 20, 20, 0.92) !important;
+    color: #198754 !important;
+    border-color: #198754 !important;
+  }
+
+  .staff-res-actions .btn-outline-success:hover,
+  .staff-res-actions .btn-outline-success:focus {
+    background-color: #198754 !important;
+    color: #ffffff !important;
+    border-color: #198754 !important;
+  }
+
+  .staff-res-actions .btn-outline-dark {
+    background-color: rgba(20, 20, 20, 0.92) !important;
+    color: #f8f9fa !important;
+    border-color: rgba(255, 255, 255, 0.35) !important;
+  }
+
+  .staff-res-actions .btn-outline-dark:hover,
+  .staff-res-actions .btn-outline-dark:focus {
+    background-color: #343a40 !important;
+    color: #ffffff !important;
+    border-color: #343a40 !important;
+  }
+
+  .staff-res-actions .btn:disabled {
+    opacity: 0.70;
+  }
+
+  .staff-res-empty {
+    color: rgba(248, 249, 250, 0.72) !important;
+    background-color: rgba(34, 34, 34, 0.92) !important;
+  }
+
+  @media (max-width: 991.98px) {
+    .staff-res-actions {
+      white-space: normal;
+    }
+
+    .staff-res-actions .btn,
+    .staff-res-actions form {
+      display: block;
+      width: 100%;
+      margin-right: 0;
+    }
+  }
+</style>
+
+<div class="container py-4 staff-res-page">
+
+  <div class="staff-res-panel">
+    <div class="staff-res-header d-flex align-items-center justify-content-between">
+      <h2>Staff Reservations</h2>
+    </div>
+
+    <div class="table-responsive staff-res-table-wrap">
+      <table class="table table-striped table-hover align-middle staff-res-table">
+        <thead>
           <tr>
-            <td>{{ r.id }}</td>
+            <th style="width: 70px;">ID</th>
+            <th style="width: 140px;">Date</th>
+            <th style="width: 170px;">Time Slot</th>
+            <th style="width: 90px;">Tables</th>
+            <th>Customer</th>
+            <th style="width: 140px;">Status</th>
+            <th style="width: 320px;">Actions</th>
+          </tr>
+        </thead>
 
-            <td>{{ r.reservation_date|date:"M d, Y" }}</td>
+        <tbody>
+          {% for r in reservations %}
+            <tr>
+              <td>{{ r.id }}</td>
 
-            <td>
-              {{ r.time_range_pretty }}
-              {% if r.duration_hours|default:1 > 1 %}
-                <div class="small text-muted">{{ r.duration_hours }} hour block</div>
-              {% endif %}
-            </td>
+              <td>{{ r.reservation_date|date:"M d, Y" }}</td>
 
-            <td>{{ r.number_of_tables_required_by_patron }}</td>
+              <td>
+                {{ r.time_range_pretty }}
+                {% if r.duration_hours|default:1 > 1 %}
+                  <div class="small text-muted">{{ r.duration_hours }} hour block</div>
+                {% endif %}
+              </td>
 
-            <td>
-              <div class="fw-semibold">
-                {{ r.customer.first_name|default:"" }} {{ r.customer.last_name|default:"" }}
-              </div>
-              {% if r.customer.email %}<div class="small text-muted">{{ r.customer.email }}</div>{% endif %}
-              {% if r.customer.phone %}<div class="small text-muted">{{ r.customer.phone }}</div>{% endif %}
-              {% if r.customer and r.customer.barred %}
-                <span class="badge bg-danger ms-1">Barred</span>
-              {% endif %}
+              <td>{{ r.number_of_tables_required_by_patron }}</td>
 
-              {% if r.is_phone_reservation %}
-                <span class="badge bg-info text-dark mt-1">Phone-in</span>
-              {% else %}
-                <span class="badge bg-success mt-1">Online</span>
-              {% endif %}
-            </td>
-
-            {# -------------------- #}
-            {# STATUS COLUMN = badge only #}
-            {# -------------------- #}
-            <td>
-              {% if r.status == 'no_show' %}
-                <span class="badge bg-danger">No Show</span>
-
-              {% elif r.status == 'cancelled' %}
-                <span class="badge bg-secondary">Cancelled</span>
-
-              {% elif r.status == 'completed' %}
-                <span class="badge bg-primary">Completed</span>
-
-              {% elif r.status == 'active' %}
-                {% if r.reservation_date < today %}
-                  <span class="badge bg-warning text-dark">Past (awaiting sweep)</span>
-                {% else %}
-                  <span class="badge bg-success">Active</span>
+              <td>
+                <div class="fw-semibold">
+                  {{ r.customer.first_name|default:"" }} {{ r.customer.last_name|default:"" }}
+                </div>
+                {% if r.customer.email %}<div class="small text-muted">{{ r.customer.email }}</div>{% endif %}
+                {% if r.customer.phone %}<div class="small text-muted">{{ r.customer.phone }}</div>{% endif %}
+                {% if r.customer and r.customer.barred %}
+                  <span class="badge bg-danger ms-1">Barred</span>
                 {% endif %}
 
-              {% else %}
-                {# Fallback for legacy-only rows #}
-                {% if r.reservation_status %}
+                {% if r.is_phone_reservation %}
+                  <span class="badge bg-info text-dark mt-1">Phone-in</span>
+                {% else %}
+                  <span class="badge bg-success mt-1">Online</span>
+                {% endif %}
+              </td>
+
+              <td>
+                {% if r.status == 'no_show' %}
+                  <span class="badge bg-danger">No Show</span>
+
+                {% elif r.status == 'cancelled' %}
+                  <span class="badge bg-secondary">Cancelled</span>
+
+                {% elif r.status == 'completed' %}
+                  <span class="badge bg-primary">Completed</span>
+
+                {% elif r.status == 'active' %}
                   {% if r.reservation_date < today %}
-                    <span class="badge bg-warning text-dark">Past (legacy)</span>
+                    <span class="badge bg-warning text-dark">Past (awaiting sweep)</span>
                   {% else %}
-                    <span class="badge bg-success">Active (legacy)</span>
+                    <span class="badge bg-success">Active</span>
                   {% endif %}
+
                 {% else %}
-                  <span class="badge bg-secondary">Inactive</span>
+                  {% if r.reservation_status %}
+                    {% if r.reservation_date < today %}
+                      <span class="badge bg-warning text-dark">Past (legacy)</span>
+                    {% else %}
+                      <span class="badge bg-success">Active (legacy)</span>
+                    {% endif %}
+                  {% else %}
+                    <span class="badge bg-secondary">Inactive</span>
+                  {% endif %}
                 {% endif %}
-              {% endif %}
-            </td>
+              </td>
 
-            {# -------------------- #}
-            {# ACTIONS COLUMN (H2-1) #}
-            {# -------------------- #}
-            <td class="text-nowrap">
+              <td class="staff-res-actions">
 
-              {# ---------- EDIT ---------- #}
-              {% if r.reservation_date and r.reservation_date >= today and r.status == 'active' %}
-                <a class="btn btn-sm btn-outline-warning"
-                  href="{% url 'update_reservation' r.id %}?next={% url 'staff_reservations' %}">
-                  Edit
-                </a>
-              {% else %}
-                <button type="button" class="btn btn-sm btn-outline-warning" disabled
-                        title="Edit is only available for active reservations on today/future dates">
-                  Edit
-                </button>
-              {% endif %}
+                {% if r.reservation_date and r.reservation_date >= today and r.status == 'active' %}
+                  <a class="btn btn-sm btn-outline-warning"
+                     href="{% url 'update_reservation' r.id %}?next={% url 'staff_reservations' %}">
+                    Edit
+                  </a>
+                {% else %}
+                  <button type="button"
+                          class="btn btn-sm btn-outline-warning"
+                          disabled
+                          title="Edit is only available for active reservations on today/future dates">
+                    Edit
+                  </button>
+                {% endif %}
 
-              {# ---------- CANCEL ---------- #}
-              {% if r.reservation_date and r.reservation_date >= today and r.status == 'active' %}
-                <form method="post" action="{% url 'cancel_reservation' r.id %}" class="d-inline">
-                  {% csrf_token %}
-                  <button type="submit" class="btn btn-sm btn-outline-danger"
-                          onclick="return confirm('Cancel this reservation?');">
+                {% if r.reservation_date and r.reservation_date >= today and r.status == 'active' %}
+                  <form method="post" action="{% url 'cancel_reservation' r.id %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit"
+                            class="btn btn-sm btn-outline-danger"
+                            onclick="return confirm('Cancel this reservation?');">
+                      Cancel
+                    </button>
+                  </form>
+                {% else %}
+                  <button type="button"
+                          class="btn btn-sm btn-outline-danger"
+                          disabled
+                          title="Cancel is only available for active reservations on today/future dates">
                     Cancel
                   </button>
-                </form>
-              {% else %}
-                <button type="button" class="btn btn-sm btn-outline-danger" disabled
-                        title="Cancel is only available for active reservations on today/future dates">
-                  Cancel
-                </button>
-              {% endif %}
+                {% endif %}
 
-              {# ---------- COMPLETE (today only) ---------- #}
-              {% if r.status == 'active' and r.reservation_date and r.reservation_date == today %}
-                <form method="post" action="{% url 'mark_reservation_completed' r.id %}" class="d-inline">
-                  {% csrf_token %}
-                  <button type="submit" class="btn btn-sm btn-outline-success"
-                          onclick="return confirm('Mark this reservation as completed?');">
+                {% if r.status == 'active' and r.reservation_date and r.reservation_date == today %}
+                  <form method="post" action="{% url 'mark_reservation_completed' r.id %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit"
+                            class="btn btn-sm btn-outline-success"
+                            onclick="return confirm('Mark this reservation as completed?');">
+                      Complete
+                    </button>
+                  </form>
+                {% elif r.status == 'active' and r.reservation_date and r.reservation_date > today %}
+                  <button type="button"
+                          class="btn btn-sm btn-outline-success"
+                          disabled
+                          title="Complete can only be set on the reservation date">
                     Complete
                   </button>
-                </form>
-              {% elif r.status == 'active' and r.reservation_date and r.reservation_date > today %}
-                <button type="button" class="btn btn-sm btn-outline-success" disabled
-                        title="Complete can only be set on the reservation date">
-                  Complete
-                </button>
-              {% endif %}
+                {% endif %}
 
-              {# ---------- NO SHOW (past only) ---------- #}
-              {% if r.status == 'active' and r.reservation_date and r.reservation_date < today %}
-                <form method="post" action="{% url 'mark_no_show' r.id %}" class="d-inline">
-                  {% csrf_token %}
-                  <button type="submit" class="btn btn-sm btn-outline-dark"
-                          onclick="return confirm('Mark this reservation as a NO SHOW?');">
-                    No Show
-                  </button>
-                </form>
-              {% endif %}
+                {% if r.status == 'active' and r.reservation_date and r.reservation_date < today %}
+                  <form method="post" action="{% url 'mark_no_show' r.id %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit"
+                            class="btn btn-sm btn-outline-dark"
+                            onclick="return confirm('Mark this reservation as a NO SHOW?');">
+                      No Show
+                    </button>
+                  </form>
+                {% endif %}
 
-            </td>            
-          </tr>
-        {% empty %}
-          <tr>
-            <td colspan="7" class="text-center text-muted py-4">
-              No reservations found.
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="7" class="text-center py-4 staff-res-empty">
+                No reservations found.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
 
 </div>

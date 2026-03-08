@@ -2,140 +2,377 @@
 {% load slot_filters %}
 
 {% block content %}
-<div class="container py-4 my-reservations">
-  <h1 class="mb-2">
-    Reservation History for {{ history_customer.get_full_name|default:history_customer.email }}
-  </h1>
-  <p class="text-muted mb-4">
-    Email: {{ history_customer.email }}
-  </p>
+<style>
+  .history-page {
+    color: #f8f9fa;
+  }
 
-  <!-- ===================== RESERVATIONS (ACTIVE/COMPLETED/NO_SHOW) ===================== -->
-  <h3>Reservations</h3>
+  .history-panel {
+    background: rgba(18, 18, 18, 0.84);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 0.85rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+    overflow: hidden;
+  }
 
-  <div class="table-responsive">
-    <table class="table table-striped table-bordered align-middle">
-      <thead>
-        <tr>
-          <th>Booking ID</th>
-          <th>Date</th>
-          <th>Time Slot</th>
-          <th>Tables</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for r in reservations %}
-          <tr>
-            <td>{{ r.id }}</td>
-            <td>{{ r.reservation_date }}</td>
-            <td>{{ r.time_range_pretty }}</td>
-            <td>{{ r.number_of_tables_required_by_patron }}</td>
-            <td>
-              {% if r.status == 'no_show' %}
-                <span class="badge bg-danger">No Show</span>
-              {% elif r.status == 'completed' %}
-                <span class="badge bg-primary">Completed</span>
-              {% elif r.status == 'active' %}
-                <span class="badge bg-success">Active</span>
-              {% else %}
-                <span class="badge bg-secondary">{{ r.status }}</span>
-              {% endif %}
-            </td>
-          </tr>
-        {% empty %}
-          <tr>
-            <td colspan="5" class="text-center">
-              No reservations found.
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  .history-header {
+    background: rgba(24, 24, 24, 0.92);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+    padding: 1rem 1.25rem;
+  }
+
+  .history-header h1 {
+    margin: 0 0 0.45rem 0;
+    color: #f8f9fa;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .history-header p {
+    margin: 0;
+    color: rgba(248, 249, 250, 0.72) !important;
+  }
+
+  .history-body {
+    padding: 1rem;
+  }
+
+  .history-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .history-chip {
+    background: rgba(34, 34, 34, 0.92);
+    color: #f8f9fa;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 999px;
+    padding: 0.45rem 0.8rem;
+    font-size: 0.95rem;
+  }
+
+  .history-section {
+    margin-bottom: 1.25rem;
+  }
+
+  .history-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .history-section-header {
+    background: rgba(24, 24, 24, 0.90);
+    color: #f8f9fa;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 0.7rem 0.7rem 0 0;
+    padding: 0.85rem 1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .history-count {
+    background: rgba(212, 175, 55, 0.16);
+    color: #f8f9fa;
+    border: 1px solid rgba(212, 175, 55, 0.30);
+    border-radius: 999px;
+    padding: 0.25rem 0.65rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .history-table-wrap {
+    background: rgba(18, 18, 18, 0.82);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-top: none;
+    border-radius: 0 0 0.7rem 0.7rem;
+    overflow-x: auto;
+  }
+
+  .history-table {
+    width: 100%;
+    margin-bottom: 0;
+    color: #f8f9fa;
+  }
+
+  .history-table thead th {
+    background-color: rgba(52, 52, 52, 0.96) !important;
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.10) !important;
+    font-weight: 700;
+    vertical-align: middle;
+    text-align: center;
+    line-height: 1.15;
+    font-size: 0.92rem;
+    padding: 0.75rem 0.55rem;
+    white-space: nowrap;
+  }
+
+  .history-table tbody td {
+    background-color: rgba(34, 34, 34, 0.92) !important;
+    color: #f8f9fa !important;
+    border-color: rgba(255, 255, 255, 0.10) !important;
+    vertical-align: middle;
+    padding: 0.75rem 0.6rem;
+    line-height: 1.2;
+    font-size: 0.95rem;
+  }
+
+  .history-table.table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: rgba(42, 42, 42, 0.92) !important;
+    color: #f8f9fa !important;
+  }
+
+  .history-table.table-hover > tbody > tr:hover > * {
+    background-color: rgba(212, 175, 55, 0.10) !important;
+    color: #ffffff !important;
+  }
+
+  .history-table .num-col,
+  .history-table .status-col,
+  .history-table .actor-col {
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .history-table .date-col,
+  .history-table .slot-col,
+  .history-table .tables-col {
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .history-table .booking-col {
+    white-space: nowrap;
+    text-align: center;
+    width: 1%;
+  }
+
+  .history-table .status-badge {
+    font-size: 0.85rem;
+    padding: 0.45em 0.7em;
+  }
+
+  .history-empty {
+    background: rgba(34, 34, 34, 0.92);
+    color: rgba(248, 249, 250, 0.72);
+    text-align: center;
+    padding: 1rem;
+  }
+
+  .history-footer {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .history-back-btn {
+    background-color: rgba(20, 20, 20, 0.92) !important;
+    color: #f8f9fa !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    padding: 0.6rem 1rem;
+    text-decoration: none !important;
+  }
+
+  .history-back-btn:hover,
+  .history-back-btn:focus {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+    border-color: #d4af37 !important;
+  }
+
+  @media (max-width: 991.98px) {
+    .history-body {
+      padding: 0.85rem;
+    }
+
+    .history-section-header {
+      padding: 0.8rem 0.9rem;
+    }
+  }
+
+  @media (max-width: 767.98px) {
+    .history-header {
+      padding: 0.9rem 1rem;
+    }
+
+    .history-header h1 {
+      font-size: 1.3rem;
+    }
+
+    .history-meta {
+      gap: 0.5rem;
+    }
+
+    .history-chip {
+      font-size: 0.9rem;
+    }
+  }
+</style>
+
+<div class="container-fluid px-3 px-xl-4 py-4 history-page">
+  <div class="history-panel">
+    <div class="history-header">
+      <h1>
+        <i class="fa-regular fa-clock me-2"></i>
+        Reservation History for {{ history_customer.get_full_name|default:history_customer.email }}
+      </h1>
+      <p>Review active, cancelled, and no-show reservation records for this customer.</p>
+    </div>
+
+    <div class="history-body">
+      <div class="history-meta">
+        <div class="history-chip">
+          <strong>Customer:</strong>
+          {{ history_customer.get_full_name|default:"No name on file" }}
+        </div>
+        <div class="history-chip">
+          <strong>Email:</strong>
+          {{ history_customer.email }}
+        </div>
+      </div>
+
+      <section class="history-section">
+        <div class="history-section-header">
+          <span><i class="fa-regular fa-calendar-check me-2"></i>Reservations</span>
+          <span class="history-count">{{ reservations|length }}</span>
+        </div>
+
+        <div class="history-table-wrap">
+          <table class="table table-striped table-hover align-middle history-table">
+            <thead>
+              <tr>
+                <th class="booking-col">Booking ID</th>
+                <th class="date-col">Date</th>
+                <th class="slot-col">Time Slot</th>
+                <th class="tables-col">Tables</th>
+                <th class="status-col">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for r in reservations %}
+                <tr>
+                  <td class="booking-col">{{ r.id }}</td>
+                  <td class="date-col">{{ r.reservation_date }}</td>
+                  <td class="slot-col">{{ r.time_range_pretty }}</td>
+                  <td class="tables-col">{{ r.number_of_tables_required_by_patron }}</td>
+                  <td class="status-col">
+                    {% if r.status == 'no_show' %}
+                      <span class="badge bg-danger status-badge">No Show</span>
+                    {% elif r.status == 'completed' %}
+                      <span class="badge bg-primary status-badge">Completed</span>
+                    {% elif r.status == 'active' %}
+                      <span class="badge bg-success status-badge">Active</span>
+                    {% else %}
+                      <span class="badge bg-secondary status-badge">{{ r.status }}</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="5" class="history-empty">No reservations found.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="history-section">
+        <div class="history-section-header">
+          <span><i class="fa-solid fa-ban me-2"></i>Cancelled Reservations</span>
+          <span class="history-count">{{ cancelled_events|length }}</span>
+        </div>
+
+        <div class="history-table-wrap">
+          <table class="table table-striped table-hover align-middle history-table">
+            <thead>
+              <tr>
+                <th class="booking-col">Booking ID</th>
+                <th class="date-col">Date</th>
+                <th class="slot-col">Time Slot</th>
+                <th class="tables-col">Tables</th>
+                <th class="actor-col">Cancelled By</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for e in cancelled_events %}
+                <tr>
+                  <td class="booking-col">{{ e.reservation_id }}</td>
+                  <td class="date-col">{{ e.reservation_date }}</td>
+                  <td class="slot-col">{{ e.time_slot|slot_label }}</td>
+                  <td class="tables-col">{{ e.tables }}</td>
+                  <td class="actor-col">
+                    {% if e.cancelled_by_staff %}
+                      <span class="badge bg-warning text-dark status-badge">Staff</span>
+                    {% else %}
+                      <span class="badge bg-info text-dark status-badge">Customer</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="5" class="history-empty">No cancellations recorded.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="history-section">
+        <div class="history-section-header">
+          <span><i class="fa-solid fa-user-slash me-2"></i>No-Shows</span>
+          <span class="history-count">{{ no_show_events|length }}</span>
+        </div>
+
+        <div class="history-table-wrap">
+          <table class="table table-striped table-hover align-middle history-table">
+            <thead>
+              <tr>
+                <th class="booking-col">Booking ID</th>
+                <th class="date-col">Date</th>
+                <th class="slot-col">Time Slot</th>
+                <th class="tables-col">Tables</th>
+                <th class="actor-col">Marked By</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for e in no_show_events %}
+                <tr>
+                  <td class="booking-col">{{ e.reservation_id }}</td>
+                  <td class="date-col">{{ e.reservation_date }}</td>
+                  <td class="slot-col">{{ e.time_slot|slot_label }}</td>
+                  <td class="tables-col">{{ e.tables }}</td>
+                  <td class="actor-col">
+                    {% if e.marked_by_staff %}
+                      <span class="badge bg-warning text-dark status-badge">Staff</span>
+                    {% else %}
+                      <span class="badge bg-secondary status-badge">System</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="5" class="history-empty">No no-shows recorded.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="history-footer">
+        <a href="{% url 'user_reservations_overview' %}" class="history-back-btn">
+          <i class="fa-solid fa-arrow-left me-2"></i>Back to overview
+        </a>
+      </div>
+    </div>
   </div>
-
-  <!-- ===================== CANCELLED (EVENTS) ===================== -->
-  <h3 class="mt-5">Cancelled Reservations</h3>
-
-  <div class="table-responsive">
-    <table class="table table-striped table-bordered align-middle">
-      <thead>
-        <tr>
-          <th>Booking ID</th>
-          <th>Date</th>
-          <th>Time Slot</th>
-          <th>Tables</th>
-          <th>Cancelled By</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for e in cancelled_events %}
-          <tr>
-            <td>{{ e.reservation_id }}</td>
-            <td>{{ e.reservation_date }}</td>
-            <td>{{ e.time_slot|slot_label }}</td>
-            <td>{{ e.tables }}</td>
-            <td>
-              {% if e.cancelled_by_staff %}
-                <span class="badge bg-dark">Staff</span>
-              {% else %}
-                <span class="badge bg-secondary">Customer</span>
-              {% endif %}
-            </td>
-          </tr>
-        {% empty %}
-          <tr>
-            <td colspan="5" class="text-center">
-              No cancellations recorded.
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-
-  <!-- ===================== NO-SHOWS (EVENTS) ===================== -->
-  <h3 class="mt-5">No-Shows</h3>
-
-  <div class="table-responsive">
-    <table class="table table-striped table-bordered align-middle">
-      <thead>
-        <tr>
-          <th>Booking ID</th>
-          <th>Date</th>
-          <th>Time Slot</th>
-          <th>Tables</th>
-          <th>Marked By</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for e in no_show_events %}
-          <tr>
-            <td>{{ e.reservation_id }}</td>
-            <td>{{ e.reservation_date }}</td>
-            <td>{{ e.time_slot|slot_label }}</td>
-            <td>{{ e.tables }}</td>
-            <td>
-              {% if e.marked_by_staff %}
-                <span class="badge bg-dark">Staff</span>
-              {% else %}
-                <span class="badge bg-warning text-dark">System</span>
-              {% endif %}
-            </td>
-          </tr>
-        {% empty %}
-          <tr>
-            <td colspan="5" class="text-center">
-              No no-shows recorded.
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-
-  <a href="{% url 'user_reservations_overview' %}" class="btn btn-secondary mt-4">
-    Back to overview
-  </a>
 </div>
 {% endblock %}

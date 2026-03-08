@@ -1,117 +1,430 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
-<div class="container py-4 dark-section">
-  <h1 class="mb-3">
-    <i class="fa-solid fa-users me-2"></i>
-    Customer Reservation Overview
-  </h1>
-  <p class="text-muted mb-4">
-    Summary of customers and their reservation activity.
-  </p>
+<style>
+  .user-overview-page {
+    color: #f8f9fa;
+  }
 
-  <div class="table-responsive my-reservations">
-    <table id="user-reservations-table"
-           class="table table-striped table-bordered align-middle">
-      <thead class="table-light">
-        <tr>
-          <th>Customer</th>
-          <th>Email</th>
-          <th>Total Reservations</th>
-          <th>Active Reservations</th>
-          <th>Active Tables Booked</th>
-          <th>Cancelled</th>
-          <th>No Shows</th>
-          <th>Total Tables Booked</th>
-          <th>Barred</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
+  .user-overview-panel {
+    background: rgba(18, 18, 18, 0.84);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 0.85rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+    overflow: hidden;
+  }
 
-      <tbody>
-        {% for customer in customers %}
+  .user-overview-header {
+    background: rgba(24, 24, 24, 0.92);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+    padding: 1rem 1.25rem;
+  }
+
+  .user-overview-header h1 {
+    margin: 0 0 0.5rem 0;
+    color: #f8f9fa;
+    font-weight: 700;
+  }
+
+  .user-overview-header p {
+    margin: 0;
+    color: rgba(248, 249, 250, 0.72) !important;
+  }
+
+  .user-overview-table-wrap {
+    padding: 1rem 1rem 1.15rem;
+    overflow-x: auto;
+  }
+
+  .user-overview-table {
+    width: 100% !important;
+    table-layout: fixed;
+    margin-bottom: 0 !important;
+    color: #f8f9fa;
+    --bs-table-bg: transparent;
+    --bs-table-color: #f8f9fa;
+    --bs-table-border-color: rgba(255, 255, 255, 0.10);
+    --bs-table-striped-bg: rgba(42, 42, 42, 0.92);
+    --bs-table-striped-color: #f8f9fa;
+    --bs-table-hover-bg: rgba(212, 175, 55, 0.10);
+    --bs-table-hover-color: #ffffff;
+  }
+
+  .user-overview-table col.customer-col { width: 14%; }
+  .user-overview-table col.email-col    { width: 18%; }
+  .user-overview-table col.num-col      { width: 7%; }
+  .user-overview-table col.status-col   { width: 6%; }
+  .user-overview-table col.actions-col  { width: 20%; }
+
+  .user-overview-table thead th {
+    background-color: rgba(52, 52, 52, 0.96) !important;
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.10) !important;
+    font-weight: 700;
+    vertical-align: middle;
+    text-align: center;
+    line-height: 1.15;
+    font-size: 0.92rem;
+    padding: 0.75rem 0.5rem;
+  }
+
+  .user-overview-table tbody td {
+    background-color: rgba(34, 34, 34, 0.92) !important;
+    color: #f8f9fa !important;
+    border-color: rgba(255, 255, 255, 0.10) !important;
+    vertical-align: middle;
+    padding: 0.75rem 0.6rem;
+    line-height: 1.2;
+    font-size: 0.95rem;
+  }
+
+  .user-overview-table.table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: rgba(42, 42, 42, 0.92) !important;
+    color: #f8f9fa !important;
+  }
+
+  .user-overview-table.table-hover > tbody > tr:hover > * {
+    background-color: rgba(212, 175, 55, 0.10) !important;
+    color: #ffffff !important;
+  }
+
+  .user-overview-table .text-muted,
+  .user-overview-table .small.text-muted,
+  .user-overview-table small.text-muted {
+    color: rgba(248, 249, 250, 0.72) !important;
+  }
+
+  .user-overview-table a {
+    color: #f8f9fa;
+  }
+
+  .user-overview-table .customer-cell,
+  .user-overview-table .email-cell {
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .user-overview-table .customer-name {
+    display: block;
+    font-weight: 600;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .user-overview-table .email-text {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .user-overview-table .num-cell,
+  .user-overview-table .status-cell {
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .user-overview-table .actions-cell {
+    text-align: center;
+    white-space: normal;
+  }
+
+  .user-overview-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.4rem;
+  }
+
+  .user-overview-actions .btn,
+  .user-overview-actions form {
+    margin: 0;
+  }
+
+  .user-overview-actions .btn {
+    min-width: 96px;
+    font-weight: 600;
+    border-radius: 0.45rem;
+  }
+
+  .user-overview-actions .btn-outline-primary {
+    background-color: rgba(20, 20, 20, 0.92) !important;
+    color: #0d6efd !important;
+    border-color: #0d6efd !important;
+  }
+
+  .user-overview-actions .btn-outline-primary:hover,
+  .user-overview-actions .btn-outline-primary:focus {
+    background-color: #0d6efd !important;
+    color: #ffffff !important;
+    border-color: #0d6efd !important;
+  }
+
+  .user-overview-actions .btn-outline-success {
+    background-color: rgba(20, 20, 20, 0.92) !important;
+    color: #198754 !important;
+    border-color: #198754 !important;
+  }
+
+  .user-overview-actions .btn-outline-success:hover,
+  .user-overview-actions .btn-outline-success:focus {
+    background-color: #198754 !important;
+    color: #ffffff !important;
+    border-color: #198754 !important;
+  }
+
+  .user-overview-actions .btn-outline-danger {
+    background-color: rgba(20, 20, 20, 0.92) !important;
+    color: #dc3545 !important;
+    border-color: #dc3545 !important;
+  }
+
+  .user-overview-actions .btn-outline-danger:hover,
+  .user-overview-actions .btn-outline-danger:focus {
+    background-color: #dc3545 !important;
+    color: #ffffff !important;
+    border-color: #dc3545 !important;
+  }
+
+  .user-overview-empty {
+    color: rgba(248, 249, 250, 0.72) !important;
+    background-color: rgba(34, 34, 34, 0.92) !important;
+  }
+
+  /* DataTables controls */
+  .user-overview-page .dataTables_wrapper {
+    color: #f8f9fa;
+    width: 100%;
+  }
+
+  .user-overview-page .dataTables_length,
+  .user-overview-page .dataTables_filter,
+  .user-overview-page .dataTables_info,
+  .user-overview-page .dataTables_paginate {
+    color: #f8f9fa !important;
+    margin-top: 0.75rem;
+  }
+
+  .user-overview-page .dataTables_length label,
+  .user-overview-page .dataTables_filter label {
+    color: #f8f9fa !important;
+    font-weight: 500;
+  }
+
+  .user-overview-page .dataTables_filter input,
+  .user-overview-page .dataTables_length select {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    border-radius: 0.45rem;
+    padding: 0.35rem 0.5rem;
+  }
+
+  .user-overview-page .dataTables_filter input:focus,
+  .user-overview-page .dataTables_length select:focus {
+    outline: none;
+    border-color: rgba(212, 175, 55, 0.55) !important;
+    box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.14) !important;
+  }
+
+  .user-overview-page .dataTables_paginate .paginate_button {
+    color: #f8f9fa !important;
+    border-radius: 0.4rem !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    background: rgba(20, 20, 20, 0.88) !important;
+    margin-left: 0.2rem;
+  }
+
+  .user-overview-page .dataTables_paginate .paginate_button:hover {
+    color: #ffffff !important;
+    border: 1px solid #d4af37 !important;
+    background: rgba(212, 175, 55, 0.14) !important;
+  }
+
+  .user-overview-page .dataTables_paginate .paginate_button.current,
+  .user-overview-page .dataTables_paginate .paginate_button.current:hover {
+    color: #212529 !important;
+    border: 1px solid #d4af37 !important;
+    background: #d4af37 !important;
+  }
+
+  .user-overview-page table.dataTable.no-footer {
+    border-bottom: none !important;
+  }
+
+  .user-overview-page table.dataTable thead th,
+  .user-overview-page table.dataTable thead td {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.10) !important;
+  }
+
+  .user-overview-page table.dataTable tbody th,
+  .user-overview-page table.dataTable tbody td {
+    border-top: 1px solid rgba(255, 255, 255, 0.10) !important;
+  }
+
+  .user-overview-page table.dataTable {
+    width: 100% !important;
+  }
+
+  @media (max-width: 1199.98px) {
+    .user-overview-table {
+      min-width: 1180px;
+    }
+  }
+
+  @media (max-width: 991.98px) {
+    .user-overview-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .user-overview-actions .btn,
+    .user-overview-actions form {
+      width: 100%;
+    }
+  }
+</style>
+
+<div class="container-fluid px-3 px-xl-4 py-4 user-overview-page">
+  <div class="user-overview-panel">
+    <div class="user-overview-header">
+      <h1><i class="fa-solid fa-users me-2"></i>Customer Reservation Overview</h1>
+      <p>Summary of customers and their reservation activity.</p>
+    </div>
+
+    <div class="user-overview-table-wrap">
+      <table id="user-reservations-table" class="table table-striped table-bordered align-middle user-overview-table" style="width:100%;">
+        <colgroup>
+          <col class="customer-col">
+          <col class="email-col">
+          <col class="num-col">
+          <col class="num-col">
+          <col class="num-col">
+          <col class="num-col">
+          <col class="num-col">
+          <col class="num-col">
+          <col class="status-col">
+          <col class="actions-col">
+        </colgroup>
+        <thead>
           <tr>
-            <td>
-              {{ customer.first_name|default:"" }} {{ customer.last_name|default:"" }}
-            </td>
-            <td>{{ customer.email|default:"" }}</td>
-
-            <td>{{ customer.total_reservations|default:0 }}</td>
-            <td>{{ customer.active_reservations|default:0 }}</td>
-            <td>{{ customer.active_tables_booked|default:0 }}</td>
-
-            <td>{{ customer.cancelled_reservations|default:0 }}</td>
-            <td>{{ customer.no_show_reservations|default:0 }}</td>
-
-            <td>{{ customer.total_tables_booked|default:0 }}</td>
-
-            <td>
-              {% if customer.barred %}
-                <span class="badge bg-danger">Barred</span>
-              {% else %}
-                <span class="badge bg-success">OK</span>
-              {% endif %}
-            </td>
-
-            <td class="text-nowrap">
-              <a href="{% url 'user_reservation_history' customer.id %}"
-                 class="btn btn-sm btn-outline-primary me-1">
-                <i class="fa-regular fa-calendar-days me-1"></i>
-                View history
-              </a>
-
-              {% if customer.barred %}
-                <form method="post" action="{% url 'unbar_customer' customer.id %}" class="d-inline">
-                  {% csrf_token %}
-                  <button type="submit" class="btn btn-sm btn-outline-success"
-                          onclick="return confirm('Unbar this customer?');">
-                    Unbar
-                  </button>
-                </form>
-              {% else %}
-                <form method="post" action="{% url 'bar_customer' customer.id %}" class="d-inline">
-                  {% csrf_token %}
-                  <button type="submit" class="btn btn-sm btn-outline-danger"
-                          onclick="return confirm('Bar this customer?');">
-                    Bar
-                  </button>
-                </form>
-              {% endif %}
-            </td>
+            <th>Customer</th>
+            <th>Email</th>
+            <th>Total<br>Res.</th>
+            <th>Active<br>Res.</th>
+            <th>Active<br>Tables</th>
+            <th>Cancelled</th>
+            <th>No<br>Shows</th>
+            <th>Total<br>Tables</th>
+            <th>Barred</th>
+            <th>Actions</th>
           </tr>
+        </thead>
+        <tbody>
+          {% for customer in customers %}
+            <tr>
+              <td class="customer-cell" title="{{ customer.first_name|default:'' }} {{ customer.last_name|default:'' }}">
+                <span class="customer-name">
+                  {{ customer.first_name|default:"" }} {{ customer.last_name|default:"" }}
+                </span>
+              </td>
 
-        {% empty %}
-          <tr>
-            <td colspan="10" class="text-center">
-              No customers found.
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+              <td class="email-cell" title="{{ customer.email|default:'' }}">
+                <span class="email-text">{{ customer.email|default:"" }}</span>
+              </td>
+
+              <td class="num-cell">{{ customer.total_reservations|default:0 }}</td>
+              <td class="num-cell">{{ customer.active_reservations|default:0 }}</td>
+              <td class="num-cell">{{ customer.active_tables_booked|default:0 }}</td>
+              <td class="num-cell">{{ customer.cancelled_reservations|default:0 }}</td>
+              <td class="num-cell">{{ customer.no_show_reservations|default:0 }}</td>
+              <td class="num-cell">{{ customer.total_tables_booked|default:0 }}</td>
+
+              <td class="status-cell">
+                {% if customer.barred %}
+                  <span class="badge bg-danger">Barred</span>
+                {% else %}
+                  <span class="badge bg-success">OK</span>
+                {% endif %}
+              </td>
+
+              <td class="actions-cell">
+                <div class="user-overview-actions">
+                  <a href="{% url 'user_reservation_history' customer.id %}"
+                     class="btn btn-sm btn-outline-primary">
+                    <i class="fa-regular fa-calendar-days me-1"></i>
+                    View history
+                  </a>
+
+                  {% if customer.barred %}
+                    <form method="post" action="{% url 'unbar_customer' customer.id %}">
+                      {% csrf_token %}
+                      <button type="submit"
+                              class="btn btn-sm btn-outline-success"
+                              onclick="return confirm('Unbar this customer?');">
+                        Unbar
+                      </button>
+                    </form>
+                  {% else %}
+                    <form method="post" action="{% url 'bar_customer' customer.id %}">
+                      {% csrf_token %}
+                      <button type="submit"
+                              class="btn btn-sm btn-outline-danger"
+                              onclick="return confirm('Bar this customer?');">
+                        Bar
+                      </button>
+                    </form>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="10" class="text-center py-4 user-overview-empty">
+                No customers found.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 {% endblock %}
 
-{% block extra_js %}
+{% block js %}
   {{ block.super }}
 
+  <link rel="stylesheet"
+        href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
+
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-          integrity="sha256-3gJwYp4gkL8JpAo7P+4l5I9E0lN3k2R3l4lXVZ6Z5ks="
+          integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
           crossorigin="anonymous"></script>
 
   <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
-  <link rel="stylesheet"
-        href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css"/>
 
   <script>
-    $(document).ready(function () {
-      $('#user-reservations-table').DataTable({
+    document.addEventListener('DOMContentLoaded', function () {
+      const table = $('#user-reservations-table').DataTable({
         pageLength: 10,
         order: [[2, 'desc']],
+        autoWidth: false,
+        responsive: false,
         columnDefs: [
-          { orderable: false, targets: [9] } // Actions
+          { orderable: false, targets: [9] }
         ]
+      });
+
+      table.columns.adjust().draw();
+
+      window.addEventListener('resize', function () {
+        table.columns.adjust();
       });
     });
   </script>

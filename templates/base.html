@@ -8,7 +8,7 @@
 
     <!-- Google Fonts CSS -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;700&display=swap" rel="stylesheet">
 
     <!-- Font Awesome CSS -->
@@ -26,7 +26,8 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-     <!-- Force native number input spinners (up/down arrows) -->
+
+    <!-- Force native number input spinners (up/down arrows) -->
     <style>
         input[type="number"]::-webkit-outer-spin-button,
         input[type="number"]::-webkit-inner-spin-button {
@@ -37,183 +38,166 @@
         }
 
         input[type="number"] {
-            -moz-appearance: textfield !important;   /* Firefox */
+            -moz-appearance: textfield !important;
             appearance: auto !important;
         }
-    </style>   
-
+    </style>
 </head>
 
-<body class="d-flex flex-column h-100"
-      style="background: url('{% static "images/hero/brown-concrete-wall-with-scratches-vector.jpg" %}') no-repeat center center fixed;
-             background-size: cover;">
+<body class="d-flex flex-column h-100 app-body"
+      style="background: url('{% static "images/hero/brown-concrete-wall-with-scratches-vector.jpg" %}') center center / cover fixed no-repeat;">
 
     <!-- Navigation -->
-    <!-- Navigation -->
-    <!-- Navigation -->
-        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-            <div class="container-fluid">
-                <a class="navbar-brand fw-bold" href="{% url 'home' %}">
-                    Gambinos Restaurant & Lounge
-                </a>
+    <nav class="navbar navbar-expand-lg navbar-dark app-navbar shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="{% url 'home' %}">
+                Gambinos Restaurant & Lounge
+            </a>
 
-                <button class="navbar-toggler"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#navbarText"
-                        aria-controls="navbarText"
-                        aria-expanded="false"
-                        aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+            <button class="navbar-toggler custom-nav-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarText"
+                    aria-controls="navbarText"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <i class="fas fa-bars" aria-hidden="true"></i>
+            </button>
 
-                <div class="collapse navbar-collapse" id="navbarText">
+            <div class="collapse navbar-collapse" id="navbarText">
 
-                    <!-- LEFT SIDE NAV -->
-                    <!-- LEFT SIDE NAV -->
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <!-- LEFT SIDE NAV -->
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
-                        <!-- Home -->
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
+                           href="{% url 'home' %}">
+                            Home
+                        </a>
+                    </li>
+
+                    {% if user.is_authenticated and not user.is_staff %}
                         <li class="nav-item">
-                            <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
-                               href="{% url 'home' %}">
-                                Home
+                            <a class="nav-link {% if request.resolver_match.url_name == 'my_reservations' %}active{% endif %}"
+                               href="{% url 'my_reservations' %}">
+                                <i class="fa-solid fa-list-check me-1"></i>
+                                My Reservations
                             </a>
                         </li>
 
-                        <!-- CUSTOMER LINKS (logged in, non-staff) -->
-                        {% if user.is_authenticated and not user.is_staff %}
-                            <li class="nav-item">
-                                <a class="nav-link {% if request.resolver_match.url_name == 'my_reservations' %}active{% endif %}"
-                                   href="{% url 'my_reservations' %}">
-                                    <i class="fa-solid fa-list-check me-1"></i>
-                                    My Reservations
-                                </a>
-                            </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.resolver_match.url_name == 'make_reservation' %}active{% endif %}"
+                               href="{% url 'make_reservation' %}">
+                                <i class="fa-solid fa-calendar-plus me-1"></i>
+                                Book Reservation
+                            </a>
+                        </li>
+                    {% endif %}
 
-                            <li class="nav-item">
-                                <a class="nav-link {% if request.resolver_match.url_name == 'make_reservation' %}active{% endif %}"
-                                   href="{% url 'make_reservation' %}">
-                                    <i class="fa-solid fa-calendar-plus me-1"></i>
-                                    Book Reservation
-                                </a>
-                            </li>
-                        {% endif %}
+                    {% if user.is_staff %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle {% if 'staff' in request.path %}active{% endif %}"
+                               href="#"
+                               id="navbarDropdown"
+                               role="button"
+                               data-bs-toggle="dropdown"
+                               aria-expanded="false">
+                                Staff
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'staff_dashboard' %}">
+                                        <i class="fa-solid fa-house me-2"></i>Staff Dashboard
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'user_reservations_overview' %}">
+                                        <i class="fa-solid fa-users me-2"></i>Customer Stats
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'staff_reservations' %}">
+                                        <i class="fa-solid fa-list-ul me-2"></i>All Reservations
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'create_phone_reservation' %}">
+                                        <i class="fa-solid fa-phone me-2"></i>Phone Reservation
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
 
-                        <!-- STAFF LINKS (keep your existing dropdown) -->
-                        {% if user.is_staff %}
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle {% if 'staff' in request.path %}active{% endif %}"
-                                   href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Staff
-                                </a>
-                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <li>
-                                        <a class="dropdown-item" href="{% url 'staff_dashboard' %}">
-                                            <i class="fa-solid fa-house me-2"></i>Staff Dashboard
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="{% url 'user_reservations_overview' %}">
-                                            <i class="fa-solid fa-users me-2"></i>Customer Stats
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="{% url 'staff_reservations' %}">
-                                            <i class="fa-solid fa-list-ul me-2"></i>All Reservations
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="{% url 'create_phone_reservation' %}">
-                                            <i class="fa-solid fa-phone me-2"></i>Phone Reservation
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-
-                            {% if request.user.is_superuser %}
+                        {% if request.user.is_superuser %}
                             <li class="nav-item">
-                                <a class="nav-link btn btn-success text-white ms-3 px-4"
+                                <a class="nav-link btn btn-success text-white ms-lg-3 mt-2 mt-lg-0 px-3"
                                    href="{% url 'staff_management' %}">
                                     <i class="fa-solid fa-user-shield me-2"></i>Manage Staff
                                 </a>
                             </li>
-                            {% endif %}
                         {% endif %}
+                    {% endif %}
+                </ul>
 
-                    </ul>                    
+                <!-- RIGHT SIDE AUTH -->
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <span class="nav-link app-user-greeting">
+                                {% if user.first_name or user.last_name %}
+                                    Hello, {{ user.first_name }} {{ user.last_name }}
+                                {% elif user.username %}
+                                    Hello, {{ user.username }}
+                                {% else %}
+                                    Hello, {{ user.email }}
+                                {% endif %}
+                            </span>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.resolver_match.url_name == 'account_logout' %}active{% endif %}"
+                               href="{% url 'account_logout' %}">
+                                Logout
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.resolver_match.url_name == 'account_login' %}active{% endif %}"
+                               href="{% url 'account_login' %}">
+                                Login
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.resolver_match.url_name == 'account_signup' %}active{% endif %}"
+                               href="{% url 'account_signup' %}">
+                                Sign Up
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
 
-                    <!-- RIGHT SIDE AUTH -->
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                        {% if user.is_authenticated %}
-                            <li class="nav-item">
-                                <span class="nav-link disabled">
-                                    {% if user.first_name or user.last_name %}
-                                        Hello, {{ user.first_name }} {{ user.last_name }}
-                                    {% elif user.username %}
-                                        Hello, {{ user.username }}
-                                    {% else %}
-                                        Hello, {{ user.email }}
-                                    {% endif %}
-                                </span>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'account_logout' %}">
-                                    Logout
-                                </a>
-                            </li>
-                        {% else %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'account_login' %}">
-                                    Login
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'account_signup' %}">
-                                    Sign Up
-                                </a>
-                            </li>
-                        {% endif %}
-                    </ul>
-
-                </div>
             </div>
-        </nav>
+        </div>
+    </nav>
 
     <!-- Flash Messages -->
-    {% comment %} {% if messages %}
-        <div class="container mt-2">
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-            {% endfor %}
-        </div>
-    {% endif %} {% endcomment %}
     {% if messages %}
-        <section id="alerts">
+        <section class="container mt-3">
             {% for msg in messages %}
-                <!-- all django message tags mirror bootstrap, except error/danger -->
-                <aside class="alert {% if msg.tags == 'error' %}alert-danger{% else %}alert-{{ msg.tags }}{% endif %} rounded-0 text-center" role="alert">
-                    <h3>{{ msg }}</h3>
-                </aside>
+                <div class="alert {% if msg.tags == 'error' %}alert-danger{% else %}alert-{{ msg.tags }}{% endif %} shadow-sm mb-2"
+                     role="alert">
+                    {{ msg }}
+                </div>
             {% endfor %}
         </section>
     {% endif %}
-    <!-- Main Content -->
-    <main class="flex-shrink-0 main-bg container my-4">
-        {% block content %}
-        {% endblock content %}
-    </main>
 
-    {% comment %} <!-- Footer -->
-    <footer class="footer mt-auto py-3 bg-dark text-white">
-        <p class="m-0 text-center">© {{ now|date:"Y" }} Gambinos Restaurant & Lounge</p>
-        <p class="m-0 text-center">
-            <i class="fab fa-facebook-square ms-2"></i>
-            <i class="fab fa-twitter-square ms-2"></i>
-            <i class="fab fa-instagram-square ms-2"></i>
-            <i class="fab fa-youtube-square ms-2"></i>
-        </p>
-    </footer> {% endcomment %}
+    <!-- Main Content -->
+    <main class="flex-shrink-0 container my-4">
+        <div class="app-content-shell">
+            {% block content %}
+            {% endblock content %}
+        </div>
+    </main>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
