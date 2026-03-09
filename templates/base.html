@@ -29,47 +29,78 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
-    <style>
-        input[type="number"]::-webkit-outer-spin-button,
-        input[type="number"]::-webkit-inner-spin-button {
-            -webkit-appearance: inner-spin-button !important;
-            opacity: 1 !important;
-            margin: 0 2px !important;
-            width: 16px !important;
-        }
+<style>
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: inner-spin-button !important;
+        opacity: 1 !important;
+        margin: 0 2px !important;
+        width: 16px !important;
+    }
 
-        input[type="number"] {
-            -moz-appearance: textfield !important;
-            appearance: auto !important;
-        }
+    input[type="number"] {
+        -moz-appearance: textfield !important;
+        appearance: auto !important;
+    }
 
-        /* Keep nav and dropdown above flash messages */
-        .app-navbar {
-            position: relative;
-            z-index: 1080;
+    .app-navbar {
+        position: relative;
+        z-index: 1080;
+    }
+
+    .app-flash-messages {
+        position: relative;
+        z-index: 1000;
+        margin-top: 0.75rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .app-flash-messages .alert {
+        margin-bottom: 0.5rem;
+    }
+
+    /* Desktop: dropdown can float normally */
+    @media (min-width: 992px) {
+        .app-navbar .dropdown-menu {
+            z-index: 2000;
+        }
+    }
+
+    /* Mobile / collapsed nav:
+       keep dropdown in flow so it pushes content down
+       instead of overlapping the flash messages */
+    @media (max-width: 991.98px) {
+        .app-navbar .navbar-collapse {
+            overflow: visible;
+            padding-bottom: 0.5rem;
         }
 
         .app-navbar .dropdown-menu {
-            z-index: 1090;
+            position: static !important;
+            float: none;
+            width: 100%;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+            background: rgba(18, 18, 18, 0.96);
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            box-shadow: none;
+        }
+
+        .app-navbar .dropdown-item {
+            color: #f8f9fa;
+        }
+
+        .app-navbar .dropdown-item:hover,
+        .app-navbar .dropdown-item:focus {
+            background-color: rgba(212, 175, 55, 0.10);
+            color: #ffffff;
         }
 
         .app-flash-messages {
-            position: relative;
-            z-index: 1000;
-            margin-top: 0.75rem;
-            margin-bottom: 0.25rem;
+            margin-top: 0.25rem;
         }
-
-        .app-flash-messages .alert {
-            margin-bottom: 0.5rem;
-        }
-
-        @media (max-width: 991.98px) {
-            .app-flash-messages {
-                margin-top: 0.5rem;
-            }
-        }
-    </style>
+    }
+</style>  
 </head>
 
 <body class="d-flex flex-column h-100 app-body"
