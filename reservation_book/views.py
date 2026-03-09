@@ -67,9 +67,6 @@ def _get_slot_capacity_default():  # legacy helper
     """
     Your project already has a notion of default tables per slot (often 20).
     Keep this as a single place to change it.
-
-    If you already have _default_tables_per_slot(), you can replace the
-    body with: return _default_tables_per_slot()
     """
     return 20
 
@@ -1187,6 +1184,7 @@ def _build_next_30_days(days=30):
 
         slots = []
         for key, label in SLOT_LABELS.items():
+
             default_capacity = int(
                 defaults.get(f"number_of_tables_available_{key}", 20)
             )

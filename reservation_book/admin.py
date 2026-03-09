@@ -2,81 +2,119 @@ from datetime import timedelta
 
 from django import forms
 from django.contrib import admin
+from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.utils.html import format_html
 
-from .models import RestaurantConfig, Customer
-from .models import TimeSlotAvailability, TableReservation
+from .models import (
+    RestaurantConfig,
+    TimeSlotAvailability,
+    TableReservation,
+    Customer,
+)
+
+
+@admin.register(RestaurantConfig)
+class RestaurantConfigAdmin(admin.ModelAdmin):
+    list_display = ("default_tables_per_slot",)
 
 
 @admin.register(TimeSlotAvailability)
 class TimeSlotAvailabilityAdmin(admin.ModelAdmin):
     list_display = (
         "calendar_date",
-        "remaining_17_18",
-        "remaining_18_19",
-        "remaining_19_20",
-        "remaining_20_21",
-        "remaining_21_22",
+        "number_of_tables_available_17_18",
+        "total_cust_demand_for_tables_17_18",
+        "number_of_tables_available_18_19",
+        "total_cust_demand_for_tables_18_19",
+        "number_of_tables_available_19_20",
+        "total_cust_demand_for_tables_19_20",
+        "number_of_tables_available_20_21",
+        "total_cust_demand_for_tables_20_21",
+        "number_of_tables_available_21_22",
+        "total_cust_demand_for_tables_21_22",
     )
-    list_filter = ("calendar_date",)
-    actions = ["update_next_30_days_capacity"]
+    ordering = ("calendar_date",)
 
-    # Real remaining columns
-    def remaining_17_18(self, obj):
-        return obj.left_for("17_18")
-    remaining_17_18.short_description = "17:00–18:00 (Rem)"
-
-    def remaining_18_19(self, obj):
-        return obj.left_for("18_19")
-    remaining_18_19.short_description = "18:00–19:00 (Rem)"
-
-    def remaining_19_20(self, obj):
-        return obj.left_for("19_20")
-    remaining_19_20.short_description = "19:00–20:00 (Rem)"
-
-    def remaining_20_21(self, obj):
-        return obj.left_for("20_21")
-    remaining_20_21.short_description = "20:00–21:00 (Rem)"
-
-    def remaining_21_22(self, obj):
-        return obj.left_for("21_22")
-    remaining_21_22.short_description = "21:00–22:00 (Rem)"
-
+    @admin.action(description="Apply default capacity to next 30 future days")
     def update_next_30_days_capacity(self, request, queryset):
+        """
+        Apply RestaurantConfig.default_tables_per_slot to TOMORROW onward
+        for the next 30 days.
+
+        Important:
+        - Past dates are untouched
+        - Today is untouched
+        - Existing demand is untouched
+        - Missing TimeSlotAvailability rows are created first
+        """
         config = RestaurantConfig.objects.first()
         if not config:
             self.message_user(
-                request, "No RestaurantConfig found.", level="error")
+                request,
+                "No RestaurantConfig row found.",
+                level=messages.ERROR,
+            )
             return
 
-        today = timezone.now().date()
-        end_date = today + timedelta(days=30)
+        new_capacity = int(config.default_tables_per_slot or 20)
 
-        updated = TimeSlotAvailability.objects.filter(
-            calendar_date__gte=today,
-            calendar_date__lte=end_date,
-        ).update(
-            number_of_tables_available_17_18=config.default_tables_per_slot,
-            number_of_tables_available_18_19=config.default_tables_per_slot,
-            number_of_tables_available_19_20=config.default_tables_per_slot,
-            number_of_tables_available_20_21=config.default_tables_per_slot,
-            number_of_tables_available_21_22=config.default_tables_per_slot,
-        )
+        today = timezone.localdate()
+        start_date = today + timedelta(days=1)
+        end_date = start_date + timedelta(days=29)
+
+        availability_fields = [
+            "number_of_tables_available_17_18",
+            "number_of_tables_available_18_19",
+            "number_of_tables_available_19_20",
+            "number_of_tables_available_20_21",
+            "number_of_tables_available_21_22",
+        ]
+
+        defaults = {field: new_capacity for field in availability_fields}
+        updated_count = 0
+        created_count = 0
+
+        for day_offset in range(30):
+            target_date = start_date + timedelta(days=day_offset)
+
+            ts, created = TimeSlotAvailability.objects.get_or_create(
+                calendar_date=target_date,
+                defaults=defaults,
+            )
+
+            if created:
+                created_count += 1
+
+            changed = False
+            for field in availability_fields:
+                current = getattr(ts, field, None)
+                if current != new_capacity:
+                    setattr(ts, field, new_capacity)
+                    changed = True
+
+            if changed:
+                ts.save(update_fields=availability_fields)
+                updated_count += 1
 
         self.message_user(
             request,
-            f"Updated capacity for {updated} day(s) to \
-                {config.default_tables_per_slot} tables per slot.",
+            (
+                f"Applied default capacity {new_capacity} to future dates "
+                f"{start_date} through {end_date}. "
+                f"Created {created_count} row(s), updated \
+                    {updated_count} row(s). "
+                "Existing demand was left unchanged."
+            ),
+            level=messages.SUCCESS,
         )
-    update_next_30_days_capacity.short_description = \
-        "Update next 30 days to RestaurantConfig capacity"
-
 
 # -----------------------------
 # H4-1: Admin validation (LOCKDOWN)
 # -----------------------------
+
+
 class TableReservationAdminForm(forms.ModelForm):
     class Meta:
         model = TableReservation
@@ -222,11 +260,6 @@ class TableReservationAdmin(admin.ModelAdmin):
             return format_html('<span class="badge bg-success">Active</span>')
         return format_html('<span class="badge bg-secondary">Inactive</span>')
     status_badge.short_description = "Status"
-
-
-@admin.register(RestaurantConfig)
-class RestaurantConfigAdmin(admin.ModelAdmin):
-    list_display = ("default_tables_per_slot",)
 
 
 @admin.register(Customer)
