@@ -8,8 +8,10 @@
 
     <!-- Google Fonts CSS -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;700&display=swap"
+          rel="stylesheet">
 
     <!-- Font Awesome CSS -->
     <link rel="stylesheet"
@@ -27,7 +29,6 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
-    <!-- Force native number input spinners (up/down arrows) -->
     <style>
         input[type="number"]::-webkit-outer-spin-button,
         input[type="number"]::-webkit-inner-spin-button {
@@ -40,6 +41,33 @@
         input[type="number"] {
             -moz-appearance: textfield !important;
             appearance: auto !important;
+        }
+
+        /* Keep nav and dropdown above flash messages */
+        .app-navbar {
+            position: relative;
+            z-index: 1080;
+        }
+
+        .app-navbar .dropdown-menu {
+            z-index: 1090;
+        }
+
+        .app-flash-messages {
+            position: relative;
+            z-index: 1000;
+            margin-top: 0.75rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .app-flash-messages .alert {
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 991.98px) {
+            .app-flash-messages {
+                margin-top: 0.5rem;
+            }
         }
     </style>
 </head>
@@ -181,9 +209,9 @@
 
     <!-- Flash Messages -->
     {% if messages %}
-        <section class="container mt-3">
+        <section class="container app-flash-messages">
             {% for msg in messages %}
-                <div class="alert {% if msg.tags == 'error' %}alert-danger{% else %}alert-{{ msg.tags }}{% endif %} shadow-sm mb-2"
+                <div class="alert {% if msg.tags == 'error' %}alert-danger{% else %}alert-{{ msg.tags }}{% endif %} shadow-sm"
                      role="alert">
                     {{ msg }}
                 </div>
