@@ -42,6 +42,20 @@
             -moz-appearance: textfield !important;
             appearance: auto !important;
         }
+
+        /* Submission-safe navbar fallback:
+           no desktop mystery box, mobile toggler still works */
+        .custom-nav-toggler {
+            display: none !important;
+        }
+
+        @media (max-width: 991.98px) {
+            .custom-nav-toggler {
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+        }
     </style>
 </head>
 
@@ -96,37 +110,36 @@
                     {% endif %}
 
                     {% if user.is_staff %}
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle {% if 'staff' in request.path %}active{% endif %}"
-                               href="#"
-                               id="navbarDropdown"
-                               role="button"
-                               data-bs-toggle="dropdown"
-                               aria-expanded="false">
-                                Staff
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.resolver_match.url_name == 'staff_dashboard' %}active{% endif %}"
+                               href="{% url 'staff_dashboard' %}">
+                                <i class="fa-solid fa-house me-1"></i>
+                                Staff Dashboard
                             </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li>
-                                    <a class="dropdown-item" href="{% url 'staff_dashboard' %}">
-                                        <i class="fa-solid fa-house me-2"></i>Staff Dashboard
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="{% url 'user_reservations_overview' %}">
-                                        <i class="fa-solid fa-users me-2"></i>Customer Stats
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="{% url 'staff_reservations' %}">
-                                        <i class="fa-solid fa-list-ul me-2"></i>All Reservations
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="{% url 'create_phone_reservation' %}">
-                                        <i class="fa-solid fa-phone me-2"></i>Phone Reservation
-                                    </a>
-                                </li>
-                            </ul>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.resolver_match.url_name == 'user_reservations_overview' %}active{% endif %}"
+                               href="{% url 'user_reservations_overview' %}">
+                                <i class="fa-solid fa-users me-1"></i>
+                                Customer Stats
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.resolver_match.url_name == 'staff_reservations' %}active{% endif %}"
+                               href="{% url 'staff_reservations' %}">
+                                <i class="fa-solid fa-list-ul me-1"></i>
+                                All Reservations
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.resolver_match.url_name == 'create_phone_reservation' %}active{% endif %}"
+                               href="{% url 'create_phone_reservation' %}">
+                                <i class="fa-solid fa-phone me-1"></i>
+                                Phone Reservation
+                            </a>
                         </li>
 
                         {% if request.user.is_superuser %}
