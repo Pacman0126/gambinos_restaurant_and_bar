@@ -130,7 +130,7 @@
 
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
-                           href="{% url 'home' %}">
+                        href="{% url 'home' %}">
                             Home
                         </a>
                     </li>
@@ -138,7 +138,7 @@
                     {% if user.is_authenticated and not user.is_staff %}
                         <li class="nav-item">
                             <a class="nav-link {% if request.resolver_match.url_name == 'my_reservations' %}active{% endif %}"
-                               href="{% url 'my_reservations' %}">
+                            href="{% url 'my_reservations' %}">
                                 <i class="fa-solid fa-list-check me-1"></i>
                                 My Reservations
                             </a>
@@ -146,7 +146,7 @@
 
                         <li class="nav-item">
                             <a class="nav-link {% if request.resolver_match.url_name == 'make_reservation' %}active{% endif %}"
-                               href="{% url 'make_reservation' %}">
+                            href="{% url 'make_reservation' %}">
                                 <i class="fa-solid fa-calendar-plus me-1"></i>
                                 Book Reservation
                             </a>
@@ -156,11 +156,11 @@
                     {% if user.is_staff %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle {% if 'staff' in request.path %}active{% endif %}"
-                               href="#"
-                               id="navbarDropdown"
-                               role="button"
-                               data-bs-toggle="dropdown"
-                               aria-expanded="false">
+                            href="#"
+                            id="navbarDropdown"
+                            role="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false">
                                 Staff
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -190,7 +190,7 @@
                         {% if request.user.is_superuser %}
                             <li class="nav-item">
                                 <a class="nav-link btn btn-success text-white ms-lg-3 mt-2 mt-lg-0 px-3"
-                                   href="{% url 'staff_management' %}">
+                                href="{% url 'staff_management' %}">
                                     <i class="fa-solid fa-user-shield me-2"></i>Manage Staff
                                 </a>
                             </li>
@@ -214,41 +214,42 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {% if request.resolver_match.url_name == 'account_logout' %}active{% endif %}"
-                               href="{% url 'account_logout' %}">
+                            href="{% url 'account_logout' %}">
                                 Logout
                             </a>
                         </li>
                     {% else %}
                         <li class="nav-item">
                             <a class="nav-link {% if request.resolver_match.url_name == 'account_login' %}active{% endif %}"
-                               href="{% url 'account_login' %}">
+                            href="{% url 'account_login' %}">
                                 Login
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {% if request.resolver_match.url_name == 'account_signup' %}active{% endif %}"
-                               href="{% url 'account_signup' %}">
+                            href="{% url 'account_signup' %}">
                                 Sign Up
                             </a>
                         </li>
                     {% endif %}
                 </ul>
 
+                <!-- Flash Messages inside navbar collapse -->
+                {% if messages %}
+                    <div class="navbar-text ms-3">
+                        {% for msg in messages %}
+                            <span class="alert {% if msg.tags == 'error' %}alert-danger{% else %}alert-{{ msg.tags }}{% endif %} py-1 px-3 mb-0 d-inline-block"
+                                role="alert"
+                                style="font-size:0.9rem;">
+                                {{ msg }}
+                            </span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
             </div>
         </div>
     </nav>
-
-    <!-- Flash Messages -->
-    {% if messages %}
-        <section class="container app-flash-messages">
-            {% for msg in messages %}
-                <div class="alert {% if msg.tags == 'error' %}alert-danger{% else %}alert-{{ msg.tags }}{% endif %} shadow-sm"
-                     role="alert">
-                    {{ msg }}
-                </div>
-            {% endfor %}
-        </section>
-    {% endif %}
 
     <!-- Main Content -->
     <main class="flex-shrink-0 container my-4">
