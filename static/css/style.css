@@ -155,6 +155,15 @@ nav.navbar.bg-light,
   box-shadow: none !important;
 }
 
+.navbar {
+  position: relative;
+  z-index: 2000;
+}
+
+.navbar .dropdown-menu {
+  z-index: 2100;
+}
+
 /* =========================================
    General readable surfaces
    ========================================= */
