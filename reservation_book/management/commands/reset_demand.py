@@ -6,9 +6,10 @@ from django.db import transaction
 from reservation_book.models import TableReservation, TimeSlotAvailability
 from reservation_book.views import SLOT_LABELS, _affected_slots
 
-# This command is for advanced use only. It allows resetting the demand counters
-# in TimeSlotAvailability for specific dates, with an optional rebuild from active
-# future reservations. Use with caution and always backup your data before running.
+# This command is for advanced use only. It allows resetting the
+# demand counters in TimeSlotAvailability for specific dates, with
+# an optional rebuild from active future reservations. Use with caution
+# and always backup your data before running.
 
 
 class Command(BaseCommand):
@@ -21,7 +22,8 @@ class Command(BaseCommand):
         parser.add_argument(
             "dates",
             nargs="*",
-            help="Dates to reset in YYYY-MM-DD format, e.g. 2026-03-09 2026-03-10",
+            help="Dates to reset in YYYY-MM-DD format, \
+                e.g. 2026-03-09 2026-03-10",
         )
         parser.add_argument(
             "--from-date",
@@ -42,8 +44,10 @@ class Command(BaseCommand):
             "--rebuild-active-future",
             action="store_true",
             help=(
-                "After reset, rebuild demand from ACTIVE reservations on the same dates. "
-                "Past, cancelled, completed, and no-show reservations are ignored."
+                "After reset, rebuild demand from ACTIVE reservations \
+                    on the same dates. "
+                "Past, cancelled, completed, and no-show reservations \
+                    are ignored."
             ),
         )
         parser.add_argument(
@@ -93,13 +97,15 @@ class Command(BaseCommand):
 
         if not dates:
             raise CommandError(
-                "Provide at least one date, a --from-date/--to-date range, or --all-next-30."
+                "Provide at least one date, a "
+                "--from-date/--to-date range, or --all-next-30."
             )
 
         return sorted(dates)
 
     def _demand_fields(self):
-        return [f"total_cust_demand_for_tables_{slot}" for slot in SLOT_LABELS.keys()]
+        return [f"total_cust_demand_for_tables_{slot}"
+                for slot in SLOT_LABELS.keys()]
 
     def _reset_ts_row(self, ts, dry_run=False):
         demand_fields = self._demand_fields()
@@ -200,7 +206,8 @@ class Command(BaseCommand):
                 rebuilt_count = self._rebuild_for_date(
                     target_date, dry_run=dry_run)
                 self.stdout.write(
-                    f"  Rebuild from ACTIVE reservations on {target_date}: {rebuilt_count} reservation(s) reapplied"
+                    f"  Rebuild from ACTIVE reservations on {target_date}: \
+                        {rebuilt_count} reservation(s) reapplied"
                 )
 
         self.stdout.write("")

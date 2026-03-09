@@ -6,7 +6,8 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.utils.html import format_html
 
-from .models import TimeSlotAvailability, TableReservation, RestaurantConfig, Customer
+from .models import RestaurantConfig, Customer
+from .models import TimeSlotAvailability, TableReservation
 
 
 @admin.register(TimeSlotAvailability)
@@ -66,9 +67,11 @@ class TimeSlotAvailabilityAdmin(admin.ModelAdmin):
 
         self.message_user(
             request,
-            f"Updated capacity for {updated} day(s) to {config.default_tables_per_slot} tables per slot.",
+            f"Updated capacity for {updated} day(s) to \
+                {config.default_tables_per_slot} tables per slot.",
         )
-    update_next_30_days_capacity.short_description = "Update next 30 days to RestaurantConfig capacity"
+    update_next_30_days_capacity.short_description = \
+        "Update next 30 days to RestaurantConfig capacity"
 
 
 # -----------------------------
@@ -93,7 +96,8 @@ class TableReservationAdminForm(forms.ModelForm):
             raise ValidationError(
                 {"reservation_date": "Reservation date is required."})
 
-        # --- Must not be in the past (admin should not be able to backfill past rows) ---
+        # --- Must not be in the past (admin should not be able
+        # to backfill past rows) ---
         if reservation_date < today:
             raise ValidationError(
                 {"reservation_date": "Past reservations are not allowed."})
@@ -102,11 +106,13 @@ class TableReservationAdminForm(forms.ModelForm):
         if not time_slot:
             raise ValidationError({"time_slot": "Time slot is required."})
 
-        # --- Must have a customer (your business logic expects Customer for analytics/counters/bans) ---
+        # --- Must have a customer (your business logic expects Customer
+        # for analytics/counters/bans) ---
         if not customer:
             raise ValidationError({"customer": "Customer is required."})
 
-        # Require at least an email AND at least one of first/last name (prevents blank identity records)
+        # Require at least an email AND at least one of first/last name
+        # (prevents blank identity records)
         cust_email = (getattr(customer, "email", "") or "").strip()
         cust_first = (getattr(customer, "first_name", "") or "").strip()
         cust_last = (getattr(customer, "last_name", "") or "").strip()
@@ -116,23 +122,28 @@ class TableReservationAdminForm(forms.ModelForm):
                 {"customer": "Customer must have an email address."})
         if not (cust_first or cust_last):
             raise ValidationError(
-                {"customer": "Customer must have at least a first or last name."})
+                {"customer": "Customer must have at \
+                 least a first or last name."})
 
-        # --- Optional consistency: if timeslot_availability is set, it must match reservation_date ---
+        # --- Optional consistency: if timeslot_availability is set,
+        # it must match reservation_date ---
         # (helps prevent admin creating mismatched rows)
         if timeslot_availability and reservation_date:
-            # FK uses to_field='calendar_date' in your model; this is still safe.
+            # FK uses to_field='calendar_date' in your
+            # model; this is still safe.
             avail_date = getattr(timeslot_availability, "calendar_date", None)
             if avail_date and avail_date != reservation_date:
                 raise ValidationError(
-                    {"timeslot_availability": "TimeSlotAvailability date must match reservation_date."}
+                    {"timeslot_availability": "TimeSlotAvailability \
+                     date must match reservation_date."}
                 )
 
         # --- Sanity checks ---
         tables = cleaned.get("number_of_tables_required_by_patron")
         if tables is None or int(tables) < 1:
             raise ValidationError(
-                {"number_of_tables_required_by_patron": "Tables must be at least 1."})
+                {"number_of_tables_required_by_patron":
+                 "Tables must be at least 1."})
 
         duration = cleaned.get("duration_hours")
         if duration is None or int(duration) < 1:
@@ -177,7 +188,8 @@ class TableReservationAdmin(admin.ModelAdmin):
 
     def customer_name(self, obj):
         if obj.customer:
-            return f"{obj.customer.first_name} {obj.customer.last_name}".strip() or "-"
+            return f"{obj.customer.first_name} {obj.customer.last_name}"\
+                .strip() or "-"
         return "-"
     customer_name.short_description = "Customer Name"
 
@@ -194,10 +206,14 @@ class TableReservationAdmin(admin.ModelAdmin):
         # Prefer the new status system; fall back to legacy boolean if needed.
         if status == getattr(TableReservation, "STATUS_NO_SHOW", "no_show"):
             return format_html('<span class="badge bg-danger">No-show</span>')
-        if status == getattr(TableReservation, "STATUS_COMPLETED", "completed"):
-            return format_html('<span class="badge bg-primary">Completed</span>')
-        if status == getattr(TableReservation, "STATUS_CANCELLED", "cancelled"):
-            return format_html('<span class="badge bg-secondary">Cancelled</span>')
+        if status == getattr(
+                TableReservation, "STATUS_COMPLETED", "completed"):
+            return format_html(
+                '<span class="badge bg-primary">Completed</span>')
+        if status == getattr(TableReservation,
+                             "STATUS_CANCELLED", "cancelled"):
+            return format_html(
+                '<span class="badge bg-secondary">Cancelled</span>')
         if status == getattr(TableReservation, "STATUS_ACTIVE", "active"):
             return format_html('<span class="badge bg-success">Active</span>')
 

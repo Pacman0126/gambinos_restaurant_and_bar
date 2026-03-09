@@ -10,7 +10,8 @@ from reservation_book.services.sweeps import run_no_show_sweep
 
 
 class Command(BaseCommand):
-    help = "Mark past active reservations as NO_SHOW and update customer counters/ban flag."
+    help = "Mark past active reservations as NO_SHOW and update \
+        customer counters/ban flag."
 
     def add_arguments(self, parser):
         parser.add_argument("--date", type=str, default=None,
@@ -30,5 +31,6 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS(
             f"Sweep complete for {today}: scanned={result.scanned}, "
-            f"marked_no_show={result.marked_no_show}, barred_customers={result.barred_customers}"
+            f"marked_no_show={result.marked_no_show}, \
+                barred_customers={result.barred_customers}"
         ))

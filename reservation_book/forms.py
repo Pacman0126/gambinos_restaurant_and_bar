@@ -173,7 +173,8 @@ class PhoneReservationForm(forms.ModelForm):
     until_close = forms.BooleanField(
         required=False,
         label="Book from selected start until kitchen close",
-        help_text="If checked, duration will be auto-set to the last available slot of the day.",
+        help_text="If checked, duration will be auto-set to the \
+            last available slot of the day.",
     )
     series_days = forms.IntegerField(
         required=False,
@@ -181,7 +182,8 @@ class PhoneReservationForm(forms.ModelForm):
         max_value=14,
         initial=1,
         label="Consecutive days (series)",
-        help_text="For conferences: book the same time block for N consecutive days (including the start date).",
+        help_text="For conferences: book the same time block for N \
+            consecutive days (including the start date).",
     )
 
     # ✅ OVERRIDE model field UI: show “time slots” instead of “hours”
@@ -278,10 +280,13 @@ class EditReservationForm(forms.ModelForm):
         self.fields['duration_hours'].required = True
         self.fields['number_of_tables_required_by_patron'].required = True
 
-        # Pre-fill from instance if needed (already handled by instance=reservation)
+        # Pre-fill from instance if needed (already handled
+        # by instance=reservation)
         if self.instance and self.instance.pk:
             self.initial['duration_hours'] = self.instance.duration_hours or 1
-            self.initial['number_of_tables_required_by_patron'] = self.instance.number_of_tables_required_by_patron or 1
+            self.initial['number_of_tables_required_by_patron'] = \
+                self.instance.number_of_tables_required_by_patron or 1
 
-        # Optional: disable or hide if you want read-only customer info in form (but better in left card)
+        # Optional: disable or hide if you want read-only customer info
+        # in form (but better in left card)
         # self.fields['duration_hours'].disabled = True  # example

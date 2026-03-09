@@ -45,7 +45,8 @@ def attach_existing_reservations(request, user, **kwargs):
     if changed:
         customer.save(update_fields=["first_name", "last_name"])
 
-    # Attach reservations for ANY customer row with matching email (case-insensitive)
+    # Attach reservations for ANY customer
+    # row with matching email (case-insensitive)
     updated = TableReservation.objects.filter(
         customer__email__iexact=email,
         created_by__isnull=True,
@@ -55,7 +56,8 @@ def attach_existing_reservations(request, user, **kwargs):
     )
 
     logger.info(
-        "user_signed_up: canonical_customer_id=%s (created=%s) attached=%s reservations to user_id=%s",
+        "user_signed_up: canonical_customer_id=%s (created=%s) \
+            attached=%s reservations to user_id=%s",
         customer.id, created, updated, user.id
     )
 
@@ -66,7 +68,8 @@ CACHE_KEY = "no_show_sweep_last_run_date"  # stores YYYY-MM-DD as string
 @receiver(user_logged_in)
 def run_no_show_sweep_on_staff_login(sender, request, user, **kwargs):
     # Only when app is being used by staff/superuser
-    if not (getattr(user, "is_staff", False) or getattr(user, "is_superuser", False)):
+    if not (getattr(user, "is_staff", False)
+            or getattr(user, "is_superuser", False)):
         return
 
     today = timezone.localdate()

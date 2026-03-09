@@ -1,8 +1,5 @@
 from __future__ import annotations
-import datetime
-from datetime import timedelta, datetime
-import json
-import uuid
+from datetime import timedelta, date
 import logging
 import re
 
@@ -39,6 +36,13 @@ from .models import CancellationEvent, ReservationStats, NoShowEvent
 from .forms import PhoneReservationForm
 from .forms import EditReservationForm, SignUpForm
 
+# Assumes these exist in your project:
+# from .constants import SLOT_LABELS
+# from .forms import PhoneReservationForm
+# from .models import TimeSlotAvailability, TableReservation, Customer
+# from .views_helpers import _timeslot_defaults   (or wherever it lives)
+logger = logging.getLogger(__name__)
+
 
 def _default_tables_per_slot() -> int:
     """
@@ -64,8 +68,8 @@ def _get_slot_capacity_default():  # legacy helper
     Your project already has a notion of default tables per slot (often 20).
     Keep this as a single place to change it.
 
-    If you already have _default_tables_per_slot(), you can replace the body with:
-        return _default_tables_per_slot()
+    If you already have _default_tables_per_slot(), you can replace the
+    body with: return _default_tables_per_slot()
     """
     return 20
 
@@ -166,14 +170,13 @@ def superuser_required(view_func):
     @login_required
     def wrapper(request, *args, **kwargs):
         if not request.user.is_superuser:
-            return HttpResponseForbidden("You do not have permission to access this page.")
+            return HttpResponseForbidden("You do not have permission to "
+                                         "access this page.")
         return view_func(request, *args, **kwargs)
     return wrapper
 
 
 User = get_user_model()
-
-logger = logging.getLogger(__name__)
 
 
 def _to_int(value, default=0):
@@ -193,34 +196,6 @@ def _slot_order():
     return list(SLOT_LABELS.keys())
 
 
-def _pretty_range_from_start_and_duration(start_slot: str, duration_hours: int) -> str:
-    """
-    Converts ('17_18', 4) => '17:00–21:00'
-    Falls back safely to the single slot label.
-    """
-    slots = _slot_order()
-    if start_slot not in slots:
-        return SLOT_LABELS.get(start_slot, start_slot)
-
-    duration_hours = int(duration_hours or 1)
-    duration_hours = max(1, duration_hours)
-
-    start_idx = slots.index(start_slot)
-    end_idx = min(start_idx + duration_hours - 1, len(slots) - 1)
-
-    first_label = SLOT_LABELS.get(
-        slots[start_idx], slots[start_idx])  # "17:00–18:00"
-    last_label = SLOT_LABELS.get(
-        slots[end_idx], slots[end_idx])      # "20:00–21:00" for 2h
-
-    try:
-        start_t = first_label.split("–")[0].strip()
-        end_t = last_label.split("–")[1].strip()
-        return f"{start_t}–{end_t}"
-    except Exception:
-        return first_label
-
-
 def _affected_slots(start_slot: str, duration: int, until_close: bool = False):
     slots = _slot_order()
     if start_slot not in slots:
@@ -234,122 +209,56 @@ def _affected_slots(start_slot: str, duration: int, until_close: bool = False):
 
 def _cancel_and_release(reservation: TableReservation) -> None:
     """
-    Cancel a reservation and RELEASE table demand back into TimeSlotAvailability.
-
-    Handles:
-    - Single-hour reservations
-    - Multi-hour blocks via duration_hours (releases demand across consecutive slot keys)
-    - Safe atomic update (locks the TimeSlotAvailability row)
-    - Never deletes Customer/User data; only cancels and updates availability
+    Release table demand for an existing reservation back into
+    TimeSlotAvailability.
 
     IMPORTANT:
-    If your model has BOTH:
-        - legacy boolean: reservation_status
-        - new lifecycle field: status
-    we update BOTH so admin + reporting stay correct.
+    This helper no longer changes reservation lifecycle/status.
+    Cancellations are handled by:
+      1) releasing demand
+      2) writing CancellationEvent
+      3) hard-deleting the reservation row
+
+    Completed and no-show reservations are handled elsewhere.
     """
-
-    # ----------------------------
-    # Idempotent: already cancelled?
-    # ----------------------------
-    # New system
-    if hasattr(reservation, "status"):
-        if reservation.status == getattr(TableReservation, "STATUS_CANCELLED", "cancelled"):
-            return
-
-    # Legacy system
-    if hasattr(reservation, "reservation_status"):
-        if reservation.reservation_status is False:
-            # Still also ensure status is cancelled if the field exists
-            if hasattr(reservation, "status") and reservation.status != getattr(TableReservation, "STATUS_CANCELLED", "cancelled"):
-                reservation.status = getattr(
-                    TableReservation, "STATUS_CANCELLED", "cancelled")
-                if hasattr(reservation, "cancelled_at"):
-                    reservation.cancelled_at = timezone.now()
-                    reservation.save(update_fields=["status", "cancelled_at"])
-                else:
-                    reservation.save(update_fields=["status"])
-            return
-
-    # ----------------------------
-    # Determine slot key ordering
-    # ----------------------------
-    # Prefer SLOT_KEYS if it exists; otherwise fall back to SLOT_LABELS.keys()
-    try:
-        slot_keys = list(SLOT_LABELS)  # uses your global ordering if present
-    except Exception:
-        labels = globals().get("SLOT_LABELS", {}) or {}
-        try:
-            slot_keys = list(labels.keys())
-        except Exception:
-            slot_keys = []
-
     start_slot = getattr(reservation, "time_slot", None)
+    if not start_slot:
+        return
 
     try:
         tables_needed = int(
-            getattr(reservation, "number_of_tables_required_by_patron", 0) or 0)
-    except Exception:
+            getattr(
+                reservation,
+                "number_of_tables_required_by_patron",
+                0,
+            ) or 0
+        )
+    except (TypeError, ValueError):
         tables_needed = 0
 
     try:
         duration = int(getattr(reservation, "duration_hours", 1) or 1)
-    except Exception:
-        duration = 1
-    if duration < 1:
+    except (TypeError, ValueError):
         duration = 1
 
-    affected_slots = []
-    if start_slot and start_slot in slot_keys:
-        start_index = slot_keys.index(start_slot)
-        affected_slots = slot_keys[start_index: start_index + duration]
-    elif start_slot:
-        affected_slots = [start_slot]
+    duration = max(duration, 1)
 
-    # ----------------------------
-    # Apply cancellation + release
-    # ----------------------------
+    affected_slots = _affected_slots(
+        start_slot,
+        duration,
+        until_close=False,
+    )
+
+    if not affected_slots or tables_needed <= 0:
+        return
+
     with transaction.atomic():
-        # 1) Mark reservation cancelled (NEW + legacy)
-        update_fields = []
-
-        if hasattr(reservation, "mark_cancelled"):
-            # Your model helper should set: status + cancelled_at + reservation_status (if exists)
-            reservation.mark_cancelled()
-
-            # Build update_fields safely
-            if hasattr(reservation, "status"):
-                update_fields.append("status")
-            if hasattr(reservation, "cancelled_at"):
-                update_fields.append("cancelled_at")
-            if hasattr(reservation, "reservation_status"):
-                update_fields.append("reservation_status")
-        else:
-            # Fallback if helper not present
-            if hasattr(reservation, "status"):
-                reservation.status = getattr(
-                    TableReservation, "STATUS_CANCELLED", "cancelled")
-                update_fields.append("status")
-            if hasattr(reservation, "cancelled_at"):
-                reservation.cancelled_at = timezone.now()
-                update_fields.append("cancelled_at")
-            if hasattr(reservation, "reservation_status"):
-                reservation.reservation_status = False
-                update_fields.append("reservation_status")
-
-        if update_fields:
-            reservation.save(update_fields=update_fields)
-        else:
-            reservation.save()
-
-        # 2) Locate/lock TSA row
         ts = getattr(reservation, "timeslot_availability", None)
 
-        # If reservation doesn't have TSA linked (should be rare), fall back to date-based TSA
         if ts is None and getattr(reservation, "reservation_date", None):
             ts, _ = TimeSlotAvailability.objects.get_or_create(
                 calendar_date=reservation.reservation_date,
-                defaults=_timeslot_defaults(),  # assumes your helper exists
+                defaults=_timeslot_defaults(),
             )
 
         if ts is None:
@@ -357,26 +266,106 @@ def _cancel_and_release(reservation: TableReservation) -> None:
 
         ts = TimeSlotAvailability.objects.select_for_update().get(pk=ts.pk)
 
-        # 3) Release demand across all affected slots
-        tsa_update_fields = []
-        if affected_slots and tables_needed > 0:
-            for slot in affected_slots:
-                if not slot:
-                    continue
+        update_fields = []
+        for slot in affected_slots:
+            demand_field = f"total_cust_demand_for_tables_{slot}"
 
-                demand_field = f"total_cust_demand_for_tables_{slot}"
+            if not hasattr(ts, demand_field):
+                continue
 
-                # Guard: only touch fields that actually exist on the TSA model
-                if not hasattr(ts, demand_field):
-                    continue
+            current = int(getattr(ts, demand_field, 0) or 0)
+            new_val = max(0, current - tables_needed)
+            setattr(ts, demand_field, new_val)
+            update_fields.append(demand_field)
 
-                current = int(getattr(ts, demand_field, 0) or 0)
-                new_val = max(0, current - tables_needed)
-                setattr(ts, demand_field, new_val)
-                tsa_update_fields.append(demand_field)
+        if update_fields:
+            ts.save(update_fields=update_fields)
 
-        if tsa_update_fields:
-            ts.save(update_fields=tsa_update_fields)
+
+def _auto_mark_no_shows(today=None):
+    """
+    Past reservations that are still ACTIVE become NO_SHOW automatically.
+    - Cancelled reservations are hard-deleted, so they never appear here.
+    - Completed reservations are excluded.
+    """
+    today = today or timezone.localdate()
+
+    if not hasattr(TableReservation, "STATUS_ACTIVE"):
+        return
+
+    status_active = TableReservation.STATUS_ACTIVE
+    status_no_show = getattr(TableReservation, "STATUS_NO_SHOW", "no_show")
+
+    qs = TableReservation.objects.select_related("customer").filter(
+        reservation_date__lt=today,
+        status=status_active,
+    )
+
+    for r in qs.iterator():
+        with transaction.atomic():
+            r2 = (
+                TableReservation.objects
+                .select_for_update()
+                .get(pk=r.pk)
+            )
+
+            if r2.reservation_date >= today:
+                continue
+            if r2.status != status_active:
+                continue
+
+            cust_email = ""
+            if r2.customer_id:
+                cust_email = (
+                    Customer.objects
+                    .filter(pk=r2.customer_id)
+                    .values_list("email", flat=True)
+                    .first()
+                    or ""
+                )
+            cust_email = (cust_email or "").strip().lower()
+
+            event, created = NoShowEvent.objects.get_or_create(
+                reservation_id=r2.id,
+                defaults={
+                    "reservation_date": r2.reservation_date,
+                    "time_slot": r2.time_slot or "",
+                    "tables": int(
+                        getattr(
+                            r2,
+                            "number_of_tables_required_by_patron",
+                            0,
+                        ) or 0
+                    ),
+                    "duration_slots": int(
+                        getattr(r2, "duration_hours", 1) or 1
+                    ),
+                    "customer_email": cust_email,
+                    "marked_by_staff": False,
+                },
+            )
+
+            if not created:
+                continue
+
+            r2.status = status_no_show
+            r2.save(update_fields=["status"])
+
+            if r2.customer_id:
+                c = Customer.objects.select_for_update().get(pk=r2.customer_id)
+                c.no_show_count = int(
+                    getattr(c, "no_show_count", 0) or 0
+                ) + 1
+
+                update_fields = ["no_show_count"]
+                if (
+                    not getattr(c, "barred", False)
+                    and c.no_show_count >= NO_SHOW_BAN_THRESHOLD
+                ):
+                    c.barred = True
+                    update_fields.append("barred")
+
+                c.save(update_fields=update_fields)
 
 
 def _reservation_contact_email(reservation: TableReservation) -> str | None:
@@ -478,13 +467,15 @@ def mark_reservation_completed(request, reservation_id):
         TableReservation, "STATUS_COMPLETED", "completed")
     status_no_show = getattr(TableReservation, "STATUS_NO_SHOW", "no_show")
 
-    # Only allow completing ACTIVE reservations (not no_show, not already completed)
+    # Only allow completing ACTIVE reservations (not no_show,
+    # not already completed)
     if getattr(reservation, "status", None) != status_active:
         if getattr(reservation, "status", None) == status_completed:
             messages.info(request, "This reservation is already completed.")
         elif getattr(reservation, "status", None) == status_no_show:
             messages.error(
-                request, "Cannot complete a reservation already marked as No Show.")
+                request, "Cannot complete a reservation \
+                    already marked as No Show.")
         else:
             messages.info(request, "This reservation is not active.")
         return redirect("staff_reservations")
@@ -530,92 +521,11 @@ def mark_completed(request, reservation_id):
 NO_SHOW_BAN_THRESHOLD = 3  # adjust as needed for your business rules
 
 
-def _auto_mark_no_shows(today=None):
+def _apply_ban_if_needed(customer_email: str,
+                         threshold: int = 3, window_days: int = 90) -> bool:
     """
-    Past reservations that are still ACTIVE become NO_SHOW automatically.
-    - Cancelled reservations are hard-deleted, so they never appear here.
-    - Completed reservations are excluded.
-    """
-    today = today or timezone.localdate()
-
-    if not hasattr(TableReservation, "STATUS_ACTIVE"):
-        return
-
-    status_active = TableReservation.STATUS_ACTIVE
-    status_completed = getattr(
-        TableReservation, "STATUS_COMPLETED", "completed")  # unused but fine
-    status_no_show = getattr(TableReservation, "STATUS_NO_SHOW", "no_show")
-
-    qs = TableReservation.objects.select_related("customer").filter(
-        reservation_date__lt=today,
-        status=status_active,
-    )
-
-    for r in qs.iterator():
-        with transaction.atomic():
-            # Lock the reservation row ONLY (avoid outer-join FOR UPDATE issues)
-            r2 = (
-                TableReservation.objects
-                .select_for_update()
-                .get(pk=r.pk)
-            )
-
-            # re-check under lock
-            if r2.reservation_date >= today:
-                continue
-            if r2.status != status_active:
-                continue
-
-            # ✅ G: normalize email consistently for analytics joins
-            cust_email = ""
-            if r2.customer_id:
-                cust_email = (
-                    Customer.objects
-                    .filter(pk=r2.customer_id)
-                    .values_list("email", flat=True)
-                    .first()
-                    or ""
-                )
-            cust_email = (cust_email or "").strip().lower()
-
-            event, created = NoShowEvent.objects.get_or_create(
-                reservation_id=r2.id,
-                defaults={
-                    "reservation_date": r2.reservation_date,
-                    "time_slot": r2.time_slot or "",
-                    "tables": int(getattr(r2, "number_of_tables_required_by_patron", 0) or 0),
-                    "duration_slots": int(getattr(r2, "duration_hours", 1) or 1),
-                    "customer_email": cust_email,
-                    "marked_by_staff": False,
-                },
-            )
-
-            # ---- created-only side effects ----
-            if not created:
-                # Event already exists => don't re-mark or re-increment
-                continue
-
-            # mark NO_SHOW
-            r2.status = status_no_show
-            r2.save(update_fields=["status"])
-
-            # increment customer + optional bar
-            if r2.customer_id:
-                c = Customer.objects.select_for_update().get(pk=r2.customer_id)
-                c.no_show_count = int(getattr(c, "no_show_count", 0) or 0) + 1
-
-                update_fields = ["no_show_count"]
-                if (not getattr(c, "barred", False)) and c.no_show_count >= NO_SHOW_BAN_THRESHOLD:
-                    c.barred = True
-                    update_fields.append("barred")
-
-                c.save(update_fields=update_fields)
-            # ----------------------------------
-
-
-def _apply_ban_if_needed(customer_email: str, threshold: int = 3, window_days: int = 90) -> bool:
-    """
-    Auto-ban customer if they have >= threshold no-shows in the last window_days.
+    Auto-ban customer if they have >= threshold
+    no-shows in the last window_days.
     Returns True if customer was newly barred.
     """
     if not customer_email:
@@ -679,27 +589,31 @@ def my_reservations(request):
 
     customer = Customer.objects.filter(email__iexact=user.email).first()
     logger.warning(
-        f"Found customer: {customer} (ID: {customer.pk if customer else 'None'})"
+        f"Found customer: {customer} (ID: {customer.pk if customer
+                                           else 'None'})"
     )
 
     today = timezone.localdate()
     _auto_mark_no_shows(today=today)
 
     # --- Auto-complete past ACTIVE reservations (keeps UI sane) ---
-    # Only if your project has a status system. If you only rely on reservation_status,
-    # we'll still *display* completed based on date in the template later, but here we
-    # do the canonical status transition when possible.
+    # Only if your project has a status system. If you only rely
+    # on reservation_status, we'll still *display* completed based on date
+    # in the template later, but here we do the canonical status
+    # ransition when possible.
     if not customer:
         messages.info(
             request,
-            "No reservations found yet. Make your first booking to see them here.",
+            "No reservations found yet. Make your "
+            "first booking to see them here.",
         )
         reservations = TableReservation.objects.none()
     else:
         qs = TableReservation.objects.filter(customer=customer)
 
         # ✅ Status-based filtering ONLY (no legacy reservation_status)
-        # Cancelled reservations are hard-deleted (mentor requirement), so they won't appear here anyway.
+        # Cancelled reservations are hard-deleted (mentor requirement),
+        # so they won't appear here anyway.
         if hasattr(TableReservation, "STATUS_ACTIVE"):
             allowed = [TableReservation.STATUS_ACTIVE]
 
@@ -716,7 +630,8 @@ def my_reservations(request):
         logger.warning(f"Reservations found: {reservations.count()}")
         for r in reservations:
             logger.warning(
-                f"Res {r.id}: status={getattr(r, 'status', None)}, legacy={getattr(r, 'reservation_status', None)}"
+                f"Res {r.id}: status={getattr(r, 'status', None)}, \
+                      legacy={getattr(r, 'reservation_status', None)}"
             )
 
     context = {
@@ -730,22 +645,22 @@ def my_reservations(request):
 
 def cancel_reservation(request, reservation_id):
     """
-    Cancel a reservation and release demand back to availability,
-    then HARD DELETE the reservation from the database.
-
-    We keep cancellation analytics in a separate model (CancellationEvent),
-    so staff dashboard can still show "Cancelled" count even after deletes.
+    Cancel a reservation, release demand, write analytics,
+    then HARD DELETE the reservation row.
 
     IMPORTANT:
-    TableReservation has NO `user` FK. Permissions via email match:
+    - Cancelled reservations do NOT remain in TableReservation.
+    - Cancellation analytics are stored in CancellationEvent.
+    - TableReservation has NO `user` FK. Permissions use email matching:
       request.user.email -> Customer.email -> reservation.customer
     """
     reservation = get_object_or_404(TableReservation, id=reservation_id)
 
     today = timezone.localdate()
-    staff_redirect = "staff_reservations" if request.user.is_staff else "my_reservations"
+    staff_redirect = (
+        "staff_reservations" if request.user.is_staff else "my_reservations"
+    )
 
-    # ---------- lifecycle guards ----------
     if reservation.status in (
         TableReservation.STATUS_COMPLETED,
         TableReservation.STATUS_NO_SHOW,
@@ -753,7 +668,10 @@ def cancel_reservation(request, reservation_id):
         messages.error(request, "This reservation cannot be cancelled.")
         return redirect(staff_redirect)
 
-    if reservation.status == TableReservation.STATUS_ACTIVE and reservation.reservation_date < today:
+    if (
+        reservation.status == TableReservation.STATUS_ACTIVE
+        and reservation.reservation_date < today
+    ):
         messages.error(request, "Past reservations cannot be cancelled.")
         return redirect(staff_redirect)
 
@@ -766,38 +684,32 @@ def cancel_reservation(request, reservation_id):
         messages.error(request, msg)
         return redirect(staff_redirect)
 
-    # Snapshot everything needed BEFORE we mutate/delete anything
     cancelled_by_staff = bool(request.user.is_staff)
 
     recipient_email = _reservation_contact_email(reservation)
     guest_name = _reservation_contact_name(
-        reservation, fallback_user=request.user)
+        reservation,
+        fallback_user=request.user,
+    )
 
     res_id = reservation.id
     res_date = reservation.reservation_date
     res_slot = reservation.time_slot
     tables = int(
-        getattr(reservation, "number_of_tables_required_by_patron", 0) or 0)
+        getattr(reservation, "number_of_tables_required_by_patron", 0) or 0
+    )
     duration_slots = int(getattr(reservation, "duration_hours", 1) or 1)
 
-    # ✅ G: normalize email for consistent analytics joins
     customer_email = (
         getattr(getattr(reservation, "customer", None), "email", "") or ""
     ).strip().lower()
 
     customer_id = reservation.customer_id
 
-    # -------- Idempotency --------
-    already_cancelled = (
-        getattr(reservation, "reservation_status", True) is False)
-
     try:
         with transaction.atomic():
-            # Release demand only if this reservation was still "active"
-            if not already_cancelled:
-                _cancel_and_release(reservation)
+            _cancel_and_release(reservation)
 
-            # --- F2: idempotent cancellation analytics ---
             event, created = CancellationEvent.objects.get_or_create(
                 reservation_id=res_id,
                 defaults={
@@ -811,14 +723,11 @@ def cancel_reservation(request, reservation_id):
                 },
             )
 
-            # Only increment customer counter if we actually created a NEW event
             if created and customer_id:
                 Customer.objects.filter(pk=customer_id).update(
                     cancellations_count=F("cancellations_count") + 1
                 )
-            # --------------------------------------------
 
-            # HARD DELETE (mentor requirement)
             reservation.delete()
 
     except Exception:
@@ -829,7 +738,6 @@ def cancel_reservation(request, reservation_id):
         messages.error(request, msg)
         return redirect(staff_redirect)
 
-    # -------- Optional: send cancellation email --------
     try:
         if recipient_email:
             subject = "Your Gambinos reservation has been cancelled"
@@ -852,7 +760,11 @@ def cancel_reservation(request, reservation_id):
                 lines.append("")
 
             lines.append(
-                f"Your reservation for {tables} table{plural_s(tables)} on {when_str} has been cancelled."
+                (
+                    f"Your reservation for {tables} "
+                    f"table{plural_s(tables)} on {when_str} "
+                    "has been cancelled."
+                )
             )
             lines.append("")
             lines.append(f"Reservation ID: {res_id}")
@@ -862,7 +774,8 @@ def cancel_reservation(request, reservation_id):
                 lines.append(f"Cancelled by: {request.user.username}")
             lines.append("")
             lines.append(
-                "Thank you for choosing Gambinos Restaurant & Lounge.")
+                "Thank you for choosing Gambinos Restaurant & Lounge."
+            )
 
             send_mail(
                 subject=subject,
@@ -935,8 +848,10 @@ def mark_no_show(request, reservation_id):
         defaults={
             "reservation_date": reservation.reservation_date,
             "time_slot": reservation.time_slot or "",
-            "tables": int(getattr(reservation, "number_of_tables_required_by_patron", 0) or 0),
-            "duration_slots": int(getattr(reservation, "duration_hours", 1) or 1),
+            "tables": int(getattr(
+                reservation, "number_of_tables_required_by_patron", 0) or 0),
+            "duration_slots": int(getattr(
+                reservation, "duration_hours", 1) or 1),
             "customer_email": cust_email,
             "marked_by_staff": True,  # manual staff action
         },
@@ -974,11 +889,14 @@ def update_reservation(request, reservation_id):
     """
     def _safe_next_url(request, default_name="my_reservations"):
         nxt = request.POST.get("next") or request.GET.get("next")
-        if nxt and url_has_allowed_host_and_scheme(nxt, allowed_hosts={request.get_host()}):
+        if nxt and \
+            url_has_allowed_host_and_scheme(
+                nxt, allowed_hosts={request.get_host()}):
             return nxt
         return reverse(default_name)
 
-    default_return = "staff_reservations" if request.user.is_staff else "my_reservations"
+    default_return = "staff_reservations" if \
+        request.user.is_staff else "my_reservations"
 
     reservation = get_object_or_404(TableReservation, id=reservation_id)
     today = timezone.localdate()
@@ -1032,7 +950,8 @@ def update_reservation(request, reservation_id):
                         reservation.time_slot,
                     ),
                     "slot_labels": SLOT_LABELS,
-                    "next": _safe_next_url(request, default_name=default_return),
+                    "next":
+                    _safe_next_url(request, default_name=default_return),
                 },
             )
 
@@ -1063,7 +982,8 @@ def update_reservation(request, reservation_id):
         except ValueError as e:
             msg = str(e)
             if is_ajax:
-                return JsonResponse({"success": False, "error": msg}, status=400)
+                return JsonResponse({"success": False, "error": msg},
+                                    status=400)
             messages.error(request, msg)
             return render(
                 request,
@@ -1076,7 +996,8 @@ def update_reservation(request, reservation_id):
                         reservation.time_slot,
                     ),
                     "slot_labels": SLOT_LABELS,
-                    "next": _safe_next_url(request, default_name=default_return),
+                    "next":
+                    _safe_next_url(request, default_name=default_return),
                 },
             )
 
@@ -1115,8 +1036,20 @@ def _apply_reservation_change(
     new_duration,
     new_tables_needed,
 ):
-    # Reload the ORIGINAL persisted reservation row under lock.
-    original = TableReservation.objects.select_for_update().get(pk=reservation.pk)
+    """
+    Safely edit an existing reservation by:
+    1) loading the original persisted row under lock
+    2) releasing old demand
+    3) validating new capacity
+    4) saving the edited reservation
+    5) re-applying new demand
+
+    Handles same-day same-row edits correctly by refreshing new_ts when
+    old_ts and new_ts refer to the same TimeSlotAvailability row.
+    """
+    original = TableReservation.objects.select_for_update().get(
+        pk=reservation.pk
+    )
 
     old_ts = TimeSlotAvailability.objects.select_for_update().get(
         pk=original.timeslot_availability_id
@@ -1126,7 +1059,9 @@ def _apply_reservation_change(
         calendar_date=new_date,
         defaults=_timeslot_defaults(),
     )
-    new_ts = TimeSlotAvailability.objects.select_for_update().get(pk=new_ts.pk)
+    new_ts = TimeSlotAvailability.objects.select_for_update().get(
+        pk=new_ts.pk
+    )
 
     old_slots = _affected_slots(
         original.time_slot,
@@ -1143,7 +1078,11 @@ def _apply_reservation_change(
     new_tables = _to_int(new_tables_needed, 0)
 
     logger.warning(
-        "[EDIT DEBUG] reservation=%s old_date=%s old_slot=%s old_duration=%s old_tables=%s | new_date=%s new_slot=%s new_duration=%s new_tables=%s",
+        (
+            "[EDIT DEBUG] reservation=%s old_date=%s old_slot=%s "
+            "old_duration=%s old_tables=%s | new_date=%s "
+            "new_slot=%s new_duration=%s new_tables=%s"
+        ),
         original.pk,
         original.reservation_date,
         original.time_slot,
@@ -1156,7 +1095,7 @@ def _apply_reservation_change(
     )
 
     status_active = getattr(TableReservation, "STATUS_ACTIVE", "active")
-    is_active = (getattr(original, "status", None) == status_active)
+    is_active = getattr(original, "status", None) == status_active
 
     if is_active:
         logger.warning(
@@ -1170,7 +1109,6 @@ def _apply_reservation_change(
         )
 
         _update_ts_demand(old_ts, old_slots, old_tables, delta_sign=-1)
-
         old_ts.refresh_from_db()
 
         logger.warning(
@@ -1183,18 +1121,22 @@ def _apply_reservation_change(
             },
         )
 
-        # CRITICAL:
-        # If old_ts and new_ts are the same DB row, new_ts is now stale.
-        # Refresh it before capacity checks and before re-applying demand.
         if old_ts.pk == new_ts.pk:
             new_ts.refresh_from_db()
 
-    ok, bad_slot, avail, demand = _capacity_ok(new_ts, new_slots, new_tables)
+    ok, bad_slot, avail, demand = _capacity_ok(
+        new_ts,
+        new_slots,
+        new_tables,
+    )
     if not ok:
         if is_active:
             _update_ts_demand(old_ts, old_slots, old_tables, delta_sign=+1)
         raise ValueError(
-            f"Not enough tables for {new_date} slot {SLOT_LABELS.get(bad_slot, bad_slot)}."
+            (
+                f"Not enough tables for {new_date} "
+                f"slot {SLOT_LABELS.get(bad_slot, bad_slot)}."
+            )
         )
 
     original.reservation_date = new_date
@@ -1206,7 +1148,6 @@ def _apply_reservation_change(
 
     if is_active:
         _update_ts_demand(new_ts, new_slots, new_tables, delta_sign=+1)
-
         new_ts.refresh_from_db()
 
         logger.warning(
@@ -1219,7 +1160,6 @@ def _apply_reservation_change(
             },
         )
 
-    # Keep caller instance in sync
     reservation.reservation_date = original.reservation_date
     reservation.timeslot_availability = original.timeslot_availability
     reservation.time_slot = original.time_slot
@@ -1234,9 +1174,6 @@ def _safe_int(value, default=0):
         return int(value)
     except (TypeError, ValueError):
         return int(default)
-
-
-logger = logging.getLogger(__name__)
 
 
 def _build_next_30_days(days=30):
@@ -1291,16 +1228,15 @@ def _build_next_30_days(days=30):
     return out
 
 
-logger = logging.getLogger(__name__)
-
-
 def get_or_create_customer_for_request(request, form):
     """
     Ensures we have a Customer record for stats/forecasting.
 
     Rules:
-    - If user is authenticated: try to map user -> Customer (via your existing helper if present).
-    - Otherwise (or if no mapping): use form fields (email/phone/name) to find/create a Customer.
+    - If user is authenticated: try to map user -> Customer
+    (via your existing helper if present).
+    - Otherwise (or if no mapping): use form fields (email/phone/name)
+    to find/create a Customer.
     """
     # 1) If logged in, try to map to an existing Customer
     user = getattr(request, "user", None)
@@ -1330,7 +1266,8 @@ def get_or_create_customer_for_request(request, form):
     phone = (cd.get("phone") or cd.get("mobile")
              or cd.get("customer_phone") or "").strip()
 
-    # Prefer lookup by email; otherwise by phone; otherwise create a very basic record.
+    # Prefer lookup by email; otherwise by phone;
+    # otherwise create a very basic record.
     if email:
         customer, _ = Customer.objects.get_or_create(
             email__iexact=email,
@@ -1361,21 +1298,13 @@ def get_or_create_customer_for_request(request, form):
     )
 
 
-# Assumes these exist in your project:
-# from .constants import SLOT_LABELS
-# from .forms import PhoneReservationForm
-# from .models import TimeSlotAvailability, TableReservation, Customer
-# from .views_helpers import _timeslot_defaults   (or wherever it lives)
-logger = logging.getLogger(__name__)
-
-
 def signup(request):
     if request.method == "POST":
         form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)  # log in automatically after signup
-            return redirect("make_reservation")  # redirect to reservation page
+            return redirect("make_reservation")
     else:
         form = SignUpForm()
     return render(request, "registration/signup.html", {"form": form})
@@ -1388,13 +1317,15 @@ def make_reservation(request):
 
     Key rules:
     - duration_hours is treated as "NUMBER OF TIME SLOTS" (not literal hours)
-    - A reservation starting at the last slot has 1 slot max (or 0 if you ever add a “closed” slot)
-    - Capacity check + demand deduction happen across ALL affected slots
+    - A reservation starting at the last slot has 1 slot max (or 0 if you
+    ever add a “closed” slot) Capacity check + demand deduction happen across
+    ALL affected slots
     - Multi-day series supported via series_days
     """
     next_30_days = _build_next_30_days(days=30)
 
-    # Build initial for GET (and as a fallback for POST if user fields were left blank)
+    # Build initial for GET (and as a fallback for POST
+    # if user fields were left blank)
     initial = {}
     if request.user.is_authenticated and not request.user.is_staff:
         initial = {
@@ -1442,8 +1373,9 @@ def make_reservation(request):
         # IMPORTANT: bind the POST data (not initial)
         post_data = request.POST.copy()
 
-        # If customer is logged in (not staff), backfill required fields if blanks came through
-        # (this prevents “required” errors if your modal fields were readonly or not filled)
+        # If customer is logged in (not staff), backfill required fields
+        # if blanks came through(this prevents “required” errors if your
+        # modal fields were readonly or not filled)
         if initial:
             for k, v in initial.items():
                 if not post_data.get(k):
@@ -1480,7 +1412,8 @@ def make_reservation(request):
         # slots remaining INCLUDING the start slot
         max_slots_left_today = max(1, len(slot_keys) - start_index)
 
-        # also respect model field choices (prevents "5 is not one of the available choices")
+        # also respect model field choices (prevents "5 is not
+        # one of the available choices")
         duration_field = TableReservation._meta.get_field("duration_hours")
         choice_values = [int(v) for (v, _lbl) in (
             duration_field.choices or []) if str(v).isdigit()]
@@ -1488,7 +1421,8 @@ def make_reservation(request):
             choice_values) if choice_values else max_slots_left_today
 
         duration_slots = max(
-            1, min(requested_duration_slots, max_slots_left_today, max_choice_allowed))
+            1, min(requested_duration_slots,
+                   max_slots_left_today, max_choice_allowed))
 
         end_index = min(start_index + duration_slots, len(slot_keys))
         affected_slot_keys = slot_keys[start_index:end_index]
@@ -1510,7 +1444,8 @@ def make_reservation(request):
                 if getattr(customer, "barred", False):
                     raise ValueError(
                         "You can’t make new reservations from this account. "
-                        "Please contact the restaurant if you believe this is a mistake.")
+                        "Please contact the restaurant if you believe this "
+                        "is a mistake.")
 
                 changed_fields = []
                 for f, v in [
@@ -1534,7 +1469,8 @@ def make_reservation(request):
                         calendar_date=day_date,
                         defaults=_timeslot_defaults(),
                     )
-                    ts_day = TimeSlotAvailability.objects.select_for_update().get(pk=ts_day.pk)
+                    ts_day = TimeSlotAvailability.objects.select_for_update().\
+                        get(pk=ts_day.pk)
 
                     # Capacity check across ALL affected slots
                     for k in affected_slot_keys:
@@ -1547,8 +1483,10 @@ def make_reservation(request):
                         if remaining < tables_requested:
                             messages.error(
                                 request,
-                                f"Not enough tables on {day_date.strftime('%b %d, %Y')} "
-                                f"for {SLOT_LABELS.get(k, k)}. Only {remaining} left."
+                                f"Not enough tables on \
+                                    {day_date.strftime('%b %d, %Y')} "
+                                f"for {SLOT_LABELS.get(k, k)}. Only \
+                                    {remaining} left."
                             )
                             return render(
                                 request,
@@ -1565,7 +1503,8 @@ def make_reservation(request):
                         update_fields.append(dfield)
                     ts_day.save(update_fields=update_fields)
 
-                    # Build kwargs safely (your model has legacy fields in some branches)
+                    # Build kwargs safely (your model has legacy
+                    # fields in some branches)
                     create_kwargs = dict(
                         customer=customer,
                         reservation_date=day_date,
@@ -1577,19 +1516,22 @@ def make_reservation(request):
 
                     # status field varies across your history; handle safely
                     if hasattr(TableReservation, "STATUS_ACTIVE"):
-                        create_kwargs["status"] = TableReservation.STATUS_ACTIVE
+                        create_kwargs["status"] = \
+                            TableReservation.STATUS_ACTIVE
                     else:
                         # many older versions used lower-case 'active'
                         create_kwargs["status"] = "active"
 
-                    # legacy flags used by /my_reservations/ in your logs earlier
+                    # legacy flags used by /my_reservations/
+                    # in your logs earlier
                     if hasattr(TableReservation, "reservation_status"):
                         create_kwargs["reservation_status"] = True
                     if hasattr(TableReservation, "is_phone_reservation"):
                         create_kwargs["is_phone_reservation"] = False
                     if hasattr(TableReservation, "created_by"):
                         # created_by is usually staff; keep None for customers
-                        create_kwargs["created_by"] = request.user if request.user.is_staff else None
+                        create_kwargs["created_by"] = request.user \
+                            if request.user.is_staff else None
 
                     reservation = TableReservation.objects.create(
                         **create_kwargs)
@@ -1607,7 +1549,9 @@ def make_reservation(request):
         except Exception:
             logger.exception("[MR] reservation create failed")
             messages.error(
-                request, "Looks like you've been barred for excessive no shows or other reasons. Please contact us if you think this is a mistake.")
+                request, "Looks like you've been barred for excessive no "
+                "shows or other reasons. Please contact us if you think this "
+                "is a mistake.")
             return render(
                 request,
                 "reservation_book/make_reservation.html",
@@ -1621,11 +1565,13 @@ def make_reservation(request):
                 context = {
                     "customer": customer,
                     "reservations": reservations_created,
-                    "reservation": reservations_created[0] if reservations_created else None,
+                    "reservation": reservations_created[0]
+                    if reservations_created else None,
                     "slot_labels": SLOT_LABELS,
                 }
                 message = render_to_string(
-                    "reservation_book/emails/online_reservation_confirmation.txt",
+                    "reservation_book/emails/"
+                    "online_reservation_confirmation.txt",
                     context,
                 )
                 send_mail(
@@ -1640,7 +1586,8 @@ def make_reservation(request):
 
         messages.success(
             request,
-            f"Reservation{' series' if series_days > 1 else ''} created successfully!",
+            f"Reservation{' series' if series_days > 1 else ''} \
+                created successfully!",
         )
         return redirect("my_reservations")
 
@@ -1741,7 +1688,8 @@ def add_staff(request):
                 existing_user.set_password(temp_password)
                 existing_user.save()
                 messages.success(
-                    request, f"Staff member {first_name} {last_name} re-activated and new password emailed.")
+                    request, f"Staff member {first_name} {last_name} \
+                        re-activated and new password emailed.")
         else:
             # Create new staff
             User.objects.create_user(
@@ -1754,7 +1702,8 @@ def add_staff(request):
                 is_active=True
             )
             messages.success(
-                request, f"Staff member {first_name} {last_name} added and password emailed.")
+                request, f"Staff member {first_name} \
+                    {last_name} added and password emailed.")
 
         # Send welcome email
         login_url = request.build_absolute_uri(reverse('account_login'))
@@ -1762,9 +1711,11 @@ def add_staff(request):
         message = f"""
             Hello {first_name},
 
-            Your staff account for Gambino's Restaurant & Bar has been created (or re-activated).
+            Your staff account for Gambino's Restaurant & Bar has been
+            created (or re-activated).
 
-            Please log in using the details below and change your password immediately:
+            Please log in using the details below and change
+            your password immediately:
 
             Login URL: {login_url}
             Username: {email}
@@ -1818,7 +1769,8 @@ def first_login_setup(request):
     if not request.user.is_staff:
         return redirect('make_reservation')
 
-    # If username has been changed from email, they've already completed setup
+    # If username has been changed from email,
+    # they've already completed setup
     if request.user.username != request.user.email:
         return redirect('staff_dashboard')
 
@@ -1834,7 +1786,8 @@ def first_login_setup(request):
             user.save()
 
             messages.success(
-                request, "Password and username updated successfully. Welcome!")
+                request, "Password and username updated \
+                    successfully. Welcome!")
             return redirect('staff_dashboard')
     else:
         password_form = SetPasswordForm(request.user)
@@ -1862,7 +1815,8 @@ def staff_dashboard(request):
     ).count()
     registered_customers_count = Customer.objects.count()
 
-    # ✅ Mentor requirement: cancellations are deleted, so count comes from stats table
+    # ✅ Mentor requirement: cancellations are deleted,
+    # so count comes from stats table
     stats = ReservationStats.get_solo()
     cancelled_reservations_count = CancellationEvent.objects.count()
     no_show_count = NoShowEvent.objects.count()
@@ -1888,20 +1842,25 @@ def staff_dashboard(request):
 @staff_or_superuser_required
 def user_reservations_overview(request):
     """
-    Staff view: overview list of customers and their reservation/counter stats.
+    Staff view: overview list of customers
+    and their reservation/counter stats.
 
     IMPORTANT:
-    - Cancelled reservations are hard-deleted, so "cancelled" must come from Customer.cancellations_count
+    - Cancelled reservations are hard-deleted, so "cancelled" must come from
+    Customer.cancellations_count
       (or CancellationEvent), NOT from TableReservation rows.
-    - No-shows are tracked on Customer.no_show_count and also optionally in NoShowEvent.
+    - No-shows are tracked on Customer.no_show_count and also optionally
+    in NoShowEvent.
     """
     today = timezone.localdate()
 
-    # NOTE: Do NOT filter(reservations__isnull=False) or the table can appear empty
+    # NOTE: Do NOT filter(reservations__isnull=False)
+    # or the table can appear empty
     customers = (
         Customer.objects.all()
         .annotate(
-            # TableReservation rows that still exist (active/completed/no_show)
+            # TableReservation rows that still exist
+            # (active/completed/no_show)
             total_reservations_db=Count("reservations", distinct=True),
 
             # Upcoming active operational reservations
@@ -1932,7 +1891,8 @@ def user_reservations_overview(request):
                 0,
             ),
 
-            # Bring in counters (these represent deleted cancellations + no-shows)
+            # Bring in counters (these represent
+            # deleted cancellations + no-shows)
             cancelled_reservations=Coalesce(
                 F("cancellations_count"), Value(0)),
             no_show_reservations=Coalesce(F("no_show_count"), Value(0)),
@@ -1995,13 +1955,15 @@ def user_reservation_history(request, customer_id):
 
 @staff_or_superuser_required
 def create_phone_reservation(request):
-    """Staff UI for creating reservations for phone-in customers (Option B + time blocks).
+    """Staff UI for creating reservations for phone-in customers
+    (Option B + time blocks).
 
     Rules enforced:
     - Reuse existing Customer by email
     - Reuse or create auth User
     - NEVER email passwords
-    - If Customer is NEW (first time in DB) => ALWAYS send set-password onboarding link
+    - If Customer is NEW (first time in DB) => ALWAYS send
+    set-password onboarding link
     - Else if User has unusable password => send set-password onboarding link
     - Else => send login link
     - Ensure allauth EmailAddress exists and is primary+verified
@@ -2031,7 +1993,7 @@ def create_phone_reservation(request):
 
         if ts_val:
             try:
-                selected_day = datetime.date.fromisoformat(ts_val)
+                selected_day = date.fromisoformat(ts_val)
             except ValueError:
                 selected_day = None
 
@@ -2082,8 +2044,10 @@ def create_phone_reservation(request):
             )
 
         customer_defaults = {
-            "first_name": (getattr(raw_customer, "first_name", "") or "").strip(),
-            "last_name": (getattr(raw_customer, "last_name", "") or "").strip(),
+            "first_name":
+            (getattr(raw_customer, "first_name", "") or "").strip(),
+            "last_name":
+                (getattr(raw_customer, "last_name", "") or "").strip(),
             "phone": getattr(raw_customer, "phone", "") or "",
             "mobile": getattr(raw_customer, "mobile", "") or "",
         }
@@ -2096,10 +2060,12 @@ def create_phone_reservation(request):
         # Barred enforcement (staff phone booking)
         if getattr(customer, "barred", False):
             messages.error(
-                request, "This customer is barred. New bookings are not allowed.")
+                request, "This customer is barred. New bookings are "
+                "not allowed.")
             return redirect("staff_dashboard")
 
-        # Only update fields if we have non-empty values (avoid wiping good data)
+        # Only update fields if we have non-empty values
+        # (avoid wiping good data)
         cust_changed = False
         for field, val in customer_defaults.items():
             if val and getattr(customer, field, "") != val:
@@ -2119,7 +2085,8 @@ def create_phone_reservation(request):
         if not start_date or not start_slot:
             messages.error(
                 request,
-                "Please click a date/time cell in the availability grid before confirming.",
+                "Please click a date/time cell in the availability "
+                "grid before confirming.",
             )
             return render(
                 request,
@@ -2196,7 +2163,8 @@ def create_phone_reservation(request):
                     if user_changed:
                         user.save()
 
-                # Ensure allauth EmailAddress exists and is usable for auth flows
+                # Ensure allauth EmailAddress exists
+                # and is usable for auth flows
                 ea, _ = EmailAddress.objects.get_or_create(
                     user=user,
                     email=email,
@@ -2214,7 +2182,7 @@ def create_phone_reservation(request):
 
                 # Book N consecutive days
                 for day_offset in range(series_days):
-                    day = start_date + datetime.timedelta(days=day_offset)
+                    day = start_date + timedelta(days=day_offset)
 
                     ts, _ = TimeSlotAvailability.objects.get_or_create(
                         calendar_date=day,
@@ -2222,17 +2190,21 @@ def create_phone_reservation(request):
                     )
 
                     # Lock row for consistent demand updates
-                    ts = TimeSlotAvailability.objects.select_for_update().get(pk=ts.pk)
+                    ts = TimeSlotAvailability.objects.select_for_update()\
+                        .get(pk=ts.pk)
 
                     # Capacity check across affected slots
                     for s in affected_slots:
                         slot_available = _to_int(
-                            getattr(ts, f"number_of_tables_available_{s}", 0), 0)
+                            getattr(ts,
+                                    f"number_of_tables_available_{s}", 0), 0)
                         slot_demand = _to_int(
-                            getattr(ts, f"total_cust_demand_for_tables_{s}", 0), 0)
+                            getattr(ts,
+                                    f"total_cust_demand_for_tables_{s}", 0), 0)
                         if slot_demand + tables_needed > slot_available:
                             raise ValueError(
-                                f"Not enough tables available for {day} in slot {SLOT_LABELS.get(s, s)}."
+                                f"Not enough tables available for {day} \
+                                    in slot {SLOT_LABELS.get(s, s)}."
                             )
 
                     # Create ONE reservation row per day
@@ -2279,7 +2251,8 @@ def create_phone_reservation(request):
         except Exception:
             logger.exception("[PHONE] reservation create failed")
             messages.error(
-                request, "Something went wrong creating the phone reservation.")
+                request, "Something went wrong creating the "
+                "phone reservation.")
             return render(
                 request,
                 "reservation_book/create_phone_reservation.html",
@@ -2321,7 +2294,8 @@ def create_phone_reservation(request):
         )
 
         context = {
-            "reservation": created_reservations[0] if created_reservations else proto,
+            "reservation": created_reservations[0]
+            if created_reservations else proto,
             "reservations": created_reservations,
             "time_slot_pretty": time_range_pretty,
             "tables_needed": tables_needed,
@@ -2339,7 +2313,8 @@ def create_phone_reservation(request):
         )
 
         send_mail(
-            subject="Your reservation at Gambinos Restaurant & Lounge is confirmed",
+            subject="Your reservation at Gambinos Restaurant & Lounge \
+                is confirmed",
             message=message,
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[email],
@@ -2348,7 +2323,8 @@ def create_phone_reservation(request):
 
         messages.success(
             request,
-            f"Phone reservation{' series' if series_days > 1 else ''} created successfully!",
+            f"Phone reservation{' series' if series_days > 1 else ''} \
+                created successfully!",
         )
         # keep your staff-facing redirect
         return redirect("staff_reservations")
@@ -2370,7 +2346,8 @@ def _normalize_query(q: str) -> str:
     """
     - strips
     - collapses whitespace
-    - removes whitespace around '@' in emails ("name @gmail.com" → "name@gmail.com")
+    - removes whitespace around '@' in emails
+    ("name @gmail.com" → "name@gmail.com")
     """
     q = (q or "").strip()
     q = re.sub(r"\s+", " ", q)
@@ -2405,14 +2382,16 @@ def ajax_lookup_customer(request):
                 id=int(stripped_q)).first()
             if res_by_id:
                 date_val = res_by_id.reservation_date or (
-                    res_by_id.timeslot_availability.calendar_date if res_by_id.timeslot_availability else None
+                    res_by_id.timeslot_availability.calendar_date
+                    if res_by_id.timeslot_availability else None
                 )
                 customer_name = ""
                 customer_email = ""
                 customer_phone = ""
                 customer_mobile = ""
                 if res_by_id.customer:
-                    customer_name = f"{res_by_id.customer.first_name} {res_by_id.customer.last_name}".strip(
+                    customer_name = f"{res_by_id.customer.first_name} \
+                        {res_by_id.customer.last_name}".strip(
                     )
                     customer_email = res_by_id.customer.email or ""
                     customer_phone = res_by_id.customer.phone or ""
@@ -2421,15 +2400,22 @@ def ajax_lookup_customer(request):
                 reservation_by_id = {
                     "type": "reservation",
                     "reservation_id": res_by_id.id,
-                    "first_name": customer_name.split()[0] if customer_name else "",
-                    "last_name": " ".join(customer_name.split()[1:]) if customer_name else "",
+                    "first_name": customer_name.split()[0]
+                    if customer_name else "",
+                    "last_name":
+                    " ".join(customer_name.split()[
+                             1:]) if customer_name else "",
                     "email": customer_email,
                     "phone": customer_phone,
                     "mobile": customer_mobile,
-                    "reservation_date": date_val.isoformat() if date_val else "",
+                    "reservation_date": date_val.isoformat()
+                        if date_val else "",
                     "time_slot": res_by_id.time_slot or "",
-                    "pretty_slot": SLOT_LABELS.get(res_by_id.time_slot, res_by_id.time_slot or ""),
-                    "reservation_status": bool(getattr(res_by_id, "reservation_status", True)),
+                    "pretty_slot":
+                        SLOT_LABELS.get(res_by_id.time_slot,
+                                        res_by_id.time_slot or ""),
+                    "reservation_status":
+                        bool(getattr(res_by_id, "reservation_status", True)),
                 }
         except (ValueError, OverflowError):
             pass
@@ -2444,7 +2430,8 @@ def ajax_lookup_customer(request):
         reservations_qs = (
             TableReservation.objects
             .select_related("timeslot_availability", "customer")
-            .filter(status=TableReservation.STATUS_ACTIVE, reservation_date__gte=today)
+            .filter(status=TableReservation.STATUS_ACTIVE,
+                    reservation_date__gte=today)
             .filter(
                 Q(customer__first_name__icontains=q)
                 | Q(customer__last_name__icontains=q)
@@ -2454,29 +2441,34 @@ def ajax_lookup_customer(request):
         )
 
         for r in reservations_qs:
-            if reservation_by_id and r.id == reservation_by_id["reservation_id"]:
+            if reservation_by_id and r.id == \
+                    reservation_by_id["reservation_id"]:
                 continue
 
             date_val = r.reservation_date or (
-                r.timeslot_availability.calendar_date if r.timeslot_availability else None
+                r.timeslot_availability.calendar_date
+                if r.timeslot_availability else None
             )
             customer_name = ""
             if r.customer:
-                customer_name = f"{r.customer.first_name} {r.customer.last_name}".strip(
-                )
+                customer_name = f"{r.customer.first_name} \
+                    {r.customer.last_name}".strip()
 
             results.append({
                 "type": "reservation",
                 "reservation_id": r.id,
-                "first_name": customer_name.split()[0] if customer_name else "",
-                "last_name": " ".join(customer_name.split()[1:]) if customer_name else "",
+                "first_name":
+                customer_name.split()[0] if customer_name else "",
+                "last_name":
+                " ".join(customer_name.split()[1:]) if customer_name else "",
                 "email": r.customer.email if r.customer else "",
                 "phone": r.customer.phone if r.customer else "",
                 "mobile": r.customer.mobile if r.customer else "",
                 "reservation_date": date_val.isoformat() if date_val else "",
                 "time_slot": r.time_slot or "",
                 "pretty_slot": SLOT_LABELS.get(r.time_slot, r.time_slot or ""),
-                "reservation_status": (r.status == TableReservation.STATUS_ACTIVE),
+                "reservation_status": (r.status
+                                       == TableReservation.STATUS_ACTIVE),
             })
 
         return JsonResponse({"results": results})
@@ -2520,7 +2512,8 @@ def ajax_lookup_customer(request):
 
 def _build_set_password_link(request, user):
     """
-    Builds a one-time onboarding link that lets a user SET their password (not reset-request flow).
+    Builds a one-time onboarding link that lets a user
+    SET their password (not reset-request flow).
     """
     uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
     token = default_token_generator.make_token(user)
@@ -2556,7 +2549,8 @@ def onboarding_set_password(request, uidb64, token):
 
             new_password = form.cleaned_data["new_password1"]
 
-            # Authenticate so Django knows which backend was used (fixes multi-backend login() errors)
+            # Authenticate so Django knows which backend was used
+            # (fixes multi-backend login() errors)
             authed = authenticate(
                 request, username=user.get_username(), password=new_password)
             if authed is None and getattr(user, "email", None):
@@ -2566,11 +2560,13 @@ def onboarding_set_password(request, uidb64, token):
             if authed is not None:
                 login(request, authed)
             else:
-                # Fallback: explicitly specify backend (keeps you from crashing)
+                # Fallback: explicitly specify backend
+                # (keeps you from crashing)
                 login(
                     request,
                     user,
-                    backend="allauth.account.auth_backends.AuthenticationBackend",
+                    backend="allauth.account\
+                        .auth_backends.AuthenticationBackend",
                 )
 
             messages.success(
@@ -2591,7 +2587,8 @@ def onboarding_set_password(request, uidb64, token):
 @require_http_methods(["POST"])
 def resend_password_setup_link(request):
     """
-    Staff button: resend the onboarding set-password link to a customer by email.
+    Staff button: resend the onboarding set-password link to a
+    customer by email.
     Expected POST field: email
     """
 
@@ -2620,7 +2617,8 @@ def resend_password_setup_link(request):
 
     password_setup_url = _build_set_password_link(request, user)
 
-    # You can reuse your existing phone confirmation template or create a small staff resend template
+    # You can reuse your existing phone confirmation template or
+    # create a small staff resend template
     context = {"password_setup_url": password_setup_url, "user": user}
     message = render_to_string(
         "reservation_book/emails/resend_password_setup.txt", context)

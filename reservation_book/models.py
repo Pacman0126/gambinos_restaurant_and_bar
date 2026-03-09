@@ -1,16 +1,9 @@
 from __future__ import annotations
 
 from django.conf import settings
-import datetime
-from datetime import date
 from django.utils import timezone
 
-from django.views.decorators.http import require_POST
-from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
 from django.db import models
-
-from django.db.models import JSONField
 from django.contrib.auth.models import User
 
 from .constants import SLOT_LABELS
@@ -48,7 +41,8 @@ class Customer(models.Model):
     # New: Flag for barred/banned customers
     barred = models.BooleanField(
         default=False,
-        help_text="Check if this customer is not welcome (no new bookings allowed)"
+        help_text="Check if this customer is not welcome \
+            (no new bookings allowed)"
     )
 
     # Counters used for staff/admin decisions
@@ -58,13 +52,15 @@ class Customer(models.Model):
     # Enhanced notes field with examples
     notes = models.TextField(
         blank=True,
-        help_text="Staff notes: e.g., VIP, regular, allergy, restaurant critic, supplier, chef, etc."
+        help_text="Staff notes: e.g., VIP, regular, allergy, \
+            restaurant critic, supplier, chef, etc."
     )
 
     def __str__(self):
         base = f"{self.first_name} {self.last_name}".strip()
         if not base:
-            base = self.email or self.phone or self.mobile or "Unknown Customer"
+            base = self.email or self.phone or self.mobile \
+                or "Unknown Customer"
         if self.barred:
             base += " [BARRED]"
         return base
@@ -85,7 +81,8 @@ class TableReservationQuerySet(models.QuerySet):
 
     IMPORTANT:
     - Supports your new lifecycle `status` field.
-    - Also supports legacy `reservation_status` boolean (backward compatibility).
+    - Also supports legacy `reservation_status` boolean
+    (backward compatibility).
     """
 
     def active(self):
@@ -130,7 +127,8 @@ class TableReservationQuerySet(models.QuerySet):
         return self.none()
 
 
-class TableReservationManager(models.Manager.from_queryset(TableReservationQuerySet)):
+class TableReservationManager(models.Manager
+                              .from_queryset(TableReservationQuerySet)):
     """
     Manager is now *backed by* TableReservationQuerySet.
     That means any queryset created from objects will have .active().
@@ -138,15 +136,9 @@ class TableReservationManager(models.Manager.from_queryset(TableReservationQuery
     pass
 
 
-# This single Manager is the only one you should have.
-# It automatically returns a TableReservationQuerySet so `.active()` works.
-TableReservationManager = models.Manager.from_queryset(
-    TableReservationQuerySet)
 # -------------------------------------------------------------------
-# TableReservation model (your status system + legacy boolean kept)
+# TableReservation model (status system + legacy boolean kept)
 # -------------------------------------------------------------------
-
-
 class TableReservation(models.Model):
     # Attach the working manager (THIS enables `.active()` everywhere)
     objects = models.Manager()
@@ -197,7 +189,8 @@ class TableReservation(models.Model):
         related_name="reservations",
     )
 
-    # Denormalized date for convenience (mirrors timeslot_availability.calendar_date)
+    # Denormalized date for convenience (mirrors
+    # timeslot_availability.calendar_date)
     reservation_date = models.DateField(
         null=True,
         blank=True,
@@ -216,7 +209,8 @@ class TableReservation(models.Model):
         null=True,
         blank=True,
         related_name="created_reservations",
-        help_text="Staff member who created this reservation (for phone bookings).",
+        help_text="Staff member who created this reservation \
+            (for phone bookings).",
     )
 
     # Your choices constant should already exist in your file; keep yours.
@@ -224,7 +218,8 @@ class TableReservation(models.Model):
     duration_hours = models.PositiveSmallIntegerField(
         choices=getattr(settings, "DURATION_CHOICES", None),
         default=1,
-        help_text="How many consecutive time slots this booking requires (max 5).",
+        help_text="How many consecutive time slots \
+            this booking requires (max 5).",
     )
 
     series = models.ForeignKey(
@@ -233,7 +228,8 @@ class TableReservation(models.Model):
         null=True,
         blank=True,
         related_name="reservations",
-        help_text="If set, this reservation is part of a multi-day series booking.",
+        help_text="If set, this reservation is part of a \
+            multi-day series booking.",
     )
 
     # How many tables this patron is using in that slot
@@ -247,13 +243,15 @@ class TableReservation(models.Model):
     reservation_status = models.BooleanField(
         default=True,
         db_index=True,
-        help_text="Legacy flag kept for backward compatibility; prefer `status`.",
+        help_text="Legacy flag kept for backward compatibility; \
+            prefer `status`.",
     )
 
     # Distinguish online vs phone-in reservations
     is_phone_reservation = models.BooleanField(
         default=False,
-        help_text="True if this reservation was taken over the phone by staff.",
+        help_text="True if this reservation was \
+            taken over the phone by staff.",
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -316,7 +314,8 @@ class TableReservation(models.Model):
     def status_display(self) -> str:
         """
         Human-friendly status label for templates.
-        Matches what your templates expect: "Active", "Cancelled", "Completed", "No-show".
+        Matches what your templates expect: "Active",
+        "Cancelled", "Completed", "No-show".
         """
         lookup = dict(self.STATUS_CHOICES)
         return lookup.get(self.status, self.status or "-")
@@ -368,8 +367,10 @@ class TableReservation(models.Model):
 
 class CancellationEvent(models.Model):
     """
-    Immutable analytics row created when a reservation is cancelled (and then hard-deleted).
-    Keep nullable where needed to avoid migration prompts if you already have existing rows.
+    Immutable analytics row created when a reservation is
+    cancelled (and then hard-deleted).
+    Keep nullable where needed to avoid migration prompts
+    if you already have existing rows.
     """
     created_at = models.DateTimeField(null=True, blank=True, db_index=True)
 
@@ -424,7 +425,8 @@ class NoShowEvent(models.Model):
         ordering = ["-created_at"]
 
     def __str__(self):
-        return f"NoShowEvent(res_id={self.reservation_id}, date={self.reservation_date}, slot={self.time_slot})"
+        return f"NoShowEvent(res_id={self.reservation_id}, \
+            date={self.reservation_date}, slot={self.time_slot})"
 
 
 class RestaurantConfig(models.Model):
@@ -444,7 +446,8 @@ class RestaurantConfig(models.Model):
             timeslot_availability=self,
             time_slot=slot,
             reservation_status=True
-        ).aggregate(total=models.Sum("number_of_tables_required_by_patron"))["total"] or 0
+        ).aggregate(total=models.Sum(
+            "number_of_tables_required_by_patron"))["total"] or 0
 
     def left_for(self, slot):
         available = getattr(self, f"number_of_tables_available_{slot}")

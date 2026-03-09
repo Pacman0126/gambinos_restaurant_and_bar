@@ -53,7 +53,8 @@ def run_no_show_sweep(
         reservations = list(qs)
         scanned = len(reservations)
 
-        # Detect optional field on NoShowEvent (you previously had marked_by_staff confusion)
+        # Detect optional field on NoShowEvent
+        # (previously had marked_by_staff confusion)
         has_marked_by_staff = any(
             f.name == "marked_by_staff"
             for f in NoShowEvent._meta.get_fields()
@@ -65,7 +66,8 @@ def run_no_show_sweep(
             cust_email = ""
             if r.customer_id:
                 cust_email = (Customer.objects.filter(pk=r.customer_id)
-                              .values_list("email", flat=True).first() or "").strip()
+                              .values_list("email",
+                                           flat=True).first() or "").strip()
 
             event_kwargs = dict(
                 reservation_id=r.id,
@@ -97,4 +99,5 @@ def run_no_show_sweep(
                     c.save(update_fields=["barred"])
                     barred_count += 1
 
-    return NoShowSweepResult(scanned=scanned, marked_no_show=marked_count, barred_customers=barred_count)
+    return NoShowSweepResult(scanned=scanned, marked_no_show=marked_count,
+                             barred_customers=barred_count)

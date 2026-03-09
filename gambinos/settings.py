@@ -85,8 +85,10 @@ LOGGING = {
     },
     "root": {"handlers": ["console"], "level": "INFO"},
     "loggers": {
-        "reservation_book": {"handlers": ["console"], "level": "DEBUG", "propagate": False},
-        "django": {"handlers": ["console"], "level": "INFO", "propagate": False},
+        "reservation_book": {"handlers": ["console"],
+                             "level": "DEBUG", "propagate": False},
+        "django": {"handlers": ["console"],
+                   "level": "INFO", "propagate": False},
     },
 }
 
@@ -212,45 +214,52 @@ else:
 # 🔐 PASSWORD VALIDATION
 # =====================================================
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
+    {"NAME":
+     "django.contrib.auth.password_validation\
+        .UserAttributeSimilarityValidator"},
+    {"NAME":
+     "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME":
+     "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME":
+     "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-
 # =====================================================
-# ✅ ALLAUTH – revised for better first-time flow
+# ✅ ALLAUTH – modern configuration (fixes deprecation warnings)
 # =====================================================
 
-# Core auth
-ACCOUNT_USERNAME_REQUIRED = True
-ACCOUNT_USER_MODEL_USERNAME_FIELD = "username"
-ACCOUNT_AUTHENTICATION_METHOD = "username_email"
-ACCOUNT_EMAIL_REQUIRED = True
+# Authentication methods
+ACCOUNT_LOGIN_METHODS = {"username", "email"}
+
+# Signup fields (* means required)
+ACCOUNT_SIGNUP_FIELDS = [
+    "email*",
+    "username*",
+    "password1*",
+    "password2*",
+]
+
+# Email requirements
 ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_EMAIL_VERIFICATION = "none"
 
-# Verification: switch to "mandatory" – prevents instant /reserve/ access
-# and makes verification meaningful (spam protection + clean onboarding)
-ACCOUNT_EMAIL_VERIFICATION = "none"                  # ← changed from "optional"
-
-# Redirects – make flow feel natural
+# Redirects – natural UX
 ACCOUNT_SIGNUP_REDIRECT_URL = "/reserve/"
-# or ACCOUNT_SIGNUP_REDIRECT_URL = "/"                     # home page – also fine
-
-# after clicking link → dashboard/reservations
-ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = None
-# (do NOT set to /reserve/ – let user choose to book)
-
-LOGIN_REDIRECT_URL = "/my_reservations/"                   # after normal login
+LOGIN_REDIRECT_URL = "/my_reservations/"
 LOGOUT_REDIRECT_URL = "home"
 
-# Adapter & forms (keep these)
-ACCOUNT_ADAPTER = "reservation_book.adapters.CustomAccountAdapter"
-ACCOUNT_FORMS = {"signup": "reservation_book.forms.CustomerSignupForm"}
-
-# Misc (keep if needed)
+# Email confirmation behavior
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = None
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+
+# Custom adapter + signup form
+ACCOUNT_ADAPTER = "reservation_book.adapters.CustomAccountAdapter"
+ACCOUNT_FORMS = {
+    "signup": "reservation_book.forms.CustomerSignupForm",
+}
+
+# Misc behavior
 ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = True
 USE_X_FORWARDED_HOST = True
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https" if not DEBUG else "http"
@@ -332,7 +341,8 @@ def _clean_env_str(key: str, default: str = "") -> str:
     return raw.strip()
 
 
-# ✅ CHANGE: default is now False so local sends via Brevo unless you explicitly opt into console
+# ✅ CHANGE: default is now False so local sends via
+# Brevo unless you explicitly opt into console
 USE_CONSOLE_EMAIL = env.bool("USE_CONSOLE_EMAIL", default=False)
 
 if DEBUG and USE_CONSOLE_EMAIL:
@@ -352,7 +362,8 @@ EMAIL_HOST_PASSWORD = _clean_env_str("EMAIL_HOST_PASSWORD", default="")
 
 DEFAULT_FROM_EMAIL = _clean_env_str(
     "DEFAULT_FROM_EMAIL",
-    default="Gambinos Restaurant & Lounge <no-reply@gambinosrestaurantandlounge.com>",
+    default="Gambinos Restaurant & Lounge \
+        <no-reply@gambinosrestaurantandlounge.com>",
 )
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 

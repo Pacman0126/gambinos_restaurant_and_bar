@@ -26,11 +26,13 @@ urlpatterns = [
         views.staff_dashboard,
         name="staff_dashboard",
     ),
+
     path(
         "staff/reservations/",
         views.staff_reservations,
         name="staff_reservations",
     ),
+
     path("staff/reservations/<int:reservation_id>/no-show/",
          views.mark_no_show,
          name="mark_no_show"),
@@ -71,7 +73,7 @@ urlpatterns = [
 
     path("staff/phone-reservation/",
          views.create_phone_reservation,
-         name="create_phone_reservation",),  # Changed to create_phone_reservation view
+         name="create_phone_reservation",),
 
     path(
         "ajax/lookup-customer/",

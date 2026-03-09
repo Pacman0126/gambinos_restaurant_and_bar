@@ -30,7 +30,7 @@ def make_user(**kwargs):
     ("create_phone_reservation", []),
 ])
 def test_staff_pages_block_nonstaff(client, name, args):
-    user = make_user(username="cust", email="cust@example.com", is_staff=False)
+
     client.login(username="cust", password="pass12345")
     url = reverse(name, args=args)
     resp = client.get(url)
@@ -42,8 +42,7 @@ def test_staff_pages_block_nonstaff(client, name, args):
     ("add_staff", []),
 ])
 def test_superuser_pages_block_staff(client, name, args):
-    staff = make_user(username="staff",
-                      email="staff@example.com", is_staff=True)
+
     client.login(username="staff", password="pass12345")
     url = reverse(name, args=args)
     resp = client.get(url)
@@ -51,8 +50,7 @@ def test_superuser_pages_block_staff(client, name, args):
 
 
 def test_staff_can_access_staff_pages(client):
-    staff = make_user(username="staff2",
-                      email="staff2@example.com", is_staff=True)
+
     client.login(username="staff2", password="pass12345")
     resp = client.get(reverse("staff_dashboard"))
     assert resp.status_code == 200

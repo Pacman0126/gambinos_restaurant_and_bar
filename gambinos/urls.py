@@ -26,7 +26,8 @@ urlpatterns = [
     # path('summernote/', include('django_summernote.urls')),
     # Provides: account_login, account_logout, account_signup, etc.
     path("accounts/", include("allauth.urls")),
-    # path('reservations/', reservation_book_views.reservations,  name='reservations'),
+    # path('reservations/', reservation_book_views.reservations,
+    # name='reservations'),
 
 ]
 
