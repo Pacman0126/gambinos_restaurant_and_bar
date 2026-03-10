@@ -36,11 +36,6 @@ from .models import CancellationEvent, ReservationStats, NoShowEvent
 from .forms import PhoneReservationForm
 from .forms import EditReservationForm, SignUpForm
 
-# Assumes these exist in your project:
-# from .constants import SLOT_LABELS
-# from .forms import PhoneReservationForm
-# from .models import TimeSlotAvailability, TableReservation, Customer
-# from .views_helpers import _timeslot_defaults   (or wherever it lives)
 logger = logging.getLogger(__name__)
 
 
