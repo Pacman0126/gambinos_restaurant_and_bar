@@ -577,12 +577,8 @@ def unbar_customer(request, customer_id):
 def my_reservations(request):
 
     user = request.user
-    logger.warning(f"User email: {user.email}")
 
     customer = Customer.objects.filter(email__iexact=user.email).first()
-    logger.warning(
-        f"Found customer: {customer} (ID: {customer.pk if customer
-                                           else 'None'})")
 
     today = timezone.localdate()
     _auto_mark_no_shows(today=today)
