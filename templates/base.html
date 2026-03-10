@@ -43,19 +43,6 @@
             appearance: auto !important;
         }
 
-        /* Submission-safe navbar fallback:
-           no desktop mystery box, mobile toggler still works */
-        .custom-nav-toggler {
-            display: none !important;
-        }
-
-        @media (max-width: 991.98px) {
-            .custom-nav-toggler {
-                display: inline-flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-            }
-        }
     </style>
 </head>
 
@@ -69,14 +56,14 @@
                 Gambinos Restaurant & Lounge
             </a>
 
-            <button class="navbar-toggler custom-nav-toggler"
+            <button class="navbar-toggler navbar-menu-toggle"
                     type="button"
                     data-bs-toggle="collapse"
                     data-bs-target="#navbarText"
                     aria-controls="navbarText"
                     aria-expanded="false"
                     aria-label="Toggle navigation">
-                <i class="fas fa-bars" aria-hidden="true"></i>
+                Navigate
             </button>
 
             <div class="collapse navbar-collapse" id="navbarText">

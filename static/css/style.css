@@ -220,61 +220,33 @@ nav.navbar.bg-light,
 /* =========================================
    Mobile navbar toggler
    ========================================= */
+/* =========================================
+   Mobile navbar toggler
+   Submission-safe plain text button
+   ========================================= */
 
-.navbar-toggler,
-.app-navbar .navbar-toggler,
-.custom-nav-toggler {
-  border: 1px solid rgba(255, 255, 255, 0.35) !important;
-  background-color: rgba(255, 255, 255, 0.06) !important;
-  min-width: 52px !important;
-  min-height: 40px !important;
-  padding: 0.45rem 0.65rem !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
+.navbar-menu-toggle {
+  border: 1px solid rgba(255, 255, 255, 0.45) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: #f8f9fa !important;
+  box-shadow: none !important;
+  padding: 0.35rem 0.75rem !important;
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+  border-radius: 0.375rem !important;
+}
+
+.navbar-menu-toggle:hover,
+.navbar-menu-toggle:focus {
+  background: rgba(255, 255, 255, 0.10) !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.60) !important;
   box-shadow: none !important;
 }
 
-.navbar-toggler:focus,
-.app-navbar .navbar-toggler:focus,
-.custom-nav-toggler:focus,
-.custom-nav-toggler:hover {
-  border-color: rgba(255, 255, 255, 0.55) !important;
-  background-color: rgba(255, 255, 255, 0.10) !important;
-  box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.10) !important;
-}
-
-/* Hide Bootstrap's default SVG icon only */
-.navbar-toggler-icon {
+.navbar-menu-toggle .navbar-toggler-icon {
   display: none !important;
-  background-image: none !important;
-}
-
-/* Show the Font Awesome icon used in base.html */
-.custom-nav-toggler i,
-.custom-nav-toggler .fa-bars {
-  display: inline-block !important;
-  color: #ffffff !important;
-  font-size: 1.15rem !important;
-  line-height: 1 !important;
-}
-
-/* Support custom 3-line icon if used anywhere */
-.custom-toggler-icon {
-  display: inline-flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 5px;
-  width: 22px;
-  height: 18px;
-}
-
-.custom-toggler-icon span {
-  display: block;
-  width: 22px;
-  height: 2px;
-  background-color: #f8f9fa !important;
-  border-radius: 2px;
 }
 
 /* =========================================
