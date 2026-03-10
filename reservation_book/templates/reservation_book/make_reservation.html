@@ -93,6 +93,100 @@
     border-radius: 0.45rem;
   }
 
+  /* =========================================
+     Reservation modal layout hardening
+     ========================================= */
+
+  #customerModal .modal-dialog {
+    max-width: 980px;
+  }
+
+  #customerModal .modal-content {
+    overflow: hidden;
+  }
+
+  #customerModal .modal-body {
+    overflow-x: hidden;
+  }
+
+  #customerModal .card {
+    height: 100%;
+  }
+
+  #customerModal .card-body,
+  #customerModal .row,
+  #customerModal [class^="col-"],
+  #customerModal [class*=" col-"] {
+    min-width: 0;
+  }
+
+  #customerModal label.form-label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-weight: 600;
+  }
+
+  #customerModal input,
+  #customerModal select,
+  #customerModal textarea,
+  #customerModal .form-control,
+  #customerModal .form-select {
+    display: block;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  #customerModal input[type="number"] {
+    padding-right: 2rem;
+  }
+
+  #customerModal .form-control-plaintext {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+    color: #f8f9fa;
+  }
+
+  #customerModal .text-success,
+  #customerModal .text-warning,
+  #customerModal .text-danger {
+    font-weight: 700;
+  }
+
+  #customerModal .invalid-feedback,
+  #customerModal .errorlist,
+  #customerModal .text-danger {
+    margin-top: 0.35rem;
+    font-size: 0.88rem;
+  }
+
+  #customerModal .errorlist {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 0;
+    color: #ff8a8a;
+  }
+
+  #customerModal .btn-close {
+    filter: invert(1);
+    opacity: 0.9;
+  }
+
+  @media (max-width: 767.98px) {
+    #customerModal .modal-dialog {
+      max-width: none;
+      margin: 0.5rem;
+    }
+
+    #customerModal .card-body {
+      padding: 1rem;
+    }
+  }
+
   /* Mobile stacked layout */
   .mobile-slots {
     display: none;
@@ -189,7 +283,6 @@
 
     <div class="make-res-body">
 
-      <!-- ✅ REAL Bootstrap Modal (overlay) -->
       <div class="modal fade" id="customerModal" tabindex="-1" aria-labelledby="customerModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
           <div class="modal-content reservation-details-modal">
@@ -213,7 +306,6 @@
                 <input type="hidden" name="timeslot_availability" id="timeslot_availability">
 
                 <div class="row g-3">
-                  <!-- Customer -->
                   <div class="col-md-6">
                     <div class="card shadow-sm">
                       <div class="card-header"><strong>Customer</strong></div>
@@ -253,7 +345,6 @@
                     </div>
                   </div>
 
-                  <!-- Reservation -->
                   <div class="col-md-6">
                     <div class="card shadow-sm">
                       <div class="card-header"><strong>Reservation</strong></div>
@@ -317,7 +408,6 @@
         Cells show <strong>remaining / total</strong> tables. “FULL” means no remaining tables.
       </div>
 
-      <!-- Tablet / laptop / desktop -->
       <div class="desktop-grid-wrap">
         <div class="table-responsive phone-reservation-grid">
           <table class="table table-sm align-middle">
@@ -368,7 +458,6 @@
         </div>
       </div>
 
-      <!-- Smartphone only -->
       <div class="mobile-slots">
         {% for ts in next_30_days %}
           <div class="mobile-day-card">
