@@ -36,3 +36,7 @@ staticfiles/
 # macOS
 .DS_Store
 
+# Local developmetent files
+.editorconfig
+.flake8
+pytest.ini
