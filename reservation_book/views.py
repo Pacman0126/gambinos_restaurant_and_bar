@@ -582,8 +582,7 @@ def my_reservations(request):
     customer = Customer.objects.filter(email__iexact=user.email).first()
     logger.warning(
         f"Found customer: {customer} (ID: {customer.pk if customer
-                                           else 'None'})"
-    )
+                                           else 'None'})")
 
     today = timezone.localdate()
     _auto_mark_no_shows(today=today)
@@ -881,14 +880,16 @@ def update_reservation(request, reservation_id):
     """
     def _safe_next_url(request, default_name="my_reservations"):
         nxt = request.POST.get("next") or request.GET.get("next")
-        if nxt and \
-            url_has_allowed_host_and_scheme(
-                nxt, allowed_hosts={request.get_host()}):
+        if nxt and url_has_allowed_host_and_scheme(
+            nxt,
+            allowed_hosts={request.get_host()},
+        ):
             return nxt
         return reverse(default_name)
 
-    default_return = "staff_reservations" if \
-        request.user.is_staff else "my_reservations"
+    default_return = (
+        "staff_reservations" if request.user.is_staff else "my_reservations"
+    )
 
     reservation = get_object_or_404(TableReservation, id=reservation_id)
     today = timezone.localdate()
@@ -1462,8 +1463,8 @@ def make_reservation(request):
                         calendar_date=day_date,
                         defaults=_timeslot_defaults(),
                     )
-                    ts_day = TimeSlotAvailability.objects.select_for_update().\
-                        get(pk=ts_day.pk)
+                    ts_day = TimeSlotAvailability.objects\
+                        .select_for_update().get(pk=ts_day.pk)
 
                     # Capacity check across ALL affected slots
                     for k in affected_slot_keys:
@@ -1509,8 +1510,9 @@ def make_reservation(request):
 
                     # status field varies across your history; handle safely
                     if hasattr(TableReservation, "STATUS_ACTIVE"):
-                        create_kwargs["status"] = \
+                        create_kwargs["status"] = (
                             TableReservation.STATUS_ACTIVE
+                        )
                     else:
                         # many older versions used lower-case 'active'
                         create_kwargs["status"] = "active"
@@ -1523,8 +1525,9 @@ def make_reservation(request):
                         create_kwargs["is_phone_reservation"] = False
                     if hasattr(TableReservation, "created_by"):
                         # created_by is usually staff; keep None for customers
-                        create_kwargs["created_by"] = request.user \
-                            if request.user.is_staff else None
+                        create_kwargs["created_by"] = (
+                            request.user if request.user.is_staff else None
+                        )
 
                     reservation = TableReservation.objects.create(
                         **create_kwargs)
@@ -2183,8 +2186,11 @@ def create_phone_reservation(request):
                     )
 
                     # Lock row for consistent demand updates
-                    ts = TimeSlotAvailability.objects.select_for_update()\
+                    ts = (
+                        TimeSlotAvailability.objects
+                        .select_for_update()
                         .get(pk=ts.pk)
+                    )
 
                     # Capacity check across affected slots
                     for s in affected_slots:
@@ -2434,8 +2440,10 @@ def ajax_lookup_customer(request):
         )
 
         for r in reservations_qs:
-            if reservation_by_id and r.id == \
-                    reservation_by_id["reservation_id"]:
+            if (
+                reservation_by_id
+                and r.id == reservation_by_id["reservation_id"]
+            ):
                 continue
 
             date_val = r.reservation_date or (
@@ -2443,9 +2451,9 @@ def ajax_lookup_customer(request):
                 if r.timeslot_availability else None
             )
             customer_name = ""
-            if r.customer:
-                customer_name = f"{r.customer.first_name} \
-                    {r.customer.last_name}".strip()
+            customer_name = (
+                f"{r.customer.first_name} {r.customer.last_name}"
+            ).strip()
 
             results.append({
                 "type": "reservation",
